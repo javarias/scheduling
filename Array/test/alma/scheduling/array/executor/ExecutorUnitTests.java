@@ -20,6 +20,7 @@
  *******************************************************************************/
 package alma.scheduling.array.executor;
 
+import java.util.TreeSet;
 import java.util.concurrent.BlockingQueue;
 
 import org.jmock.Expectations;
@@ -59,6 +60,8 @@ import alma.lifecycle.stateengine.constants.Role;
 import alma.lifecycle.stateengine.constants.Subsystem;
 import alma.offline.ASDMArchivedEvent;
 import alma.offline.DataCapturerId;
+import alma.offline.SubScanProcessedEvent;
+import alma.offline.SubScanSequenceEndedEvent;
 import alma.scheduling.SchedBlockExecutionCallback;
 import alma.scheduling.SchedBlockQueueItem;
 import alma.scheduling.array.executor.services.ControlArray;
@@ -520,6 +523,120 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 		execContext.processASDMArchivedEvent(null);
 		executor.stop("UnitTest", "MasterOfTheUniverse");
 		executor.abortCurrentExecution("UnitTest", "MasterOfTheUniverse");
+	}
+	
+	public void testDataCaptureEventsHandling() throws Exception {
+		final IDLEntityRef execBlockRef = new IDLEntityRef("uid://A000/X000/X00","uid://A000/X000/X00", "EXEC", "1.0");
+		final IDLEntityRef wrongExecBlockRef = new IDLEntityRef("uid://A000/X001/X00","uid://A000/X000/X00", "EXEC", "1.0");
+		final IDLEntityRef sbRef = new IDLEntityRef("uid://A000/X000/X01","uid://A000/X000/X01", "SCHEDBLOCK", "1.0");
+		final IDLEntityRef sessionRef = new IDLEntityRef("uid://A000/X000/X02","uid://A000/X000/X02", "SESSION", "1.0");
+		final DataCapturerId dcId = new DataCapturerId("DC001", "Array001", sessionRef, sbRef, null, null);
+		final ExecBlockStartedEvent startEvent = new ExecBlockStartedEvent(
+				execBlockRef, sbRef, sessionRef, 
+				"Array001", System.currentTimeMillis());
+		final ExecBlockEndedEvent endEvent = new ExecBlockEndedEvent(
+				execBlockRef, sbRef, sessionRef, 
+				"Array001", "DC001", Completion.FAIL, null, System.currentTimeMillis() + 2000);
+		final ASDMArchivedEvent archEvent = new ASDMArchivedEvent(new DataCapturerId(), "complete", new IDLEntityRef(), 0);
+		final SubScanProcessedEvent ssp1_1 = new SubScanProcessedEvent(
+				dcId, "finished", execBlockRef, 1, 1, 
+				System.currentTimeMillis(), 
+				System.currentTimeMillis() - 5000, 
+				System.currentTimeMillis(), true);
+		final SubScanProcessedEvent ssp1_2 = new SubScanProcessedEvent(
+				dcId, "finished", execBlockRef, 1, 2, 
+				System.currentTimeMillis(), 
+				System.currentTimeMillis() - 5000, 
+				System.currentTimeMillis(), true);
+		final int success1[] = {1, 2};
+		final SubScanSequenceEndedEvent ssse1 = new SubScanSequenceEndedEvent(dcId, "finished", execBlockRef, 1, System.currentTimeMillis(), success1);
+		final SubScanProcessedEvent ssp2_1 = new SubScanProcessedEvent(
+				dcId, "finished", execBlockRef, 2, 1, 
+				System.currentTimeMillis(), 
+				System.currentTimeMillis() - 5000, 
+				System.currentTimeMillis(), true);
+		final SubScanProcessedEvent ssp2_2 = new SubScanProcessedEvent(
+				dcId, "finished", execBlockRef, 2, 2, 
+				System.currentTimeMillis(), 
+				System.currentTimeMillis() - 5000, 
+				System.currentTimeMillis(), true);
+		final SubScanSequenceEndedEvent ssse2 = new SubScanSequenceEndedEvent(dcId, "finished", execBlockRef, 2, System.currentTimeMillis(), success1);
+		
+		final SubScanProcessedEvent sspBad1 = new SubScanProcessedEvent(
+				dcId, "finished", wrongExecBlockRef, 1, 1, 
+				System.currentTimeMillis(), 
+				System.currentTimeMillis() - 5000, 
+				System.currentTimeMillis(), true);
+		final SubScanSequenceEndedEvent ssseBad = new SubScanSequenceEndedEvent(dcId, "finished", wrongExecBlockRef, 2, System.currentTimeMillis(), success1);
+		
+		checking(new Expectations() {{ 
+			SchedBlockItem item = new SchedBlockItem("uid://A000/X000/X01", System.currentTimeMillis());
+			atLeast(1).of(queue).take(); will(returnValue(item));
+			atLeast(1).of(queue).offer(with(any(SchedBlockItem.class)));
+			allowing(services).getModel(); will(returnValue(model));
+			atLeast(1).of(model).getSchedBlockFromEntityId("uid://A000/X000/X01"); will(returnValue(sb));
+			SBStatus sbStatus = new SBStatus();
+			sbStatus.setStatus(status);
+			sbStatus.setSBStatusEntity(new SBStatusEntityT());
+			sbStatus.setSchedBlockRef(new SchedBlockRefT());
+			sbStatus.setContainingObsUnitSetRef(new OUSStatusRefT());
+			allowing(stateArchive).getSBStatus(sb.getStatusEntity()); will(returnValue(sbStatus));
+			atLeast(1).of(stateEngine).changeState(sb.getStatusEntity(), StatusTStateType.RUNNING, Subsystem.SCHEDULING, Role.AOD);
+			atLeast(1).of(stateEngine).changeState(sb.getStatusEntity(), StatusTStateType.READY, Subsystem.SCHEDULING, Role.AOD);
+			IDLEntityRef curSession = new IDLEntityRef();
+			atLeast(1).of(sessions).observeSB(sb); will(returnValue(curSession));
+			atLeast(1).of(sessions).getCurrentSession(); will(returnValue(curSession));
+			IDLEntityRef curSB = new IDLEntityRef();
+			curSB.entityId = sb.getUid();
+			atLeast(1).of(sessions).getCurrentSB(); will(returnValue(curSB));
+			atLeast(1).of(services).getControlArray(); will(returnValue(array));
+			atLeast(1).of(array).configure(curSB);
+			atLeast(1).of(array).observe(with(any(IDLEntityRef.class)), with(any(IDLEntityRef.class)));
+			oneOf(sessions).addExecution(startEvent.execId.entityId);
+		}});
+		
+		executor.configureManual(true);
+		executor.start("UnitTest", "MasterOfTheUniverse");
+		Thread.sleep(1000);
+		ExecutionContext execContext = executor.getCurrentExecution();
+		execContext.processExecBlockStartedEvent(startEvent);
+		Thread.sleep(1000);
+		execContext.processSubScanProcessedEvent(ssp1_1);
+		Thread.sleep(1000);
+		execContext.processSubScanProcessedEvent(ssp1_2);
+		Thread.sleep(1000);
+		execContext.processSubScanSequenceEndedEvent(ssse1);
+		Thread.sleep(1000);
+		execContext.processSubScanProcessedEvent(ssp2_1);
+		Thread.sleep(1000);
+		execContext.processSubScanProcessedEvent(sspBad1);
+		Thread.sleep(1000);
+		execContext.processSubScanSequenceEndedEvent(ssseBad);
+		Thread.sleep(1000);
+		execContext.processSubScanProcessedEvent(ssp2_2);
+		Thread.sleep(1000);
+		execContext.processSubScanSequenceEndedEvent(ssse2);
+		Thread.sleep(1000);
+		execContext.processExecBlockEndedEvent(endEvent);
+		Thread.sleep(1000);
+		execContext.processASDMArchivedEvent(archEvent);
+		Thread.sleep(1000);
+		executor.stop("UnitTest", "MasterOfTheUniverse");
+		
+		//Check if the tree set are sorted
+		TreeSet<SubScanSequenceEndedEvent> ssseSet = execContext.getSSSSet();
+		TreeSet<SubScanProcessedEvent> sspSet = execContext.getSSPSet();
+		int c = 0;
+		for (SubScanSequenceEndedEvent ev1: ssseSet) {
+			int subscan = ev1.scanNumber;
+			int k = 0;
+			int[] successSubScans = ev1.successfulSubscans;
+			for (int i = c; i < successSubScans.length; i++) {
+				SubScanProcessedEvent ev2 = sspSet.pollFirst();
+				assertEquals(subscan, ev2.processedScanNum);
+				assertEquals(successSubScans[k++], ev2.processedSubScanNum);
+			}
+		}
 	}
 	
 	private class TestExecCallback implements SchedBlockExecutionCallback {

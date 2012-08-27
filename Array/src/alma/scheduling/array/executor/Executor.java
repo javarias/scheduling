@@ -40,7 +40,6 @@ import alma.scheduling.array.executor.services.Services;
 import alma.scheduling.array.guis.ArrayGUINotification;
 import alma.scheduling.array.sbQueue.SchedBlockItem;
 import alma.scheduling.array.sessions.SessionManager;
-import alma.scheduling.formatting.Format;
 import alma.scheduling.utils.ErrorHandling;
 import alma.scheduling.utils.LoggerFactory;
 
@@ -228,6 +227,8 @@ public class Executor extends Observable {
         fullAuto = false;
         manual   = false;
         running  = false;
+//        activeObservations = new TreeMap<String, ExecStatusT>();
+//        activeObsGroupBySbUid = new TreeMap<String, TreeMap<String,ExecStatusT>>();
     }
 
 	public void start(String name, String role) {
@@ -271,15 +272,16 @@ public class Executor extends Observable {
 
     public void receive(ExecBlockStartedEvent event) {
         logger.info(String.format(
-        		"%s: received ExecBlockStartedEvent for SchedBlock %s",
+        		"%s: received ExecBlockStartedEvent for SchedBlock %s, ExecBlock %s",
         		this.getClass().getSimpleName(),
-        		event.sbId.entityId));
-	logger.fine(String.format("event.arrayName = %s, event.sessionId = %s",
+        		event.sbId.entityId,
+        		event.execId.entityId));
+        logger.fine(String.format("event.arrayName = %s, event.sessionId = %s",
                                   event.arrayName,
                                   (event.sessionId==null)? "Null": event.sessionId.entityId));
         try {
             if (currentExecution != null) {
-		logger.fine(String.format("arrayName = %s, currentEx.sessionId = %s, currentEx.sbId = %s",
+            	logger.fine(String.format("arrayName = %s, currentEx.sessionId = %s, currentEx.sbId = %s",
 					  arrayName,
 					  (currentExecution.getSessionRef()==null)? "Null": currentExecution.getSessionRef().entityId,
 					  (currentExecution.getSchedBlockRef()==null)? "Null": currentExecution.getSchedBlockRef().entityId));
@@ -399,6 +401,7 @@ public class Executor extends Observable {
     	b.append(")");
 
     	logger.info(b.toString());
+    	currentExecution.processSubScanProcessedEvent(event);
     }
     
     public void receive(SubScanSequenceEndedEvent event) {
@@ -415,13 +418,7 @@ public class Executor extends Observable {
     	b.append(")");
 
     	logger.info(b.toString());
-    }
-    
-	public static void main(String[] args) {
-    	int[] j = {2, 3, 5, 7, 11};
-    	
-    	System.out.println(j);
-    	System.out.println(Format.formatArray(j));
+    	currentExecution.processSubScanSequenceEndedEvent(event);
     }
 	
     public ExecutionContext getCurrentExecution() {

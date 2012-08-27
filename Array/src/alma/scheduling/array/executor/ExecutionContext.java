@@ -20,8 +20,10 @@ package alma.scheduling.array.executor;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Formatter;
+import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -50,6 +52,8 @@ import alma.lifecycle.persistence.StateArchive;
 import alma.lifecycle.stateengine.constants.Role;
 import alma.lifecycle.stateengine.constants.Subsystem;
 import alma.offline.ASDMArchivedEvent;
+import alma.offline.SubScanProcessedEvent;
+import alma.offline.SubScanSequenceEndedEvent;
 import alma.scheduling.SchedulingException;
 import alma.scheduling.array.executor.services.ControlArray;
 import alma.scheduling.array.executor.services.EventPublisher;
@@ -119,11 +123,16 @@ public class ExecutionContext {
     private long execTime = 0;
     private DateFormat dateFormat;
     
+    private TreeSet<SubScanProcessedEvent> SSPSet;
+    private TreeSet<SubScanSequenceEndedEvent> SSSSet;
+    
     public ExecutionContext(SchedBlockItem schedBlockItem, Executor executor, boolean manual) {
     	this.schedBlockItem = schedBlockItem;
     	this.executor = executor;
     	this.schedBlock = getModel().getSchedBlockFromEntityId(schedBlockItem.getUid());
     	this.dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    	this.SSPSet = new TreeSet<SubScanProcessedEvent>(new SubScanProcessedEventComparator());
+    	this.SSSSet = new TreeSet<SubScanSequenceEndedEvent>(new SubScanSequenceEndedEventComparator());
     	if (manual) {
     		state = new ManualReadyExecutionState(this);
     	} else {
@@ -495,6 +504,41 @@ public class ExecutionContext {
     	return executor.isFullAuto();
     }
  
+    public void processSubScanSequenceEndedEvent(SubScanSequenceEndedEvent event) {
+    	logger.info(String.format(
+        		"%s: processing SubScanSequenceEndedEvent",
+        		this.getClass().getSimpleName()));
+    	if (execBlockRef != null &&
+    			execBlockRef.entityId.equals(event.processedExecBlockId.entityId)) {
+    		SSSSet.add(event);
+    	} else {
+    		String msg = "Discarded SSSE event: currentExecId=";
+    		if (execBlockRef != null)
+    			msg += execBlockRef.entityId;
+    		else
+    			msg += execBlockRef;
+    		msg += " event.processedExecBlockId=" + event.processedExecBlockId.entityId;
+			logger.fine(msg);
+    	}
+    }
+    
+    public void processSubScanProcessedEvent(SubScanProcessedEvent event) {
+    	logger.info(String.format(
+        		"%s: processing SubScanProcessedEvent",
+        		this.getClass().getSimpleName()));
+    	if (execBlockRef != null &&
+    			execBlockRef.entityId.equals(event.processedExecBlockId.entityId)) {
+    		SSPSet.add(event);
+    	} else {
+    		String msg = "Discarded SSP event: currentExecId=";
+    		if (execBlockRef != null)
+    			msg += execBlockRef.entityId;
+    		else
+    			msg += execBlockRef;
+    		msg += " event.processedExecBlockId=" + event.processedExecBlockId.entityId;
+			logger.fine(msg);
+    	}
+    }
 
     
     
@@ -1137,5 +1181,35 @@ public class ExecutionContext {
 		} catch (NullPointerException e) {
 			return "";
 		}
+	}
+	
+	
+	private class SubScanSequenceEndedEventComparator implements Comparator<SubScanSequenceEndedEvent> {
+
+		@Override
+		public int compare(SubScanSequenceEndedEvent o1,
+				SubScanSequenceEndedEvent o2) {
+			return (o1.scanNumber - o2.scanNumber);
+		}
+	}
+	
+	private class SubScanProcessedEventComparator implements Comparator<SubScanProcessedEvent> {
+
+		@Override
+		public int compare(SubScanProcessedEvent o1, SubScanProcessedEvent o2) {
+			int retVal = (o1.processedScanNum - o2.processedScanNum) * 1000;
+			retVal += o1.processedSubScanNum - o2.processedSubScanNum;
+			return retVal;
+		}
+	}
+
+	///// For testing purposes only
+
+	TreeSet<SubScanProcessedEvent> getSSPSet() {
+		return SSPSet;
+	}
+
+	TreeSet<SubScanSequenceEndedEvent> getSSSSet() {
+		return SSSSet;
 	}
 }
