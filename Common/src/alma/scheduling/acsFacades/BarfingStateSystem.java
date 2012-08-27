@@ -49,7 +49,7 @@ import alma.xmlentity.XmlEntityStruct;
 /**
  * A facade for the StateSystem which logs calls made to it.
  *
- * @version $Id: BarfingStateSystem.java,v 1.3 2012/08/14 16:22:53 javarias Exp $
+ * @version $Id: BarfingStateSystem.java,v 1.4 2012/08/27 23:18:30 javarias Exp $
  * @author David Clarke
  */
 public class BarfingStateSystem implements StateSystemOperations {
@@ -538,5 +538,12 @@ public class BarfingStateSystem implements StateSystemOperations {
 			throws NoSuchEntityEx, StateIOFailedEx {
 		updateSBStatus(entity);
 		
+	}
+
+	@Override
+	public XmlEntityStruct[] findOUSStatusByState(String[] states)
+			throws InappropriateEntityTypeEx, IllegalArgumentEx {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
