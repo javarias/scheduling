@@ -843,7 +843,9 @@ public class ExecutionContext {
 	    			* Math.pow(sbStatus.getSensitivityAchievedJy(),2)
 	    			+ Math.pow(sensJy,2)) / (sbStatus.getSuccessfulExecutions() + 1);
 	    		sbStatus.setSensitivityAchievedJy(totalSensJy);
-    	}
+		    	logger.info("Accumulated senitivity so far for SchedBlock: " + schedBlock.getUid() 
+		    			+ "= " + totalSensJy  + " [Jy]");
+	    	}
     	} catch (Exception ex) {
     		AcsJSchedulingInternalExceptionEx e = new AcsJSchedulingInternalExceptionEx(ex);
     		e.setProperty("Reason", "Failed calculation of the sensitivity achieved for this execution");
@@ -1097,7 +1099,8 @@ public class ExecutionContext {
     	if( sensJy > 1.0 ){
 			String msg = new String(
 					"  High Sensitivity detected in " + schedBlock.getSchedulingConstraints().getSchedBlockMode() + 
-					"  SchedBlock ID: " + schedBlock.getId() + "\n" +  
+					"  SchedBlock ID: " + schedBlock.getId() + "\n" + 
+					"  Number of Antennas (diameter):" + this.numOfAntennas + " (" + this.antDiameter +")\n" +
 					"  Temp and Humi: " + hr.getValue() + ", " + tr.getValue() + "\n" + 
 					"  opacityInterpolator.estimatePWV(): " + pwv + "\n" + 
 					"  opacityInterpolator.interpolateOpacityAndTemperature().opacity: " + opacity + "\n" + 
@@ -1332,7 +1335,7 @@ public class ExecutionContext {
 	//very inefficient, improve if it is necessary
 	private TreeMap<SubScanSequenceEndedEvent, ArrayList<SubScanProcessedEvent>> processScanEvents() {
 		final TreeMap<SubScanSequenceEndedEvent, ArrayList<SubScanProcessedEvent>> retVal =
-				new TreeMap<SubScanSequenceEndedEvent, ArrayList<SubScanProcessedEvent>>();
+				new TreeMap<SubScanSequenceEndedEvent, ArrayList<SubScanProcessedEvent>>(new SubScanSequenceEndedEventComparator());
 		for (SubScanProcessedEvent sspEv: SSPSet) {
 			SubScanSequenceEndedEvent ssseEv = null;
 			for (SubScanSequenceEndedEvent x: SSSSet) {

@@ -20,6 +20,7 @@
  *******************************************************************************/
 package alma.scheduling.array.executor;
 
+import java.util.Date;
 import java.util.TreeSet;
 import java.util.concurrent.BlockingQueue;
 
@@ -68,11 +69,21 @@ import alma.scheduling.array.executor.services.ControlArray;
 import alma.scheduling.array.executor.services.Services;
 import alma.scheduling.array.sbQueue.SchedBlockItem;
 import alma.scheduling.array.sessions.SessionManager;
+import alma.scheduling.datamodel.obsproject.FieldSource;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.SchedBlockControl;
+import alma.scheduling.datamodel.obsproject.SchedBlockMode;
+import alma.scheduling.datamodel.obsproject.SchedulingConstraints;
+import alma.scheduling.datamodel.obsproject.SkyCoordinates;
+import alma.scheduling.datamodel.obsproject.Target;
 import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
 import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
+import alma.scheduling.datamodel.weather.HumidityHistRecord;
+import alma.scheduling.datamodel.weather.TemperatureHistRecord;
+import alma.scheduling.datamodel.weather.dao.WeatherHistoryDAO;
+import alma.scheduling.weather.OpacityInterpolator;
+import alma.scheduling.weather.OpacityInterpolatorImpl;
 
 public class ExecutorUnitTests extends MockObjectTestCase {
 	{
@@ -93,6 +104,9 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 	private OUSStatus ousStatus = null;
 	private ProjectStatus prjStatus = null;
 	private StatusT status = null;
+	private WeatherHistoryDAO weatherDao = mock(WeatherHistoryDAO.class);
+	private OpacityInterpolator opacityInterpolator = mock(OpacityInterpolator.class);
+	private double[] opacityResult = {0.3078, 75.3473}; 
 	
 	
 	@Override
@@ -105,12 +119,21 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 		services = mock(Services.class);
 		sessions = mock(SessionManager.class);
 		executor = new Executor("Array001", queue);
+		executor.setAntennaDiameter(12D);
+		executor.setNumOfAvailableAntennas(18);
 		sb.setUid("uid://A000/X000/X01");
 		sb.setSchedBlockControl(new SchedBlockControl());
 		sb.getSchedBlockControl().setAccumulatedExecutionTime(0.0);
 		sb.getSchedBlockControl().setExecutionCount(0);
 		sb.setProjectUid("uid://A000/X000/X04");
 		sb.getSchedBlockControl().setIndefiniteRepeat(true);
+		SchedulingConstraints sbConstraints = new SchedulingConstraints();
+		sbConstraints.setRepresentativeFrequency(40D);
+		Target t = new Target();
+		t.setSource(new FieldSource("Alpha Centauri", new SkyCoordinates(14.660137528, -60.833974444), 0D, 0D));
+		sbConstraints.setRepresentativeTarget(t);
+		sbConstraints.setSchedBlockMode(SchedBlockMode.INTERFEROMETRY);
+		sb.setSchedulingConstraints(sbConstraints);
 		SBStatusEntityT sbStatusRef = new SBStatusEntityT();
 		sbStatusRef.setEntityId("uid://A000/X000/X03");
 		sbStatusRef.setEntityTypeName("SCHEDBLOCK");
@@ -138,6 +161,12 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 		checking(new Expectations() {{ 
 			allowing(model).getStateArchive(); will(returnValue(stateArchive));
 			allowing(model).getStateEngine(); will(returnValue(stateEngine));
+			allowing(model).getWeatherDao(); will(returnValue(weatherDao));
+			allowing(model).getOpacityInterpolator(); will(returnValue(opacityInterpolator));
+			allowing(weatherDao).getTemperatureForTime(with(any(Date.class))); will(returnValue(new TemperatureHistRecord(0D, 1D, 0D, 0D)));
+			allowing(weatherDao).getHumidityForTime(with(any(Date.class))); will(returnValue(new HumidityHistRecord(0D, 1D, 0D, 0D)));
+			allowing(opacityInterpolator).estimatePWV(with(any(Double.class)), with(any(Double.class))); will(returnValue(0.5));
+			allowing(opacityInterpolator).interpolateOpacityAndTemperature(with(any(Double.class)), with(any(Double.class))); will(returnValue(opacityResult));
 		}});
 		
 		execNotifier = new ExecutorCallbackNotifier();
@@ -536,43 +565,43 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 				"Array001", System.currentTimeMillis());
 		final ExecBlockEndedEvent endEvent = new ExecBlockEndedEvent(
 				execBlockRef, sbRef, sessionRef, 
-				"Array001", "DC001", Completion.FAIL, null, System.currentTimeMillis() + 2000);
+				"Array001", "DC001", Completion.SUCCESS, null, System.currentTimeMillis() + 2000);
 		final ASDMArchivedEvent archEvent = new ASDMArchivedEvent(new DataCapturerId(), "complete", new IDLEntityRef(), 0);
 		final SubScanProcessedEvent ssp1_1 = new SubScanProcessedEvent(
 				dcId, "finished", execBlockRef, 1, 1, 
-				System.currentTimeMillis(), 
-				System.currentTimeMillis() - 5000, 
-				System.currentTimeMillis(), true);
+				System.currentTimeMillis() * 10000, 
+				(System.currentTimeMillis() - 5000) * 10000, 
+				System.currentTimeMillis() * 10000, true);
 		final SubScanProcessedEvent ssp1_2 = new SubScanProcessedEvent(
 				dcId, "finished", execBlockRef, 1, 2, 
-				System.currentTimeMillis(), 
-				System.currentTimeMillis() - 5000, 
-				System.currentTimeMillis(), true);
+				System.currentTimeMillis() * 10000, 
+				(System.currentTimeMillis() - 5000) * 10000, 
+				System.currentTimeMillis() * 10000, true);
 		final int success1[] = {1, 2};
 		final SubScanSequenceEndedEvent ssse1 = new SubScanSequenceEndedEvent(dcId, "finished", execBlockRef, 1, System.currentTimeMillis(), success1);
 		final SubScanProcessedEvent ssp2_1 = new SubScanProcessedEvent(
 				dcId, "finished", execBlockRef, 2, 1, 
-				System.currentTimeMillis(), 
-				System.currentTimeMillis() - 5000, 
-				System.currentTimeMillis(), true);
+				System.currentTimeMillis() * 10000, 
+				(System.currentTimeMillis() - 5000) * 10000, 
+				System.currentTimeMillis() * 10000, true);
 		final SubScanProcessedEvent ssp2_2 = new SubScanProcessedEvent(
 				dcId, "finished", execBlockRef, 2, 2, 
-				System.currentTimeMillis(), 
-				System.currentTimeMillis() - 5000, 
-				System.currentTimeMillis(), true);
+				System.currentTimeMillis() * 10000, 
+				(System.currentTimeMillis() - 5000) * 10000, 
+				System.currentTimeMillis() * 10000, true);
 		final SubScanSequenceEndedEvent ssse2 = new SubScanSequenceEndedEvent(dcId, "finished", execBlockRef, 2, System.currentTimeMillis(), success1);
 		
 		final SubScanProcessedEvent sspBad1 = new SubScanProcessedEvent(
 				dcId, "finished", wrongExecBlockRef, 1, 1, 
-				System.currentTimeMillis(), 
-				System.currentTimeMillis() - 5000, 
-				System.currentTimeMillis(), true);
+				System.currentTimeMillis() * 10000, 
+				(System.currentTimeMillis() - 5000) * 10000, 
+				System.currentTimeMillis() * 10000, true);
 		final SubScanSequenceEndedEvent ssseBad = new SubScanSequenceEndedEvent(dcId, "finished", wrongExecBlockRef, 2, System.currentTimeMillis(), success1);
 		
 		checking(new Expectations() {{ 
 			SchedBlockItem item = new SchedBlockItem("uid://A000/X000/X01", System.currentTimeMillis());
 			atLeast(1).of(queue).take(); will(returnValue(item));
-			atLeast(1).of(queue).offer(with(any(SchedBlockItem.class)));
+//			atLeast(1).of(queue).offer(with(any(SchedBlockItem.class)));
 			allowing(services).getModel(); will(returnValue(model));
 			atLeast(1).of(model).getSchedBlockFromEntityId("uid://A000/X000/X01"); will(returnValue(sb));
 			SBStatus sbStatus = new SBStatus();
@@ -580,9 +609,12 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 			sbStatus.setSBStatusEntity(new SBStatusEntityT());
 			sbStatus.setSchedBlockRef(new SchedBlockRefT());
 			sbStatus.setContainingObsUnitSetRef(new OUSStatusRefT());
+			sbStatus.setHasSensitivityGoal(true);
+			sbStatus.setHasExecutionCount(true);
+			sbStatus.setExecutionsRemaining(100);
 			allowing(stateArchive).getSBStatus(sb.getStatusEntity()); will(returnValue(sbStatus));
 			atLeast(1).of(stateEngine).changeState(sb.getStatusEntity(), StatusTStateType.RUNNING, Subsystem.SCHEDULING, Role.AOD);
-			atLeast(1).of(stateEngine).changeState(sb.getStatusEntity(), StatusTStateType.READY, Subsystem.SCHEDULING, Role.AOD);
+			atLeast(1).of(stateEngine).changeState(sb.getStatusEntity(), StatusTStateType.SUSPENDED, Subsystem.SCHEDULING, Role.AOD);
 			IDLEntityRef curSession = new IDLEntityRef();
 			atLeast(1).of(sessions).observeSB(sb); will(returnValue(curSession));
 			atLeast(1).of(sessions).getCurrentSession(); will(returnValue(curSession));
@@ -593,9 +625,16 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 			atLeast(1).of(array).configure(curSB);
 			atLeast(1).of(array).observe(with(any(IDLEntityRef.class)), with(any(IDLEntityRef.class)));
 			oneOf(sessions).addExecution(startEvent.execId.entityId);
+			allowing(model).getObsProjectDao(); will(returnValue(prjDao));
+			atMost(2).of(stateArchive).insertOrUpdate(sbStatus, Subsystem.SCHEDULING);
+			atMost(2).of(stateArchive).getOUSStatus(with(any(OUSStatusEntityT.class))); will(returnValue(ousStatus));
+			atMost(2).of(stateArchive).insertOrUpdate(with(any(OUSStatus.class)), with(Subsystem.SCHEDULING));
+			atMost(1).of(stateArchive).getProjectStatus(with(any(ProjectStatusEntityT.class))); will(returnValue(prjStatus));
+			atMost(2).of(stateArchive).insertOrUpdate(with(any(ProjectStatus.class)), with(Subsystem.SCHEDULING));
+			allowing(prjDao).findByEntityId("uid://A000/X000/X04"); will(returnValue(prj));
 		}});
 		
-		executor.configureManual(true);
+		executor.configureManual(false);
 		executor.start("UnitTest", "MasterOfTheUniverse");
 		Thread.sleep(1000);
 		ExecutionContext execContext = executor.getCurrentExecution();
@@ -620,7 +659,7 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 		execContext.processExecBlockEndedEvent(endEvent);
 		Thread.sleep(1000);
 		execContext.processASDMArchivedEvent(archEvent);
-		Thread.sleep(1000);
+		Thread.sleep(2000);
 		executor.stop("UnitTest", "MasterOfTheUniverse");
 		
 		//Check if the tree set are sorted
