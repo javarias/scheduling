@@ -64,6 +64,8 @@ public class Executor extends Observable {
     private boolean activeDynamic;
     private boolean manual;
     private boolean running;
+    private int numOfAntennas;
+    private double antennaDiameter;
     
     private Services services;
     private SessionManager sessions;
@@ -109,7 +111,7 @@ public class Executor extends Observable {
         			logger.info("executor consumer took item " + item);
 
         			try {
-        				currentExecution = new ExecutionContext(item, executor, manual);
+        				currentExecution = new ExecutionContext(item, executor, manual, numOfAntennas, antennaDiameter);
          				// Blocks until the execution has finished.
         				logger.finer(String.format("(%s) %s for %s just before %s.startObservation()",
         						this.getName(),
@@ -518,6 +520,14 @@ public class Executor extends Observable {
     						role);
     		notify(agn);
     	}
+    }
+    
+    public void setNumOfAvailableAntennas(int numOfAntennas) {
+    	this.numOfAntennas = numOfAntennas;
+    }
+    
+    public void setAntennaDiameter(double diameter) {
+    	this.antennaDiameter = diameter;
     }
 
     public void destroyArray(String user, String role) {

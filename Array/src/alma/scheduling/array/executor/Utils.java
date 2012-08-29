@@ -20,6 +20,7 @@ package alma.scheduling.array.executor;
 import alma.entity.xmlbinding.ousstatus.OUSStatus;
 import alma.entity.xmlbinding.ousstatus.PipelineProcessingRequestT;
 import alma.entity.xmlbinding.ousstatus.SessionT;
+import alma.entity.xmlbinding.sbstatus.SBStatus;
 
 /**
  * @author rhiriart
@@ -37,6 +38,11 @@ public class Utils {
     public static String genPartId(OUSStatus ouss) {
     	int numSessions = ouss.getSessionCount();
     	return String.format("X%08x", numSessions);
+    }
+    
+    public static String genPartId(SBStatus sbStatus) {
+    	int numExecStatus = sbStatus.getExecStatusCount();
+    	return String.format("X%08x",numExecStatus);
     }
     
     public static String genPPRId(OUSStatus ouss) {

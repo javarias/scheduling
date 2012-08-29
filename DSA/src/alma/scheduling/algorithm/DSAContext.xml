@@ -92,7 +92,20 @@
 		<constructor-arg>
 			<value>sbStatusSelector</value>
 		</constructor-arg>
-		<property name="sbDao" ref="sbDao" />
+	</bean>
+	
+	<bean id="csvFalseSelector"
+		class="alma.scheduling.algorithm.obsproject.CSVSelector"
+		scope="singleton">
+		<constructor-arg><value>csvFalseSelector</value></constructor-arg>
+		<property name="csv" value="false"/>
+	</bean>
+	
+	<bean id="csvTrueSelector"
+		class="alma.scheduling.algorithm.obsproject.CSVSelector"
+		scope="singleton">
+		<constructor-arg><value>csvFalseSelector</value></constructor-arg>
+		<property name="csv" value="true"/>
 	</bean>
 
 	<bean id="weatherSelector" class="alma.scheduling.algorithm.weather.WeatherFullSelector"
@@ -250,7 +263,6 @@
 		<property name="projTimeIncr" value="0.5" />
 	</bean>
 	<!-- SchedBlock Executor -->
-    <bean name="opacityInterpolator" class="alma.scheduling.algorithm.weather.OpacityInterpolatorImpl"/>
     <bean name="schedBlockExecutor" class="alma.scheduling.algorithm.SchedBlockExecutorImpl">
         <property name="execDao" ref="execDao"/>
         <property name="schedBlockDao" ref="sbDao" />

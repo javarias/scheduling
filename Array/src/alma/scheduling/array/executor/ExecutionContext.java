@@ -20,9 +20,13 @@ package alma.scheduling.array.executor;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Formatter;
+import java.util.Iterator;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -33,6 +37,8 @@ import java.util.logging.Logger;
 import alma.ACSErrTypeCommon.wrappers.AcsJIllegalArgumentEx;
 import alma.Control.ExecBlockEndedEvent;
 import alma.Control.ExecBlockStartedEvent;
+import alma.SchedulingMasterExceptions.SchedulingInternalExceptionEx;
+import alma.SchedulingMasterExceptions.wrappers.AcsJSchedulingInternalExceptionEx;
 import alma.acs.util.UTCUtility;
 import alma.asdmIDLTypes.IDLEntityRef;
 import alma.entity.xmlbinding.ousstatus.OUSStatus;
@@ -55,14 +61,22 @@ import alma.offline.ASDMArchivedEvent;
 import alma.offline.SubScanProcessedEvent;
 import alma.offline.SubScanSequenceEndedEvent;
 import alma.scheduling.SchedulingException;
+import alma.scheduling.algorithm.astro.InterferometrySensitivityCalculator;
+import alma.scheduling.algorithm.astro.SingleDishSensitivityCalculator;
 import alma.scheduling.array.executor.services.ControlArray;
 import alma.scheduling.array.executor.services.EventPublisher;
 import alma.scheduling.array.executor.services.Pipeline;
 import alma.scheduling.array.sbQueue.SchedBlockItem;
 import alma.scheduling.array.sessions.SessionManager;
 import alma.scheduling.datamodel.obsproject.ObsProject;
+import alma.scheduling.datamodel.obsproject.ObservingParameters;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.obsproject.ScienceParameters;
 import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
+import alma.scheduling.datamodel.weather.HumidityHistRecord;
+import alma.scheduling.datamodel.weather.TemperatureHistRecord;
+import alma.scheduling.utils.Constants;
+import alma.scheduling.utils.CoordinatesUtil;
 import alma.scheduling.utils.ErrorHandling;
 import alma.scheduling.utils.LoggerFactory;
 import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
@@ -103,9 +117,7 @@ public class ExecutionContext {
     private Executor executor;
     
     private long startTimestamp;
-    
     private long stopTimestamp;
-    
     private long archivedTimestamp;
 
     private Lock receptionLock = new ReentrantLock();
@@ -123,13 +135,18 @@ public class ExecutionContext {
     private long execTime = 0;
     private DateFormat dateFormat;
     
+    private int numOfAntennas;
+    private double antDiameter;
+    
     private TreeSet<SubScanProcessedEvent> SSPSet;
     private TreeSet<SubScanSequenceEndedEvent> SSSSet;
     
-    public ExecutionContext(SchedBlockItem schedBlockItem, Executor executor, boolean manual) {
+    public ExecutionContext(SchedBlockItem schedBlockItem, Executor executor, boolean manual, int numOfAntennas, double antDiameter) {
     	this.schedBlockItem = schedBlockItem;
     	this.executor = executor;
     	this.schedBlock = getModel().getSchedBlockFromEntityId(schedBlockItem.getUid());
+    	this.numOfAntennas = numOfAntennas;
+    	this.antDiameter = antDiameter;
     	this.dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     	this.SSPSet = new TreeSet<SubScanProcessedEvent>(new SubScanProcessedEventComparator());
     	this.SSSSet = new TreeSet<SubScanSequenceEndedEvent>(new SubScanSequenceEndedEventComparator());
@@ -187,8 +204,7 @@ public class ExecutionContext {
 			try {
 				ArchivingExecutionState aes = (ArchivingExecutionState) state;
 				final SBStatus sbStatus = getSBStatusFor(getSchedBlock());
-				addExecStatus(sbStatus, aes.getFinalState());
-				accountExecution(sbStatus, execTime);
+				accountExecution(sbStatus, execTime, aes.getFinalState());
 			} catch (Exception e) {
 				ErrorHandling.warning(logger,
 								String.format(
@@ -241,7 +257,6 @@ public class ExecutionContext {
 					final long then = (long) UTCUtility.utcOmgToJava(startedEvent.startTime);
 					timeTaken = now - then;
 				}
-				addExecStatus(sbStatus, StatusTStateType.BROKEN);
 				accountFailure(sbStatus, timeTaken);
 			} catch (Exception e) {
 				ErrorHandling.warning(logger, String.format(
@@ -510,7 +525,9 @@ public class ExecutionContext {
         		this.getClass().getSimpleName()));
     	if (execBlockRef != null &&
     			execBlockRef.entityId.equals(event.processedExecBlockId.entityId)) {
-    		SSSSet.add(event);
+    		synchronized(this) {
+    			SSSSet.add(event);
+    		}
     	} else {
     		String msg = "Discarded SSSE event: currentExecId=";
     		if (execBlockRef != null)
@@ -528,7 +545,9 @@ public class ExecutionContext {
         		this.getClass().getSimpleName()));
     	if (execBlockRef != null &&
     			execBlockRef.entityId.equals(event.processedExecBlockId.entityId)) {
-    		SSPSet.add(event);
+    		synchronized(this) {
+    			SSPSet.add(event);
+    		}
     	} else {
     		String msg = "Discarded SSP event: currentExecId=";
     		if (execBlockRef != null)
@@ -806,7 +825,34 @@ public class ExecutionContext {
     private void updateForSuccess(SBStatus sbStatus,
     		                      String   endTime,
     		                      int      secs,
-    		                      boolean  csv) {
+    		                      boolean  csv,
+    		                      StatusTStateType state) {
+    	
+    	//Calculate sensitivity for this execution
+    	try {
+	    	double sensJy = calculateSensitivity();
+	    	
+	    	//Create ExecStatus for the current Execution
+	    	addExecStatus(sbStatus, state, sensJy);
+	    	
+	    	//Add the current sensitivity achieved to the total
+	    	//Check DSA document, SB Status subsection
+	    	if (sbStatus.getHasExecutionCount()){
+	    		double totalSensJy = 
+	    			Math.sqrt(Math.pow(sbStatus.getSuccessfulExecutions(),2) 
+	    			* Math.pow(sbStatus.getSensitivityAchievedJy(),2)
+	    			+ Math.pow(sensJy,2)) / (sbStatus.getSuccessfulExecutions() + 1);
+	    		sbStatus.setSensitivityAchievedJy(totalSensJy);
+    	}
+    	} catch (Exception ex) {
+    		AcsJSchedulingInternalExceptionEx e = new AcsJSchedulingInternalExceptionEx(ex);
+    		e.setProperty("Reason", "Failed calculation of the sensitivity achieved for this execution");
+    		e.setProperty("ExecBlockId", getExecBlockRef().entityId);
+    		e.log(logger);
+    		ex.printStackTrace();
+    		//TODO: Report in some way that the Sensitivity was not properly calculated
+    		addExecStatus(sbStatus, state, 10D);
+    	}
     	if (sbStatus.getHasExecutionCount()) {
         	sbStatus.setSuccessfulExecutions(sbStatus.getSuccessfulExecutions() + 1);
     		sbStatus.setExecutionsRemaining(sbStatus.getExecutionsRemaining() - 1);
@@ -816,8 +862,6 @@ public class ExecutionContext {
         	sbStatus.setSuccessfulSeconds(sbStatus.getSuccessfulSeconds() + secs);
     		sbStatus.setSecondsRemaining(sbStatus.getSecondsRemaining() - secs);
     	}
-    	
-    	// TODO: sensitivity
     	
     	sbStatus.setTotalUsedTimeInSec(sbStatus.getTotalUsedTimeInSec() + secs); // old stuff
     	
@@ -945,6 +989,20 @@ public class ExecutionContext {
     private void updateForFailure(SBStatus sbStatus,
     		                      String   endTime,
     		                      int      secs) {
+    	//Calculate sensitivity for this execution
+    	try {
+    		double sensJy = calculateSensitivity();
+    	
+    		addExecStatus(sbStatus, StatusTStateType.BROKEN, sensJy);
+    	} catch (Exception ex) {
+    		AcsJSchedulingInternalExceptionEx e = new AcsJSchedulingInternalExceptionEx(ex);
+    		e.setProperty("Reason", "Failed calculation of the sensitivity achieved for this execution");
+    		e.setProperty("ExecBlockId", getExecBlockRef().entityId);
+    		e.log(logger);
+    		ex.printStackTrace();
+    		//TODO: Report in some way that the Sensitivity was not properly calculated
+        	addExecStatus(sbStatus, StatusTStateType.BROKEN, 10D);
+    	}
     	if (sbStatus.getHasExecutionCount()) {
         	sbStatus.setFailedExecutions(sbStatus.getFailedExecutions() + 1);
     	}
@@ -952,8 +1010,6 @@ public class ExecutionContext {
     	if (sbStatus.getHasTimeLimit()) {
         	sbStatus.setFailedSeconds(sbStatus.getFailedSeconds() + secs);
     	}
-    	
-    	// TODO: sensitivity
     	
     	try {
     		getModel().getStateArchive().insertOrUpdate(sbStatus, Subsystem.SCHEDULING);
@@ -972,9 +1028,95 @@ public class ExecutionContext {
     	}
     }
     
+    private double calculateSensitivity() {
+    	double expTime = 0.0; // in hours
+    	double freqGHz = schedBlock.getSchedulingConstraints().getRepresentativeFrequency();
+    	double bwGHz = 2.0;
+//        double sensGoalJy = 10.0;
+//        for (ObservingParameters params: schedBlock.getObservingParameters()) {
+//            if (params instanceof ScienceParameters) {
+//                bwGHz = ((ScienceParameters) params).getRepresentativeBandwidth();
+//                sensGoalJy = ((ScienceParameters) params).getSensitivityGoal();
+//            }
+//        }
+		double raDeg = schedBlock.getSchedulingConstraints()
+				.getRepresentativeTarget().getSource().getCoordinates().getRA();
+		double declDeg = schedBlock.getSchedulingConstraints()
+				.getRepresentativeTarget().getSource().getCoordinates()
+				.getDec();
+		TemperatureHistRecord tr = getModel().getWeatherDao().getTemperatureForTime(new Date());
+        HumidityHistRecord hr = getModel().getWeatherDao().getHumidityForTime(new Date());
+        
+        double pwv = getModel().getOpacityInterpolator().estimatePWV(hr.getValue(), tr.getValue());
+        double[] tmp = getModel().getOpacityInterpolator().interpolateOpacityAndTemperature(pwv, freqGHz);
+        double opacity = tmp[0];
+        double atmBrightnessTemp = tmp[1];
+    	TreeMap<SubScanSequenceEndedEvent, ArrayList<SubScanProcessedEvent>> scans = null;
+    	synchronized(this){
+    			scans = processScanEvents();
+    	}
+    	for (SubScanSequenceEndedEvent ssseEv: scans.keySet()) {
+    		for (SubScanProcessedEvent sspEv: scans.get(ssseEv)) {
+    			if (sspEv.representativeScienceSubScan) {
+    				double ssTime = (sspEv.subscanEndTime - sspEv.subscanStartTime) * 1e-7D / 3600.0; //to hours
+    				if (ssTime <=0 ) {
+    					String msg = "Time of observation reported for execId, scan, subscan = (" 
+    						+ sspEv.processedExecBlockId.entityId + ", " + sspEv.processedScanNum 
+    						+ ", " + sspEv.processedSubScanNum + ") "
+    						+ "is not a valid time: " + ssTime + "hours";
+    					logger.warning(msg);
+    					ssTime = 0D;
+    				}
+    				expTime += ssTime;
+    			}
+    		}
+    	}
+    	double sensJy = 10D;
+    	switch(schedBlock.getSchedulingConstraints().getSchedBlockMode()) {
+    		case INTERFEROMETRY:
+    			sensJy = InterferometrySensitivityCalculator.pointSourceSensitivity(
+    					expTime,freqGHz, bwGHz, raDeg, declDeg,
+    					numOfAntennas, antDiameter, 
+    					alma.scheduling.utils.Constants.CHAJNANTOR_LATITUDE,
+                        opacity, atmBrightnessTemp, new Date());
+    			break;
+    		case SINGLE_DISH:
+    			SingleDishSensitivityCalculator.pointSourceSensitivity(
+    					expTime, freqGHz, bwGHz, raDeg, declDeg,
+    					numOfAntennas, antDiameter,
+    					alma.scheduling.utils.Constants.CHAJNANTOR_LATITUDE,
+    					opacity, atmBrightnessTemp,
+    					new Date());
+    			break;
+    		default:
+    			logger.severe("No idea how to calculate the sensitivity for: " 
+    					+ schedBlock.getSchedulingConstraints().getSchedBlockMode());
+    			break;
+    	}
+    	
+    	if( sensJy > 1.0 ){
+			String msg = new String(
+					"  High Sensitivity detected in " + schedBlock.getSchedulingConstraints().getSchedBlockMode() + 
+					"  SchedBlock ID: " + schedBlock.getId() + "\n" +  
+					"  Temp and Humi: " + hr.getValue() + ", " + tr.getValue() + "\n" + 
+					"  opacityInterpolator.estimatePWV(): " + pwv + "\n" + 
+					"  opacityInterpolator.interpolateOpacityAndTemperature().opacity: " + opacity + "\n" + 
+					"  opacityInterpolator.interpolateOpacityAndTemperature().atmBrightnessTemp: " + atmBrightnessTemp + "\n" + 
+					"  InterferometrySensitivityCalculator.pointSourceSensitivity(): " + sensJy + "\n" + 
+					"  RA: " + raDeg + "     Dec: " + declDeg + "\n" + 
+					"  Hour Angle at the given time: " + 
+					CoordinatesUtil.getHourAngle(new Date(), schedBlock.getSchedulingConstraints()
+	                      .getRepresentativeTarget()
+	                      .getSource()
+	                      .getCoordinates().getRA() / 15, 
+	                Constants.CHAJNANTOR_LONGITUDE) );
+			logger.warning(msg);
+    	}
+    	return sensJy;
+    }
     
     
-    private void addExecStatus(SBStatus sbStatus, StatusTStateType state) {
+    private void addExecStatus(SBStatus sbStatus, StatusTStateType state, double sensJy) {
     	ExecStatusT es = new ExecStatusT();
     	StatusT execStatus = new StatusT();
     	ExecBlockRefT ref = new ExecBlockRefT();
@@ -983,9 +1125,13 @@ public class ExecutionContext {
 
     	if(getExecBlockRef() != null)
     		ref.setExecBlockId(getExecBlockRef().entityId);
+    	if (sbStatus != null)
+    		es.setEntityPartId(Utils.genPartId(sbStatus));
     	es.setExecBlockRef(ref);
     	es.setArrayName(executor.getArrayName());
     	es.setTimeOfCreation(startTime);
+    	if (es.hasSensitivityAchievedJy())
+    		es.setSensitivityAchievedJy(sensJy);
     	execStatus.setStartTime(startTime);
     	execStatus.setEndTime(endTime);
     	execStatus.setState(state);
@@ -1021,7 +1167,7 @@ public class ExecutionContext {
 
     
     
-    public void accountExecution(SBStatus sbStatus, long secs)
+    public void accountExecution(SBStatus sbStatus, long secs, StatusTStateType state)
     			throws AcsJNullEntityIdEx,
     			       AcsJNoSuchEntityEx,
     			       AcsJInappropriateEntityTypeEx,
@@ -1044,11 +1190,11 @@ public class ExecutionContext {
     	// Update State Archive Statuses
     	SchedBlock sb = getSchedBlock();
     	SBStatusEntityT sbId = sb.getStatusEntity();
-
     	updateForSuccess(sbStatus,
     			dateFormat.format(new Date()),
     			(int) secs,
-    			sb.getCsv() || sb.isOnCSVLifecycle(sbStatus));
+    			sb.getCsv() || sb.isOnCSVLifecycle(sbStatus),
+    			state);
 
     	logger.fine("\n\n************\n\n" + initialBookkeeping +
     			    "\n\n" + getSchedBlock().bookkeepingString(sbStatus) +
@@ -1183,6 +1329,53 @@ public class ExecutionContext {
 		}
 	}
 	
+	//very inefficient, improve if it is necessary
+	private TreeMap<SubScanSequenceEndedEvent, ArrayList<SubScanProcessedEvent>> processScanEvents() {
+		final TreeMap<SubScanSequenceEndedEvent, ArrayList<SubScanProcessedEvent>> retVal =
+				new TreeMap<SubScanSequenceEndedEvent, ArrayList<SubScanProcessedEvent>>();
+		for (SubScanProcessedEvent sspEv: SSPSet) {
+			SubScanSequenceEndedEvent ssseEv = null;
+			for (SubScanSequenceEndedEvent x: SSSSet) {
+				if (sspEv.processedScanNum == x.scanNumber) {
+					ssseEv = x;
+					break;
+				}
+			}
+			if (ssseEv == null) {
+				String msg = "Accounting of Sensitivity will not be complete. "
+					+ "Missing SubScanSequenceEndedEvent " 
+					+ "for execBlock: " + sspEv.processedExecBlockId.entityId + " " 
+					+ "SubScanSequenceEndedEvent.processedScanNum=" + sspEv.processedScanNum + " ";
+				logger.warning(msg);
+				break;
+			}
+
+			if (!retVal.containsKey(ssseEv))
+				retVal.put(ssseEv, new ArrayList<SubScanProcessedEvent>());
+			ArrayList<SubScanProcessedEvent> subScans = retVal.get(ssseEv);
+			subScans.add(sspEv);
+		}
+		
+		//Remove unsuccessful subscans
+		for (SubScanSequenceEndedEvent ssseEv: retVal.keySet()) {
+			ArrayList<SubScanProcessedEvent> toRemove= new ArrayList<SubScanProcessedEvent>();
+			for(SubScanProcessedEvent sspEv: retVal.get(ssseEv)) {
+				boolean isSuccessful = false;
+				for (int i: ssseEv.successfulSubscans) {
+					if (sspEv.processedSubScanNum == i) {
+						isSuccessful = true;
+						break;
+					}
+				}
+				if (!isSuccessful)
+					toRemove.add(sspEv);
+			}
+			for(SubScanProcessedEvent r: toRemove)
+				retVal.get(ssseEv).remove(r);
+		}
+		
+		return retVal;
+	}
 	
 	private class SubScanSequenceEndedEventComparator implements Comparator<SubScanSequenceEndedEvent> {
 
@@ -1212,4 +1405,5 @@ public class ExecutionContext {
 	TreeSet<SubScanSequenceEndedEvent> getSSSSet() {
 		return SSSSet;
 	}
+	
 }

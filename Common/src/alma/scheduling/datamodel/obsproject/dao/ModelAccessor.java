@@ -22,6 +22,8 @@ import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_ATM_DAO_BEAN
 import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_EXECUTIVE_DAO_BEAN;
 import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_OBSPROJECT_DAO_BEAN;
 import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_SCHEDBLOCK_DAO_BEAN;
+import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_WEATHER_DAO_BEAN;
+import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_OPACITY_INTERPOLATOR_BEAN;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -43,7 +45,9 @@ import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.weather.dao.AtmParametersDao;
+import alma.scheduling.datamodel.weather.dao.WeatherHistoryDAO;
 import alma.scheduling.utils.LoggerFactory;
+import alma.scheduling.weather.OpacityInterpolator;
 import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
 
 
@@ -69,6 +73,8 @@ public class ModelAccessor extends Observable {
 	private SchedBlockDao schedBlockDao;
 	private ExecutiveDAO execDao;
 	private AtmParametersDao atmDao;
+	private WeatherHistoryDAO weatherDao;
+	private OpacityInterpolator opacityInterpolator;
 		
 	public ModelAccessor() throws Exception {
 	    // There should be only one instance of the stateArchive in the process.
@@ -94,11 +100,14 @@ public class ModelAccessor extends Observable {
 		//TODO: Remove this reflection call
 		Class<?> factoryClass = Class.forName("alma.scheduling.utils.DSAContextFactory");
 		Method m = factoryClass.getMethod("getContextFromPropertyFile");
+		//END 
         AbstractApplicationContext ctx = (AbstractApplicationContext) m.invoke(factoryClass, (Object [])null);
         projectDao = (ObsProjectDao) ctx.getBean(SCHEDULING_OBSPROJECT_DAO_BEAN);
         schedBlockDao = (SchedBlockDao) ctx.getBean(SCHEDULING_SCHEDBLOCK_DAO_BEAN);
         execDao = (ExecutiveDAO) ctx.getBean(SCHEDULING_EXECUTIVE_DAO_BEAN);
         atmDao = (AtmParametersDao) ctx.getBean(SCHEDULING_ATM_DAO_BEAN);
+        weatherDao = (WeatherHistoryDAO) ctx.getBean(SCHEDULING_WEATHER_DAO_BEAN);
+        opacityInterpolator = (OpacityInterpolator) ctx.getBean(SCHEDULING_OPACITY_INTERPOLATOR_BEAN);
 	}
 	
 	public StateArchive getStateArchive() {
@@ -123,6 +132,14 @@ public class ModelAccessor extends Observable {
 	
 	public AtmParametersDao getAtmDao() {
 		return atmDao;
+	}
+	
+	public WeatherHistoryDAO getWeatherDao() {
+		return weatherDao;
+	}
+	
+	public OpacityInterpolator getOpacityInterpolator() {
+		return opacityInterpolator;
 	}
 
 	public ProjectStatus[] getAllProjectStatuses()
@@ -222,5 +239,6 @@ public class ModelAccessor extends Observable {
 		hydrateSchedBlock(sb);
 		return sb;
 	}
-	
+
+
 }

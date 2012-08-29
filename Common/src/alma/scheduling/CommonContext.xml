@@ -128,6 +128,10 @@
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
+    <bean name="opacityInterpolator" 
+    	class="alma.scheduling.weather.OpacityInterpolatorImpl"
+    	scope="singleton"/>
+    
 <!-- XML DAO Beans -->
 	<bean id="configDao"
 		class="alma.scheduling.datamodel.config.dao.ConfigurationDaoImpl" />
