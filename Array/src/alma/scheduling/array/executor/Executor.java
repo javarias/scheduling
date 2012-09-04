@@ -229,8 +229,6 @@ public class Executor extends Observable {
         fullAuto = false;
         manual   = false;
         running  = false;
-//        activeObservations = new TreeMap<String, ExecStatusT>();
-//        activeObsGroupBySbUid = new TreeMap<String, TreeMap<String,ExecStatusT>>();
     }
 
 	public void start(String name, String role) {

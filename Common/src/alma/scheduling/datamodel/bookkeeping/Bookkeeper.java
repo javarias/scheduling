@@ -64,7 +64,7 @@ import alma.scheduling.utils.ErrorHandling;
  * OUSStatuses and ProjectStatuses.
  *  
  * @author dclarke
- * $Id: Bookkeeper.java,v 1.1 2011/09/14 22:13:09 dclarke Exp $
+ * $Id: Bookkeeper.java,v 1.2 2012/09/04 22:59:53 javarias Exp $
  */
 public final class Bookkeeper {
 
@@ -143,17 +143,10 @@ public final class Bookkeeper {
 	 * ================================================================
 	 */
 	/**
-	 * Hidden default constructor.
-	 */
-	private Bookkeeper() {
-    	this.dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-	}
-	
-	/**
 	 * Public constructor.
 	 */
 	public Bookkeeper(ArchiveInterface archive, Logger logger) {
-		this();
+		this.dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 		this.archive = archive;
 		this.logger  = logger;
 	}
@@ -186,6 +179,7 @@ public final class Bookkeeper {
 				}
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return null;
 	}

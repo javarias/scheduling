@@ -58,7 +58,8 @@ import alma.xmlentity.XmlEntityStruct;
 public class Phase2XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 	
     final private static String[] OPPhase2RunnableStates = {
-    	alma.entity.xmlbinding.valuetypes.types.StatusTStateType.READY.toString(),              
+    	alma.entity.xmlbinding.valuetypes.types.StatusTStateType.READY.toString(),
+    	alma.entity.xmlbinding.valuetypes.types.StatusTStateType.INPROGRESS.toString(),
     	alma.entity.xmlbinding.valuetypes.types.StatusTStateType.PARTIALLYOBSERVED.toString(),
     	alma.entity.xmlbinding.valuetypes.types.StatusTStateType.CSVREADY.toString()
     };
@@ -99,7 +100,7 @@ public class Phase2XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 		final APDMtoSchedulingConverter converter =
 			new APDMtoSchedulingConverter(archive,
                                           APDMtoSchedulingConverter.Phase.PHASE2,
-                                          logger, notifier);
+                                          logger, notifier, bookie);
 		return converter.convertAPDMProjectsToDataModel();
 	}
 

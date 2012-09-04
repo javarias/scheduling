@@ -73,7 +73,7 @@ public class Phase1XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 		final APDMtoSchedulingConverter converter =
 			new APDMtoSchedulingConverter(archive,
                                           APDMtoSchedulingConverter.Phase.PHASE1,
-                                          logger, notifier);
+                                          logger, notifier, bookie);
 		return converter.convertAPDMProjectsToDataModel();
 	}
 

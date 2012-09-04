@@ -157,6 +157,8 @@ public class ArrayImpl implements ComponentLifecycle,
 		executor = new Executor(arrayName, queue);
 		executor.configureManual(manual);
 		executor.configureServices(services);
+		executor.setNumOfAvailableAntennas(descriptor.antennaIdList.length);
+		executor.setAntennaDiameter(getAntennaDiameter(descriptor.antennaIdList));
 		executor.configureSessionManager(new SessionManager(arrayName,
 				containerServices, services, manual));
 
@@ -491,6 +493,15 @@ public class ArrayImpl implements ComponentLifecycle,
 		}
 	}
 
+	private double getAntennaDiameter(String[] antennaIdList) {
+		double diameter = 7D;
+		for (String id: antennaIdList) {
+			if (!id.startsWith("CM"));
+			return 12D;
+		}
+		return diameter;
+	}
+	
 	//Methods for testing purposes
 	void setServiceProvider(AcsProvider provider) {
 		this.serviceProvider = provider;

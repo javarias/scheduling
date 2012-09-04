@@ -54,6 +54,8 @@ import alma.entity.xmlbinding.valuetypes.types.SensitivityTUnitType;
 import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
 import alma.entity.xmlbinding.valuetypes.types.TimeTUnitType;
 import alma.entity.xmlbinding.valuetypes.types.UserAngleTUserUnitType;
+import alma.scheduling.datamodel.bookkeeping.Bookkeeper;
+import alma.scheduling.datamodel.bookkeeping.Bookkeeper.BookkeepingException;
 import alma.scheduling.datamodel.helpers.AngleConverter;
 import alma.scheduling.datamodel.helpers.AngularVelocityConverter;
 import alma.scheduling.datamodel.helpers.ConversionException;
@@ -117,6 +119,7 @@ public class APDMtoSchedulingConverter {
 	private ArchiveInterface archive;
 	private Phase            phase;
 	private Logger           logger;
+	private Bookkeeper bookie;
 	
 	private final AbstractXMLStoreProjectDao.XMLStoreImportNotifier notifier;
 	/* End Fields
@@ -143,11 +146,13 @@ public class APDMtoSchedulingConverter {
 			ArchiveInterface archive,
 			Phase            phase,
 			Logger           logger,
-			AbstractXMLStoreProjectDao.XMLStoreImportNotifier notifier) {
+			AbstractXMLStoreProjectDao.XMLStoreImportNotifier notifier,
+			Bookkeeper bookie) {
 		this.archive = archive;
 		this.phase   = phase;
 		this.logger  = logger;
 		this.notifier = notifier;
+		this.bookie = bookie;
 	}
 	/* End Construction
 	 * ============================================================= */
@@ -341,6 +346,11 @@ public class APDMtoSchedulingConverter {
 			if (archive.hasProjectStatus(statusId)) {
 				ProjectStatus
 						projectStatus = archive.cachedProjectStatus(statusId);
+				try {
+					bookie.initialise(projectStatus);
+				} catch (BookkeepingException e) {
+					e.printStackTrace();
+				}
 				alma.entity.xmlbinding.ousstatus.OUSStatusRefT
 						sRef = projectStatus.getObsProgramStatusRef();
 				if (sRef != null) {
