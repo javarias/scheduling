@@ -14,13 +14,14 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
- * $Id: ArchivePoller.java,v 1.15 2012/08/17 22:21:00 dclarke Exp $
+ * $Id: ArchivePoller.java,v 1.16 2012/09/04 22:55:41 javarias Exp $
  */
 
 package alma.scheduling.archiveupd.functionality;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -30,6 +31,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import alma.acs.container.ContainerServices;
+import alma.entity.xmlbinding.obsproposal.types.InvestigatorTAssociatedExecType;
 import alma.scheduling.ArchiveImportEvent;
 import alma.scheduling.ArchiveUpdaterCallback;
 import alma.scheduling.SchedulingException;
@@ -58,7 +60,7 @@ import alma.scheduling.utils.ErrorHandling;
 /**
  *
  * @author dclarke
- * $Id: ArchivePoller.java,v 1.15 2012/08/17 22:21:00 dclarke Exp $
+ * $Id: ArchivePoller.java,v 1.16 2012/09/04 22:55:41 javarias Exp $
  */
 public class ArchivePoller implements Observer{
 
@@ -319,7 +321,14 @@ public class ArchivePoller implements Observer{
     
     private void createExecutives(){
     	//Names retrieved from ObsProposal.xsd
-    	String [] executiveNames = {"NONALMA","OTHER", "CL", "CHILE", "EA", "EU", "NA"};
+    	//String [] executiveNames = {"NONALMA","OTHER", "CL", "CHILE", "EA", "EU", "NA"};
+    	ArrayList<String> executiveNames = new ArrayList<String>();
+		@SuppressWarnings("rawtypes")
+		Enumeration e = InvestigatorTAssociatedExecType.enumerate();
+		while(e.hasMoreElements()) {
+			InvestigatorTAssociatedExecType apdmExec = (InvestigatorTAssociatedExecType) e.nextElement();
+			executiveNames.add(apdmExec.toString());
+		}
     	List<Executive> execs = new ArrayList<Executive>();
     	List<ObservingSeason> seasons = new ArrayList<ObservingSeason>();
     	Set<ExecutivePercentage> eps = new HashSet<ExecutivePercentage>();
@@ -328,18 +337,21 @@ public class ArchivePoller implements Observer{
 		season.setStartDate(new Date());
 		season.setEndDate(new Date(System.currentTimeMillis() + 315360000 ));
 		seasons.add(season);
-    	for (int i = 0; i < executiveNames.length; i++){
+    	for (String execName: executiveNames){
     		Executive exec =  new Executive();
-    		exec.setName(executiveNames[i]);
+    		exec.setName(execName);
     		//All executives will have the same percentage
     		//TODO: Change this: each executive has different percentages 
-    		exec.setDefaultPercentage((float) 0.20);
+    		double percentage = 0.0;
+    		if (executiveNames.size() > 0)
+    				percentage = 1.0F/(float)executiveNames.size();
+    		exec.setDefaultPercentage((float)percentage);
     		execs.add(exec);
     		ExecutivePercentage ep = new ExecutivePercentage();
     		ep.setExecutive(exec);
     		ep.setSeason(season);
-    		ep.setPercentage((float) 0.2);
-    		ep.setTotalObsTimeForSeason(315360000 * 0.2);
+    		ep.setPercentage((float)percentage);
+    		ep.setTotalObsTimeForSeason(315360000 * percentage);
     		eps.add(ep);
     	}
     	season.setExecutivePercentage(eps);
@@ -370,6 +382,8 @@ public class ArchivePoller implements Observer{
     		sb.setExecutive(exec);
     		sb.setCsv(proj.getCsv());
     		sb.setManual(proj.getManual());
+    		sb.setLetterGrade(proj.getLetterGrade());
+    		sb.setScienceRank(proj.getScienceRank());
     	}
     }
     
