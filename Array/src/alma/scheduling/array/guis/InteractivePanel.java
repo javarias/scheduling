@@ -93,7 +93,7 @@ import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.32 2012/03/08 21:00:25 dclarke Exp $
+ * $Id: InteractivePanel.java,v 1.33 2012/09/04 22:57:44 javarias Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel
@@ -1119,6 +1119,7 @@ public class InteractivePanel extends AbstractArrayPanel
 		}
 		@Override
 		protected Boolean doInBackground() throws Exception {
+			try {
 			String opInfo = "Getting Project data";
 			String sbInfo = "Getting SchedBlock data";
 			safePublish(opInfo, sbInfo);
@@ -1148,6 +1149,9 @@ public class InteractivePanel extends AbstractArrayPanel
 					   wantManual? "Manual mode ": "",
 					   sbs.size()==1? "": "s");
 			safePublish(opInfo, sbInfo);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 			return true;
 		}
 

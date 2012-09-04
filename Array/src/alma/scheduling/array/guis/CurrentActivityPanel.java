@@ -85,7 +85,7 @@ import alma.scheduling.utils.ErrorHandling;
 /**
  *
  * @author dclarke
- * $Id: CurrentActivityPanel.java,v 1.24 2012/08/17 22:18:33 dclarke Exp $
+ * $Id: CurrentActivityPanel.java,v 1.25 2012/09/04 22:57:44 javarias Exp $
  */
 @SuppressWarnings("serial")
 public class CurrentActivityPanel extends AbstractArrayPanel
@@ -753,7 +753,11 @@ public class CurrentActivityPanel extends AbstractArrayPanel
     	
 		final SchedBlockExecutionItem[] items = array.getExecutions();
 		for (final SchedBlockExecutionItem item : items) {
-			addExecutionToModels(item);
+			try {
+				addExecutionToModels(item);
+			} catch (Exception ex) {
+				//Do not nothing this sched block will not show up in the GUI
+			}
 		}
 
     	showConnectivity();
