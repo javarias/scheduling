@@ -1133,8 +1133,7 @@ public class ExecutionContext {
     	es.setExecBlockRef(ref);
     	es.setArrayName(executor.getArrayName());
     	es.setTimeOfCreation(startTime);
-    	if (es.hasSensitivityAchievedJy())
-    		es.setSensitivityAchievedJy(sensJy);
+   		es.setSensitivityAchievedJy(sensJy);
     	execStatus.setStartTime(startTime);
     	execStatus.setEndTime(endTime);
     	execStatus.setState(state);
