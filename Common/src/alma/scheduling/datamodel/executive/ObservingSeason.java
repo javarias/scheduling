@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObservingSeason.java,v 1.11 2010/04/09 01:26:15 rhiriart Exp $"
+ * "@(#) $Id: ObservingSeason.java,v 1.12 2012/09/10 20:26:12 javarias Exp $"
  */
 package alma.scheduling.datamodel.executive;
 
@@ -53,6 +53,8 @@ public class ObservingSeason implements Comparable<ObservingSeason>{
 	
 	/** Executives that participate in the ObservingSeason and their percentages */
 	private Set<ExecutivePercentage> executivePercentage = new HashSet<ExecutivePercentage>();
+	
+	private TimeInterval observingInterval;
 
 	/**
 	 * Zero-args constructor.
@@ -101,6 +103,15 @@ public class ObservingSeason implements Comparable<ObservingSeason>{
         executivePercentage = mExecutivePercentage;
     }
 
+
+	public TimeInterval getObservingInterval() {
+		return observingInterval;
+	}
+
+	public void setObservingInterval(TimeInterval observingInterval) {
+		this.observingInterval = observingInterval;
+	}
+    
     @Override
     public int compareTo(ObservingSeason o) {
         return this.startDate.compareTo(o.startDate);
