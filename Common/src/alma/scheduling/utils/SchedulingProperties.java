@@ -23,7 +23,7 @@
  * Centralised place for querying the scheduling properties.
  * 
  * @author dclarke
- * $Id: SchedulingProperties.java,v 1.10 2012/07/10 20:57:06 dclarke Exp $
+ * $Id: SchedulingProperties.java,v 1.11 2012/09/10 22:40:06 javarias Exp $
  */
 package alma.scheduling.utils;
 
@@ -57,7 +57,7 @@ public abstract class SchedulingProperties {
 	private static String PROP_PHASE1_SB_SOURCE_VALUE       = "scheduling.phase1SBsource";
 	
 	/** This should enable the import of XML projects. */
-	private static String PROP_PMS_XML_PROJECT_IMPORT_FLAG  = "scheduling.pms.xmlProjects";
+	public static String PROP_PMS_XML_PROJECT_IMPORT_FLAG  = "scheduling.pms.xmlProjects";
 	
 	private static String PROP_USE_EXPERIMENTAL_HIBERNATE_XMLSTORE_IF = "scheduling.archive.hibernate";
 	/* End of the properties we know about
