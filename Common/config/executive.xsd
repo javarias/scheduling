@@ -46,6 +46,7 @@
 					<xs:attribute name="totalObsTimeForSeason" type="xs:float" use="optional"/>		
 				</xs:complexType>				
 			</xs:element>
+			<xs:element name="DailyTimeInterval" type="TimeIntervalT" maxOccurs="1" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" use="required"/>
 		<xs:attribute name="startDate" type="xs:dateTime" use="required"/>
@@ -62,4 +63,18 @@
 		<xs:attribute name="executiveRef" type="xs:NCName" use="required"/>
 	</xs:complexType>
 
+	<xs:complexType name="TimeIntervalT">
+		<xs:sequence>
+			<xs:element name="StartTime" maxOccurs="1" minOccurs="1">
+				<xs:simpleType>
+					<xs:restriction base="xs:time"/>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="EndTime" maxOccurs="1" minOccurs="1">
+				<xs:simpleType>
+					<xs:restriction base="xs:time" />
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
 </xs:schema>
