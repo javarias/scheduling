@@ -1,5 +1,7 @@
 package alma.scheduling.datamodel.executive;
 
+import java.util.Date;
+
 import alma.scheduling.utils.DailyTimeInterval;
 
 public class TimeInterval extends DailyTimeInterval {
@@ -7,6 +9,11 @@ public class TimeInterval extends DailyTimeInterval {
 	public TimeInterval() {
 		
 	}
+	
+	public TimeInterval(Date startTime, Date endTime) {
+		super(startTime, endTime);
+	}
+	
 	
 	public long getStartTime() {
 		return this.startTime;
@@ -29,4 +36,5 @@ public class TimeInterval extends DailyTimeInterval {
 			return true;
 		return false;
 	}
+
 }

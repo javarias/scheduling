@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlExecutiveDaoImpl.java,v 1.11 2012/05/24 20:38:57 javarias Exp $"
+ * "@(#) $Id: XmlExecutiveDaoImpl.java,v 1.12 2012/09/10 20:35:45 javarias Exp $"
  */
 package alma.scheduling.datamodel.executive.dao;
 
@@ -47,6 +47,7 @@ import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
 import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.executive.PI;
 import alma.scheduling.datamodel.executive.PIMembership;
+import alma.scheduling.datamodel.executive.TimeInterval;
 import alma.scheduling.input.executive.generated.ExecutiveData;
 
 public class XmlExecutiveDaoImpl implements XmlExecutiveDAO {
@@ -256,6 +257,10 @@ public class XmlExecutiveDaoImpl implements XmlExecutiveDAO {
         os.setName(in.getName());
         os.setStartDate(in.getStartDate());
         os.setEndDate(in.getEndDate());
+        TimeInterval ti = new TimeInterval(
+        		in.getDailyTimeInterval().getStartTime().toDate(),
+        		in.getDailyTimeInterval().getEndTime().toDate());
+        os.setObservingInterval(ti);
         return os;
     }
 

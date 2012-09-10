@@ -9,11 +9,15 @@ public class DailyTimeInterval {
 	/**
 	 * Start time in milliseconds considering the start at the beginning of the day in UT (00:00:00.000) 
 	 */
-	private long startTime;
+	protected long startTime;
 	/**
 	 * Duration of the interval in milliseconds 
 	 */
-	private long duration;
+	protected long duration;
+	
+	protected DailyTimeInterval() {
+		
+	}
 	
 	public DailyTimeInterval (long startTime, long duration) {
 		this.startTime = startTime;
