@@ -25,11 +25,13 @@ public class SimulationProgressEvent {
 	private Date currentTime;
 	private Date stopTime;
 	private Double p = null;
+	private TimeEvent te = null;
 	
-	public SimulationProgressEvent(Date startTime, Date currentTime, Date stopTime) {
+	public SimulationProgressEvent(Date startTime, Date currentTime, Date stopTime, TimeEvent te) {
 		this.startTime = startTime;
 		this.currentTime = currentTime;
 		this.stopTime = stopTime;
+		this.te = te;
 	}
 	
 	public Date getStartTime() {
@@ -42,6 +44,10 @@ public class SimulationProgressEvent {
 	
 	public Date getStopTime() {
 		return stopTime;
+	}
+	
+	public TimeEvent getTimeEvent() {
+		return te;
 	}
 	
 	public double getProgressPercentage() {

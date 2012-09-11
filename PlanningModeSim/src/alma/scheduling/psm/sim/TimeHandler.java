@@ -73,7 +73,7 @@ public abstract class TimeHandler {
 	public abstract Date getTime();
 	
 	/**
-	 * Steps forward a pre-established amount of time. 30 minutes.
+	 * Steps forward a pre-established amount of time. 1 hr. and 20 minutes.
 	 */
 	public abstract void step();
 

@@ -57,7 +57,8 @@ public class TimeSim extends TimeHandler{
 	 * @see alma.scheduling.planning_mode_sim.controller.TimeUtil#step()
 	 */
 	public void step() {
-		this.step(30 * 60 * 1000);
+		// 1 hr and 20 mins
+		this.step(60 * 60 * 1000 + 20 * 60 * 1000);
 	}
 
 	/* (non-Javadoc)

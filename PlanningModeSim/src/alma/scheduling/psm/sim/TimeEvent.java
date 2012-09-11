@@ -35,10 +35,15 @@ public class TimeEvent implements Comparable<TimeEvent>{
     private EventType type;
     private ArrayConfiguration array;
     private SchedBlock sb;
+    /** Duration of the event in ms (used only for SB observations)*/
+    //For now this is fixed to 80 mins
+    private static long duration = 5160000;
     /**
      * When the event occurs
      */
     private Date time;
+    
+    private boolean endOfInterval = false;
     
     public EventType getType() {
         return type;
@@ -71,13 +76,26 @@ public class TimeEvent implements Comparable<TimeEvent>{
     public void setTime(Date time) {
         this.time = time;
     }
+    
+    public long getDuration() {
+    	return duration;
+    }
+    
+	public boolean isEndOfInterval() {
+		return endOfInterval;
+	}
+
+	public void setEndOfInterval(boolean endOfInterval) {
+		this.endOfInterval = endOfInterval;
+	}
 
     /**
      * Compare the date when will occur
      */
     @Override
     public int compareTo(TimeEvent o) {
-        return time.compareTo(o.getTime());
+    	int retVal = time.compareTo(o.getTime());
+        return retVal;
     }
     
     @Override

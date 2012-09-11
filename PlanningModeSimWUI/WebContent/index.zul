@@ -23,13 +23,13 @@
 		<menubar>
 			<menu label="Simulation">
 				<menupopup>
-					<menuitem label="New" id="menuItemNew" />
-					<menuitem label="Clone" id="menuItemClone" />
+<!--					<menuitem label="New" id="menuItemNew" />
+					<menuitem label="Clone" id="menuItemClone" /> -->
 					<menuseparator />
 					<menuitem label="Open" id="menuItemOpen" />
-					<menuitem label="Save" id="menuItemSave" />
+<!--					<menuitem label="Save" id="menuItemSave" /> -->
 					<menuseparator />
-					<menuitem label="Save as..." id="menuItemSaveAs" />
+<!--					<menuitem label="Save as..." id="menuItemSaveAs" /> -->
 				</menupopup>
 			</menu>
 			<menu label="Reports">

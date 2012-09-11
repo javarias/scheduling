@@ -1,17 +1,12 @@
 package alma.scheduling.psm.web;
 
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.servlet.ServletContext;
-
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.Page;
 import org.zkoss.zk.ui.Path;
@@ -22,7 +17,6 @@ import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.EventQueue;
 import org.zkoss.zk.ui.event.EventQueues;
-import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.http.WebManager;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zk.ui.util.Initiator;
@@ -30,14 +24,18 @@ import org.zkoss.zul.Label;
 import org.zkoss.zul.Progressmeter;
 import org.zkoss.zul.api.Button;
 import org.zkoss.zul.api.Combobox;
+import org.zkoss.zul.api.Datebox;
 import org.zkoss.zul.api.Panelchildren;
 import org.zkoss.zul.api.Window;
 
+import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.psm.sim.InputActions;
 import alma.scheduling.psm.sim.ReportGenerator;
 import alma.scheduling.psm.sim.SimulationProgressEvent;
 import alma.scheduling.psm.sim.Simulator;
 import alma.scheduling.psm.util.SchedulingPolicyWrapper;
+import alma.scheduling.psm.web.timeline.TimelineCollector;
+import alma.scheduling.psm.web.timeline.TimelineEventListener;
 import alma.scheduling.psm.web.util.DSAPoliciesLoaderListener;
 import alma.scheduling.utils.DSAContextFactory;
 
@@ -59,10 +57,15 @@ public class SimulationController extends GenericForwardComposer implements
 	private Combobox DSAPoliciesComboBox;
 	private Progressmeter simulationProgress;
 	private Label simulationPercentageLabel;
-
+	private Datebox dateboxStartDate;
+	private Datebox dateboxEndDate;
+	
 	private Panelchildren panelChildrenStatus;
 
 	private WebApp webapp;
+
+	public static final ExecutiveDAO execDao = (ExecutiveDAO) alma.scheduling.utils.DSAContextFactory
+			.getContext().getBean("execDao");
 	
 	public static final String PROGRESS_QUEUE = "simulationRun";
 
@@ -160,6 +163,7 @@ public class SimulationController extends GenericForwardComposer implements
 	public void onClick$buttonRun(Event event) {
 		final String workDir = (String) Sessions.getCurrent().getAttribute("workDir");
 		final Observer o =  this;
+		final Observer tlo = new TimelineEventListener();
 		logger.info("Using APRC_WORK_DIR: " + workDir);
 		final EventQueue eq = EventQueues.lookup(PROGRESS_QUEUE, EventQueues.APPLICATION, true);
 		eq.subscribe(new EventListener() {
@@ -167,12 +171,15 @@ public class SimulationController extends GenericForwardComposer implements
 			public void onEvent(Event event) throws Exception {
 				if ("startSimulation".compareTo(event.getName()) == 0) {
 					Simulator.setApplicationContext(DSAContextFactory.getContext());
+					TimelineCollector.getInstance().reset();
 					Simulator simt = new Simulator(workDir);
 					simt.addObserver(o);
+					simt.addObserver(tlo);
 					simt.run(((SchedulingPolicyWrapper) DSAPoliciesComboBox
 							.getSelectedItemApi().getValue()).getSpringBeanName());
 					System.out.println("Run finished");
 					simt.deleteObserver(o);
+					simt.deleteObserver(tlo);
 					eq.publish(new Event("endSimulation"));
 				}
 			}
@@ -195,7 +202,7 @@ public class SimulationController extends GenericForwardComposer implements
 			e.printStackTrace();
 		}
 	}
-
+	
 	public void doAfterCompose(Page arg0) throws Exception {
 		System.out.println("SimulatorController.doAfterCompose()");
 		webapp = Sessions.getCurrent().getWebApp();

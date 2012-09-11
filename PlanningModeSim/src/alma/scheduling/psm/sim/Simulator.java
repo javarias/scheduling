@@ -50,6 +50,7 @@ import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.datamodel.config.Configuration;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.config.dao.XmlConfigurationDaoImpl;
+import alma.scheduling.datamodel.executive.TimeInterval;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.observatory.dao.ObservatoryDao;
@@ -152,6 +153,7 @@ public class Simulator extends PsmContext {
         TimeHandler.getHandler().setStartingDate( execDao.getCurrentSeason().getStartDate() );
         logger.info( TimeUtil.getUTString(time) + "Starting Simulation" );
         Date stopTime = execDao.getCurrentSeason().getEndDate();
+        TimeInterval ti = execDao.getCurrentSeason().getObservingInterval();
         configDao.getConfiguration().setSimulationStartTime(new Date());
         if( simThread != null ){
         	simThread.setStartDate( time );
@@ -227,18 +229,25 @@ public class Simulator extends PsmContext {
             logger.debug(ev.toString());
         }
         
+
         // Stop at end of season
         while( time.before(stopTime) && !timesToCheck.isEmpty() ){
             Date t1 = new Date();
         	setChanged();
         	notifyObservers(
         			new SimulationProgressEvent(time,
-        					timesToCheck.get(0).getTime(), stopTime));
-        	step(timesToCheck, stopTime, rc, 
+        					timesToCheck.get(0).getTime(), stopTime, timesToCheck.get(0)));
+        	step(timesToCheck, stopTime, ti , rc,
         			ctx, 
         			arraysCreated, freeArrays, sbExecutor, DSAPolicyName);
         	Date t2 = new Date();
         	System.out.println("Step takes: "+ (t2.getTime() - t1.getTime()));
+        	//Check if the current simulation time is already after the end of the daily interval
+        	//if it so calculate the next interval
+//        	if (endIntervalDate != null && time.after(endIntervalDate)) {
+//            	time = ti.getStartNextInterval(time);
+//            	endIntervalDate = ti.getEndInterval(time);
+//        	}
         	if(isToBeInterrupted())
         	    Console.getConsole().activate(this);
         }   
@@ -256,6 +265,7 @@ public class Simulator extends PsmContext {
     public void step(
             LinkedList<TimeEvent> timesToCheck,
             Date time,
+            TimeInterval ti,
             ResultComposer rc,
             ApplicationContext ctx,
             Hashtable<ArrayConfiguration, DynamicSchedulingAlgorithm> arraysCreated,
@@ -301,6 +311,21 @@ public class Simulator extends PsmContext {
                 Date d = sbExecutor.execute(sb, ev.getArray(), time);
                 System.out.println("ARRAY_CREATION End Date given by executor: " + d);
                 rc.notifySchedBlockStart(sb, ev.getArray().getId() );
+                //If there is a valid interval of time where the observation is carried over, use it!
+                Date endIntervalDate = null;
+                if (ti != null && ti.isValid()) {
+                	endIntervalDate = ti.getEndInterval(time);
+                }
+            	if (endIntervalDate != null && 
+            			(d.after(endIntervalDate) || d.equals(endIntervalDate))) {
+            		Date startNextIntervalDate = ti.getStartNextInterval(d);
+            		TimeEvent startObsIntervalEv = new TimeEvent();
+            		startObsIntervalEv.setType(EventType.START_NEXT_OBSERVATION_TIME_INTERVAL);
+            		startObsIntervalEv.setTime(startNextIntervalDate);
+            		startObsIntervalEv.setArray(ev.getArray());
+            		timesToCheck.add(startObsIntervalEv);
+            		d = endIntervalDate; //Stops at the end of this interval
+            	}
                 logger.info("Notification: " + ev.getArray().getId());
                 // Create a new EventTime to check the SB execution termination
                 // in the future
@@ -310,6 +335,8 @@ public class Simulator extends PsmContext {
                 sbEndEv.setSb(sb);
                 sbEndEv.setArray(ev.getArray());
                 sbEndEv.setTime(d);
+                if (endIntervalDate != null && d.equals(endIntervalDate))
+                	sbEndEv.setEndOfInterval(true);
                 TimeHandler.getHandler().step( d );
                 rc.notifySchedBlockStop(sb, sb.getSchedBlockControl().getSbMaximumTime());
                timesToCheck.add(sbEndEv);                
@@ -337,6 +364,8 @@ public class Simulator extends PsmContext {
             System.out.println(TimeUtil.getUTString(time)
                     + "Finishing Execution of SchedBlock Id: "
                     + ev.getSb().getId());
+            if (ev.isEndOfInterval()) //If we finish the daily execution time just continue
+            	break;
             if (arraysCreated.get(ev.getArray()) != null)
             System.out
                     .println(TimeUtil.getUTString(time)
@@ -356,6 +385,23 @@ public class Simulator extends PsmContext {
                 Date d = sbExecutor.execute(sb, ev.getArray(), time);
                 System.out.println("SCHEDBLOCK_EXECUTION_FINISH End Date given by executor: " + d);
                 rc.notifySchedBlockStart(sb, ev.getArray().getId());
+              //If there is a valid interval of time where the observation is carried over, use it!
+                Date endIntervalDate = null;
+                if (ti != null && ti.isValid()) {
+                	endIntervalDate = ti.getEndInterval(time);
+                	System.out.println("Current time: " + time);
+                	System.out.println("End of interval time: " + endIntervalDate);
+                	System.out.println("End Execution SB: " + d);
+                }
+            	if (endIntervalDate != null && (d.after(endIntervalDate) || d.equals(endIntervalDate))) {
+            		Date startNextIntervalDate = ti.getStartNextInterval(d);
+            		TimeEvent startObsIntervalEv = new TimeEvent();
+            		startObsIntervalEv.setType(EventType.START_NEXT_OBSERVATION_TIME_INTERVAL);
+            		startObsIntervalEv.setTime(startNextIntervalDate);
+            		startObsIntervalEv.setArray(ev.getArray());
+            		timesToCheck.add(startObsIntervalEv);
+            		d = endIntervalDate; //Stops at the end of this interval
+            	}
                 // Create a new EventTime to check the SB execution termination
                 // in the future
                 TimeEvent sbEndEv = new TimeEvent();
@@ -363,6 +409,8 @@ public class Simulator extends PsmContext {
                 sbEndEv.setSb(sb);
                 sbEndEv.setArray(ev.getArray());
                 sbEndEv.setTime(d);
+                if (endIntervalDate != null && d.equals(endIntervalDate))
+                	sbEndEv.setEndOfInterval(true);
                 timesToCheck.add(sbEndEv);
                 TimeHandler.getHandler().step( d );
                 rc.notifySchedBlockStop(sb, sb.getSchedBlockControl().getSbMaximumTime());
@@ -412,6 +460,20 @@ public class Simulator extends PsmContext {
                 Date d = sbExecutor.execute(sb, ev.getArray(), time);
                 System.out.println("FREE_ARRAY End Date given by executor: " + d);
                 rc.notifySchedBlockStart(sb, ev.getArray().getId() );
+                //If there is a valid interval of time where the observation is carried over, use it!
+                Date endIntervalDate = null;
+                if (ti != null && ti.isValid()) {
+                	endIntervalDate = ti.getEndInterval(time);
+                }
+            	if (endIntervalDate != null && (d.after(endIntervalDate) || d.equals(endIntervalDate))) {
+            		Date startNextIntervalDate = ti.getStartNextInterval(d);
+            		TimeEvent startObsIntervalEv = new TimeEvent();
+            		startObsIntervalEv.setType(EventType.START_NEXT_OBSERVATION_TIME_INTERVAL);
+            		startObsIntervalEv.setTime(startNextIntervalDate);
+            		startObsIntervalEv.setArray(ev.getArray());
+            		timesToCheck.add(startObsIntervalEv);
+            		d = endIntervalDate; //Stops at the end of this interval
+            	}
                 // Create a new EventTime to check the SB execution termination
                 // in the future
                 TimeEvent sbEndEv = new TimeEvent();
@@ -419,6 +481,8 @@ public class Simulator extends PsmContext {
                 sbEndEv.setSb(sb);
                 sbEndEv.setArray(ev.getArray());
                 sbEndEv.setTime(d);
+                if (endIntervalDate != null && d.equals(endIntervalDate))
+                	sbEndEv.setEndOfInterval(true);
                 timesToCheck.add(sbEndEv);
                 TimeHandler.getHandler().step( d );
                 rc.notifySchedBlockStop(sb, sb.getSchedBlockControl().getSbMaximumTime());
@@ -430,10 +494,79 @@ public class Simulator extends PsmContext {
                 break;
             }
             break;
+        case START_NEXT_OBSERVATION_TIME_INTERVAL:
+        	TimeHandler.getHandler().step(ev.getTime());
+            System.out
+                    .println(TimeUtil.getUTString(time)
+                            + "Starting selection of candidate SchedBlocks for Array Id: "
+                            + ev.getArray().getId());
+            try {
+            	dsa = arraysCreated.get(ev.getArray());
+                Date t1 = new Date();
+                dsa.selectCandidateSB(time);
+                Date t2 = new Date();
+                System.out.println("Selection takes: "+ (t2.getTime() - t1.getTime()));
+                dsa.updateCandidateSB(time);
+                logger.info("Ranking available scheduling blocks for Array Id: " + ev.getArray().getId());
+                dsa.rankSchedBlocks(time);
+                logger.info("Obtaining scheduling block for array: " + ev.getArray().getId());
+                SchedBlock sb = dsa.getSelectedSchedBlock();
+                logger.info("Executing scheduling block for array: " + ev.getArray().getId());
+                TimeHandler.getHandler().step( ev.getTime() );
+                // Replace second argument with the proper execution time when it gets simulated.
+                Date d = sbExecutor.execute(sb, ev.getArray(), time);
+                System.out.println("ARRAY_CREATION End Date given by executor: " + d);
+                //If there is a valid interval of time where the observation is carried over, use it!
+                Date endIntervalDate = null;
+                if (ti != null && ti.isValid()) {
+                	endIntervalDate = ti.getEndInterval(time);
+                }
+            	if (endIntervalDate != null && (d.after(endIntervalDate) || d.equals(endIntervalDate))) {
+            		Date startNextIntervalDate = ti.getStartNextInterval(d);
+            		TimeEvent startObsIntervalEv = new TimeEvent();
+            		startObsIntervalEv.setType(EventType.START_NEXT_OBSERVATION_TIME_INTERVAL);
+            		startObsIntervalEv.setTime(startNextIntervalDate);
+            		startObsIntervalEv.setArray(ev.getArray());
+            		timesToCheck.add(startObsIntervalEv);
+            		d = endIntervalDate; //Stops at the end of this interval
+            	}
+                rc.notifySchedBlockStart(sb, ev.getArray().getId() );
+                logger.info("Notification: " + ev.getArray().getId());
+                // Create a new EventTime to check the SB execution termination
+                // in the future
+                logger.info("Simulating passed time for array: " + ev.getArray().getId());
+                TimeEvent sbEndEv = new TimeEvent();
+                sbEndEv.setType(EventType.SCHEDBLOCK_EXECUTION_FINISH);
+                sbEndEv.setSb(sb);
+                sbEndEv.setArray(ev.getArray());
+                sbEndEv.setTime(d);
+                if (endIntervalDate != null && d.equals(endIntervalDate))
+                	sbEndEv.setEndOfInterval(true);
+                TimeHandler.getHandler().step( d );
+                rc.notifySchedBlockStop(sb, sb.getSchedBlockControl().getSbMaximumTime());
+               timesToCheck.add(sbEndEv);                
+            } catch (NoSbSelectedException ex) {
+                System.out.println("After selectors " + new Date());
+                System.out.println(TimeUtil.getUTString(time)
+                        + " DSA for array " + ev.getArray().getId().toString()
+                        + " -- No suitable SBs to be scheduled");
+                freeArrays.add(ev.getArray());
+                break;
+            }
+        	break;
         }
         if (freeArrays.size() > 0) {
-            // Check in 30 mins more of the simulated time
-            Date next = new Date(time.getTime() + (30 * 60 * 1000));
+            // Check in 80 mins more of the simulated time
+            Date next = new Date(time.getTime() + (80 * 60 * 1000));
+            //If there is a valid interval of time where the observation is carried over, use it!
+            Date endIntervalDate = null;
+            if (ti != null && ti.isValid()) {
+            	endIntervalDate = ti.getEndInterval(time);
+            }
+        	if (endIntervalDate != null && next.after(endIntervalDate)) {
+        		Date startNextIntervalDate = ti.getStartNextInterval(next);
+        		next = new Date(startNextIntervalDate.getTime()); //Stops at the end of this interval
+        	}
             for (ArrayConfiguration a : freeArrays) {
                 TimeEvent freeEv = new TimeEvent();
                 freeEv.setArray(a);

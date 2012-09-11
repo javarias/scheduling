@@ -2,6 +2,7 @@ package alma.scheduling.psm.web;
 
 import java.util.HashMap;
 
+import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.Path;
 import org.zkoss.zk.ui.SuspendNotAllowedException;
@@ -167,4 +168,17 @@ public class MainWindowController extends GenericForwardComposer {
     	}    	
     	aboutWindow.doOverlapped();
     }
+
+	@Override
+	public void doAfterCompose(Component comp) throws Exception {
+		super.doAfterCompose(comp);
+    	Window mainWindow = (Window) Path.getComponent("//");
+    	if( mainWindow == null ){
+    		System.out.println("mainWindow is null");
+    	}
+    	Window simulationWindow = (Window) Executions.createComponents("simulation.zul", mainWindow, null);
+		simulationWindow.doOverlapped();
+	}
+    
+    
 }

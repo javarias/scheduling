@@ -1,0 +1,27 @@
+<zk>
+    <zscript><![CDATA[
+        import java.util.*;
+        import java.util.Calendar;
+        import org.zkforge.timeline.*;
+        import org.zkforge.timeline.data.*;
+        import org.zkforge.timeline.decorator.*;
+         
+        Date current = new Date(Date.parse("June 29 2010"));
+        Date d1 = new Date(Date.parse("June 29 2010"));
+        Date d2 = new Date(Date.parse("July 24 2010"));
+         
+        SpanHighlightDecorator shd = new SpanHighlightDecorator(d1, d2);
+        shd.setStartLabel("start");
+        shd.setEndLabel("end");
+        shd.setColor("blue");
+        shd.setOpacity(25);
+    ]]></zscript>
+    <timeline id="tl" height="300px" width="850px">
+        <bandinfo width="70%" id="b1" intervalUnit="month" date="${current}"
+            intervalPixels="100" eventSourceUrl="servlets/xml/timeline">
+        </bandinfo>
+        <bandinfo width="30%" id="b2" intervalUnit="year" intervalPixels="200" date="${current}"
+            syncWith="b1" eventSourceUrl="servlets/xml/timeline">
+        </bandinfo>
+    </timeline>
+</zk>

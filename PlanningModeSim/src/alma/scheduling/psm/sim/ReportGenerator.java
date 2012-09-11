@@ -217,6 +217,10 @@ public class ReportGenerator extends PsmContext {
 			for (ObservationProject p : r.getObservationProject()) {
 				for (SchedBlockResult sbr : p.getSchedBlock()) {
 					SchedBlock sb = sbDao.findById(SchedBlock.class, sbr.getOriginalId());
+					if (sb == null){
+						logger.warn("Trying to retrieve SchedBlock " + sbr.getOriginalId() + "returns and empty reference");
+						continue;
+					}
 					sbDao.hydrateSchedBlockObsParams(sb);
 					double ra = sb.getSchedulingConstraints()
 					.getRepresentativeTarget().getSource()
