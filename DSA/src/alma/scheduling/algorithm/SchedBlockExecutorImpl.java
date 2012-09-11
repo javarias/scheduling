@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockExecutorImpl.java,v 1.17 2012/08/29 20:26:28 javarias Exp $"
+ * "@(#) $Id: SchedBlockExecutorImpl.java,v 1.18 2012/09/11 15:48:32 javarias Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -189,8 +189,10 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
         }
         schedBlockDao.saveOrUpdate(schedBlock);
         
-        long executionTime = (long) (schedBlock.getSchedBlockControl().getSbMaximumTime().doubleValue()
-            * 1000 * 3600);
+        //Ignore the Sb max time use instead use a fixed time: 1hr and 20 min of execution.
+//        long executionTime = (long) (schedBlock.getSchedBlockControl().getSbMaximumTime().doubleValue()
+//            * 1000 * 3600);
+        long executionTime = 60 * 60 * 1000 + 20 * 60 * 1000; //1 hr 20 min.
         Date nextExecutionTime = new Date(ut.getTime() + executionTime);
         return nextExecutionTime;
     }
