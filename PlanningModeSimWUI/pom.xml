@@ -4,7 +4,7 @@
 	<groupId>alma.scheduling</groupId>
 	<artifactId>pms</artifactId>
 	<packaging>war</packaging>
-	<version>9.0-SNAPSHOT</version>
+	<version>9.1-SNAPSHOT</version>
 	<name>Planning Mode Simulator (ALMA SCHEDULING subsystem)</name>
 	<dependencies>
 		<dependency>
@@ -21,6 +21,21 @@
 			<groupId>org.zkoss.zk</groupId>
 			<artifactId>zkplus</artifactId>
 			<version>5.0.10</version>
+		</dependency>
+		<dependency>
+			<groupId>org.zkoss.common</groupId>
+			<artifactId>zcommon</artifactId>
+			<version>5.0.10</version>
+		</dependency>
+		<dependency>
+			<groupId>org.zkoss.common</groupId>
+			<artifactId>zweb</artifactId>
+			<version>5.0.10</version>
+		</dependency>
+		<dependency>
+			<groupId>org.zkoss.zkforge</groupId>
+			<artifactId>timelinez</artifactId>
+			<version>2.3.1_50</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -150,41 +165,203 @@
 			<version>10.1</version>
 		</dependency>
 		<dependency>
+			<groupId>alma.acs</groupId>
+			<artifactId>acsASsources</artifactId>
+			<version>10.1</version>
+		</dependency>
+		<dependency>
+			<groupId>alma.acs</groupId>
+			<artifactId>acsCallbacksSupport</artifactId>
+			<version>10.1</version>
+		</dependency>
+		<dependency>
+			<groupId>alma.acs</groupId>
+			<artifactId>acscommon</artifactId>
+			<version>10.1</version>
+		</dependency>
+		<dependency>
+			<groupId>alma.acs</groupId>
+			<artifactId>acscomponent</artifactId>
+			<version>10.1</version>
+		</dependency>
+		<dependency>
+			<groupId>alma.acs</groupId>
+			<artifactId>acsContainerServices</artifactId>
+			<version>10.1</version>
+		</dependency>
+		<dependency>
+			<groupId>alma.acs</groupId>
+			<artifactId>acserr</artifactId>
+			<version>10.1</version>
+		</dependency>
+		<dependency>
+			<groupId>alma.acs</groupId>
+			<artifactId>acserrj</artifactId>
+			<version>10.1</version>
+		</dependency>
+		<dependency>
+			<groupId>alma.acs</groupId>
+			<artifactId>acsErrTypeAlarmSourceFactory</artifactId>
+			<version>10.1</version>
+		</dependency>
+		<dependency>
+			<groupId>alma.acs</groupId>
+			<artifactId>ACSErrTypeCommon</artifactId>
+			<version>10.1</version>
+		</dependency>
+		<dependency>
+			<groupId>alma.acs</groupId>
+			<artifactId>acsjlog</artifactId>
+			<version>10.1</version>
+		</dependency>
+		<dependency>
+			<groupId>alma.acs</groupId>
+			<artifactId>archive_xmlstore_if</artifactId>
+			<version>10.1</version>
+		</dependency>
+        <dependency>
+            <groupId>jdom</groupId>
+            <artifactId>jdom</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>alma.acs</groupId>
+            <artifactId>archive_database</artifactId>
+            <version>10.1</version>
+        </dependency>
+		<dependency>
+			<groupId>alma.acs</groupId>
+			<artifactId>cdbDAL</artifactId>
+			<version>10.1</version>
+		</dependency>
+		<dependency>
+			<groupId>alma.acs</groupId>
+			<artifactId>cdbErrType</artifactId>
+			<version>10.1</version>
+		</dependency>
+		<dependency>
+			<groupId>alma.acs</groupId>
+			<artifactId>jacorb</artifactId>
+			<version>10.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>alma.acs</groupId>
+			<artifactId>jACSUtil</artifactId>
+			<version>10.1</version>
+		</dependency>
+		<dependency>
+			<groupId>alma.acs</groupId>
+			<artifactId>JavaContainerError</artifactId>
+			<version>10.1</version>
+		</dependency>
+		<dependency>
+			<groupId>alma.acs</groupId>
+			<artifactId>jcont</artifactId>
+			<version>10.1</version>
+		</dependency>
+		<dependency>
+			<groupId>alma.acs</groupId>
+			<artifactId>logging_idl</artifactId>
+			<version>10.1</version>
+		</dependency>
+		<dependency>
+			<groupId>alma.acs</groupId>
+			<artifactId>logkit</artifactId>
+			<version>10.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>alma.acs</groupId>
+			<artifactId>maciErrType</artifactId>
+			<version>10.1</version>
+		</dependency>
+		<dependency>
+			<groupId>alma.acs</groupId>
+			<artifactId>maci</artifactId>
+			<version>10.1</version>
+		</dependency>
+		<dependency>
+			<groupId>alma.acs</groupId>
+			<artifactId>maciSchemaBindings</artifactId>
+			<version>10.1</version>
+		</dependency>
+		<dependency>
+			<groupId>alma.acs</groupId>
+			<artifactId>xmlentity</artifactId>
+			<version>10.1</version>
+		</dependency>
+		<dependency>
 			<groupId>alma.icd</groupId>
 			<artifactId>APDMEntities</artifactId>
-			<version>9.0-HEAD</version>
+			<version>9.1-HEAD</version>
+		</dependency>
+		<dependency>
+			<groupId>alma.icd</groupId>
+			<artifactId>statearchiveexceptions</artifactId>
+			<version>9.1-HEAD</version>
+		</dependency>
+		<dependency>
+			<groupId>alma.icd</groupId>
+			<artifactId>stateengineexceptions</artifactId>
+			<version>9.1-HEAD</version>
+		</dependency>
+		<dependency>
+			<groupId>alma.icd</groupId>
+			<artifactId>StateSystem</artifactId>
+			<version>9.1-HEAD</version>
+		</dependency>
+		<dependency>
+			<groupId>alma.icd</groupId>
+			<artifactId>projectlifecycle</artifactId>
+			<version>9.1-HEAD</version>
 		</dependency>
 		<dependency>
     <groupId>alma.icd</groupId>
     <artifactId>CommonGUIComponents</artifactId>
-    <version>9.0-HEAD</version>
+    <version>9.1-HEAD</version>
 </dependency>
 		<dependency>
     <groupId>alma.icd</groupId>
     <artifactId>SchedulingTypes</artifactId>
-    <version>9.0-HEAD</version>
+    <version>9.1-HEAD</version>
+</dependency>
+	<dependency>
+    <groupId>alma.icd</groupId>
+    <artifactId>SchedulingMasterExceptions</artifactId>
+    <version>9.1-HEAD</version>
 </dependency>
     <dependency>
       <groupId>alma.scheduling</groupId>
       <artifactId>SchedulingDSA</artifactId>
-      <version>9.0-HEAD</version>
+      <version>9.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>alma.scheduling</groupId>
 	<artifactId>SchedulingCommon</artifactId>
-	<version>9.0-HEAD</version>
+	<version>9.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>alma.scheduling</groupId>
       <artifactId>SchedulingPMS</artifactId>
-      <version>9.0-HEAD</version>
+      <version>9.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>alma.scheduling</groupId>
       <artifactId>SchedulingPMSCli</artifactId>
-      <version>9.0-HEAD</version>
+      <version>9.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
+	<repositories>
+		<repository>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<id>local</id>
+			<name>acs01 NRAO local repository</name>
+			<url>http://acs01.aoc.nrao.edu:8081/artifactory/repo</url>
+		</repository>
+	</repositories>
 	<build>
 		<finalName>pms</finalName>
 		<plugins>
