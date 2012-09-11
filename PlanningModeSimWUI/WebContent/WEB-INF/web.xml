@@ -80,6 +80,15 @@
 		<servlet-name>auEngine</servlet-name>
 		<url-pattern>/zkau/*</url-pattern>
 	</servlet-mapping>
+	
+	 <servlet>
+		<servlet-name>XmlTimelineServlet</servlet-name>
+		<servlet-class>alma.scheduling.psm.web.timeline.TimelineEventServlet</servlet-class>
+	</servlet> 
+	<servlet-mapping>
+		<servlet-name>XmlTimelineServlet</servlet-name>
+		<url-pattern>/servlets/xml/timeline</url-pattern>
+	</servlet-mapping>
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 		<welcome-file>index.htm</welcome-file>
