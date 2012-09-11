@@ -66,7 +66,10 @@ public class DailyTimeInterval {
 		timeOfDay += currCal.get(Calendar.MINUTE) * 60 * 1000;
 		timeOfDay += currCal.get(Calendar.SECOND) * 1000;
 		timeOfDay += currCal.get(Calendar.MILLISECOND);
-		return (this.startTime - timeOfDay + this.duration);
+		long retVal = this.startTime - timeOfDay + this.duration;
+		if (retVal > (24 * 60 * 60 * 1000))
+			return (retVal -  (24 * 60 * 60 * 1000));
+		return retVal;
 	}
 	
 	public Date getEndInterval(Date currTime) {
