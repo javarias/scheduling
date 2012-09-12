@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
- * $Id: ArchivePoller.java,v 1.16 2012/09/04 22:55:41 javarias Exp $
+ * $Id: ArchivePoller.java,v 1.17 2012/09/12 16:46:16 javarias Exp $
  */
 
 package alma.scheduling.archiveupd.functionality;
@@ -60,7 +60,7 @@ import alma.scheduling.utils.ErrorHandling;
 /**
  *
  * @author dclarke
- * $Id: ArchivePoller.java,v 1.16 2012/09/04 22:55:41 javarias Exp $
+ * $Id: ArchivePoller.java,v 1.17 2012/09/12 16:46:16 javarias Exp $
  */
 public class ArchivePoller implements Observer{
 
@@ -589,11 +589,13 @@ public class ArchivePoller implements Observer{
 		
 		startTime = new Date();
 		lastUpdate = lastRefresh(forceRefresh);
-		
 		if (lastUpdate == null) {
 			reset();
 			initialPollArchive();
 		} else {
+			//WORKAROUND: Check JIRA:CSV-2149
+			//Avoid projects that doesn't show at Scheduler; go back 2 minutes before the last update
+			lastUpdate = new Date(lastUpdate.getTime() - 2 * 60 * 1000);
 			incrementalPollArchive(lastUpdate);
 		}
 		
