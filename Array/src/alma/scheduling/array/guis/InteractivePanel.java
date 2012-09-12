@@ -93,7 +93,7 @@ import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.33 2012/09/04 22:57:44 javarias Exp $
+ * $Id: InteractivePanel.java,v 1.34 2012/09/12 21:10:16 javarias Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel
@@ -579,7 +579,7 @@ public class InteractivePanel extends AbstractArrayPanel
 		
 		subSplit.setTopComponent(opPanel);
 		subSplit.setBottomComponent(sbPanel);
-		subSplit.setDividerLocation(0.5);
+		subSplit.setDividerLocation(0.0);
 		split.setTopComponent(subSplit);
 		split.setBottomComponent(details);
 //		split.setDividerLocation(1.0);
