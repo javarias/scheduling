@@ -46,10 +46,11 @@ public class DSAPoliciesLoaderListener implements ServletContextListener {
 
 	private static Logger logger = LoggerFactory.getLogger(DSAPoliciesLoaderListener.class);
 	
-	//TODO: This is a horror!!!!! Find a way to remove it, getting the servlet context in another way
+	//TODO: This is horrible!!!!! Find a way to remove it, try to get the servlet context in another way
 	public static ServletContext servletContext = null;
 	
 	public void contextInitialized(ServletContextEvent sce) {
+		//Initialize policies
 		servletContext = sce.getServletContext();
 		WebApplicationContext ctx = 
 				WebApplicationContextUtils.getWebApplicationContext(sce.getServletContext());
@@ -106,6 +107,9 @@ public class DSAPoliciesLoaderListener implements ServletContextListener {
 					e.printStackTrace();
 				}
 		}
+		
+		//Set the ACS.manager property
+		System.setProperty("ACS.manager", "corbaloc::localhost:3000/Manager");
 	}
 
 	public void contextDestroyed(ServletContextEvent sce) {
