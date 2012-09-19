@@ -59,9 +59,9 @@ public final class HibernateArchiveInterface extends AbstractArchiveInterface
 			EntitySerializer entitySerializer) {
 		super(archive, stateSystem, entityDeserializer, entitySerializer);
 		//TODO: At some point the session and the transaction should be closed
-		System.out.println("**********************************************************************************");
-		System.out.println("Using hibernate to access to xmlstore, some people just want to see the world burn");
-		System.out.println("**********************************************************************************");
+		System.out.println("************************************************************************************");
+		System.out.println("Using hibernate to access to xmlstore, some people just want to watch the world burn");
+		System.out.println("************************************************************************************");
 		if (session == null)
 			initializeDBSession();
 	}
