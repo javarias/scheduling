@@ -250,12 +250,13 @@ public class Phase1XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 	 * 
 	 * @return a <code>List</code> of all the ObsProposals found.
 	 */
-	private List<alma.entity.xmlbinding.obsproposal.ObsProposal> fetchInterestingAPDMProposals() {
+	private List<alma.entity.xmlbinding.obsproposal.ObsProposal> fetchInterestingAPDMProposals(String cycle) {
 		List<alma.entity.xmlbinding.obsproposal.ObsProposal> result
 				= new Vector<alma.entity.xmlbinding.obsproposal.ObsProposal>();
 
 //		String query = new String("/prp:ObsProposal");
-		String query = makeQuery(OPPhase1RunnableStates);
+//		String query = makeQuery(OPPhase1RunnableStates); //No longer useful
+		String query = "/prp:ObsProposal[prp:cycle=\""+ cycle +"\"]";
 		String schema = new String("ObsProposal");
 		Cursor cursor = null;
 		
@@ -314,7 +315,7 @@ public class Phase1XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 		List<alma.entity.xmlbinding.obsproject.ObsProject>   apdmProjects;
 		
 		Date start = new Date();
-		apdmProposals = fetchInterestingAPDMProposals();
+		apdmProposals = fetchInterestingAPDMProposals("2012.1");
 		Date end = new Date();
 		logger.info("Fetching APDM Proposals from archive took " + (end.getTime() - start.getTime()) + " ms");
 		
