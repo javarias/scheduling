@@ -21,7 +21,7 @@
 #*******************************************************************************
 # ALMA Project
 #
-# "@(#) $Id: Makefile,v 1.16 2012/02/06 20:19:45 javarias Exp $"
+# "@(#) $Id: Makefile,v 1.17 2012/09/21 15:06:30 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -177,7 +177,7 @@ $(Test):
 #
 clean:	
 	$(canned)
-all:	cli	
+all:	
 	$(canned)
 cli:
 	cp ./thirdPartyPackages/JavaServlet/servlet-api.jar ${INSTALL_DIR}/lib
