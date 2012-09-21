@@ -21,7 +21,7 @@
 #*******************************************************************************
 # ALMA Project
 #
-# "@(#) $Id: Makefile,v 1.17 2012/09/21 15:06:30 javarias Exp $"
+# "@(#) $Id: Makefile,v 1.18 2012/09/21 15:18:05 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -116,7 +116,7 @@ clean_log:
 #
 # building all modules
 #
-build:	cli
+build:	
 	@$(ECHO) "############ build $(SUBSYSTEM) Software         #################"| tee -a build.log
 	@for member in  $(foreach name, $(MODULES), $(name) ) ; do \
 		    if [ ! -d $${member} ]; then \
@@ -179,8 +179,6 @@ clean:
 	$(canned)
 all:	
 	$(canned)
-cli:
-	cp ./thirdPartyPackages/JavaServlet/servlet-api.jar ${INSTALL_DIR}/lib
 
 install:
 	$(canned)
