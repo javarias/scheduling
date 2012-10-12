@@ -39,7 +39,8 @@ public class CalibratorCheckPluginImpl implements CalibratorCheckPlugin {
 		sbStatus.setEntityId(schedBlock.getSBStatusRef().getEntityId());
 		try {
 			Logger.getAnonymousLogger().info("Tranistioning SB: " 
-					+ schedBlock.getSchedBlockEntity().getEntityId() + " to " + StatusTStateType.CALIBRATORCHECK);
+					+ schedBlock.getSchedBlockEntity().getEntityId() 
+					+ " from: "+ schedBlock.getStatus() +" to " + StatusTStateType.CALIBRATORCHECK);
 			stateEngine.changeState(sbStatus, StatusTStateType.CALIBRATORCHECK, Subsystem.SCHEDULING, Role.AOD);
 			//TODO: Call the script to check for available calibrations
 //			Process p = Runtime.getRuntime().exec("script");
