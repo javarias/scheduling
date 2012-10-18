@@ -28,7 +28,7 @@ public class SchedBlockStatusChecker {
 	private static StateEngine stateEngine;
 	private static StateArchive stateArchive;
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-	private static final long TIME_TO_SUSPEND = 60 * 24 * 60 * 60 * 1000; //60 days
+	private static final long TIME_TO_SUSPEND = 30 * 24 * 60 * 60 * 1000; //30 days
 	private static final long TIME_TO_CHECK_FOR_CALIBRATIONS = 30 * 60 * 1000; //30 mins
 	
 	public SchedBlockStatusChecker() {
