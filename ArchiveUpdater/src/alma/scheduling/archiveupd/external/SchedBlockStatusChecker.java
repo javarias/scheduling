@@ -55,20 +55,21 @@ public class SchedBlockStatusChecker {
 	}
 	
 	private void checkForCalibrations() {
-		String[] states = {StatusTStateType.CALIBRATORCHECK.toString()};
+		String[] states = {StatusTStateType.CALIBRATORCHECK.toString(), StatusTStateType.READY.toString()};
 		Date currentDate = new Date();
 		try {
 			SBStatus[] statuses = stateArchive.findSBStatusByState(states);
 			for(SBStatus s: statuses) {
 				if(s.getTimeOfUpdate() != null) {
 					try {
-						Date date = dateFormat.parse(s.getTimeOfUpdate());
+						Date lastUpdate = dateFormat.parse(s.getTimeOfUpdate());
 						//check if the SB has been waiting for calibrations too long 
-						if (date.getTime() < (currentDate.getTime() - TIME_TO_SUSPEND)) {
+						if ((s.getStatus().getState().getType() == StatusTStateType.CALIBRATORCHECK_TYPE) && 
+								(lastUpdate.getTime() < (currentDate.getTime() - TIME_TO_SUSPEND)) ) {
 							stateEngine.changeState(s.getSBStatusEntity(),  StatusTStateType.SUSPENDED, Subsystem.SCHEDULING, Role.AOD);
 						}
 						//Check if last update of SBStatus was not too soon
-						else if(date.getTime() < (currentDate.getTime() - TIME_TO_CHECK_FOR_CALIBRATIONS)) { 
+						else if(lastUpdate.getTime() < (currentDate.getTime() - TIME_TO_CHECK_FOR_CALIBRATIONS)) { 
 							Process p = Runtime.getRuntime().exec("testCalibratorsCheckScript");
 							ProcessReader stdout = new ProcessReader(p.getInputStream(), "SCRIPT OUTPUT");
 							stdout.start();
@@ -89,7 +90,7 @@ public class SchedBlockStatusChecker {
 							else {
 								logger.severe("Exit code of the script was not 0.\n" + stderr.getOutput().toString());
 							}
-						} 
+						} 						
 					} catch (AcsJNoSuchTransitionEx e) {
 						e.printStackTrace();
 					} catch (AcsJNotAuthorizedEx e) {
