@@ -81,10 +81,15 @@ public class SchedBlockStatusChecker {
 							if (exitVal == 0) {
 								String outStr = stdout.getOutput().toString();
 								int val = Integer.valueOf(outStr.substring(outStr.length() - 2, outStr.length() - 1));
-								if (val == 0) {
-									logger.info("Tranistioning SB Status: " 
-											+ s.getSBStatusEntity().getEntityId() + " to " + StatusTStateType.READY);
+								if (val == 0 && s.getStatus().getState().getType() == StatusTStateType.CALIBRATORCHECK_TYPE) {
+										logger.info("Tranistioning SB: " 
+												+ s.getSchedBlockRef().getEntityId() + " to " + StatusTStateType.READY);
 										stateEngine.changeState(s.getSBStatusEntity(), StatusTStateType.READY, Subsystem.SCHEDULING, Role.AOD);
+								}
+								else if (val != 0 && s.getStatus().getState().getType() == StatusTStateType.READY_TYPE) {
+									logger.info("Tranistioning SB: " 
+											+ s.getSchedBlockRef().getEntityId() + " to " + StatusTStateType.CALIBRATORCHECK);
+									stateEngine.changeState(s.getSBStatusEntity(), StatusTStateType.CALIBRATORCHECK, Subsystem.SCHEDULING, Role.AOD);
 								}
 							}
 							else {
@@ -134,10 +139,15 @@ public class SchedBlockStatusChecker {
 				if (exitVal == 0) {
 					String outStr = stdout.getOutput().toString();
 					int val = Integer.valueOf(outStr.substring(outStr.length() - 2, outStr.length() - 1));
-					if (val == 0) {
-						logger.info("Tranistioning SB Status: " 
-								+ s.getSBStatusEntity().getEntityId() + " to " + StatusTStateType.READY);
-							stateEngine.changeState(s.getSBStatusEntity(), StatusTStateType.READY, Subsystem.SCHEDULING, Role.AOD);
+					if (val == 0 && s.getStatus().getState().getType() == StatusTStateType.CALIBRATORCHECK_TYPE) {
+						logger.info("Tranistioning SB: " 
+								+ s.getSchedBlockRef().getEntityId() + " to " + StatusTStateType.READY);
+						stateEngine.changeState(s.getSBStatusEntity(), StatusTStateType.READY, Subsystem.SCHEDULING, Role.AOD);
+					}
+					else if (val != 0 && s.getStatus().getState().getType() == StatusTStateType.READY_TYPE) {
+						logger.info("Tranistioning SB: " 
+								+ s.getSchedBlockRef().getEntityId() + " to " + StatusTStateType.CALIBRATORCHECK);
+						stateEngine.changeState(s.getSBStatusEntity(), StatusTStateType.CALIBRATORCHECK, Subsystem.SCHEDULING, Role.AOD);
 					}
 				}
 				else {
