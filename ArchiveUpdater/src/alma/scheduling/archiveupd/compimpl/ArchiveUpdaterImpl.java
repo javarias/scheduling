@@ -27,6 +27,7 @@ import alma.acs.logging.AcsLogger;
 import alma.acs.logging.domainspecific.OperatorLogger;
 import alma.scheduling.ArchiveUpdaterCallback;
 import alma.scheduling.ArchiveUpdaterOperations;
+import alma.scheduling.archiveupd.external.SchedBlockStatusChecker;
 import alma.scheduling.archiveupd.functionality.ArchivePoller;
 import alma.scheduling.utils.ErrorHandling;
 
@@ -40,6 +41,7 @@ public class ArchiveUpdaterImpl implements ComponentLifecycle,
     
     private ArchivePoller poller = null;
     private Loop          loop = null;
+    private SchedBlockStatusChecker sbStatusChecker = null;
 
 	private ErrorHandling handler;
 
@@ -60,6 +62,7 @@ public class ArchiveUpdaterImpl implements ComponentLifecycle,
         	ErrorHandling.initialize(m_logger);
 		handler = ErrorHandling.getInstance();
 		getPoller(containerServices);
+		getChecker(containerServices);
 		
 		m_logger.finest("initialize() called...");
     }
@@ -156,6 +159,19 @@ public class ArchiveUpdaterImpl implements ComponentLifecycle,
 			}
     	}
     }
+    
+    public void getChecker(ContainerServices containerServices) {
+    	if (sbStatusChecker == null) {
+    		try {
+    			
+    		} catch (Exception ex) {
+    			ex.printStackTrace();
+				handler.severe(String.format(
+						"Error creating SchedBlock Status Checker - %s",
+						ex.getMessage()), ex);
+    		}
+    	}
+    }
 
     private class Loop extends Thread {
     	public Loop() {
@@ -171,6 +187,14 @@ public class ArchiveUpdaterImpl implements ComponentLifecycle,
     			} catch (Exception e) {
     				final String message = String.format(
     						"Error updating Scheduler from ALMA Archive and State Archive - %s - some project updates might have been missed",
+    						e.getMessage());
+    				m_opLogger.severe(message);
+    			}
+    			try {
+    				sbStatusChecker.checkForStatus();
+    			} catch (Exception e) {
+    				final String message = String.format(
+    						"Error updating SchedBlock Statuses in ALMA State Archive - %s ",
     						e.getMessage());
     				m_opLogger.severe(message);
     			}

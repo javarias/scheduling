@@ -75,7 +75,7 @@ public class CalibratorCheckPluginImpl implements CalibratorCheckPlugin {
 		} 
 	}
 
-	private static class ProcessReader extends Thread{
+	public static class ProcessReader extends Thread{
 		private InputStream is;
 	    private String type;
 	    private StringBuilder builder;

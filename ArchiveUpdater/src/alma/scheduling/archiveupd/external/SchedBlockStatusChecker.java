@@ -2,6 +2,7 @@ package alma.scheduling.archiveupd.external;
 
 import static alma.lifecycle.config.SpringConstants.STATE_SYSTEM_SPRING_CONFIG;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,6 +16,7 @@ import alma.lifecycle.persistence.StateArchive;
 import alma.lifecycle.stateengine.StateEngine;
 import alma.lifecycle.stateengine.constants.Role;
 import alma.lifecycle.stateengine.constants.Subsystem;
+import alma.scheduling.archiveupd.external.CalibratorCheckPluginImpl.ProcessReader;
 import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
 import alma.statearchiveexceptions.wrappers.AcsJNoSuchEntityEx;
 import alma.stateengineexceptions.wrappers.AcsJNoSuchTransitionEx;
@@ -30,11 +32,14 @@ public class SchedBlockStatusChecker {
 	private static final long TIME_TO_SUSPEND = 30 * 24 * 60 * 60 * 1000; //30 days
 	private static final long TIME_TO_CHECK_FOR_CALIBRATIONS = 30 * 60 * 1000; //30 mins
 	
-	public SchedBlockStatusChecker() {
+	private Logger logger;
+	
+	public SchedBlockStatusChecker(Logger logger) {
+		this.logger = logger;
 		synchronized(SchedBlockStatusChecker.class) {
 			if (!StateSystemContextFactory.INSTANCE.isInitialized()) {
 				StateSystemContextFactory.INSTANCE.init(STATE_SYSTEM_SPRING_CONFIG,
-								Logger.getAnonymousLogger());
+								logger);
 				stateArchive = StateSystemContextFactory.INSTANCE.getStateArchive();
 				stateEngine = StateSystemContextFactory.INSTANCE.getStateEngine();
 			}
@@ -64,7 +69,26 @@ public class SchedBlockStatusChecker {
 						}
 						//Check if last update of SBStatus was not too soon
 						else if(date.getTime() < (currentDate.getTime() - TIME_TO_CHECK_FOR_CALIBRATIONS)) { 
-							//TODO: Run script and check for calibrations
+							Process p = Runtime.getRuntime().exec("testCalibratorsCheckScript");
+							ProcessReader stdout = new ProcessReader(p.getInputStream(), "SCRIPT OUTPUT");
+							stdout.start();
+							ProcessReader stderr = new ProcessReader(p.getErrorStream(), "SCRIPT ERROR");
+							stderr.start();
+							int exitVal = p.waitFor();
+							//Check the output of the script
+							//If the script fails it should finish with a code distinct than 0, throw an error in this case
+							if (exitVal == 0) {
+								String outStr = stdout.getOutput().toString();
+								int val = Integer.valueOf(outStr.substring(outStr.length() - 2, outStr.length() - 1));
+								if (val == 0) {
+									logger.info("Tranistioning SB Status: " 
+											+ s.getSBStatusEntity().getEntityId() + " to " + StatusTStateType.READY);
+										stateEngine.changeState(s.getSBStatusEntity(), StatusTStateType.READY, Subsystem.SCHEDULING, Role.AOD);
+								}
+							}
+							else {
+								logger.severe("Exit code of the script was not 0.\n" + stderr.getOutput().toString());
+							}
 						} 
 					} catch (AcsJNoSuchTransitionEx e) {
 						e.printStackTrace();
@@ -75,6 +99,10 @@ public class SchedBlockStatusChecker {
 					} catch (AcsJPostconditionFailedEx e) {
 						e.printStackTrace();
 					} catch (AcsJNoSuchEntityEx e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
@@ -94,11 +122,44 @@ public class SchedBlockStatusChecker {
 		try {
 			statuses = stateArchive.findSBStatusByState(states);
 			for (SBStatus s : statuses) {
-				// TODO: Run script and check for calibrations
+				Process p = Runtime.getRuntime().exec("testCalibratorsCheckScript");
+				ProcessReader stdout = new ProcessReader(p.getInputStream(), "SCRIPT OUTPUT");
+				stdout.start();
+				ProcessReader stderr = new ProcessReader(p.getErrorStream(), "SCRIPT ERROR");
+				stderr.start();
+				int exitVal = p.waitFor();
+				//Check the output of the script
+				//If the script fails it should finish with a code distinct than 0, throw an error in this case
+				if (exitVal == 0) {
+					String outStr = stdout.getOutput().toString();
+					int val = Integer.valueOf(outStr.substring(outStr.length() - 2, outStr.length() - 1));
+					if (val == 0) {
+						logger.info("Tranistioning SB Status: " 
+								+ s.getSBStatusEntity().getEntityId() + " to " + StatusTStateType.READY);
+							stateEngine.changeState(s.getSBStatusEntity(), StatusTStateType.READY, Subsystem.SCHEDULING, Role.AOD);
+					}
+				}
+				else {
+					logger.severe("Exit code of the script was not 0.\n" + stderr.getOutput().toString());
+				}
 			}
 		} catch (AcsJIllegalArgumentEx e) {
 			e.printStackTrace();
 		} catch (AcsJInappropriateEntityTypeEx e) {
+			e.printStackTrace();
+		} catch (AcsJNoSuchTransitionEx e) {
+			e.printStackTrace();
+		} catch (AcsJNotAuthorizedEx e) {
+			e.printStackTrace();
+		} catch (AcsJPreconditionFailedEx e) {
+			e.printStackTrace();
+		} catch (AcsJPostconditionFailedEx e) {
+			e.printStackTrace();
+		} catch (AcsJNoSuchEntityEx e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
