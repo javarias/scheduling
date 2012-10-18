@@ -21,7 +21,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.4 2011/10/25 15:21:44 dclarke Exp $"
+# "@(#) $Id: Makefile,v 1.5 2012/10/18 22:45:54 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -86,7 +86,7 @@ lllll_OBJECTS   =
 #
 # Scripts (public and local)
 # ----------------------------
-SCRIPTS         =
+SCRIPTS         = testCalibratorsCheckScript
 SCRIPTS_L       =
 
 #
@@ -139,9 +139,10 @@ USER_IDL =
 # Jarfiles and their directories
 #
 COMPONENTS_JARFILES := SchedulingArchiveUpdaterImpl
-JARFILES = SchedulingArchiveUpdaterGUI
+JARFILES = SchedulingArchiveUpdaterGUI SchedulingArchiveUpdaterExternals
 SchedulingArchiveUpdaterImpl_DIRS := alma/scheduling/archiveupd/compimpl alma/scheduling/archiveupd/functionality alma/scheduling/archiveupd/mastercomp
 SchedulingArchiveUpdaterGUI_DIRS := alma/scheduling/archiveupd/gui
+SchedulingArchiveUpdaterExternals_DIRS := alma/scheduling/archiveupd/external
 SchedulingArchiveUpdaterImpl_JLIBS=SchedulingArchiveUpdater
 SchedulingArchiveUpdaterGUI_JLIBS=SchedulingArchiveUpdater
 jjj_EXTRAS= 

@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 
 import alma.ACSErrTypeCommon.wrappers.AcsJIllegalArgumentEx;
 import alma.entity.xmlbinding.sbstatus.SBStatus;
-import alma.entity.xmlbinding.sbstatus.SBStatusEntityT;
 import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
 import alma.lifecycle.config.StateSystemContextFactory;
 import alma.lifecycle.persistence.StateArchive;
