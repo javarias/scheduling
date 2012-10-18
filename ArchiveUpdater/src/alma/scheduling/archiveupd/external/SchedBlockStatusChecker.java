@@ -118,7 +118,7 @@ public class SchedBlockStatusChecker {
 	}
 	
 	private void forceCheckForCalibrations() {
-		String[] states = { StatusTStateType.CALIBRATORCHECK.toString() };
+		String[] states = {StatusTStateType.CALIBRATORCHECK.toString(), StatusTStateType.READY.toString()};
 		SBStatus[] statuses;
 		try {
 			statuses = stateArchive.findSBStatusByState(states);
