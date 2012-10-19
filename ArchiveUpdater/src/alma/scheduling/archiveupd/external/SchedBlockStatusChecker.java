@@ -43,6 +43,10 @@ public class SchedBlockStatusChecker {
 				stateArchive = StateSystemContextFactory.INSTANCE.getStateArchive();
 				stateEngine = StateSystemContextFactory.INSTANCE.getStateEngine();
 			}
+			else if (stateArchive == null)
+				stateArchive = StateSystemContextFactory.INSTANCE.getStateArchive();
+			else if (stateEngine == null)
+				stateEngine = StateSystemContextFactory.INSTANCE.getStateEngine();
 		}
 	}
 	

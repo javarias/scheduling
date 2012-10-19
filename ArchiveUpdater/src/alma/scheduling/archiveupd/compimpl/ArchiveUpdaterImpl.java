@@ -163,7 +163,7 @@ public class ArchiveUpdaterImpl implements ComponentLifecycle,
     public void getChecker(ContainerServices containerServices) {
     	if (sbStatusChecker == null) {
     		try {
-    			
+    			sbStatusChecker = new SchedBlockStatusChecker(m_logger);
     		} catch (Exception ex) {
     			ex.printStackTrace();
 				handler.severe(String.format(
