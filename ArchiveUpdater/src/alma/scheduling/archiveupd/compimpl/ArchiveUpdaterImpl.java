@@ -188,6 +188,7 @@ public class ArchiveUpdaterImpl implements ComponentLifecycle,
     				final String message = String.format(
     						"Error updating Scheduler from ALMA Archive and State Archive - %s - some project updates might have been missed",
     						e.getMessage());
+    				e.printStackTrace();
     				m_opLogger.severe(message);
     			}
     			try {
@@ -196,6 +197,7 @@ public class ArchiveUpdaterImpl implements ComponentLifecycle,
     				final String message = String.format(
     						"Error updating SchedBlock Statuses in ALMA State Archive - %s ",
     						e.getMessage());
+    				e.printStackTrace();
     				m_opLogger.severe(message);
     			}
     			try {
