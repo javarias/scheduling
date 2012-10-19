@@ -47,6 +47,7 @@ public class SchedBlockStatusChecker {
 	}
 	
 	public void checkForStatus() {
+		logger.info("Starting checking for calibrators");
 		checkForCalibrations();
 	}
 	
@@ -60,6 +61,7 @@ public class SchedBlockStatusChecker {
 		try {
 			SBStatus[] statuses = stateArchive.findSBStatusByState(states);
 			for(SBStatus s: statuses) {
+				logger.fine("Check calibrators for SB: " + s.getSchedBlockRef().getEntityId());
 				if(s.getTimeOfUpdate() != null) {
 					try {
 						Date lastUpdate = dateFormat.parse(s.getTimeOfUpdate());
