@@ -192,6 +192,7 @@ public class ArchiveUpdaterImpl implements ComponentLifecycle,
     				m_opLogger.severe(message);
     			}
     			try {
+    				getChecker(m_containerServices);
     				sbStatusChecker.checkForStatus();
     			} catch (Exception e) {
     				final String message = String.format(
