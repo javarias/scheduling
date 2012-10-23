@@ -16,7 +16,7 @@ import alma.lifecycle.persistence.StateArchive;
 import alma.lifecycle.stateengine.StateEngine;
 import alma.lifecycle.stateengine.constants.Role;
 import alma.lifecycle.stateengine.constants.Subsystem;
-import alma.scheduling.archiveupd.external.CalibratorCheckPluginImpl.ProcessReader;
+import alma.scheduling.external.CalibratorCheckPluginImpl.ProcessReader;
 import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
 import alma.statearchiveexceptions.wrappers.AcsJNoSuchEntityEx;
 import alma.stateengineexceptions.wrappers.AcsJNoSuchTransitionEx;
