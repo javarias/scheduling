@@ -21,7 +21,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.6 2012/10/23 16:54:06 javarias Exp $"
+# "@(#) $Id: Makefile,v 1.7 2012/10/23 17:16:37 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -86,7 +86,7 @@ lllll_OBJECTS   =
 #
 # Scripts (public and local)
 # ----------------------------
-SCRIPTS         = testCalibratorsCheckScript
+SCRIPTS         = 
 SCRIPTS_L       =
 
 #
