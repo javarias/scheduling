@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: OutputDao.java,v 1.4 2010/08/13 21:52:12 javarias Exp $"
+ * "@(#) $Id: OutputDao.java,v 1.5 2012/10/30 22:10:18 javarias Exp $"
  */
 package alma.scheduling.datamodel.output.dao;
 
@@ -56,4 +56,8 @@ public interface OutputDao {
     public List<Results> getResults();
     
     public void deleteAll();
+    
+    public Results getResult(long id);
+    
+    public Results getLastResult();
 }

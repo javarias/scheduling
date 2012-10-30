@@ -21,13 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: OutputDaoImpl.java,v 1.4 2010/08/13 21:52:12 javarias Exp $"
+ * "@(#) $Id: OutputDaoImpl.java,v 1.5 2012/10/30 22:10:18 javarias Exp $"
  */
 package alma.scheduling.datamodel.output.dao;
 
 import java.util.Collection;
 import java.util.List;
 
+import org.hibernate.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.datamodel.GenericDaoImpl;
@@ -56,6 +57,21 @@ public class OutputDaoImpl extends GenericDaoImpl implements OutputDao{
 
     @Override
     public void deleteAll() {
-        super.deleteAll(getResults());
+    	getSession().createQuery("delete from " + Results.class.getCanonicalName()).executeUpdate();
     }
+    
+    @Override
+    public Results getResult(long id) {
+    	Query q = getSession().createQuery("from Results r where r.id = " + id);
+    	Results retVal = (Results) q.uniqueResult();
+    	return retVal;
+    }
+    
+    @Override
+    public Results getLastResult() {
+    	Query q = getSession().createQuery("select r.id from Results r order by r.id desc");
+    	long id = (Long) q.uniqueResult();
+    	return getResult(id);
+    }
+    
 }

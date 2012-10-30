@@ -63,14 +63,6 @@ public class XmlOutputDaoImpl implements OutputDao {
     }
 
     @Override
-    public List<Results> getResults() {
-        //alma.scheduling.output.generated.Results r;
-        //Configuration config = configDao.getConfiguration();
-        //config.getOutputDirectory();
-        return null;
-    }
-
-    @Override
     @Transactional(readOnly=true)
     public void saveResults(Results results) {
         // TODO Auto-generated method stub
@@ -225,6 +217,24 @@ public class XmlOutputDaoImpl implements OutputDao {
     public void deleteAll() {
         // TODO Do nothing?
         
+    }
+
+	@Override
+	public Results getResult(long id) {
+		return null;
+	}
+
+	@Override
+	public Results getLastResult() {
+		return null;
+	}
+	
+    @Override
+    public List<Results> getResults() {
+        //alma.scheduling.output.generated.Results r;
+        //Configuration config = configDao.getConfiguration();
+        //config.getOutputDirectory();
+        return null;
     }
 
 }
