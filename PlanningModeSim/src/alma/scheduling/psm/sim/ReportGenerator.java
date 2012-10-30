@@ -25,11 +25,16 @@
 
 package alma.scheduling.psm.sim;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -685,7 +690,79 @@ public class ReportGenerator extends PsmContext {
 
 		XsltTransformer.transform( xslt.toString(), xmlIn, htmlOut );
 	}
-
+	
+	public void writeFinalReportToDisc() {
+		ApplicationContext ctx = getApplicationContext();
+		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+		Results lastResult = outDao.getResults().get(outDao.getResults().size()-1 );
+		String htmlOut = this.getReportDirectory() + "/" +  "report_" +
+			lastResult.getStartRealDate().getTime() + ".html";
+		FileOutputStream fos = null;
+		try {
+			fos = new FileOutputStream(htmlOut);
+			InputStream html = getFinalReport();
+			int b = 0;
+			while ((b = html.read()) != -1 ){
+				fos.write(b);
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (fos != null) {
+				try {
+					fos.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	/**
+	 * 
+	 * @param entityId corresponds to the id of {@code Results}
+	 * @return The InputStream of the processed report in HTML.
+	 * @throws FileNotFoundException if the report was not 
+	 * generated previously at the end of the simulated season. 
+	 */
+	public InputStream getFinalReport(long entityId) throws FileNotFoundException {
+		ApplicationContext ctx = getApplicationContext();
+		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+		Results result = outDao.getResult(entityId);
+		return getFinalReport(result);
+	}
+	
+	/**
+	 * 
+	 * @return the report for the very last results as InputStream of 
+	 * the processed report in HTML.
+	 * @throws FileNotFoundException if the report was not 
+	 * generated previously at the end of the simulated season.
+	 */
+	public InputStream getFinalReport() throws FileNotFoundException {
+		ApplicationContext ctx = getApplicationContext();
+		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+		Results result = outDao.getLastResult();
+		return getFinalReport(result);
+	}
+	
+	private InputStream getFinalReport(Results result) throws FileNotFoundException {
+		URL xslt = getClass().getClassLoader()
+			.getResource("alma/scheduling/psm/reports/general_report.xsl");
+		// TODO: Change names to a more characteristic name
+		String xmlIn = this.getOutputDirectory() + "/" +  "output_" +
+				result.getStartRealDate().getTime() + ".xml";
+		logger.debug("URL for xslt: " + xslt.toString());
+		
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		FileInputStream is;
+		is = new FileInputStream(xmlIn);
+		XsltTransformer.transform( xslt.toString(), is, os );
+		return new ByteArrayInputStream(os.toByteArray());
+	}
+	
 	public void createAllReports(){
 
 		try{
