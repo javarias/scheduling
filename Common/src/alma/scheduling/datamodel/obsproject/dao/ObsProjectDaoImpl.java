@@ -26,6 +26,7 @@ import java.util.List;
 import org.hibernate.LockMode;
 import org.hibernate.Query;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Isolation;
@@ -38,6 +39,7 @@ import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.ObservingParameters;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.obsproject.ScienceGrade;
 import alma.scheduling.datamodel.obsproject.Target;
 
 @Transactional(readOnly = true)
@@ -194,6 +196,32 @@ public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao{
 		getSession().createSQLQuery("DELETE FROM OBSUNIT").executeUpdate();
 //		getSession().createQuery("delete from " + ObsUnitSet.class.getCanonicalName()).executeUpdate();
 //		getSession().createQuery("delete from " + SchedBlock.class.getCanonicalName()).executeUpdate();
+	}
+
+
+	@Override
+	public List<String> getObsProjectsUidsByCode(String code) {
+		// TODO Auto-generated method stub
+		Query q = getSession().createQuery("select uid from ObsProject where (code like '%"+ code +"%') and (uid is not null)" );
+		//q.setParameter(0, "'%"+ code +"%'"); this doesn't work
+		System.out.println(q.getQueryString());
+		@SuppressWarnings("unchecked")
+		List<String> uids = q.list();
+		return uids;
+	}
+
+
+	@Override
+	public List<String> getObsProjectsUidsbySciGrade(List<ScienceGrade> grades) {
+		String restriction = "";
+		for(ScienceGrade g: grades) {
+			restriction += "'" + g.toString() + "',";
+		}
+		restriction = restriction.substring(0, restriction.length() - 1);
+		Query q = getSession().createQuery("select uid from ObsProject p where p.letterGrade in (" + restriction +")");
+		@SuppressWarnings("unchecked")
+		List<String> uids = q.list();
+		return uids;
 	}
 
 }

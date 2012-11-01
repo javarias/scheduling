@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsProjectDao.java,v 1.8 2012/05/21 19:51:30 javarias Exp $"
+ * "@(#) $Id: ObsProjectDao.java,v 1.9 2012/11/01 22:05:20 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
@@ -30,6 +30,7 @@ import java.util.List;
 import alma.scheduling.datamodel.GenericDao;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnit;
+import alma.scheduling.datamodel.obsproject.ScienceGrade;
 
 public interface ObsProjectDao extends GenericDao {
     
@@ -64,4 +65,15 @@ public interface ObsProjectDao extends GenericDao {
      * @param list of projects to refresh.
      */
     public void refreshProjects(List<ObsProject> list);
+    
+    /**
+     * Search the SWDB for project matching the code.
+     * 
+     * @param code the project code to search, it could contains SQL wildcards.
+     * @return A list with project uids.
+     */
+    public List<String> getObsProjectsUidsByCode (String code);
+    
+    public List<String> getObsProjectsUidsbySciGrade (List<ScienceGrade> grades);
+    
 }
