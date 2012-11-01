@@ -59,6 +59,7 @@ public class TsysScorer extends AbstractBaseRanker {
 	            SBRank rank = new SBRank();
 	            rank.setUid(sb.getUid());
 	            rank.setRank(0.0);
+	            rank.setDetails(this.rankerName);
 	            ranks.add(rank);
 			}
 		}

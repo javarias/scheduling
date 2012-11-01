@@ -20,8 +20,11 @@
  *******************************************************************************/
 package alma.scheduling.algorithm.obsproject;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
@@ -31,18 +34,34 @@ import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.ScienceGrade;
+import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
 
 public class ProjectQualitySelector extends AbstractBaseSelector {
 
+	private Set<String> allowedGrades;
+	private ObsProjectDao prjDao;
+	
     public ProjectQualitySelector(String selectorName) {
         super(selectorName);
-        // TODO Auto-generated constructor stub
     }
 
     @Override
     public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
-        Criterion crit = Restrictions.ne("letterGrade", ScienceGrade.D);
-        return crit;
+    	ArrayList<ScienceGrade> enumAllowedGrades = new ArrayList<ScienceGrade>();
+    	if (allowedGrades != null || allowedGrades.size() > 0) {
+    		for(String grade: allowedGrades) {
+    			try {
+    				enumAllowedGrades.add(ScienceGrade.valueOf(grade));
+    			} catch (RuntimeException ex) {
+    				System.out.println("Unknown grade detected: " + grade);
+    			}
+    		}
+    		List<String> uids = prjDao.getObsProjectsUidsbySciGrade(enumAllowedGrades);
+    		if (uids.size() == 0)
+    			return null;
+    		return Restrictions.in("projectUid", uids);
+    	}
+        return null;
     }
 
     @Override
@@ -51,4 +70,21 @@ public class ProjectQualitySelector extends AbstractBaseSelector {
         return null;
     }
 
+	public Set<String> getAllowedGrades() {
+		return allowedGrades;
+	}
+
+	public void setAllowedGrades(Set<String> allowedGrades) {
+		this.allowedGrades = allowedGrades;
+	}
+
+	public ObsProjectDao getPrjDao() {
+		return prjDao;
+	}
+
+	public void setPrjDao(ObsProjectDao prjDao) {
+		this.prjDao = prjDao;
+	}
+
+    
 }

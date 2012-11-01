@@ -33,7 +33,7 @@ import alma.scheduling.datamodel.obsproject.SchedBlock;
 
 public class CSVSelector extends AbstractBaseSelector {
 
-	private boolean csv = false;
+	private boolean csv = true;
 	
 	public CSVSelector(String selectorName) {
 		super(selectorName);
@@ -47,7 +47,7 @@ public class CSVSelector extends AbstractBaseSelector {
 
 	@Override
 	public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
-		return Restrictions.not(Restrictions.eq("s.csv", csv));
+		return Restrictions.eq("csv", csv);
 	}
 
 	public boolean isCsv() {

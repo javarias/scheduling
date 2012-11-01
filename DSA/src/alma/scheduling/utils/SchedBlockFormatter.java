@@ -38,7 +38,7 @@ import alma.scheduling.formatting.Format;
 /**
  *
  * @author dclarke
- * $Id: SchedBlockFormatter.java,v 1.1 2011/09/29 20:55:12 dclarke Exp $
+ * $Id: SchedBlockFormatter.java,v 1.2 2012/11/01 21:55:14 javarias Exp $
  */
 public class SchedBlockFormatter extends EntityFormatter {
 	/*
@@ -387,7 +387,13 @@ public class SchedBlockFormatter extends EntityFormatter {
 
 	private String stripSuffix(String details) {
 		for (final String suffix : CommonSuffixes) {
-			int pos = details.lastIndexOf(suffix);
+			int pos = 0;
+			try {
+				pos =details.lastIndexOf(suffix);
+			} catch (RuntimeException ex){
+				System.out.println("This should not happen.");
+				ex.printStackTrace();
+			}
 			if (pos > 0) {
 				// > 0 to avoid the suffix being at the start of the String
 				return details.substring(0, pos);

@@ -56,6 +56,31 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
                 </bean>
             </xsl:if>
             
+            <xsl:if test="count(SelectionCriteria/ProjectCodeSelector) = 1">
+                <bean id="{concat('projectCodeSelector', '_', @name)}" class="alma.scheduling.algorithm.obsproject.ProjectCodeSelector"
+                    scope="prototype">
+                    <constructor-arg><value>projectCodeSelector</value></constructor-arg>
+                    <property name="prjDao" ref="obsProjectDao"/>
+                    <property name="code" value="{SelectionCriteria/ProjectCodeSelector/code}" />
+                </bean>
+            </xsl:if>
+            
+            <xsl:if test="count(SelectionCriteria/ProjectGradeSelector) = 1">
+                <bean id="{concat('projectGradeSelector', '_', @name)}" class="alma.scheduling.algorithm.obsproject.ProjectQualitySelector"
+                    scope="prototype">
+                    <constructor-arg><value>projectGradeSelector</value></constructor-arg>
+                    <property name="prjDao" ref="obsProjectDao"/>
+                    <property name="allowedGrades">
+                        <set>
+                        <xsl:for-each select="SelectionCriteria/ProjectGradeSelector/grade">
+                            <value><xsl:value-of select="text()"/></value>
+                        </xsl:for-each>
+                        </set>
+                    </property>
+                </bean>
+            </xsl:if>
+            
+            
             <bean id="{concat('preUpdateSelector', '_', @name)}" class="alma.scheduling.algorithm.sbselection.MasterSelector"
                 scope="prototype">
                 <property name="selectors">
@@ -81,6 +106,26 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
                             <ref bean="projectQualitySelector" />
                         </xsl:if>
                             <ref bean="interactiveProjectsSelector" />
+                        <xsl:if test="count(SelectionCriteria/ProjectCodeSelector) = 1">
+                            <ref bean="{concat('projectCodeSelector', '_', @name)}" />
+                        </xsl:if>
+                        <xsl:if test="count(SelectionCriteria/CSVProjectSelector) = 1">
+                            <!-- For some unknown reason the 'boolean(SelectionCriteria/CSVProjectSelector/isCSV) = true()' doesn't work-->
+                            <xsl:choose>
+                                <xsl:when test="starts-with(SelectionCriteria/CSVProjectSelector/isCSV, 'true')">
+                                    <ref bean="csvTrueSelector"/>
+                                </xsl:when>
+                                <xsl:when test="starts-with(SelectionCriteria/CSVProjectSelector/isCSV, '1')">
+                                    <ref bean="csvTrueSelector"/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <ref bean="csvFalseSelector"/>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </xsl:if>
+                        <xsl:if test="count(SelectionCriteria/ProjectGradeSelector) = 1">
+                            <ref bean="{concat('projectGradeSelector', '_', @name)}"/>
+                        </xsl:if>
                     </set>
                 </property>
             </bean>

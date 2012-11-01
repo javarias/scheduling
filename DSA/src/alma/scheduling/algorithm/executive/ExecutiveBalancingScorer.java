@@ -61,6 +61,7 @@ public class ExecutiveBalancingScorer extends AbstractBaseRanker {
 	            SBRank rank = new SBRank();
 	            rank.setUid(sb.getUid());
 	            rank.setRank(score);
+	            rank.setDetails(this.rankerName);
 	            scores.add(rank);
 	            logger.debug("SchedBlock: " + sb.getUid() + "rank: " + rank);
 			} catch(RuntimeException ex) {

@@ -47,6 +47,7 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
     
     @Override
     public synchronized void update(Date date, Collection<SchedBlock> sbs) {
+        /*this is to assure of the atomicity of the update operation*/
         if(needsToUpdate(date) == false)
             return;
         lastUpdate = date;

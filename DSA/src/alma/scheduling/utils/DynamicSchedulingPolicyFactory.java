@@ -32,7 +32,6 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 
@@ -70,6 +69,8 @@ public class DynamicSchedulingPolicyFactory {
 			beanNamesToFix.add("preUpdateSelector_" + beanName);
 			beanNamesToFix.add("postUpdateSelectorAndUpdater_" + beanName);
 			beanNamesToFix.add("weatherTsysSelector_" + beanName);
+			beanNamesToFix.add("projectCodeSelector_" + beanName);
+			beanNamesToFix.add("projectGradeSelector_" + beanName);
 		}
 		for(String beanName: beanNamesToFix) {
 			xmlContextString = xmlContextString.replace("\"" + beanName + "\"", "\"uuid" + container.getUuid().toString() + "-" + beanName + "\"");

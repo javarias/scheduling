@@ -271,7 +271,6 @@
         <property name="opacityInterpolator" ref="opacityInterpolator"/>
     </bean>
 	
-
 	<!-- DSA results beans -->
 	<bean id="dsaResultsSessionFactory"
 		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
@@ -316,5 +315,4 @@
 		class="alma.scheduling.algorithm.results.dao.ResultsDaoImpl">
 		<property name="sessionFactory" ref="dsaResultsSessionFactory" />
 	</bean>
-
 </beans>

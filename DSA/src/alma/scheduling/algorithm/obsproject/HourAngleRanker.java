@@ -38,7 +38,7 @@ import alma.scheduling.utils.CoordinatesUtil;
 
 public class HourAngleRanker extends AbstractBaseRanker {
 
-//	private static Logger logger = LoggerFactory.getLogger(HourAngleRanker.class);
+	private static Logger logger = LoggerFactory.getLogger(HourAngleRanker.class);
 	private ArrayList<SBRank> ranks;
 	
 	public HourAngleRanker(String rankerName) {
@@ -54,7 +54,7 @@ public class HourAngleRanker extends AbstractBaseRanker {
 	@Override
 	public List<SBRank> rank(List<SchedBlock> sbs, ArrayConfiguration arrConf,
 			Date ut, int nProjects) {
-		ranks.clear();
+		ranks = new ArrayList<SBRank>();
 		for(SchedBlock sb: sbs){
 			SBRank rank = new SBRank();
 			rank.setDetails(this.rankerName);
