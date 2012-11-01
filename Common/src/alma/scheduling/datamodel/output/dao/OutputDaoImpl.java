@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: OutputDaoImpl.java,v 1.6 2012/10/30 22:31:06 javarias Exp $"
+ * "@(#) $Id: OutputDaoImpl.java,v 1.7 2012/11/01 20:27:16 javarias Exp $"
  */
 package alma.scheduling.datamodel.output.dao;
 
@@ -69,9 +69,14 @@ public class OutputDaoImpl extends GenericDaoImpl implements OutputDao{
     
     @Override
     public Results getLastResult() {
-    	Query q = getSession().createQuery("select r.id from Results r order by r.id desc");
-    	long id = (Long) q.list().get(0);
-    	return getResult(id);
+    	return getResult(getLastResultId());
     }
+
+	@Override
+	public long getLastResultId() {
+		Query q = getSession().createQuery("select r.id from Results r order by r.id desc");
+		long id = (Long) q.list().get(0);
+		return id;
+	}
     
 }

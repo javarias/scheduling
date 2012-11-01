@@ -237,4 +237,10 @@ public class XmlOutputDaoImpl implements OutputDao {
         return null;
     }
 
+	@Override
+	public long getLastResultId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }
