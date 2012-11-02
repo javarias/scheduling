@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ArrayConfiguration.java,v 1.1 2010/03/10 22:31:18 rhiriart Exp $"
+ * "@(#) $Id: ArrayConfiguration.java,v 1.2 2012/11/02 21:47:43 javarias Exp $"
  */
 package alma.scheduling.datamodel.observatory;
 
@@ -32,16 +32,21 @@ import java.util.Set;
 public class ArrayConfiguration {
 
     private Long id;
-    
     private Date startTime;
-    
     private Date endTime;
-    
     private Set<AntennaInstallation> antennaInstallations = new HashSet<AntennaInstallation>();
-    
     private Double resolution;
-    
     private Double uvCoverage;
+    private String arrayName;
+    private String configurationName;
+    /**
+     * Used by array configuration lite version. In the future this should be replaced by
+     * a complete list of antennas saved in {@link ArrayConfiguration#antennaInstallations}
+     */
+    private int numberOfAntennas;
+    private double minBaseline;
+    private double maxBaseline;
+    private double antennaDiameter;
 
     public ArrayConfiguration() {
     }
@@ -94,4 +99,61 @@ public class ArrayConfiguration {
     public void setUvCoverage(Double uvCoverage) {
         this.uvCoverage = uvCoverage;
     }
+
+	public String getArrayName() {
+		return arrayName;
+	}
+
+	public void setArrayName(String arrayName) {
+		this.arrayName = arrayName;
+	}
+
+	public String getConfigurationName() {
+		return configurationName;
+	}
+
+	public void setConfigurationName(String configurationName) {
+		this.configurationName = configurationName;
+	}
+
+	/**
+	 * @see ArrayConfiguration#numberOfAntennas
+	 * @param numberOfAntennas
+	 */
+	public int getNumberOfAntennas() {
+		return numberOfAntennas;
+	}
+
+	/**
+	 * @see ArrayConfiguration#numberOfAntennas
+	 * @param numberOfAntennas
+	 */
+	public void setNumberOfAntennas(int numberOfAntennas) {
+		this.numberOfAntennas = numberOfAntennas;
+	}
+
+	public double getMinBaseline() {
+		return minBaseline;
+	}
+
+	public void setMinBaseline(double minBaseline) {
+		this.minBaseline = minBaseline;
+	}
+
+	public double getMaxBaseline() {
+		return maxBaseline;
+	}
+
+	public void setMaxBaseline(double maxBaseline) {
+		this.maxBaseline = maxBaseline;
+	}
+
+	public double getAntennaDiameter() {
+		return antennaDiameter;
+	}
+
+	public void setAntennaDiameter(double antennaDiameter) {
+		this.antennaDiameter = antennaDiameter;
+	}
+    
 }
