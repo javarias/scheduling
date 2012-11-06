@@ -67,14 +67,14 @@ import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
 public class ModelAccessor extends Observable {
 	
 	private Logger logger = LoggerFactory.getLogger(getClass());
-	private StateArchive stateArchive;
-	private StateEngine stateEngine;
-	private ObsProjectDao projectDao;
-	private SchedBlockDao schedBlockDao;
-	private ExecutiveDAO execDao;
-	private AtmParametersDao atmDao;
-	private WeatherHistoryDAO weatherDao;
-	private OpacityInterpolator opacityInterpolator;
+	protected StateArchive stateArchive;
+	protected StateEngine stateEngine;
+	protected ObsProjectDao projectDao;
+	protected SchedBlockDao schedBlockDao;
+	protected ExecutiveDAO execDao;
+	protected AtmParametersDao atmDao;
+	protected WeatherHistoryDAO weatherDao;
+	protected OpacityInterpolator opacityInterpolator;
 		
 	public ModelAccessor() throws Exception {
 	    // There should be only one instance of the stateArchive in the process.

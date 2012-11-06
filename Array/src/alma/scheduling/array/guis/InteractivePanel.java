@@ -18,6 +18,13 @@
 
 package alma.scheduling.array.guis;
 
+import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_ATM_DAO_BEAN;
+import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_EXECUTIVE_DAO_BEAN;
+import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_OBSPROJECT_DAO_BEAN;
+import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_OPACITY_INTERPOLATOR_BEAN;
+import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_SCHEDBLOCK_DAO_BEAN;
+import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_WEATHER_DAO_BEAN;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -29,6 +36,7 @@ import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -63,6 +71,7 @@ import javax.swing.event.RowSorterListener;
 import javax.swing.table.TableRowSorter;
 
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.gui.standards.StandardIcons;
@@ -80,11 +89,19 @@ import alma.scheduling.array.guis.state.TableState;
 import alma.scheduling.array.util.FilterSet;
 import alma.scheduling.array.util.FilterSetPanel;
 import alma.scheduling.array.util.StatusCollection;
+import alma.scheduling.array.util.NameTranslator.TranslationException;
+import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
+import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
+import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
+import alma.scheduling.datamodel.weather.dao.AtmParametersDao;
+import alma.scheduling.datamodel.weather.dao.WeatherHistoryDAO;
 import alma.scheduling.swingx.CallbackFilter;
 import alma.scheduling.utils.DSAContextFactory;
 import alma.scheduling.utils.SchedBlockFormatter;
+import alma.scheduling.weather.OpacityInterpolator;
 import alma.statearchiveexceptions.wrappers.AcsJEntitySerializationFailedEx;
 import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
 import alma.statearchiveexceptions.wrappers.AcsJNoSuchEntityEx;
@@ -93,7 +110,7 @@ import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.35 2012/09/12 21:23:09 javarias Exp $
+ * $Id: InteractivePanel.java,v 1.36 2012/11/06 23:08:53 javarias Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel
@@ -1501,13 +1518,15 @@ public class InteractivePanel extends AbstractArrayPanel
 	 * Running stand-alone
 	 * ================================================================
 	 */
-    private static InteractivePanel createAndShowGUI() {
+    private static InteractivePanel createAndShowGUI() throws Exception {
         //Create and set up the window.
         JFrame frame = new JFrame("Interactive Panel");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //Add the ubiquitous "Hello World" label.
         InteractivePanel panel = new InteractivePanel("testArray");
+        panel.setArray(new DummyArrayAccessor("CONTROL/No Array"));
+        panel.setModelAccessor(new ModelAccessor());
         frame.getContentPane().add(panel);
 
         //Display the window.
@@ -1523,9 +1542,10 @@ public class InteractivePanel extends AbstractArrayPanel
     	//Schedule a job for the event-dispatching thread:
     	//creating and showing this application's GUI.
     	javax.swing.SwingUtilities.invokeLater(new Runnable() {
+    		InteractivePanel p = null;
     		public void run() {
-    			InteractivePanel p = createAndShowGUI();
     			try {
+        			p = createAndShowGUI();
     				p.runRestricted(false);
     			} catch (Exception e) {
     				e.printStackTrace();
@@ -1535,6 +1555,26 @@ public class InteractivePanel extends AbstractArrayPanel
     		}
     	});
     }
+    
+	private static class DummyArrayAccessor extends ArrayAccessor {
+
+		public DummyArrayAccessor(String arrayName) throws AcsJContainerServicesEx,
+				TranslationException {
+			super(arrayName);
+		}
+
+		@Override
+		public boolean isManual() {
+			return false;
+		}
+
+		@Override
+		public void registerGUICallback(PropertyChangeListener pcl)
+				throws AcsJContainerServicesEx {
+		}
+		
+	}
+		
 	/*
 	 * End Running stand-alone
 	 * ============================================================= */

@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: CannotParseDataException.java,v 1.2 2010/03/02 17:09:02 javarias Exp $"
+ * "@(#) $Id: CannotParseDataException.java,v 1.3 2012/11/06 23:08:52 javarias Exp $"
  */
 package alma.scheduling.datamodel;
 
@@ -36,5 +36,13 @@ public class CannotParseDataException extends Exception {
      */
     public CannotParseDataException(String file, Exception ex){
         super("Cannot parse the file: "+ file, ex);
+    }
+    
+    public CannotParseDataException(long lineno, String extraInfo) {
+    	super("Cannot parse line: " + lineno + ". " + extraInfo);
+    }
+    
+    public CannotParseDataException(long lineno, String extraInfo, Throwable ex) {
+    	super("Cannot parse line: " + lineno + ". " + extraInfo, ex);
     }
 }

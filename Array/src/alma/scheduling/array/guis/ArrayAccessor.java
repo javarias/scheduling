@@ -19,15 +19,33 @@ package alma.scheduling.array.guis;
 
 import java.beans.PropertyChangeListener;
 
+import org.omg.CORBA.Context;
+import org.omg.CORBA.ContextList;
+import org.omg.CORBA.DomainManager;
+import org.omg.CORBA.ExceptionList;
+import org.omg.CORBA.InterfaceDef;
+import org.omg.CORBA.NVList;
+import org.omg.CORBA.NamedValue;
 import org.omg.CORBA.Object;
+import org.omg.CORBA.Policy;
+import org.omg.CORBA.Request;
+import org.omg.CORBA.SetOverrideType;
 
+import alma.ACS.ComponentStates;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.SchedulingArrayExceptions.NoRunningSchedBlockEx;
+import alma.SchedulingExceptions.InvalidOperationEx;
+import alma.asdmIDLTypes.IDLEntityRef;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.scheduling.Array;
+import alma.scheduling.ArrayDescriptor;
+import alma.scheduling.ArrayGUICallback;
 import alma.scheduling.ArrayHelper;
+import alma.scheduling.ArraySchedulerLifecycleType;
 import alma.scheduling.ArraySchedulerMode;
+import alma.scheduling.SchedBlockExecutionCallback;
 import alma.scheduling.SchedBlockExecutionItem;
+import alma.scheduling.SchedBlockQueueCallback;
 import alma.scheduling.SchedBlockQueueItem;
 import alma.scheduling.array.compimpl.ArrayGUICallbackImpl;
 import alma.scheduling.array.compimpl.SchedBlockExecutionCallbackImpl;
@@ -62,6 +80,15 @@ public class ArrayAccessor {
         Object obj = this.services.getComponentNonSticky(NameTranslator.arrayToComponentName(arrayName));
         array = ArrayHelper.narrow(obj);
         determineArrayCharacteristics();
+    }
+    
+    /**
+     * Constructor used for dummies children
+     * @param arrayName
+     */
+    protected ArrayAccessor(String arrayName) {
+        this.arrayName = arrayName;
+        this.array = new DummyArrayImpl();
     }
 
 	private boolean determineDynamic() {
@@ -381,5 +408,281 @@ public class ArrayAccessor {
 	
 	public void setSchedulingPolicy(String name) {
 		array.configureDynamicScheduler(name);
+	}
+	
+	/* For test purposes only */
+	private static class DummyArrayImpl implements alma.scheduling.Array{
+
+		@Override
+		public void configure(String arrayName, ArraySchedulerMode[] modes,
+				ArrayDescriptor descriptor) {
+			
+		}
+
+		@Override
+		public ArraySchedulerMode[] getModes() {
+			return null;
+		}
+
+		@Override
+		public ArraySchedulerLifecycleType getLifecycleType() {
+			return null;
+		}
+
+		@Override
+		public String getArrayName() {
+			return null;
+		}
+
+		@Override
+		public ArrayDescriptor getDescriptor() {
+			return null;
+		}
+
+		@Override
+		public String name() {
+			return null;
+		}
+
+		@Override
+		public ComponentStates componentState() {
+			return null;
+		}
+
+		@Override
+		public void addMonitorQueue(String arg0, SchedBlockQueueCallback arg1) {
+			
+		}
+
+		@Override
+		public void delete(SchedBlockQueueItem arg0) {
+			
+		}
+
+		@Override
+		public SchedBlockQueueItem[] getQueue() {
+			return null;
+		}
+
+		@Override
+		public int getQueueCapacity() {
+			return 0;
+		}
+
+		@Override
+		public SchedBlockQueueItem[] getExecutedQueue() {
+			return null;
+		}
+
+		@Override
+		public void moveDown(SchedBlockQueueItem arg0) {
+			
+		}
+
+		@Override
+		public void moveUp(SchedBlockQueueItem arg0) {
+			
+		}
+
+		@Override
+		public SchedBlockQueueItem pull() {
+			return null;
+		}
+
+		@Override
+		public void push(SchedBlockQueueItem arg0) {
+			
+		}
+
+		@Override
+		public void removeMonitorQueue(String monitorName) {
+			
+		}
+
+		@Override
+		public void start(String name, String role) {
+			
+		}
+
+		@Override
+		public void stop(String name, String role) {
+			
+		}
+
+		@Override
+		public String getRunningSchedBlock() throws NoRunningSchedBlockEx {
+			return null;
+		}
+
+		@Override
+		public boolean hasRunningSchedBlock() {
+			return false;
+		}
+
+		@Override
+		public void stopRunningSchedBlock(String name, String role) {
+			
+		}
+
+		@Override
+		public void addMonitorExecution(String monitorName,
+				SchedBlockExecutionCallback callback) {
+			
+		}
+
+		@Override
+		public void removeMonitorExecution(String monitorName) {
+			
+		}
+
+		@Override
+		public void addMonitorGUI(String monitorName, ArrayGUICallback callback) {
+			
+		}
+
+		@Override
+		public void removeMonitorGUI(String monitorName) {
+			
+		}
+
+		@Override
+		public boolean isRunning() {
+			return false;
+		}
+
+		@Override
+		public boolean isManual() {
+			return false;
+		}
+
+		@Override
+		public boolean isFullAuto() {
+			return false;
+		}
+
+		@Override
+		public void setFullAuto(boolean on, String name, String role) {
+			
+		}
+
+		@Override
+		public void destroyArray(String name, String role) {
+			
+		}
+
+		@Override
+		public SchedBlockExecutionItem[] getExecutions() {
+			return null;
+		}
+
+		@Override
+		public IDLEntityRef startManualModeSession(String sbid)
+				throws InvalidOperationEx {
+			return null;
+		}
+
+		@Override
+		public void configureDynamicScheduler(String policyName) {
+			
+		}
+
+		@Override
+		public boolean isActiveDynamic() {
+			return false;
+		}
+
+		@Override
+		public void setActiveDynamic(boolean on, String name, String role) {
+			
+		}
+
+		@Override
+		public String getSchedulingPolicy() {
+			return null;
+		}
+
+		@Override
+		public int getLogAmount() {
+			return 0;
+		}
+
+		@Override
+		public void setLogAmount(int n) {
+			
+		}
+
+		@Override
+		public boolean _is_a(String repositoryIdentifier) {
+			return false;
+		}
+
+		@Override
+		public boolean _is_equivalent(Object other) {
+			return false;
+		}
+
+		@Override
+		public boolean _non_existent() {
+			return false;
+		}
+
+		@Override
+		public int _hash(int maximum) {
+			return 0;
+		}
+
+		@Override
+		public Object _duplicate() {
+			return null;
+		}
+
+		@Override
+		public void _release() {
+			
+		}
+
+		public InterfaceDef _get_interface() {
+			return null;
+		}
+
+		@Override
+		public Object _get_interface_def() {
+			return null;
+		}
+
+		@Override
+		public Request _request(String operation) {
+			return null;
+		}
+
+		@Override
+		public Request _create_request(Context ctx, String operation,
+				NVList arg_list, NamedValue result) {
+			return null;
+		}
+
+		@Override
+		public Request _create_request(Context ctx, String operation,
+				NVList arg_list, NamedValue result, ExceptionList exclist,
+				ContextList ctxlist) {
+			return null;
+		}
+
+		@Override
+		public Policy _get_policy(int policy_type) {
+			return null;
+		}
+
+		@Override
+		public DomainManager[] _get_domain_managers() {
+			return null;
+		}
+
+		@Override
+		public Object _set_policy_override(Policy[] policies,
+				SetOverrideType set_add) {
+			return null;
+		}
+		
 	}
 }
