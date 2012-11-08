@@ -25,9 +25,12 @@
 
 package alma.scheduling.psm.util;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 
@@ -57,8 +60,14 @@ import alma.scheduling.utils.DynamicSchedulingPolicyFactory;
 public class XsltTransformer {
 	
 	public static void transform(String xslInURI, String xmlInURI, String htmlOutURI){
-		// Instantiate the TransformerFactory, and use it with a StreamSource
-		// XSL stylesheet to create a translet as a Templates object.
+		try {
+			transform(xslInURI, new FileInputStream(xmlInURI), new FileOutputStream(htmlOutURI));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void transform(String xslInURI, InputStream xmlIS, OutputStream htmlOS) {
 		TransformerFactory tFactory = TransformerFactory.newInstance();
 		Transformer transformer;
 		Templates translet;
@@ -67,15 +76,10 @@ public class XsltTransformer {
 			// For each thread, instantiate a new Transformer, and perform the
 			// transformations on that thread from a StreamSource to a StreamResult;
 			transformer = translet.newTransformer();
-			transformer.transform(new StreamSource(xmlInURI), new StreamResult(new FileOutputStream(htmlOutURI)));
+			transformer.transform(new StreamSource(xmlIS), new StreamResult(htmlOS));
 		} catch (TransformerConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (TransformerException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

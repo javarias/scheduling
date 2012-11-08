@@ -34,14 +34,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
+import java.util.TimeZone;
 import java.util.TreeMap;
 
 import net.sf.jasperreports.engine.JRDataSource;
@@ -55,6 +54,7 @@ import net.sf.jasperreports.view.JasperViewer;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
+import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.obsproject.FieldSourceObservability;
 import alma.scheduling.datamodel.obsproject.ObservingParameters;
@@ -95,6 +95,20 @@ public class ReportGenerator extends PsmContext {
 		};
 	
 	private static final String Executives[] = {"EU", "NA", "EA", "CHILE", "NONALMA"};
+	
+	private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+	static {dateFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));}
+	
+	private static enum reportTypes {
+		LST_BEFORE_SIM,
+		LST_AFTER_SIM,
+		EXECUTIVE_BEFORE_SIM,
+		EXECUTIVE_AFTER_SIM,
+		BAND_BEFORE_SIM,
+		BAND_AFTER_SIM,
+		COMPLETION,
+		COMPLETE
+	}
 
 	public ReportGenerator(String workDir){
 		super(workDir);
@@ -166,7 +180,6 @@ public class ReportGenerator extends PsmContext {
 		// Parameters
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
 		TreeMap<String, String> props = new TreeMap<String, String>();
 //		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
@@ -181,6 +194,7 @@ public class ReportGenerator extends PsmContext {
 		logger.info("Creating RA ranges before simulation report");
 		try {
 			JasperPrint print = JasperFillManager.fillReport(reportStream, props, dataSource);
+			print.setName("ra_time_requested_report");
 			return print;
 		} catch (JRException e) {
 			e.printStackTrace();
@@ -196,7 +210,6 @@ public class ReportGenerator extends PsmContext {
 		try {
 			Thread.currentThread().join();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -208,41 +221,37 @@ public class ReportGenerator extends PsmContext {
 	 * @return A collection of beans containing the data of all ScheckBlocks.
 	 */
 
-	public JRDataSource getLstRangeAfterSimData(){
+	public JRDataSource getLstRangeAfterSimData(Results result){
 		JRBeanCollectionDataSource dataSource = null;
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		SchedBlockDao sbDao = (SchedBlockDao) ctx.getBean("sbDao");
-		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+		
 		ArrayList<SchedBlockReportBean> data = new ArrayList<SchedBlockReportBean>();
 		TreeMap<String, ArrayList<SchedBlockReportBean>> SBPerLST = new TreeMap<String, ArrayList<SchedBlockReportBean>>();
 		for(int i = 0; i < 24; i++)
 			SBPerLST.put(i + " - " + (i+1), new ArrayList<SchedBlockReportBean>());
-		List<Results> result = outDao.getResults();
-		for (Results r : result) {
-			for (ObservationProject p : r.getObservationProject()) {
-				for (SchedBlockResult sbr : p.getSchedBlock()) {
-					SchedBlock sb = sbDao.findById(SchedBlock.class, sbr.getOriginalId());
-					if (sb == null){
-						logger.warn("Trying to retrieve SchedBlock " + sbr.getOriginalId() + "returns and empty reference");
-						continue;
-					}
-					sbDao.hydrateSchedBlockObsParams(sb);
-					double ra = sb.getSchedulingConstraints()
-					.getRepresentativeTarget().getSource()
-					.getCoordinates().getRA() * 24 / 360;
-					for (int i = 0; i < 24; i++) {
-						if (ra >= i && ra <= (i + 1)) {
-							ArrayList<SchedBlockReportBean> list;
-							list = SBPerLST.get(i + " - " + (i + 1));
-							SchedBlockReportBean sbrb = new SchedBlockReportBean();
-							sbrb.setLstRange( determineLst( ra ) );
-							double execTime = (sbr.getEndDate().getTime() - sbr
-									.getStartDate().getTime()) / 1000.0 / 3600.0;
-							sbrb.setExecutionTime(execTime);
-							sbrb.setTotalExecutionTime(sbrb.getTotalExecutionTime() + execTime);
-							list.add(sbrb);
-							break;
-						}
+		for (ObservationProject p : result.getObservationProject()) {
+			for (SchedBlockResult sbr : p.getSchedBlock()) {
+				SchedBlock sb = sbDao.findById(SchedBlock.class, sbr.getOriginalId());
+				if (sb == null){
+					logger.warn("Trying to retrieve SchedBlock " + sbr.getOriginalId() + "returned an empty reference");
+					continue;
+				}
+				sbDao.hydrateSchedBlockObsParams(sb);
+				double ra = sb.getSchedulingConstraints().getRepresentativeTarget().getSource()
+						.getCoordinates().getRA() * 24 / 360;
+				for (int i = 0; i < 24; i++) {
+					if (ra >= i && ra <= (i + 1)) {
+						ArrayList<SchedBlockReportBean> list;
+						list = SBPerLST.get(i + " - " + (i + 1));
+						SchedBlockReportBean sbrb = new SchedBlockReportBean();
+						sbrb.setLstRange( determineLst( ra ) );
+						double execTime = (sbr.getEndDate().getTime() - sbr
+								.getStartDate().getTime()) / 1000.0 / 3600.0;
+						sbrb.setExecutionTime(execTime);
+						sbrb.setTotalExecutionTime(sbrb.getTotalExecutionTime() + execTime);
+						list.add(sbrb);
+						break;
 					}
 				}
 			}
@@ -258,28 +267,34 @@ public class ReportGenerator extends PsmContext {
 	 * The returned object can then be rendered to screen, or other media, such as PDF.
 	 * @return JasperPrint object with the generated report
 	 */
-	public JasperPrint createLstRangeAfterSimReport() {
+	public JasperPrint createLstRangeAfterSimReport(long id) {
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
 		TreeMap<String, String> props = new TreeMap<String, String>();
 		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
 		props.put("scientificTime", Double.toString( outDao.getResults().get(0).getScientificTime() ) );
-		props.put("seasonStart", formatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
-		props.put("seasonEnd", formatter.format( outDao.getResults().get(0).getObsSeasonEnd() ) );
+		props.put("seasonStart", dateFormatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
+		props.put("seasonEnd", dateFormatter.format( outDao.getResults().get(0).getObsSeasonEnd() ) );
 		props.put("title", "Right Ascension Distribution");
 		props.put("subtitle", "Observed time per RA range");
-		JRDataSource dataSource = getLstRangeAfterSimData();
+		JRDataSource dataSource = getLstRangeAfterSimData(outDao.getResult(id));
 		InputStream reportStream = getClass().getClassLoader().getResourceAsStream("alma/scheduling/psm/reports/lstRangesBeforeSim.jasper");
 		logger.info("Creating RA ranges after simulation report");
 		try {
 			JasperPrint print = JasperFillManager.fillReport(reportStream, props, dataSource);
+			print.setName("ra_time_used_report");
 			return print;
 		}catch (JRException e) {
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	public JasperPrint createLstRangeAfterSimReport() {
+		ApplicationContext ctx = ReportGenerator.getApplicationContext();
+		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+		return createLstRangeAfterSimReport(outDao.getLastResultId());
 	}
 
 	/** Pops up a report using Swing interface providad by JasperReports.
@@ -301,32 +316,28 @@ public class ReportGenerator extends PsmContext {
 	 * which contains only a brief summary of observation projects executions.
 	 * @return JRDataSource, a collection of ObsProjectReportsBean, with summary of executions.
 	 */
-	public JRDataSource getExecutiveAfterSimData() {
+	private JRDataSource getExecutiveAfterSimData(Results result) {
 		JRBeanCollectionDataSource dataSource = null;
-		ApplicationContext ctx = ReportGenerator.getApplicationContext();
-		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
 		TreeMap<String, ArrayList<ObsProjectReportBean>> OPPerExecutive = new TreeMap<String, ArrayList<ObsProjectReportBean>>();
 		ArrayList<ObsProjectReportBean> data = new ArrayList<ObsProjectReportBean>();
-		logger.info("Retrieving Data...");
-		List<Results> results = outDao.getResults();
-		logger.info("Processing Data...");
-		for(Results r: results)
-			for(ObservationProject op: r.getObservationProject()){
-				ObsProjectReportBean oprb = new ObsProjectReportBean();
-				oprb.setExecutive( op.getAffiliation().iterator().next().getExecutive() );
-				oprb.setExecutionTime( op.getExecutionTime() );
-				oprb.setGrade( op.getGrade() );
-				oprb.setScienceRank( op.getScienceRank() );
-				oprb.setScienceScore( op.getScienceScore() );
-				oprb.setStatus(op.getStatus().toString());
-				if( OPPerExecutive.containsKey( oprb.getExecutive() )){
-					OPPerExecutive.get( oprb.getExecutive() ).add( oprb );
-				}else{
-					ArrayList<ObsProjectReportBean> list = new ArrayList<ObsProjectReportBean>();
-					list.add( oprb );
-					OPPerExecutive.put( oprb.getExecutive(), list );
-				}
+		
+		for(ObservationProject op: result.getObservationProject()) {
+			ObsProjectReportBean oprb = new ObsProjectReportBean();
+			oprb.setExecutive( op.getAffiliation().iterator().next().getExecutive() );
+			oprb.setExecutionTime( op.getExecutionTime() );
+			oprb.setGrade( op.getGrade() );
+			oprb.setScienceRank( op.getScienceRank() );
+			oprb.setScienceScore( op.getScienceScore() );
+			oprb.setStatus(op.getStatus().toString());
+			if( OPPerExecutive.containsKey( oprb.getExecutive() )){
+				OPPerExecutive.get( oprb.getExecutive() ).add( oprb );
+			}else{
+				ArrayList<ObsProjectReportBean> list = new ArrayList<ObsProjectReportBean>();
+				list.add( oprb );
+				OPPerExecutive.put( oprb.getExecutive(), list );
 			}
+		}
+		
 		for( int i = 0; i < Executives.length ; i++ )
 			try {
 			data.addAll( OPPerExecutive.get( Executives[i] ) );
@@ -336,12 +347,19 @@ public class ReportGenerator extends PsmContext {
 		dataSource =  new JRBeanCollectionDataSource(data);
 		return dataSource;
 	}
+	
+	public JRDataSource getExecutiveAfterSimData(long id) {
+		ApplicationContext ctx = ReportGenerator.getApplicationContext();
+		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+		return getExecutiveAfterSimData(outDao.getResult(id));
+		
+	}
 
 	/** Creates the executive time allocation jasper report.
 	 * The returned object can then be rendered to screen, or other media, such as PDF.
 	 * @return JasperPrint object with the generated report
 	 */
-	public JasperPrint createExecutiveReport() {
+	public JasperPrint createExecutiveReport(long id) {
 		JasperPrint print = null;
 		InputStream reportStream = getClass().getClassLoader().getResourceAsStream(
 		"alma/scheduling/psm/reports/executiveReport.jasper");
@@ -349,26 +367,32 @@ public class ReportGenerator extends PsmContext {
 		// Parameters
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
 		TreeMap<String, String> props = new TreeMap<String, String>();
 		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
 		props.put("scientificTime", Double.toString( outDao.getResults().get(0).getScientificTime() ) );
-		props.put("seasonStart", formatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
-		props.put("seasonEnd", formatter.format( outDao.getResults().get(0).getObsSeasonEnd() ) );
+		props.put("seasonStart", dateFormatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
+		props.put("seasonEnd", dateFormatter.format( outDao.getResults().get(0).getObsSeasonEnd() ) );
 		props.put("title", "Executive Percentage Balance");
 		props.put("subtitle", "Observed time dedicated per executive");
 		synchronized (this) {
-			JRDataSource dataSource = getExecutiveAfterSimData();
+			JRDataSource dataSource = getExecutiveAfterSimData(id);
 			try {
 				print = JasperFillManager.fillReport(reportStream, props,
 						dataSource);
+				print.setName("executive_time_used_report");
 				return print;
 			} catch (JRException e) {
 				e.printStackTrace();
 			}
 		}
 		return print;
+	}
+	
+	public JasperPrint createExecutiveReport() {
+		ApplicationContext ctx = ReportGenerator.getApplicationContext();
+		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+		return createExecutiveReport(outDao.getLastResultId());
 	}
 
 	/** Pops up a report using Swing interface providad by JasperReports.
@@ -386,7 +410,6 @@ public class ReportGenerator extends PsmContext {
 
 	/**
 	 * Dummy method, implement the real report.   
-	 * TODO: implement the real report
 	 */
 	public void executiveBeforeSim() {
 		logger.info("Creating executive report");
@@ -400,17 +423,18 @@ public class ReportGenerator extends PsmContext {
 
 	/** Creates the report for the observation projects completion report.
 	 * This can then be rendered to different media. 
+	 * 
 	 * @return JasperPrint object containing the processed completion report.
 	 */
-	public JasperPrint createCompletionReport() {
+	public JasperPrint createCompletionReport(long id) {
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
 		TreeMap<String, String> props = new TreeMap<String, String>();
+		
 		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
-		props.put("seasonStart", formatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
-		props.put("seasonEnd", formatter.format( outDao.getResults().get(0).getObsSeasonEnd() ) );
+		props.put("seasonStart", dateFormatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
+		props.put("seasonEnd", dateFormatter.format( outDao.getResults().get(0).getObsSeasonEnd() ) );
 		props.put("title", "Observation Projects Completion");
 		props.put("subtitle", "Number of observation projects per executive");
 
@@ -418,15 +442,22 @@ public class ReportGenerator extends PsmContext {
 		InputStream reportStream = getClass().getClassLoader().getResourceAsStream(
 		"alma/scheduling/psm/reports/completionReport.jasper");
 		synchronized (this) {
-			JRDataSource dataSource = getExecutiveAfterSimData();
+			JRDataSource dataSource = getExecutiveAfterSimData(id);
 			try {
 				print = JasperFillManager.fillReport(reportStream, props, dataSource);
+				print.setName("completion_report");
 				return print;
 			} catch (JRException e) {
 				e.printStackTrace();
 			}
 		}
 		return print;
+	}
+	
+	public JasperPrint createCompletionReport() {
+		ApplicationContext ctx = ReportGenerator.getApplicationContext();
+		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+		return createCompletionReport(outDao.getLastResultId());
 	}
 
 	/** Pops up a window with a rendered version of the Observation Projects completion report.
@@ -448,6 +479,7 @@ public class ReportGenerator extends PsmContext {
 	 * The returned data is used by "createBandsBeforeSimReport()" to create the reports.
 	 * Data returned is a collection (JRDataSource), of SchedBlockReportBean,
 	 * which contains only a brief summary of scheduling blocks to be executed.
+	 * 
 	 * @return JRDataSource, a collection of SchedBlockReportBean, with summary of requests.
 	 */   
 	public JRDataSource getBandsBeforeSimData(){
@@ -507,13 +539,13 @@ public class ReportGenerator extends PsmContext {
 	public JasperPrint createBandsBeforeSimReport(){
 		// Parameters
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
-		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		ExecutiveDAO execDao = (ExecutiveDAO) ctx.getBean("execDao");
 
+		ObservingSeason currObsSeason = execDao.getCurrentSeason();
 		TreeMap<String, String> props = new TreeMap<String, String>();
 //		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
-//		props.put("seasonStart", formatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
-//		props.put("seasonEnd", formatter.format( outDao.getResults().get(0).getObsSeasonEnd() ) );
+		props.put("seasonStart", dateFormatter.format( currObsSeason.getStartDate() ) );
+		props.put("seasonEnd", dateFormatter.format( currObsSeason.getEndDate() ) );
 		props.put("title", "Frequency Bands Usage");
 		props.put("subtitle", "Requested time per frequency bands");
 		JRDataSource dataSource = getBandsBeforeSimData();
@@ -521,6 +553,7 @@ public class ReportGenerator extends PsmContext {
 		logger.info("Creating crowding report");
 		try {
 			JasperPrint print = JasperFillManager.fillReport(reportStream, props, dataSource);
+			print.setName("band_time_requested_report");
 			return print;
 		} catch (JRException e) {
 			e.printStackTrace();
@@ -540,11 +573,8 @@ public class ReportGenerator extends PsmContext {
 		}
 	}
 	
-
-	public JRDataSource getBandsAfterSimData() {
+	private JRDataSource getBandsAfterSimData(Results result) {
 		JRBeanCollectionDataSource dataSource = null;
-		ApplicationContext ctx = ReportGenerator.getApplicationContext();
-		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
 		ArrayList<SchedBlockReportBean> data = new ArrayList<SchedBlockReportBean>();
 		// Create inmediately the entries for bands, so we keep order (if we rely on DB, the may not be ordered
 		TreeMap<String, ArrayList<SchedBlockReportBean>> SBPerBand = new TreeMap<String, ArrayList<SchedBlockReportBean>>();
@@ -553,26 +583,22 @@ public class ReportGenerator extends PsmContext {
 			SBPerBand.put( determineBand( ReportGenerator.ReceiverBandsRange[i][0] + 0.1), list );
 		}		
 		
-		logger.info("Retrieving Data...");
-		List<Results> results = outDao.getResults();
-		logger.info("Processing Data...");
 		SchedBlockReportBean.totalExecutionTime = 0;
-		for (Results r : results)
-			for (ObservationProject op : r.getObservationProject()) {
-				for (SchedBlockResult sbr : op.getSchedBlock()) {
-					SchedBlockReportBean sbrb = new SchedBlockReportBean();
-					sbrb.setFrequency( sbr.getRepresentativeFrequency() );
-					sbrb.setBand( determineBand(sbr.getRepresentativeFrequency()) );
-					sbrb.setExecutionTime( sbr.getExecutionTime() );
-					
-					ArrayList<SchedBlockReportBean> list = SBPerBand.get( sbrb.getBand() );
-					if( list == null ){
-						logger.error("Frequency not in ALMA band currently managed: " + sbrb.getFrequency() );
-						continue;
-					}
-					list.add(sbrb);
+		for (ObservationProject op : result.getObservationProject()) {
+			for (SchedBlockResult sbr : op.getSchedBlock()) {
+				SchedBlockReportBean sbrb = new SchedBlockReportBean();
+				sbrb.setFrequency( sbr.getRepresentativeFrequency() );
+				sbrb.setBand( determineBand(sbr.getRepresentativeFrequency()) );
+				sbrb.setExecutionTime( sbr.getExecutionTime() );
+				
+				ArrayList<SchedBlockReportBean> list = SBPerBand.get( sbrb.getBand() );
+				if( list == null ){
+					logger.error("Frequency not in ALMA band currently managed: " + sbrb.getFrequency() );
+					continue;
 				}
+				list.add(sbrb);
 			}
+		}
 
 		Stack<ArrayList<SchedBlockReportBean>> tmpStack = new Stack<ArrayList<SchedBlockReportBean>>();
 		for (ArrayList<SchedBlockReportBean> list : SBPerBand.values())
@@ -584,24 +610,31 @@ public class ReportGenerator extends PsmContext {
 		dataSource = new JRBeanCollectionDataSource(data);
 		return dataSource;
 	}
+	
+	public JRDataSource getBandsAfterSimData(long id) {
+		ApplicationContext ctx = ReportGenerator.getApplicationContext();
+		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+		return getBandsAfterSimData(outDao.getResult(id));
+	}
 
 	/** Creates a project for band crowding data, after simulations.
 	 * This method returns a JasperPrint object, which can be used for rendering
 	 * the report to several different medias.
+	 * @param id the results used to create the report
 	 * @return JasperPrint object, containing the receiver band report after simulations.
 	 */
-	public JasperPrint createBandsAfterSimReport() {
+	public JasperPrint createBandsAfterSimReport(long id) {
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+
 
 		TreeMap<String, String> props = new TreeMap<String, String>();
 		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
-		props.put("seasonStart", formatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
-		props.put("seasonEnd", formatter.format( outDao.getResults().get(0).getObsSeasonEnd() ) );
+		props.put("seasonStart", dateFormatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
+		props.put("seasonEnd", dateFormatter.format( outDao.getResults().get(0).getObsSeasonEnd() ) );
 		props.put("title", "Receiver Bands Crowding");
 		props.put("subtitle", "Time observed per band");
-		JRDataSource dataSource = getBandsAfterSimData();
+		JRDataSource dataSource = getBandsAfterSimData(id);
 		InputStream reportStream = getClass().getClassLoader()
 		.getResourceAsStream(
 				"alma/scheduling/psm/reports/bandsBeforeSim.jasper");
@@ -610,12 +643,25 @@ public class ReportGenerator extends PsmContext {
 			try {
 				JasperPrint print = JasperFillManager.fillReport(reportStream,
 						props, dataSource);
+				print.setName("band_time_used_report");
 				return print;
 			} catch (JRException e) {
 				e.printStackTrace();
 				return null;
 			}
 		}
+	}
+	
+	/** 
+	 * Uses the very last result to create the report.
+	 * 
+	 * @see ReportGenerator#createBandsAfterSimReport(long)
+	 * @return JasperPrint object, containing the receiver band report after simulations.
+	 */
+	public JasperPrint createBandsAfterSimReport() {
+		ApplicationContext ctx = ReportGenerator.getApplicationContext();
+		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+		return createBandsAfterSimReport(outDao.getLastResultId());
 	}
 
 	/** Pops up a window with the Receiver bands report after simulation.
@@ -752,15 +798,21 @@ public class ReportGenerator extends PsmContext {
 		URL xslt = getClass().getClassLoader()
 			.getResource("alma/scheduling/psm/reports/general_report.xsl");
 		// TODO: Change names to a more characteristic name
-		String xmlIn = this.getOutputDirectory() + "/" +  "output_" +
-				result.getStartRealDate().getTime() + ".xml";
-		logger.debug("URL for xslt: " + xslt.toString());
-		
-		ByteArrayOutputStream os = new ByteArrayOutputStream();
-		FileInputStream is;
-		is = new FileInputStream(xmlIn);
-		XsltTransformer.transform( xslt.toString(), is, os );
-		return new ByteArrayInputStream(os.toByteArray());
+		try {
+			String xmlIn = this.getOutputDirectory() + "/" +  "output_" +
+					result.getStartRealDate().getTime() + ".xml";
+			logger.debug("URL for xslt: " + xslt.toString());
+			
+			ByteArrayOutputStream os = new ByteArrayOutputStream();
+			FileInputStream is;
+			is = new FileInputStream(xmlIn);
+			XsltTransformer.transform( xslt.toString(), is, os );
+			return new ByteArrayInputStream(os.toByteArray());
+		} catch (Exception ex) {
+			String html = "<html><title>Error. Report not found</title>" +
+					"<body><h1>The report you tried to obatain doesn't exist or it has been not yet created.</h1></body></html>";
+			return new ByteArrayInputStream(html.getBytes());
+		}
 	}
 	
 	public void createAllReports(){
@@ -812,8 +864,7 @@ public class ReportGenerator extends PsmContext {
 		Results lastResult = outDao.getResults().get(outDao.getResults().size()-1 );
 		Date date = lastResult.getStartRealDate();
 
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
-		String s = formatter.format(date);
+		String s = dateFormatter.format(date);
 
 		String base = this.getReportDirectory() + "/";
 		if( type == reportTypes.LST_BEFORE_SIM )
@@ -851,17 +902,6 @@ public class ReportGenerator extends PsmContext {
 				return new String( i + "-" + (i + 1) );
 		}
 		return new String("N/A");
-	}
-
-	private enum reportTypes {
-		LST_BEFORE_SIM,
-		LST_AFTER_SIM,
-		EXECUTIVE_BEFORE_SIM,
-		EXECUTIVE_AFTER_SIM,
-		BAND_BEFORE_SIM,
-		BAND_AFTER_SIM,
-		COMPLETION,
-		COMPLETE
 	}
 
 }
