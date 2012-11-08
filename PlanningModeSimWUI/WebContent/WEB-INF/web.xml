@@ -89,6 +89,25 @@
 		<servlet-name>XmlTimelineServlet</servlet-name>
 		<url-pattern>/servlets/xml/timeline</url-pattern>
 	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>FinalReportServlet</servlet-name>
+		<servlet-class>alma.scheduling.psm.web.report.FinalReportServlet</servlet-class>
+	</servlet> 
+	<servlet-mapping>
+		<servlet-name>FinalReportServlet</servlet-name>
+		<url-pattern>/servlets/html/final_report</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>ZippedReportsServlet</servlet-name>
+		<servlet-class>alma.scheduling.psm.web.report.ZippedReportsServlet</servlet-class>
+	</servlet> 
+	<servlet-mapping>
+		<servlet-name>ZippedReportsServlet</servlet-name>
+		<url-pattern>/servlets/get_reports</url-pattern>
+	</servlet-mapping>
+	
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 		<welcome-file>index.htm</welcome-file>
