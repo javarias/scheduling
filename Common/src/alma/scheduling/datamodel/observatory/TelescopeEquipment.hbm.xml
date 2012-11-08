@@ -116,6 +116,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
         <property name="endTime" column="END_TIME" type="timestamp"/>
         <property name="resolution" column="RESOLUTION" type="double"/>
         <property name="uvCoverage" column="UVCOVERAGE" type="double"/>
+        <property name="arrayName" column="ARRAY_NAME" type="string" />
+        <property name="configurationName" column="CONFIGURATION_NAME" type="string" />
+        <property name="numberOfAntennas" column="NUMBER_ANTENNAS" type="integer" />
+        <property name="minBaseline" column="MIN_BASELINE" type="double" />
+        <property name="maxBaseline" column="MAX_BASELINE" type="double" />
+        <property name="antennaDiameter" column="ANTENNA_DIAMETER" type="double" />
         <set name="antennaInstallations" table="ANTENNA_INSTALLATION" order-by="START_TIME asc">
             <key column="ID"/>
             <composite-element class="AntennaInstallation">
