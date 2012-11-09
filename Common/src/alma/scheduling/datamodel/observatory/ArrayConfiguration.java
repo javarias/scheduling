@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ArrayConfiguration.java,v 1.2 2012/11/02 21:47:43 javarias Exp $"
+ * "@(#) $Id: ArrayConfiguration.java,v 1.3 2012/11/09 17:40:17 javarias Exp $"
  */
 package alma.scheduling.datamodel.observatory;
 
@@ -43,10 +43,10 @@ public class ArrayConfiguration {
      * Used by array configuration lite version. In the future this should be replaced by
      * a complete list of antennas saved in {@link ArrayConfiguration#antennaInstallations}
      */
-    private int numberOfAntennas;
-    private double minBaseline;
-    private double maxBaseline;
-    private double antennaDiameter;
+    private Integer numberOfAntennas;
+    private Double minBaseline;
+    private Double maxBaseline;
+    private Double antennaDiameter;
 
     public ArrayConfiguration() {
     }
@@ -120,7 +120,7 @@ public class ArrayConfiguration {
 	 * @see ArrayConfiguration#numberOfAntennas
 	 * @param numberOfAntennas
 	 */
-	public int getNumberOfAntennas() {
+	public Integer getNumberOfAntennas() {
 		return numberOfAntennas;
 	}
 
@@ -128,31 +128,31 @@ public class ArrayConfiguration {
 	 * @see ArrayConfiguration#numberOfAntennas
 	 * @param numberOfAntennas
 	 */
-	public void setNumberOfAntennas(int numberOfAntennas) {
+	public void setNumberOfAntennas(Integer numberOfAntennas) {
 		this.numberOfAntennas = numberOfAntennas;
 	}
 
-	public double getMinBaseline() {
+	public Double getMinBaseline() {
 		return minBaseline;
 	}
 
-	public void setMinBaseline(double minBaseline) {
+	public void setMinBaseline(Double minBaseline) {
 		this.minBaseline = minBaseline;
 	}
 
-	public double getMaxBaseline() {
+	public Double getMaxBaseline() {
 		return maxBaseline;
 	}
 
-	public void setMaxBaseline(double maxBaseline) {
+	public void setMaxBaseline(Double maxBaseline) {
 		this.maxBaseline = maxBaseline;
 	}
 
-	public double getAntennaDiameter() {
+	public Double getAntennaDiameter() {
 		return antennaDiameter;
 	}
 
-	public void setAntennaDiameter(double antennaDiameter) {
+	public void setAntennaDiameter(Double antennaDiameter) {
 		this.antennaDiameter = antennaDiameter;
 	}
     

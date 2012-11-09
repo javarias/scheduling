@@ -64,8 +64,8 @@ public class ArrayConfigurationLiteReader extends BufferedReader {
 				tmp.setArrayName(fields[0].split("#")[0]);
 				tmp.setConfigurationName(fields[1].split("#")[0]);
 				tmp.setNumberOfAntennas(Integer.valueOf(fields[2].split("#")[0]));
-				tmp.setMinBaseline(Integer.valueOf(fields[3].split("#")[0]));
-				tmp.setMaxBaseline(Integer.valueOf(fields[4].split("#")[0]));
+				tmp.setMinBaseline(Double.valueOf(fields[3].split("#")[0]));
+				tmp.setMaxBaseline(Double.valueOf(fields[4].split("#")[0]));
 				tmp.setStartTime(dateFormatter.parse(fields[5].split("#")[0]));
 				tmp.setEndTime(dateFormatter.parse(fields[6].split("#")[0]));
 				ret.add(tmp);
