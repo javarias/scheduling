@@ -5,7 +5,10 @@
             <xs:sequence>
                 <xs:element name="TelescopeEquipment" type="TelescopeEquipmentT"/>
                 <xs:element name="EquipmentOperation" type="EquipmentOperationT"/>
-                <xs:element name="Array" type="ArrayConfigurationSetT"/>
+                <xs:choice maxOccurs="1" minOccurs="1">
+                	<xs:element name="Array" type="ArrayConfigurationSetT"/>
+                	<xs:element name="ArrayLite" type="ArrayConfigurationLiteSetT"/>
+                </xs:choice>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -174,6 +177,11 @@
             <xs:element name="ArrayConfiguration" type="ArrayConfigurationT" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
     </xs:complexType>
+    <xs:complexType name="ArrayConfigurationLiteSetT">
+    	<xs:sequence>
+    		<xs:element name="ArrayConfiguration" type="ArrayConfigurationLiteT" minOccurs="1" maxOccurs="unbounded"/>
+    	</xs:sequence>
+    </xs:complexType>
     <xs:complexType name="AntennaInstallationT">
         <xs:attribute name="startTime" type="xs:dateTime"/>
         <xs:attribute name="endTime" type="xs:dateTime"/>
@@ -188,5 +196,14 @@
         <xs:attribute name="endTime" type="xs:dateTime"/>
         <xs:attribute name="uvCoverage" type="xs:double"/>
         <xs:attribute name="resolution" type="xs:double"/>
+    </xs:complexType>
+    <xs:complexType name="ArrayConfigurationLiteT">
+    	<xs:attribute name="startTime" type="xs:dateTime" use="required"/>
+    	<xs:attribute name="endTime" type="xs:dateTime" use="required"/>
+    	<xs:attribute name="configurationName" type="xs:string" use="required"/>
+    	<xs:attribute name="arrayName" type="xs:string" use="required"/>
+    	<xs:attribute name="numberOfAntennas" type="xs:int" use="required"/>
+    	<xs:attribute name="minBaseLine" type="xs:double" use="required"/>
+    	<xs:attribute name="maxBaseLine" type="xs:double" use="required"/>
     </xs:complexType>
 </xs:schema>

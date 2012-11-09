@@ -48,5 +48,5 @@ public class ObservatoryDaoImpl extends GenericDaoImpl implements ObservatoryDao
         }
         return arrCnfs;
     }
-
+    
 }

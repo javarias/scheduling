@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlObservatoryDaoImpl.java,v 1.4 2011/03/17 22:56:29 javarias Exp $"
+ * "@(#) $Id: XmlObservatoryDaoImpl.java,v 1.5 2012/11/09 21:44:52 javarias Exp $"
  */
 package alma.scheduling.datamodel.observatory.dao;
 
@@ -54,6 +54,7 @@ import alma.scheduling.datamodel.observatory.ReceiverBand;
 import alma.scheduling.datamodel.observatory.TelescopeEquipment;
 import alma.scheduling.input.observatory.generated.AntennaInstallationT;
 import alma.scheduling.input.observatory.generated.AntennaT;
+import alma.scheduling.input.observatory.generated.ArrayConfigurationLiteT;
 import alma.scheduling.input.observatory.generated.ArrayConfigurationT;
 import alma.scheduling.input.observatory.generated.AssemblyContainerOperationT;
 import alma.scheduling.input.observatory.generated.EquipmentT;
@@ -145,26 +146,48 @@ public class XmlObservatoryDaoImpl implements XmlObservatoryDao {
                     targetEquip.getOperations().add(op);
                 }
                 // finally process the ArrayConfigurations
-                ArrayConfigurationT[] xmlACs = xmlRoot.getArray().getArrayConfiguration();
-                for (ArrayConfigurationT xmlAC : xmlACs) {
-                    ArrayConfiguration ac = new ArrayConfiguration();
-                    ac.setStartTime(xmlAC.getStartTime());
-                    ac.setEndTime(xmlAC.getEndTime());
-                    ac.setResolution(xmlAC.getResolution());
-                    ac.setUvCoverage(xmlAC.getUvCoverage());
-                    AntennaInstallationT[] xmlAIs = xmlAC.getAntennaInstallation();
-                    for (AntennaInstallationT xmlAI : xmlAIs) {
-                        AntennaInstallation ai = new AntennaInstallation();
-                        ai.setStartTime(xmlAI.getStartTime());
-                        ai.setEndTime(xmlAI.getEndTime());
-                        Set<AssemblyContainer> acs = new HashSet<AssemblyContainer>(equipments.values());
-                        Antenna a = (Antenna) searchEquipment(xmlAI.getAntenna(), acs);
-                        ai.setAntenna(a);
-                        Pad p = (Pad) searchEquipment(xmlAI.getPad(), acs);
-                        ai.setPad(p);
-                        ac.getAntennaInstallations().add(ai);
-                    }
-                    arrayConfigurations.add(ac);
+                if (xmlRoot.getObservatoryCharacteristicsChoice().getArray() != null) {
+                ArrayConfigurationT[] xmlACs = xmlRoot.getObservatoryCharacteristicsChoice().getArray().getArrayConfiguration();
+	                for (ArrayConfigurationT xmlAC : xmlACs) {
+	                    ArrayConfiguration ac = new ArrayConfiguration();
+	                    ac.setStartTime(xmlAC.getStartTime());
+	                    ac.setEndTime(xmlAC.getEndTime());
+	                    ac.setResolution(xmlAC.getResolution());
+	                    ac.setUvCoverage(xmlAC.getUvCoverage());
+	                    AntennaInstallationT[] xmlAIs = xmlAC.getAntennaInstallation();
+	                    for (AntennaInstallationT xmlAI : xmlAIs) {
+	                        AntennaInstallation ai = new AntennaInstallation();
+	                        ai.setStartTime(xmlAI.getStartTime());
+	                        ai.setEndTime(xmlAI.getEndTime());
+	                        Set<AssemblyContainer> acs = new HashSet<AssemblyContainer>(equipments.values());
+	                        Antenna a = (Antenna) searchEquipment(xmlAI.getAntenna(), acs);
+	                        ai.setAntenna(a);
+	                        Pad p = (Pad) searchEquipment(xmlAI.getPad(), acs);
+	                        ai.setPad(p);
+	                        ac.getAntennaInstallations().add(ai);
+	                    }
+	                    arrayConfigurations.add(ac);
+	                }
+                }
+                else if (xmlRoot.getObservatoryCharacteristicsChoice().getArrayLite() != null) {
+                	ArrayConfigurationLiteT[] xmlACs = xmlRoot.getObservatoryCharacteristicsChoice().getArrayLite().getArrayConfiguration();
+                	for (ArrayConfigurationLiteT xmlAC: xmlACs) {
+                		ArrayConfiguration ac = new ArrayConfiguration();
+                		ac.setStartTime(xmlAC.getStartTime());
+                		ac.setEndTime(xmlAC.getEndTime());
+                		ac.setConfigurationName(xmlAC.getConfigurationName());
+                		ac.setArrayName(xmlAC.getArrayName());
+                		ac.setNumberOfAntennas(xmlAC.getNumberOfAntennas());
+                		ac.setMinBaseline(xmlAC.getMinBaseLine());
+                		ac.setMaxBaseline(xmlAC.getMaxBaseLine());
+                		if (ac.getArrayName().toLowerCase().equals("12-m"))
+                			ac.setAntennaDiameter(12.0);
+                		else if (ac.getArrayName().toLowerCase().equals("7-m"))
+                			ac.setAntennaDiameter(7.0);
+                		else
+                			ac.setAntennaDiameter(12.0);
+                    	arrayConfigurations.add(ac);
+                	}
                 }
             } catch (MarshalException e) {
                 // TODO Auto-generated catch block
