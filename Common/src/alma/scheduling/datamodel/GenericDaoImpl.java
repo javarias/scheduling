@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: GenericDaoImpl.java,v 1.20 2012/11/14 21:49:00 javarias Exp $"
+ * "@(#) $Id: GenericDaoImpl.java,v 1.21 2012/11/14 21:56:16 javarias Exp $"
  */
 package alma.scheduling.datamodel;
 
@@ -32,6 +32,7 @@ import java.util.List;
 import org.hibernate.Query;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.datamodel.obsproject.ObsProject;
@@ -124,7 +125,7 @@ public abstract class GenericDaoImpl extends HibernateDaoSupport implements Gene
         return (List<T>)getHibernateTemplate().find("from " + obj.getName());
     }
     
-    @Transactional(readOnly=false, isolation=Isolation.SERIALIZABLE)
+    @Transactional(readOnly=false, isolation=Isolation.SERIALIZABLE, propagation=Propagation.REQUIRES_NEW)
     public <T> void deleteAll(Class<T> clazz) {
     	super.getSession().createQuery("delete from " + clazz.getCanonicalName()).executeUpdate();
     }
