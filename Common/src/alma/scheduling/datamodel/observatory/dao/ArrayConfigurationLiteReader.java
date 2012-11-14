@@ -70,6 +70,12 @@ public class ArrayConfigurationLiteReader extends BufferedReader {
 				tmp.setEndTime(dateFormatter.parse(fields[6].split("#")[0]));
 				tmp.setResolution(0.0);
 				tmp.setUvCoverage(0.0);
+        		if (tmp.getArrayName().toLowerCase().equals("12-m"))
+        			tmp.setAntennaDiameter(12.0);
+        		else if (tmp.getArrayName().toLowerCase().equals("7-m"))
+        			tmp.setAntennaDiameter(7.0);
+        		else
+        			tmp.setAntennaDiameter(12.0);
 				ret.add(tmp);
 			} catch (Exception ex) {
 				throw new CannotParseDataException(lineno, "Line: " + line, ex);
