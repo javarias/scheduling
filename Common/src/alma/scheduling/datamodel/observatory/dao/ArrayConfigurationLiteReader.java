@@ -68,6 +68,8 @@ public class ArrayConfigurationLiteReader extends BufferedReader {
 				tmp.setMaxBaseline(Double.valueOf(fields[4].split("#")[0]));
 				tmp.setStartTime(dateFormatter.parse(fields[5].split("#")[0]));
 				tmp.setEndTime(dateFormatter.parse(fields[6].split("#")[0]));
+				tmp.setResolution(0.0);
+				tmp.setUvCoverage(0.0);
 				ret.add(tmp);
 			} catch (Exception ex) {
 				throw new CannotParseDataException(lineno, "Line: " + line, ex);
