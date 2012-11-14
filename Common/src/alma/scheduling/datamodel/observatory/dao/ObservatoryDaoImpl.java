@@ -30,7 +30,7 @@ import alma.scheduling.datamodel.GenericDaoImpl;
 import alma.scheduling.datamodel.observatory.AntennaInstallation;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 
-@Transactional(readOnly=true)
+@Transactional
 public class ObservatoryDaoImpl extends GenericDaoImpl implements ObservatoryDao {
 
     @Override
@@ -50,6 +50,7 @@ public class ObservatoryDaoImpl extends GenericDaoImpl implements ObservatoryDao
     }
 
 	@Override
+	@Transactional(readOnly=false)
 	public void deleteAllArrayConfigurations() {
 		super.deleteAll(ArrayConfiguration.class);
 	}
