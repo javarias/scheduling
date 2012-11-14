@@ -30,10 +30,11 @@ import alma.scheduling.datamodel.GenericDaoImpl;
 import alma.scheduling.datamodel.observatory.AntennaInstallation;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 
-@Transactional
+
 public class ObservatoryDaoImpl extends GenericDaoImpl implements ObservatoryDao {
 
     @Override
+    @Transactional
     public List<ArrayConfiguration> findArrayConfigurations() {
         // hydrate the antenna installations
         List<ArrayConfiguration> arrCnfs = findAll(ArrayConfiguration.class);
