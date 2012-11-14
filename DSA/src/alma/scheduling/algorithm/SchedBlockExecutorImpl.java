@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockExecutorImpl.java,v 1.18 2012/09/11 15:48:32 javarias Exp $"
+ * "@(#) $Id: SchedBlockExecutorImpl.java,v 1.19 2012/11/14 23:14:12 javarias Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -126,13 +126,18 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
                       .getSource()
                       .getCoordinates()
                       .getDec();
+        //Check if the antennas has been declared in the configuration
+        //Otherwise use the value put in the array configuration
         int numAnt = arrCnf.getAntennaInstallations().size();
-        double antDiamMtr = 4.0;
-        Set<AntennaInstallation> antInst = arrCnf.getAntennaInstallations();
-        for (Iterator<AntennaInstallation> iter = antInst.iterator(); iter.hasNext();) {
-            AntennaInstallation ai = iter.next();
-            antDiamMtr = ai.getAntenna().getDiameter(); // just pick the first one
-        }
+        if (numAnt == 0)
+        	numAnt = arrCnf.getNumberOfAntennas();
+        double antDiamMtr = arrCnf.getAntennaDiameter();
+        
+//        Set<AntennaInstallation> antInst = arrCnf.getAntennaInstallations();
+//        for (Iterator<AntennaInstallation> iter = antInst.iterator(); iter.hasNext();) {
+//            AntennaInstallation ai = iter.next();
+//            antDiamMtr = ai.getAntenna().getDiameter(); // just pick the first one
+//        }
         double latitudeDeg = configDao.getConfiguration().getArrayCenterLatitude();
         TemperatureHistRecord tr = weatherDao.getTemperatureForTime(ut);
         HumidityHistRecord hr = weatherDao.getHumidityForTime(ut);
