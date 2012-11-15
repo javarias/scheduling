@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlExecutiveDaoImpl.java,v 1.13 2012/09/10 22:58:35 javarias Exp $"
+ * "@(#) $Id: XmlExecutiveDaoImpl.java,v 1.14 2012/11/15 22:10:00 javarias Exp $"
  */
 package alma.scheduling.datamodel.executive.dao;
 
@@ -235,9 +235,9 @@ public class XmlExecutiveDaoImpl implements XmlExecutiveDAO {
             PI tmp = copyPI(data.getPI(i), execm);
             pi.add(tmp);
         }
-
         exec.addAll(execm.values());
         os.addAll(osm.values());
+        logger.info("Found: " + pi.size() + " PI," + exec.size() + " Executives and " + os.size() + " Observing Seasons");
 
     }
 
