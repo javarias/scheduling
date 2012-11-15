@@ -25,6 +25,8 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.datamodel.config.Configuration;
@@ -89,7 +91,7 @@ public class DataLinker implements DataLoader {
     }
 
     @Override
-    @Transactional( readOnly=false)
+    @Transactional( readOnly=false, propagation=Propagation.MANDATORY, isolation=Isolation.SERIALIZABLE)
     public void load() throws InvalidScienceGradeConfig {
         List<ObsProject>prjs = obsPrjDao.getObsProjectsOrderBySciRank();
         long i = 0;
