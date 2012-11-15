@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutiveDaoImpl.java,v 1.29 2012/06/26 17:59:26 javarias Exp $"
+ * "@(#) $Id: ExecutiveDaoImpl.java,v 1.30 2012/11/15 21:50:20 javarias Exp $"
  */
 package alma.scheduling.datamodel.executive.dao;
 
@@ -166,7 +166,7 @@ public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO {
     @Transactional(readOnly=false, isolation=Isolation.SERIALIZABLE, propagation=Propagation.REQUIRES_NEW)
     public void saveObservingSeasonsAndExecutives(List<ObservingSeason> seasons,
             List<Executive> executives) {
-    	logger.debug("Storing into DB the season and executives...");
+    	logger.info("Storing into DB the season and executives...");
         List<ExecutivePercentage> eps = new ArrayList<ExecutivePercentage>();
         ArrayList<ObservingSeason> ss = new ArrayList<ObservingSeason>();
         List<Executive> execs = new ArrayList<Executive>();

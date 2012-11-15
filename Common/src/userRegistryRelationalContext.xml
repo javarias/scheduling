@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--  $Id: userRegistryRelationalContext.xml,v 1.1 2012/11/15 18:08:22 javarias Exp $  -->
+<!--  $Id: userRegistryRelationalContext.xml,v 1.2 2012/11/15 21:50:20 javarias Exp $  -->
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:util="http://www.springframework.org/schema/util"
@@ -27,16 +27,11 @@
 		apply DbConfig settings to the sessionFactory -->
     <bean class="alma.obops.utils.config.SpringDbConfigPostProcessor"/>
     
-	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
-		<property name="annotatedClasses">
-		<list>
-			<value>alma.obops.dam.userreg.domain.HibernateInstitution</value>
-			<value>alma.obops.dam.userreg.domain.PortalAccount</value>
-			<value>alma.obops.dam.userreg.domain.TrustedAccount</value>
-			<value>alma.obops.dam.userreg.domain.ProjectDelegation</value>
-                	<value>alma.obops.dam.userreg.domain.Role</value>
-                	<value>alma.obops.dam.userreg.domain.Country</value>                
-		</list>
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="mappingResources">
+			<list>
+				<value>alma/scheduling/datamodel/executive/obopsUserReg.hbm.xml</value>             
+			</list>
 		</property>
         <property name="hibernateProperties">
             <props>

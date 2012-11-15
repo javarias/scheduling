@@ -1,108 +1,108 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-ALMA - Atacama Large Millimeter Array
-Copyright (c) AUI - Associated Universities Inc., 2011
-(in the framework of the ALMA collaboration).
-All rights reserved.
-
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
-
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
--->
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+                                   "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- ALMA - Atacama Large Millimeter Array Copyright (c) AUI - Associated 
+	Universities Inc., 2011 (in the framework of the ALMA collaboration). All 
+	rights reserved. This library is free software; you can redistribute it and/or 
+	modify it under the terms of the GNU Lesser General Public License as published 
+	by the Free Software Foundation; either version 2.1 of the License, or (at 
+	your option) any later version. This library is distributed in the hope that 
+	it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
+	of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser 
+	General Public License for more details. You should have received a copy 
+	of the GNU Lesser General Public License along with this library; if not, 
+	write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, 
+	Boston, MA 02111-1307 USA -->
 <hibernate-mapping package="alma.scheduling.datamodel.executive">
-
-    <class name="Executive" table="EXECUTIVE">
-    	<id name="id" column="ID">            
-    		<generator class="native"/>
-    	</id>
-    	<property name="name" column="NAME" type="string"/>
-        <property name="defaultPercentage" column="DEFAULT_PERCENTAGE" type="float"/>
-		<set name="executivePercentage" inverse="true">
+	<class name="Executive" table="EXECUTIVE">
+		<id column="ID" name="id">
+			<generator class="native" />
+		</id>
+		<property column="NAME" generated="never" lazy="false" name="name"
+			type="string" />
+		<property column="DEFAULT_PERCENTAGE" generated="never" lazy="false"
+			name="defaultPercentage" type="float" />
+		<set inverse="true" name="executivePercentage" sort="unsorted">
 			<key column="EXECUTIVE_ID" />
 			<one-to-many class="ExecutivePercentage" />
 		</set>
 	</class>
-	
 	<class name="ObservingSeason" table="OBSERVING_SEASON">
-		<id name="id" column="ID">            
-			<generator class="native"/>
+		<id column="ID" name="id">
+			<generator class="native" />
 		</id>
-		<property name="name" type="string" column="NAME"/>
-		<property name="startDate" type="timestamp" column="START_DATE"/>
-		<property name="endDate" type="timestamp" column="END_DATE"/>
-		<set name="executivePercentage" inverse="true">
+		<property column="NAME" generated="never" lazy="false" name="name"
+			type="string" />
+		<property column="START_DATE" generated="never" lazy="false"
+			name="startDate" type="timestamp" />
+		<property column="END_DATE" generated="never" lazy="false"
+			name="endDate" type="timestamp" />
+		<set inverse="true" name="executivePercentage" sort="unsorted">
 			<key column="SEASON_ID" />
 			<one-to-many class="ExecutivePercentage" />
 		</set>
 		<component class="TimeInterval" name="observingInterval">
-			<property name="startTime" column="DAILY_INTERVAL_START_TIME" type="long"/>
-			<property name="duration" column="DAILY_INTERVAL_DURATION" type="long"/>
+			<property column="DAILY_INTERVAL_START_TIME" generated="never"
+				lazy="false" name="startTime" type="long" />
+			<property column="DAILY_INTERVAL_DURATION" generated="never"
+				lazy="false" name="duration" type="long" />
 		</component>
 	</class>
-	
 	<class name="ExecutivePercentage" table="EXECUTIVE_PERCENTAGE">
-		<composite-id name="id" class="ExecutivePercentage$Id">
-			<key-property name="executiveId" access="field" column="EXECUTIVE_ID"/>
-			<key-property name="seasonId" access="field" column="SEASON_ID"/>
-		</composite-id>		
-		<property name="percentage" type="float" column="PERCENTAGE"/>
-		<property name="totalObsTimeForSeason" type="double" column="TOTAL_OBS_TIME_FOR_SEASON" />
-		<property name="remainingObsTime" type="double" column="REMAINING_OBSTIME" />
-		<many-to-one name="executive" column="EXECUTIVE_ID" not-null="true" insert="false" update="false"/>
-		<many-to-one name="season" column="SEASON_ID" not-null="true" insert="false" update="false"/>
+		<composite-id class="ExecutivePercentage$Id" mapped="false"
+			name="id" unsaved-value="undefined">
+			<key-property access="field" column="EXECUTIVE_ID" name="executiveId" />
+			<key-property access="field" column="SEASON_ID" name="seasonId" />
+		</composite-id>
+		<property column="PERCENTAGE" generated="never" lazy="false"
+			name="percentage" type="float" />
+		<property column="TOTAL_OBS_TIME_FOR_SEASON" generated="never"
+			lazy="false" name="totalObsTimeForSeason" type="double" />
+		<property column="REMAINING_OBSTIME" generated="never" lazy="false"
+			name="remainingObsTime" type="double" />
+		<many-to-one column="EXECUTIVE_ID" insert="false" name="executive"
+			not-null="true" update="false" />
+		<many-to-one column="SEASON_ID" insert="false" name="season"
+			not-null="true" update="false" />
 	</class>
-	
 	<class name="ExecutiveTimeSpent" table="EXECUTIVE_TIME_SPENT">
 		<id column="ID" type="long">
-			<generator class="native"/>
+			<generator class="native" />
 		</id>
-		<property name="timeSpent" type="float" column="TIME_SPENT" not-null="true"/>
-		<property name="sbId" type="long" column="SB_ID" not-null="true"/>
-		<many-to-one name="observingSeason" column="OBS_SEASON_ID" 
-        	 not-null="true" class="ObservingSeason"/>
-        <many-to-one name="executive" column="EXECUTIVE_NAME" 
-        	 not-null="true" class="Executive"/>
+		<property column="TIME_SPENT" generated="never" lazy="false"
+			name="timeSpent" not-null="true" type="float" />
+		<property column="SB_ID" generated="never" lazy="false" name="sbId"
+			not-null="true" type="long" />
+		<many-to-one class="ObservingSeason" column="OBS_SEASON_ID"
+			name="observingSeason" not-null="true" />
+		<many-to-one class="Executive" column="EXECUTIVE_NAME"
+			name="executive" not-null="true" />
 	</class>
-		
 	<class name="PI" table="PI">
-		<id name="id" column="ID" type="long">
-			<generator class="native"/>
+		<id column="ID" name="id" type="long">
+			<generator class="native" />
 		</id>
-		<property name="email" column="EMAIL" type="string"/>
-		<property name="name" column="NAME" type="string"/>
-		<set name="PIMembership" table="PI_MEMBERSHIP" cascade="save-update,lock, delete, delete-orphan">
+		<property column="EMAIL" generated="never" lazy="false" name="email"
+			type="string" />
+		<property column="NAME" generated="never" lazy="false" name="name"
+			type="string" />
+		<set cascade="save-update,lock, delete, delete-orphan" name="PIMembership"
+			optimistic-lock="false" sort="unsorted" table="PI_MEMBERSHIP">
 			<key column="PI_ID" />
 			<one-to-many class="PIMembership" />
 		</set>
 	</class>
-	
-	<class name="PIMembership" table="PI_MEMBERSHIP" >
-		<id	column="ID" type="long">
-			<generator class="native"/>
+	<class name="PIMembership" table="PI_MEMBERSHIP">
+		<id column="ID" type="long">
+			<generator class="native" />
 		</id>
-		<property name="membershipPercentage" type="float" column="PERCENTAGE" />
-		<many-to-one name="executive" column="EXECUTIVE_NAME" 
-        	not-null="true" class="Executive"/>
+		<property column="PERCENTAGE" generated="never" lazy="false"
+			name="membershipPercentage" type="float" />
+		<many-to-one class="Executive" column="EXECUTIVE_NAME"
+			name="executive" not-null="true" />
 	</class>
-	
-  	<query name="ExecutiveTimeSpent.findBySeasonAndExecutive">
-		<![CDATA[
-			from ExecutiveTimeSpent ets 
-			where ets.observingSeason.startDate = ? and ets.executive.name = ? 
-		]]>
+	<query name="ExecutiveTimeSpent.findBySeasonAndExecutive">
+		from ExecutiveTimeSpent ets
+		where ets.observingSeason.startDate = ? and ets.executive.name = ?
 	</query>
-	
-</hibernate-mapping>    
+</hibernate-mapping>
