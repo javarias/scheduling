@@ -21,7 +21,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.7 2012/10/23 17:16:37 javarias Exp $"
+# "@(#) $Id: Makefile,v 1.8 2012/11/19 22:11:42 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -86,7 +86,7 @@ lllll_OBJECTS   =
 #
 # Scripts (public and local)
 # ----------------------------
-SCRIPTS         = 
+SCRIPTS         =
 SCRIPTS_L       =
 
 #
@@ -98,7 +98,7 @@ TCL_SCRIPTS_L   =
 #
 # Python stuff (public and local)
 # ----------------------------
-PY_SCRIPTS         =
+PY_SCRIPTS         = schedulingUpdateProject
 PY_SCRIPTS_L       =
 
 PY_MODULES         =

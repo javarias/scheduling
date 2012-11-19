@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
- * $Id: ArchivePoller.java,v 1.18 2012/10/23 16:34:30 javarias Exp $
+ * $Id: ArchivePoller.java,v 1.19 2012/11/19 22:11:42 javarias Exp $
  */
 
 package alma.scheduling.archiveupd.functionality;
@@ -60,7 +60,7 @@ import alma.scheduling.utils.ErrorHandling;
 /**
  *
  * @author dclarke
- * $Id: ArchivePoller.java,v 1.18 2012/10/23 16:34:30 javarias Exp $
+ * $Id: ArchivePoller.java,v 1.19 2012/11/19 22:11:42 javarias Exp $
  */
 public class ArchivePoller implements Observer{
 
@@ -553,6 +553,77 @@ public class ArchivePoller implements Observer{
 		inDao.getNotifer().notifyEvent(event);
 		inDao.tidyUp();
     }
+    
+	
+	private void refreshObsProject(String obsPrjUid, Date since) {
+		logger.info("Starting polling of ObsProject " + obsPrjUid);
+    	
+    	Phase2XMLStoreProjectDao inDao;
+		try {
+			inDao = new Phase2XMLStoreProjectDao(containerServices);
+		} catch (Exception e) {
+			handler.severe(String.format(
+					"Error creating DAO for ALMA project store - %s",
+					e.getMessage()), e);
+			return;
+		}
+    	List<String> newOrModifiedIds = new ArrayList<String>();
+		List<String> deletedIds = new ArrayList<String>();
+		try {
+			inDao.getObsProjectChanges(since, newOrModifiedIds, deletedIds);
+		} catch (DAOException e) {
+			handler.severe(String.format(
+					"Error getting new projects from ALMA project store - %s",
+					e.getMessage()), e);
+			return;
+		}
+		//Check if the project is in any of the lists
+		//if not added to the modified projects list because it has been  inactive for a while
+		if (!(deletedIds.contains(obsPrjUid) || newOrModifiedIds.contains(obsPrjUid)))
+			newOrModifiedIds.add(obsPrjUid);
+		
+    	List<ObsProject> newProjects;
+		try {
+			newProjects = inDao.getSomeObsProjects(newOrModifiedIds);
+		} catch (DAOException e) {
+			handler.severe(String.format(
+					"Error getting projects from ALMA project store - %s",
+					e.getMessage()), e);
+			return;
+		}
+		final int deleted = deleteProjects(deletedIds);
+		for(ObsProject prj: newProjects)
+			linkData(prj);
+		logger.info("Checking for entities already stored in SWDB");
+		deleteExistingProjectsInSWDB(newProjects);
+		if (newProjects.size() > 0) {
+			ProjectImportEvent event = new ProjectImportEvent();
+			event.setEntityId("Saving Converted Projects to SWDB");
+			event.setTimestamp(new Date());
+			event.setStatus(ImportStatus.STATUS_INFO);
+			event.setEntityType("<html><i>none</i></html>");
+			event.setDetails("About to save: " + newProjects.size()
+					+ " Projects");
+			inDao.getNotifer().notifyEvent(event);
+		}
+    	obsProjectDao.saveOrUpdate(newProjects);
+    	logger.info(String.format(
+    			"%d new or modified project%s, %d project%s removed",
+    			newProjects.size(),
+    			newProjects.size()==1? "": "s",
+    			deleted,
+    			deleted==1? "": "s"));
+    	logNumbers();
+    	
+		ProjectImportEvent event = new ProjectImportEvent();
+		event.setEntityId("Incremental Poll Archive Completed");
+		event.setTimestamp(new Date());
+		event.setStatus(ImportStatus.STATUS_INFO);
+		event.setEntityType("<html><i>none</i></html>");
+		event.setDetails("");
+		inDao.getNotifer().notifyEvent(event);
+		inDao.tidyUp();
+	}
 	/* End Incremental Polling of the ALMA Archives
 	 * ============================================================= */
 
@@ -607,6 +678,14 @@ public class ArchivePoller implements Observer{
 			pollerBusy = false;
 		}
 	}
+	
+	public void pollObsProject(String obsPrjUid) {
+		synchronized(this) {
+			Date lastUpdate = lastRefresh(false);
+			refreshObsProject(obsPrjUid, lastUpdate);
+		}
+		
+	}
     
     public void deregisterCallback(String arg0) {
     	synchronized(callbacks){
@@ -649,6 +728,7 @@ public class ArchivePoller implements Observer{
 				deregisterCallback(callback);
 		}
 	}
+
 
 	/* End External interface
 	 * ============================================================= */

@@ -123,6 +123,15 @@ public class ArchiveUpdaterImpl implements ComponentLifecycle,
 		pollInterval = seconds * 1000;
 		loop.interrupt();
 	}
+	
+	@Override
+	public void refreshObsProject(String obsPrjUid) {
+		getPoller(m_containerServices);
+		if (poller != null) {
+			m_logger.info("Refreshing ObsProject " + obsPrjUid);
+			poller.pollObsProject(obsPrjUid);
+		}
+	}
 
 //	@Override
 //	public int getPollIntervalInSecs() {

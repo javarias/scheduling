@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * $Id: SchedulingArchiveUpdater.idl,v 1.4 2011/03/25 15:30:28 ntroncos Exp $
+ * $Id: SchedulingArchiveUpdater.idl,v 1.5 2012/11/19 22:11:42 javarias Exp $
  */
 
 #ifndef _SCHEDULING_ARCHIVE_UPDATER_IDL_
@@ -91,6 +91,8 @@ module scheduling {
 		void registerCallback(in string name, in ArchiveUpdaterCallback callback);
 	
 		void deregisterCallback(in string name);
+
+		void refreshObsProject(in string uid);
 	
     };
 
