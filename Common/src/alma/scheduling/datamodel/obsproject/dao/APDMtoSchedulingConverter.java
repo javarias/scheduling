@@ -62,6 +62,7 @@ import alma.scheduling.datamodel.helpers.ConversionException;
 import alma.scheduling.datamodel.helpers.FrequencyConverter;
 import alma.scheduling.datamodel.helpers.SensitivityConverter;
 import alma.scheduling.datamodel.helpers.TimeConverter;
+import alma.scheduling.datamodel.obsproject.ArrayType;
 import alma.scheduling.datamodel.obsproject.FieldSource;
 import alma.scheduling.datamodel.obsproject.GenericObservingParameters;
 import alma.scheduling.datamodel.obsproject.ObsProject;
@@ -906,6 +907,8 @@ public class APDMtoSchedulingConverter {
 						schedBlock.getSchedulingConstraints()
 						    .setSchedBlockMode(determineSchedBlockMode(
 						    		apdmSB, representativeTargetId));
+						schedBlock.getObsUnitControl().setArrayRequested(
+								determineArrayType(apdmSB, representativeTargetId));
 					} else {
 						throw new ConversionException(
 									"Cannot find representative target");
@@ -1080,6 +1083,27 @@ public class APDMtoSchedulingConverter {
 		return result;
 	}
 
+	private ArrayType determineArrayType (alma.entity.xmlbinding.schedblock.SchedBlock apdmSB,
+			String targetName) {
+		final alma.entity.xmlbinding.schedblock.TargetT apdmTarget = findTarget(
+				apdmSB, targetName);
+		final String spectralSpecName = apdmTarget
+				.getAbstractInstrumentSpecRef().getPartId();
+		final alma.entity.xmlbinding.schedblock.SpectralSpecT apdmSpectralSpec = findSpectralSpec(
+				apdmSB, spectralSpecName);
+
+		if (apdmSpectralSpec != null) {
+			final SpectralSpecTChoice choice = apdmSpectralSpec.getSpectralSpecTChoice();
+			if (choice.getACACorrelatorConfiguration() != null)
+				return ArrayType.ACA;
+			if (choice.getBLCorrelatorConfiguration() != null)
+				return ArrayType.TWELVE_M;
+			if (apdmSpectralSpec.getSquareLawSetup() != null)
+				return ArrayType.TP_ARRAY;
+		}
+		return null;
+	}
+	
 	private SchedBlockMode determineSchedBlockMode(
 			alma.entity.xmlbinding.schedblock.SchedBlock apdmSB,
 			String                                       targetName) {
