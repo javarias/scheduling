@@ -13,27 +13,29 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 
-import alma.obops.dam.userreg.config.UserregContextFactory;
+import alma.obops.dam.userreg.dao.PortalAccountDao;
+import alma.obops.dam.userreg.dao.PortalAccountDaoRelationalImpl;
 import alma.obops.dam.userreg.domain.PortalAccount;
+import alma.obsprep.ot.userdb.userregistry.UserRegistryClientFactory;
 import alma.scheduling.input.executive.generated.PI;
 import alma.scheduling.input.executive.generated.PIMembership;
 
 public class UserRegistryDaoImpl implements UserRegistryDao{
 
-	private UserregContextFactory factory;
+	private UserRegistryClientFactory factory;
 	
 	public UserRegistryDaoImpl() {
-		factory = UserregContextFactory.INSTANCE;
+		factory = UserRegistryClientFactory.getInstance();
 		factory.init("userRegistryRelationalContext.xml", Logger.getAnonymousLogger());
 	}
 	
 	@Override
 	public List<PI> getAllPI() {
-		SortedSet<PortalAccount> accounts = factory.getPortalAccountDao().getAllAccounts();
+		SortedSet<PortalAccount> accounts = ((PortalAccountDao)factory.getBean("portalAccountDao")).getAllAccounts();
 		ArrayList<PI> retVal = new ArrayList<PI>(accounts.size());
 		for (PortalAccount acc: accounts) {
 			PI pi = new PI();
-			pi.setEmail(acc.getEmail());
+			pi.setEmail(acc.getId());
 			pi.setName(acc.getFirstName() + " " + acc.getLastName());
 			PIMembership pim[] = new PIMembership[1];
 			pim[0] = new PIMembership();

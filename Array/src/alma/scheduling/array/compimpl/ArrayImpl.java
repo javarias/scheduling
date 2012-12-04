@@ -25,12 +25,15 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 import alma.ACS.ComponentStates;
+import alma.Control.ExecBlockStartedEvent;
+import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.SchedulingArrayExceptions.NoRunningSchedBlockEx;
 import alma.SchedulingArrayExceptions.wrappers.AcsJNoRunningSchedBlockEx;
 import alma.SchedulingExceptions.InvalidOperationEx;
 import alma.acs.component.ComponentLifecycle;
 import alma.acs.container.ContainerServices;
 import alma.acs.exceptions.AcsJException;
+import alma.acs.nc.AcsEventSubscriber;
 import alma.asdmIDLTypes.IDLEntityRef;
 import alma.scheduling.ArrayDescriptor;
 import alma.scheduling.ArrayGUICallback;
@@ -171,17 +174,16 @@ public class ArrayImpl implements ComponentLifecycle,
 		executor.addObserver(guiNotifier);
 
 		serviceProvider.getControlEventReceiver().attach(
-				"alma.Control.ExecBlockStartedEvent", executor);
+				alma.Control.CHANNELNAME_CONTROLSYSTEM.value, executor.getExecBlockStartedEventCallback());
 		serviceProvider.getControlEventReceiver().attach(
-				"alma.Control.ExecBlockEndedEvent", executor);
+				alma.Control.CHANNELNAME_CONTROLSYSTEM.value, executor.getExecBlockEndedEventCallback());
 		serviceProvider.getControlEventReceiver().attach(
-				"alma.offline.ASDMArchivedEvent", executor);
+				alma.Control.CHANNELNAME_CONTROLSYSTEM.value, executor.getASDMArchivedEventCallback());
 		serviceProvider.getControlEventReceiver().attach(
-				"alma.offline.SubScanProcessedEvent", executor);
+				alma.Control.CHANNELNAME_CONTROLSYSTEM.value, executor.getSubScanProcessedEventCallback());
 		serviceProvider.getControlEventReceiver().attach(
-				"alma.offline.SubScanSequenceEndedEvent", executor);
+				alma.Control.CHANNELNAME_CONTROLSYSTEM.value, executor.getSubScanSequenceEndedEventCallback());
 
-		serviceProvider.getControlEventReceiver().begin();
 
 		if (manual) {
 			executor.setFullAuto(true, "Master Scheduler",
@@ -248,7 +250,6 @@ public class ArrayImpl implements ComponentLifecycle,
 
     public void cleanUp() {
     	logger.finest("cleanUp() called");
-    	serviceProvider.getControlEventReceiver().end();
     	serviceProvider.cleanUp();
     	if (descriptor != null) {
     		if (descriptor.policyName != null) {

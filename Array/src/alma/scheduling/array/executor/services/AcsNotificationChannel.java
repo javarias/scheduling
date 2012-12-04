@@ -17,13 +17,21 @@
  */
 package alma.scheduling.array.executor.services;
 
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 import org.omg.CORBA.portable.IDLEntity;
 
+import alma.ACSErrTypeCommon.wrappers.AcsJCouldntPerformActionEx;
+import alma.ACSErrTypeCommon.wrappers.AcsJIllegalStateEventEx;
+import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
+import alma.SchedulingMasterExceptions.wrappers.AcsJACSInternalExceptionEx;
 import alma.acs.container.ContainerServices;
 import alma.acs.exceptions.AcsJException;
-import alma.acs.nc.CorbaNotificationChannel;
+import alma.acs.nc.AcsEventPublisher;
+import alma.acs.nc.AcsEventSubscriber;
+import alma.acs.nc.AcsEventSubscriber.Callback;
+import alma.acsErrTypeLifeCycle.wrappers.AcsJEventSubscriptionEx;
 import alma.scheduling.utils.LoggerFactory;
 
 /**
@@ -38,21 +46,23 @@ public class AcsNotificationChannel implements EventPublisher, EventReceiver {
     
     private ContainerServices container;
     
+    private HashMap<Callback<IDLEntity>, AcsEventSubscriber<IDLEntity>> activeNcSubscribers;
+    
     /*
      * CorbaNotificationChannel is a wrapper that Allen Farris wrote that
      * includes both the publisher and the receiver. May be we should use
      * the original ACS classes.
      */
-    private CorbaNotificationChannel nc;
+    private AcsEventPublisher<IDLEntity> nc;
     
     public AcsNotificationChannel(ContainerServices container, String channelName) throws AcsJException {
         this.container = container;
-        this.nc = new CorbaNotificationChannel(channelName, container);
+        this.nc = container.createNotificationChannelPublisher(channelName, IDLEntity.class);
     }
 
     @Override
     public void publish(IDLEntity event) throws AcsJException {
-        nc.publish(event);
+        nc.publishEvent(event);
     }
     
     @Override
@@ -63,24 +73,65 @@ public class AcsNotificationChannel implements EventPublisher, EventReceiver {
         //     sched_nc.deactivate();
     }
 
-    @Override
-    public void attach(String eventName, Object receiver) {
-        nc.attach(eventName, receiver);
+    @SuppressWarnings("unchecked")
+	@Override
+    public void attach(String channelName, Callback<? extends IDLEntity> receiver) {
+    	AcsEventSubscriber<IDLEntity> s = null;
+		try {
+			s = (AcsEventSubscriber<IDLEntity>) container.createNotificationChannelSubscriber(channelName, receiver.getEventType());
+			s.addSubscription(receiver);
+			synchronized (activeNcSubscribers) {
+				activeNcSubscribers.put((Callback<IDLEntity>) receiver, s);
+			}
+		} catch (AcsJContainerServicesEx e) {
+			AcsJACSInternalExceptionEx ex = new AcsJACSInternalExceptionEx(e);
+			e.log(container.getLogger());
+			ex.printStackTrace();
+		} catch (AcsJEventSubscriptionEx e) {
+			AcsJACSInternalExceptionEx ex = new AcsJACSInternalExceptionEx(e);
+			e.log(container.getLogger());
+			ex.printStackTrace();
+		}
+        
     }
 
     @Override
-    public void detach(String eventName, Object receiver) {
-        nc.detach(eventName, receiver);
+    public void detach(String channelName, Callback<? extends IDLEntity> receiver) {
+    	AcsEventSubscriber<IDLEntity> s = null;
+    	synchronized (activeNcSubscribers) {
+    		s = activeNcSubscribers.remove(receiver);
+    	}
+    	try {
+    		s.disconnect();
+		} catch (AcsJIllegalStateEventEx e) {
+			AcsJACSInternalExceptionEx ex = new AcsJACSInternalExceptionEx(e);
+			e.log(container.getLogger());
+			ex.printStackTrace();
+		} catch (AcsJCouldntPerformActionEx e) {
+			AcsJACSInternalExceptionEx ex = new AcsJACSInternalExceptionEx(e);
+			e.log(container.getLogger());
+			ex.printStackTrace();
+		}
     }
 
-    @Override
-    public void begin() {
-        nc.begin();
-    }
-
-    @Override
-    public void end() {
-        nc.end();
-    }
+	@Override
+	public void end() {
+		synchronized(activeNcSubscribers) {
+			for (Callback<? extends IDLEntity> c: activeNcSubscribers.keySet()) {
+				try {
+					activeNcSubscribers.get(c).disconnect();
+				} catch (AcsJIllegalStateEventEx e) {
+					AcsJACSInternalExceptionEx ex = new AcsJACSInternalExceptionEx(e);
+					e.log(container.getLogger());
+					ex.printStackTrace();
+				} catch (AcsJCouldntPerformActionEx e) {
+					AcsJACSInternalExceptionEx ex = new AcsJACSInternalExceptionEx(e);
+					e.log(container.getLogger());
+					ex.printStackTrace();
+				}
+			}
+			activeNcSubscribers.clear();
+		}
+	}
 
 }

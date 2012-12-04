@@ -24,12 +24,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.omg.CORBA.portable.IDLEntity;
+
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.container.ContainerServices;
 import alma.acs.exceptions.AcsJException;
 import alma.acs.logging.AcsLogger;
 import alma.acs.logging.domainspecific.AudienceLogger.Audience;
-import alma.acs.nc.CorbaNotificationChannel;
+import alma.acs.nc.AcsEventPublisher;
 import alma.acs.util.UTCUtility;
 import alma.asdmIDLTypes.IDLEntityRef;
 import alma.entity.xmlbinding.ousstatus.OUSStatus;
@@ -63,7 +65,7 @@ import alma.statearchiveexceptions.wrappers.AcsJStateIOFailedEx;
  * appropriate.
  * 
  * @author dclarke
- * $Id: SessionManager.java,v 1.12 2012/08/14 16:27:18 javarias Exp $
+ * $Id: SessionManager.java,v 1.13 2012/12/04 00:16:21 javarias Exp $
  */
 public class SessionManager {
 
@@ -89,7 +91,7 @@ public class SessionManager {
     private final AudienceFlogger operatorLog;
     private QlDisplayManager quicklook;
     private ModelAccessor model;
-    private CorbaNotificationChannel sched_nc;
+    private AcsEventPublisher<IDLEntity> sched_nc;
     private boolean newSessionPerExecution = false;
 
     private String arrayName;
@@ -207,13 +209,11 @@ public class SessionManager {
     /**
      * Get the notification channel we're going to use
      */
-	private CorbaNotificationChannel getNotificationChannel() {
-		CorbaNotificationChannel result = null;
+	private AcsEventPublisher<IDLEntity> getNotificationChannel() {
+		AcsEventPublisher<IDLEntity> result = null;
 		
 		try {
-			result = new CorbaNotificationChannel(
-			        		alma.scheduling.CHANNELNAME_SCHEDULING.value, 
-			        		containerServices);
+			result = containerServices.createNotificationChannelPublisher(alma.scheduling.CHANNELNAME_SCHEDULING.value, IDLEntity.class);
 		} catch (AcsJException e) {
             ErrorHandling.severe(logger,
             		String.format("Error trying to connect %s to notification channel - %s",
@@ -238,7 +238,7 @@ public class SessionManager {
     private void publish(org.omg.CORBA.portable.IDLEntity event,
     		             String description) {
         try {
-			sched_nc.publish(event);
+			sched_nc.publishEvent(event);
 		} catch (AcsJException e) {
 			ErrorHandling.warning(logger,
 					String.format("Error publishing %s event for %s - %s",

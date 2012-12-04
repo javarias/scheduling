@@ -105,11 +105,6 @@ public class AcsProvider implements Provider {
     }
 
     @Override
-    public EventReceiver getEventReceiver() {
-        return schedulingNotificationChannel;
-    }
-
-    @Override
     public EventReceiver getControlEventReceiver() {
         return controlNotificationChannel;
     }

@@ -30,6 +30,8 @@ import java.util.logging.Logger;
 import alma.Control.ExecBlockEndedEvent;
 import alma.Control.ExecBlockStartedEvent;
 import alma.SchedulingExceptions.InvalidOperationEx;
+import alma.acs.nc.AcsEventSubscriber.Callback;
+import alma.acsnc.EventDescription;
 import alma.asdmIDLTypes.IDLEntityRef;
 import alma.offline.ASDMArchivedEvent;
 import alma.offline.SubScanProcessedEvent;
@@ -69,6 +71,12 @@ public class Executor extends Observable {
     
     private Services services;
     private SessionManager sessions;
+    
+    private ASDMArchivedEventCallback asdmArchEvCb = null;
+    private ExecBlockEndedEventCallback execBlkEndEvCb = null;
+    private ExecBlockStartedEventCallback execBlkStEvCb = null;
+    private SubScanSequenceEndedEventCallback ssSeqEndEvCb = null;
+    private SubScanProcessedEventCallback ssPrEvCb = null;
     
     private final static long ms      = 1000;         // milliseconds per second
     private final static long minutes = 60 * ms;      // milliseconds per minute
@@ -270,155 +278,34 @@ public class Executor extends Observable {
         }        
     }
 
-    public void receive(ExecBlockStartedEvent event) {
-        logger.info(String.format(
-        		"%s: received ExecBlockStartedEvent for SchedBlock %s, ExecBlock %s",
-        		this.getClass().getSimpleName(),
-        		event.sbId.entityId,
-        		event.execId.entityId));
-        logger.fine(String.format("event.arrayName = %s, event.sessionId = %s",
-                                  event.arrayName,
-                                  (event.sessionId==null)? "Null": event.sessionId.entityId));
-        try {
-            if (currentExecution != null) {
-            	logger.fine(String.format("arrayName = %s, currentEx.sessionId = %s, currentEx.sbId = %s",
-					  arrayName,
-					  (currentExecution.getSessionRef()==null)? "Null": currentExecution.getSessionRef().entityId,
-					  (currentExecution.getSchedBlockRef()==null)? "Null": currentExecution.getSchedBlockRef().entityId));
-                if (event.arrayName.equals(arrayName) &&
-		    //                        event.sessionId.entityId.equals(currentExecution.getSessionRef().entityId) &&
-                        event.sbId.entityId.equals(currentExecution.getSchedBlockRef().entityId)) {
-                    currentExecution.processExecBlockStartedEvent(event);
-                } else {
-                	logger.warning(String.format(
-                			"start event(%s, %s, %s) does not match current execution(%s, %s, %s)",
-                			event.arrayName,
-                			event.sessionId.entityId,
-                			event.sbId.entityId,
-                			arrayName,
-                			currentExecution.getSessionRef().entityId,
-                			currentExecution.getSchedBlockRef().entityId));
-                }
-            } else {
-            	logger.warning("No current execution");
-            }
-        } catch(Exception ex) {
-            ex.printStackTrace();
-        }
+    public ExecBlockStartedEventCallback getExecBlockStartedEventCallback() {
+       if (execBlkStEvCb == null)
+    	   execBlkStEvCb = new ExecBlockStartedEventCallback();
+       return execBlkStEvCb;
     }
     
-    public void receive(ExecBlockEndedEvent event) {
-        logger.info(String.format(
-        		"%s: received ExecBlockEndedEvent",
-        		this.getClass().getSimpleName()));
-        try {
-            if (currentExecution != null) {
-                if (event.arrayName.equals(arrayName) &&
-		    //		        event.sessionId.entityId.equals(currentExecution.getSessionRef().entityId) &&
-                        event.sbId.entityId.equals(currentExecution.getSchedBlockRef().entityId)) {
-                    currentExecution.processExecBlockEndedEvent(event);
-                }
-            }
-        } catch(Exception ex) {
-            ex.printStackTrace();
-        }
+    public ExecBlockEndedEventCallback getExecBlockEndedEventCallback() {
+        if (execBlkEndEvCb == null)
+        	execBlkEndEvCb = new ExecBlockEndedEventCallback();
+        return execBlkEndEvCb;
     }
     
-    public void receive(ASDMArchivedEvent event) {
-        logger.info(String.format(
-        		"%s: received ASDMArchivedEvent (asdmId = %s)",
-        		this.getClass().getSimpleName(),
-        		event.asdmId.entityId));
-        try {
-        	boolean doneIt = false;
-            if (currentExecution != null) {
-                logger.info("there is a current execution");
-                logger.info("event.asdmId.entityId: " + event.asdmId.entityId);
-                if (currentExecution.getExecBlockRef() != null) {
-                	// The current execution has an exec block ref set
-                    if (event.asdmId.entityId.equals(currentExecution.getExecBlockRef().entityId)) {
-                        currentExecution.processASDMArchivedEvent(event);
-                        doneIt = true;
-                    } else {
-                    	logger.info(String.format(
-                    			"The current execution's execBlockRef (%s) does not match the event's",
-                    			currentExecution.getExecBlockRef().entityId));
-                    }
-                } else {
-                	logger.info("The current execution does not have an execBlockRef");
-                }
-            }
-            if (!doneIt) {
-            	logger.info("Checking past executions for match with event");
-            	List<ExecutionContext> pastContexts = getPastExecutions();
-            	for (int i = pastContexts.size()-1; i >= 0; i--) {
-            		// Search backwards on the assumption that the event is more likely to be to
-            		// do with a relatively recent execution (the list is oldest first).
-            		final ExecutionContext ctx = pastContexts.get(i);
-                    if (ctx.getExecBlockRef() != null) {
-                    	// The past execution has an exec block ref set
-                        if (event.asdmId.entityId.equals(ctx.getExecBlockRef().entityId)) {
-                        	ctx.processASDMArchivedEvent(event);
-                            doneIt = true;
-                            break;
-                        } else {
-                        	logger.info(String.format(
-                        			"This past execution's execBlockRef (%s) does not match the event's",
-                        			ctx.getExecBlockRef().entityId));
-                        }
-                    } else {
-            			logger.warning(String.format(
-            					"Missing execBlockRef in ExecutionContext %s @ %s",
-            					ctx.getSchedBlock().getUid(),
-            					ctx.getQueuedTimestamp()));
-                    }
-            	}
-            }
-            if (!doneIt) {
-    			logger.warning(String.format(
-    					"Could not find SchedBlock execution for ASDMArchivedEvent %s",
-    					event.asdmId.entityId));
-           }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+    public ASDMArchivedEventCallback getASDMArchivedEventCallback() {
+        if (asdmArchEvCb == null)
+        	asdmArchEvCb = new ASDMArchivedEventCallback();
+        return asdmArchEvCb;
     }
     
-    public void receive(SubScanProcessedEvent event) {
-    	final String sep = ",\n\t";
-    	StringBuilder b = new StringBuilder();
-
-    	b.append("Received ");
-    	b.append("SubScanProcessedEvent(");
-    	b.append(sep); b.append("execBlockId: "); b.append(event.processedExecBlockId.entityId);
-    	b.append(sep); b.append("status: ");      b.append(event.status);
-    	b.append(sep); b.append("finishedAt: ");  b.append(event.finishedAt);
-    	b.append(sep); b.append("scanNum: ");     b.append(event.processedScanNum);
-    	b.append(sep); b.append("subScanNum: ");  b.append(event.processedSubScanNum);
-    	b.append(sep); b.append("startTime: ");   b.append(event.subscanStartTime);
-    	b.append(sep); b.append("endTime: ");     b.append(event.subscanEndTime);
-    	b.append(sep); b.append("science?: ");    b.append(event.representativeScienceSubScan);
-    	b.append(")");
-
-    	logger.info(b.toString());
-    	currentExecution.processSubScanProcessedEvent(event);
+    public SubScanProcessedEventCallback getSubScanProcessedEventCallback() {
+    	if (ssPrEvCb == null)
+    		ssPrEvCb = new SubScanProcessedEventCallback();
+    	return ssPrEvCb;
     }
     
-    public void receive(SubScanSequenceEndedEvent event) {
-    	final String sep = ",\n\t";
-    	StringBuilder b = new StringBuilder();
-
-    	b.append("Received ");
-    	b.append("SubScanSequenceEndedEvent(");
-    	b.append(sep); b.append("execBlockId: "); b.append(event.processedExecBlockId.entityId);
-    	b.append(sep); b.append("status: ");      b.append(event.status);
-    	b.append(sep); b.append("finishedAt: ");  b.append(event.finishedAt);
-    	b.append(sep); b.append("scanNum: ");     b.append(event.scanNumber);
-    	b.append(sep); b.append("successfulSubscans: ");  b.append(event.successfulSubscans);
-    	b.append(")");
-
-    	logger.info(b.toString());
-    	currentExecution.processSubScanSequenceEndedEvent(event);
+    public SubScanSequenceEndedEventCallback getSubScanSequenceEndedEventCallback() {
+    	if (ssSeqEndEvCb == null)
+    		ssSeqEndEvCb = new SubScanSequenceEndedEventCallback();
+    	return ssSeqEndEvCb;
     }
 	
     public ExecutionContext getCurrentExecution() {
@@ -662,5 +549,210 @@ public class Executor extends Observable {
 		logger.info(b.toString());
 
 		return result;
+	}
+	
+	public class ASDMArchivedEventCallback implements Callback<ASDMArchivedEvent> {
+
+		@Override
+		public void receive(ASDMArchivedEvent event,
+				EventDescription eventDescrip) {
+			logger.info(String.format(
+	        		"%s: received ASDMArchivedEvent (asdmId = %s)",
+	        		this.getClass().getSimpleName(),
+	        		event.asdmId.entityId));
+	        try {
+	        	boolean doneIt = false;
+	            if (currentExecution != null) {
+	                logger.info("there is a current execution");
+	                logger.info("event.asdmId.entityId: " + event.asdmId.entityId);
+	                if (currentExecution.getExecBlockRef() != null) {
+	                	// The current execution has an exec block ref set
+	                    if (event.asdmId.entityId.equals(currentExecution.getExecBlockRef().entityId)) {
+	                        currentExecution.processASDMArchivedEvent(event);
+	                        doneIt = true;
+	                    } else {
+	                    	logger.info(String.format(
+	                    			"The current execution's execBlockRef (%s) does not match the event's",
+	                    			currentExecution.getExecBlockRef().entityId));
+	                    }
+	                } else {
+	                	logger.info("The current execution does not have an execBlockRef");
+	                }
+	            }
+	            if (!doneIt) {
+	            	logger.info("Checking past executions for match with event");
+	            	List<ExecutionContext> pastContexts = getPastExecutions();
+	            	for (int i = pastContexts.size()-1; i >= 0; i--) {
+	            		// Search backwards on the assumption that the event is more likely to be to
+	            		// do with a relatively recent execution (the list is oldest first).
+	            		final ExecutionContext ctx = pastContexts.get(i);
+	                    if (ctx.getExecBlockRef() != null) {
+	                    	// The past execution has an exec block ref set
+	                        if (event.asdmId.entityId.equals(ctx.getExecBlockRef().entityId)) {
+	                        	ctx.processASDMArchivedEvent(event);
+	                            doneIt = true;
+	                            break;
+	                        } else {
+	                        	logger.info(String.format(
+	                        			"This past execution's execBlockRef (%s) does not match the event's",
+	                        			ctx.getExecBlockRef().entityId));
+	                        }
+	                    } else {
+	            			logger.warning(String.format(
+	            					"Missing execBlockRef in ExecutionContext %s @ %s",
+	            					ctx.getSchedBlock().getUid(),
+	            					ctx.getQueuedTimestamp()));
+	                    }
+	            	}
+	            }
+	            if (!doneIt) {
+	    			logger.warning(String.format(
+	    					"Could not find SchedBlock execution for ASDMArchivedEvent %s",
+	    					event.asdmId.entityId));
+	           }
+	        } catch (Exception ex) {
+	            ex.printStackTrace();
+	        }
+			
+		}
+
+		@Override
+		public Class<ASDMArchivedEvent> getEventType() {
+			return ASDMArchivedEvent.class;
+		}
+	}
+	
+	public class ExecBlockEndedEventCallback implements Callback<ExecBlockEndedEvent> {
+
+		@Override
+		public void receive(ExecBlockEndedEvent event,
+				EventDescription eventDescrip) {
+			logger.info(String.format(
+	        		"%s: received ExecBlockEndedEvent",
+	        		this.getClass().getSimpleName()));
+	        try {
+	            if (currentExecution != null) {
+	                if (event.arrayName.equals(arrayName) &&
+			    //		        event.sessionId.entityId.equals(currentExecution.getSessionRef().entityId) &&
+	                        event.sbId.entityId.equals(currentExecution.getSchedBlockRef().entityId)) {
+	                    currentExecution.processExecBlockEndedEvent(event);
+	                }
+	            }
+	        } catch(Exception ex) {
+	            ex.printStackTrace();
+	        }
+			
+		}
+
+		@Override
+		public Class<ExecBlockEndedEvent> getEventType() {
+			return ExecBlockEndedEvent.class;
+		}
+	}
+	
+	public class ExecBlockStartedEventCallback implements Callback<ExecBlockStartedEvent> {
+
+		@Override
+		public void receive(ExecBlockStartedEvent event,
+				EventDescription eventDescrip) {
+			logger.info(String.format(
+	        		"%s: received ExecBlockStartedEvent for SchedBlock %s, ExecBlock %s",
+	        		this.getClass().getSimpleName(),
+	        		event.sbId.entityId,
+	        		event.execId.entityId));
+	        logger.fine(String.format("event.arrayName = %s, event.sessionId = %s",
+	                                  event.arrayName,
+	                                  (event.sessionId==null)? "Null": event.sessionId.entityId));
+	        try {
+	            if (currentExecution != null) {
+	            	logger.fine(String.format("arrayName = %s, currentEx.sessionId = %s, currentEx.sbId = %s",
+						  arrayName,
+						  (currentExecution.getSessionRef()==null)? "Null": currentExecution.getSessionRef().entityId,
+						  (currentExecution.getSchedBlockRef()==null)? "Null": currentExecution.getSchedBlockRef().entityId));
+	                if (event.arrayName.equals(arrayName) &&
+			    //                        event.sessionId.entityId.equals(currentExecution.getSessionRef().entityId) &&
+	                        event.sbId.entityId.equals(currentExecution.getSchedBlockRef().entityId)) {
+	                    currentExecution.processExecBlockStartedEvent(event);
+	                } else {
+	                	logger.warning(String.format(
+	                			"start event(%s, %s, %s) does not match current execution(%s, %s, %s)",
+	                			event.arrayName,
+	                			event.sessionId.entityId,
+	                			event.sbId.entityId,
+	                			arrayName,
+	                			currentExecution.getSessionRef().entityId,
+	                			currentExecution.getSchedBlockRef().entityId));
+	                }
+	            } else {
+	            	logger.warning("No current execution");
+	            }
+	        } catch(Exception ex) {
+	            ex.printStackTrace();
+	        }
+			
+		}
+
+		@Override
+		public Class<ExecBlockStartedEvent> getEventType() {
+			return ExecBlockStartedEvent.class;
+		}
+	}
+	
+	public class SubScanProcessedEventCallback implements Callback<SubScanProcessedEvent> {
+
+		@Override
+		public void receive(SubScanProcessedEvent event,
+				EventDescription eventDescrip) {
+			final String sep = ",\n\t";
+	    	StringBuilder b = new StringBuilder();
+
+	    	b.append("Received ");
+	    	b.append("SubScanProcessedEvent(");
+	    	b.append(sep); b.append("execBlockId: "); b.append(event.processedExecBlockId.entityId);
+	    	b.append(sep); b.append("status: ");      b.append(event.status);
+	    	b.append(sep); b.append("finishedAt: ");  b.append(event.finishedAt);
+	    	b.append(sep); b.append("scanNum: ");     b.append(event.processedScanNum);
+	    	b.append(sep); b.append("subScanNum: ");  b.append(event.processedSubScanNum);
+	    	b.append(sep); b.append("startTime: ");   b.append(event.subscanStartTime);
+	    	b.append(sep); b.append("endTime: ");     b.append(event.subscanEndTime);
+	    	b.append(sep); b.append("science?: ");    b.append(event.representativeScienceSubScan);
+	    	b.append(")");
+
+	    	logger.info(b.toString());
+	    	currentExecution.processSubScanProcessedEvent(event);
+		}
+
+		@Override
+		public Class<SubScanProcessedEvent> getEventType() {
+			return SubScanProcessedEvent.class;
+		}
+	}
+	
+	public class SubScanSequenceEndedEventCallback implements Callback<SubScanSequenceEndedEvent> {
+
+		@Override
+		public void receive(SubScanSequenceEndedEvent event,
+				EventDescription eventDescrip) {
+			final String sep = ",\n\t";
+	    	StringBuilder b = new StringBuilder();
+
+	    	b.append("Received ");
+	    	b.append("SubScanSequenceEndedEvent(");
+	    	b.append(sep); b.append("execBlockId: "); b.append(event.processedExecBlockId.entityId);
+	    	b.append(sep); b.append("status: ");      b.append(event.status);
+	    	b.append(sep); b.append("finishedAt: ");  b.append(event.finishedAt);
+	    	b.append(sep); b.append("scanNum: ");     b.append(event.scanNumber);
+	    	b.append(sep); b.append("successfulSubscans: ");  b.append(event.successfulSubscans);
+	    	b.append(")");
+
+	    	logger.info(b.toString());
+	    	currentExecution.processSubScanSequenceEndedEvent(event);
+		}
+
+		@Override
+		public Class<SubScanSequenceEndedEvent> getEventType() {
+			return SubScanSequenceEndedEvent.class;
+		}
+		
 	}
 }
