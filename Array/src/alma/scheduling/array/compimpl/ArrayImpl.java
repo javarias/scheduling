@@ -251,6 +251,7 @@ public class ArrayImpl implements ComponentLifecycle,
 
     public void cleanUp() {
     	logger.finest("cleanUp() called");
+    	serviceProvider.getControlEventReceiver().end();
     	serviceProvider.cleanUp();
     	if (descriptor != null) {
     		if (descriptor.policyName != null) {
