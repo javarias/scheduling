@@ -134,4 +134,23 @@ public class AcsNotificationChannel implements EventPublisher, EventReceiver {
 		}
 	}
 
+	@Override
+	public void begin() {
+		synchronized(activeNcSubscribers) {
+			for (Callback<? extends IDLEntity> c: activeNcSubscribers.keySet()) {
+				try {
+					activeNcSubscribers.get(c).startReceivingEvents();
+				} catch (AcsJIllegalStateEventEx e) {
+					AcsJACSInternalExceptionEx ex = new AcsJACSInternalExceptionEx(e);
+					e.log(container.getLogger());
+					ex.printStackTrace();
+				} catch (AcsJCouldntPerformActionEx e) {
+					AcsJACSInternalExceptionEx ex = new AcsJACSInternalExceptionEx(e);
+					e.log(container.getLogger());
+					ex.printStackTrace();
+				}
+			}
+		}
+	}
+
 }

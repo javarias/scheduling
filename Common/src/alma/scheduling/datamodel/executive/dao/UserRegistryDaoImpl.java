@@ -2,7 +2,6 @@ package alma.scheduling.datamodel.executive.dao;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,18 +13,18 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 
 import alma.obops.dam.userreg.dao.PortalAccountDao;
-import alma.obops.dam.userreg.dao.PortalAccountDaoRelationalImpl;
 import alma.obops.dam.userreg.domain.PortalAccount;
-import alma.obsprep.ot.userdb.userregistry.UserRegistryClientFactory;
+import alma.obops.dam.userreg.utils.UserRegistryBeanFactory;
 import alma.scheduling.input.executive.generated.PI;
 import alma.scheduling.input.executive.generated.PIMembership;
 
 public class UserRegistryDaoImpl implements UserRegistryDao{
 
-	private UserRegistryClientFactory factory;
+	private UserRegistryBeanFactory factory;
 	
 	public UserRegistryDaoImpl() {
-		factory = UserRegistryClientFactory.getInstance();
+		factory = new UserRegistryBeanFactory() {
+		};
 		factory.init("userRegistryRelationalContext.xml", Logger.getAnonymousLogger());
 	}
 	

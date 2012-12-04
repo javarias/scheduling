@@ -17,9 +17,12 @@
  */
 package alma.scheduling.array.executor.services;
 
+import org.omg.CORBA.portable.IDLEntity;
+
+import alma.acs.nc.AcsEventSubscriber.Callback;
+
 public interface EventReceiver {
-    void attach(String eventName, Object receiver);
-    void detach(String eventName, Object receiver);
-    void begin();
+    void attach(String channelName, Callback<? extends IDLEntity> receiver);
+    void detach(String channelName, Callback<? extends IDLEntity> receiver);
     void end();
 }
