@@ -27,7 +27,6 @@ public interface Provider {
     ControlArray getControlArray();
     Pipeline getPipeline();
     EventPublisher getEventPublisher();
-    EventReceiver getEventReceiver();
     EventReceiver getControlEventReceiver();
     ModelAccessor getModel();
     void cleanUp();

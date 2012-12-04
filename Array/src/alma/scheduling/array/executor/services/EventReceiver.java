@@ -24,5 +24,6 @@ import alma.acs.nc.AcsEventSubscriber.Callback;
 public interface EventReceiver {
     void attach(String channelName, Callback<? extends IDLEntity> receiver);
     void detach(String channelName, Callback<? extends IDLEntity> receiver);
+    void begin();
     void end();
 }
