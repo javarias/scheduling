@@ -184,6 +184,7 @@ public class ArrayImpl implements ComponentLifecycle,
 		serviceProvider.getControlEventReceiver().attach(
 				alma.Control.CHANNELNAME_CONTROLSYSTEM.value, executor.getSubScanSequenceEndedEventCallback());
 
+		serviceProvider.getControlEventReceiver().begin();
 
 		if (manual) {
 			executor.setFullAuto(true, "Master Scheduler",
