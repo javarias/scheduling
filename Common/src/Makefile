@@ -21,7 +21,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.24 2012/07/03 21:05:26 javarias Exp $"
+# "@(#) $Id: Makefile,v 1.25 2012/12/07 14:18:11 hsommer Exp $"
 #
 # Makefile of ........
 #
@@ -195,8 +195,8 @@ ASCII_TO_MIF =
 #
 # other files to be installed
 #----------------------------
-INSTALL_FILES += ../lib/hamcrest-core-1.1.jar ../lib/hamcrest-library-1.1.jar ../lib/jmock-2.5.1.jar ../lib/jmock-junit3-2.5.1.jar \
-				 ../lib/cglib-nodep-2.1_3.jar ../lib/jmock-legacy-2.5.1.jar ../lib/objenesis-1.0.jar
+INSTALL_FILES += ../lib/jmock-2.5.1.jar ../lib/jmock-junit3-2.5.1.jar \
+				 ../lib/cglib-nodep-2.1_3.jar ../lib/jmock-legacy-2.5.1.jar
 #
 # list of all possible C-sources (used to create automatic dependencies)
 # ------------------------------
