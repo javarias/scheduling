@@ -75,6 +75,7 @@ public class ArrayImplUnitTests extends MockObjectTestCase  {
 			atLeast(1).of(model).getObsProjectDao();
 			atLeast(1).of(model).getSchedBlockDao();
 			atLeast(1).of(provider).getControlArray();
+			oneOf(controlEventReceiver).begin();
 			oneOf(controlEventReceiver).attach(with(equal(alma.Control.CHANNELNAME_CONTROLSYSTEM.value)), with(any(Executor.ASDMArchivedEventCallback.class)));
 			oneOf(controlEventReceiver).attach(with(equal(alma.Control.CHANNELNAME_CONTROLSYSTEM.value)), with(any(Executor.ExecBlockEndedEventCallback.class)));
 			oneOf(controlEventReceiver).attach(with(equal(alma.Control.CHANNELNAME_CONTROLSYSTEM.value)), with(any(Executor.SubScanProcessedEventCallback.class)));
@@ -115,7 +116,7 @@ public class ArrayImplUnitTests extends MockObjectTestCase  {
 			atLeast(1).of(model).getSchedBlockDao();
 			atLeast(1).of(provider).getControlArray();
 			atLeast(1).of(provider).getControlEventReceiver(); will(returnValue(controlEventReceiver));
-//			atLeast(1).of(provider).getControlEventReceiver(); will(returnValue(controlEventReceiver));
+			oneOf(controlEventReceiver).begin();
 			oneOf(controlEventReceiver).attach(with(equal(alma.Control.CHANNELNAME_CONTROLSYSTEM.value)), with(any(Executor.ASDMArchivedEventCallback.class)));
 			oneOf(controlEventReceiver).attach(with(equal(alma.Control.CHANNELNAME_CONTROLSYSTEM.value)), with(any(Executor.ExecBlockEndedEventCallback.class)));
 			oneOf(controlEventReceiver).attach(with(equal(alma.Control.CHANNELNAME_CONTROLSYSTEM.value)), with(any(Executor.SubScanProcessedEventCallback.class)));
@@ -152,6 +153,7 @@ public class ArrayImplUnitTests extends MockObjectTestCase  {
 			oneOf(contServices).getDefaultComponent("IDL:alma/pipelineql/QlDisplayManager:1.0"); will(returnValue(retQlDispMan));
 			atLeast(1).of(provider).getModel(); will(returnValue(model));
 			atLeast(1).of(provider).getControlEventReceiver(); will(returnValue(controlEventReceiver));
+			oneOf(controlEventReceiver).begin();
 			oneOf(controlEventReceiver).attach(with(equal(alma.Control.CHANNELNAME_CONTROLSYSTEM.value)), with(any(Executor.ASDMArchivedEventCallback.class)));
 			oneOf(controlEventReceiver).attach(with(equal(alma.Control.CHANNELNAME_CONTROLSYSTEM.value)), with(any(Executor.ExecBlockEndedEventCallback.class)));
 			oneOf(controlEventReceiver).attach(with(equal(alma.Control.CHANNELNAME_CONTROLSYSTEM.value)), with(any(Executor.SubScanProcessedEventCallback.class)));
@@ -185,6 +187,7 @@ public class ArrayImplUnitTests extends MockObjectTestCase  {
 			oneOf(contServices).getDefaultComponent("IDL:alma/pipelineql/QlDisplayManager:1.0"); will(returnValue(retQlDispMan));
 			atLeast(1).of(provider).getModel(); will(returnValue(model));
 			atLeast(1).of(provider).getControlEventReceiver(); will(returnValue(controlEventReceiver));
+			oneOf(controlEventReceiver).begin();
 			oneOf(controlEventReceiver).attach(with(equal(alma.Control.CHANNELNAME_CONTROLSYSTEM.value)), with(any(Executor.ASDMArchivedEventCallback.class)));
 			oneOf(controlEventReceiver).attach(with(equal(alma.Control.CHANNELNAME_CONTROLSYSTEM.value)), with(any(Executor.ExecBlockEndedEventCallback.class)));
 			oneOf(controlEventReceiver).attach(with(equal(alma.Control.CHANNELNAME_CONTROLSYSTEM.value)), with(any(Executor.SubScanProcessedEventCallback.class)));
