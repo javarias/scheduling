@@ -159,6 +159,12 @@ public class SimulationController extends GenericForwardComposer implements
 
 		System.out.println("Generation finished");
 	}
+	
+	public void onClick$buttonOpenArrayConfiguration() {
+		Window mainWindow = (Window) Path.getComponent("//");
+		Window window = (Window) Executions.createComponents("season_arrays_configuration.zul", mainWindow, null);
+    	window.doOverlapped();
+	}
 
 	public void onClick$buttonRun(Event event) {
 		final String workDir = (String) Sessions.getCurrent().getAttribute("workDir");

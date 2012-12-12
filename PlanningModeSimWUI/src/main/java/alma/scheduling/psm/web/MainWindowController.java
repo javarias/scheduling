@@ -129,6 +129,17 @@ public class MainWindowController extends GenericForwardComposer {
     	reportsWindow.doOverlapped();
     }
     
+    public void onClick$menuItemFinalReport(Event event) {
+    	Window mainWindow = (Window) Path.getComponent("//");
+    	Window reportsWindow = (Window) Executions.createComponents("final_report.zul", mainWindow, null);
+    	reportsWindow.doOverlapped();
+    }
+    
+    public void onClick$menuItemOlderResults(Event event) {
+    	Window mainWindow = (Window) Path.getComponent("//");
+    	Window reportsWindow = (Window) Executions.createComponents("results_list.zul", mainWindow, null);
+    	reportsWindow.doOverlapped();
+    }
     
     public void onClick$menuItemHelp(Event event) {
     	Window helpWindow = (Window) Path.getComponent("/mainWindow/helpWindow");

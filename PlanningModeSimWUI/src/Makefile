@@ -21,7 +21,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.1 2012/01/27 18:50:06 javarias Exp $"
+# "@(#) $Id: Makefile,v 1.2 2012/12/12 18:07:27 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -211,7 +211,8 @@ all: do_all
 	cp -r apache-maven-3.0.4/lib/* ../lib
 	cp -r apache-maven-3.0.4/boot ../
 	cp -r apache-maven-3.0.4/conf ../
-	mvn
+	cd ..
+	mvn package
 	@echo " . . . 'all' done" 
 
 clean : clean_all 
