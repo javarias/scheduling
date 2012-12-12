@@ -1,0 +1,11 @@
+<?page title="Final Report" contentType="text/html;charset=UTF-8"?>
+<zk>
+<window title="Final Report" border="normal" height="600px" width="650px" closable="true" maximizable="true"
+		id="reportWindowFinalReport" sizable="true" apply="alma.scheduling.psm.web.FinalReportController">
+		<borderlayout>
+			<center border="none" flex="true" autoscroll="true" >
+				<iframe id="reportFrame"/>
+			</center>
+		</borderlayout>
+</window>
+</zk>
