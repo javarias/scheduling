@@ -119,11 +119,9 @@ eq.subscribe(new org.zkoss.zk.ui.event.EventListener() {
 							<datebox id="dateboxStartDate" width="100%" readonly="true" >
 							<attribute name="onCreate"><![CDATA[
 	try {
-		java.util.Calendar c = java.util.Calendar.getInstance();
-		c.setTimeInMillis(alma.scheduling.psm.web.SimulationController.execDao
-				.getCurrentSeason().getStartDate().getTime());
-		c.setTimeZone(TimeZone.getTimeZone("UTC"));
-		dateboxStartDate.setValue(c.getTime());
+		dateboxStartDate.setTimeZone("UTC");
+		dateboxStartDate.setValue(alma.scheduling.psm.web.SimulationController.execDao
+				.getCurrentSeason().getStartDate());
 	} catch (IndexOutOfBoundsException ex) {
 		//Do nothing the database is empty
 	}
@@ -136,13 +134,9 @@ eq.subscribe(new org.zkoss.zk.ui.event.EventListener() {
 							<datebox id="dateboxEndDate" width="100%" readonly="true" >
 							<attribute name="onCreate"><![CDATA[
 	try {
-		java.util.Calendar c = java.util.Calendar.getInstance();
-		c.setTimeInMillis(alma.scheduling.psm.web.SimulationController.execDao
-				.getCurrentSeason().getStartDate().getTime());
-		c.setTimeZone(TimeZone.getTimeZone("UTC"));
-		dateboxEndDate
-				.setValue(alma.scheduling.psm.web.SimulationController.execDao
-						.getCurrentSeason().getEndDate());
+		dateboxStartDate.setTimeZone("UTC");
+		dateboxEndDate.setValue(alma.scheduling.psm.web.SimulationController.execDao
+				.getCurrentSeason().getEndDate());
 	} catch (IndexOutOfBoundsException ex) {
 		//Do nothing the database is empty
 	}
@@ -172,15 +166,7 @@ eq.subscribe(new org.zkoss.zk.ui.event.EventListener() {
 						</row>
 						<row>
 							Observatory and hardware configuration:
-							<combobox width="100%" readonly="true" disabled="true"
-								value="Two antennas, one array">
-								<comboitem
-									label="Two antennas, one array" />
-								<comboitem
-									label="Four antennas, two arrays" />
-								<comboitem
-									label="16 antennas, four arrays" />
-							</combobox>
+							<button id="buttonOpenArrayConfiguration" label="Review cofiguration"/>
 						</row>
 						<row>
 							Weather statistics:

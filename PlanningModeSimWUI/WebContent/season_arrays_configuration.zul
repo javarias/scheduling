@@ -1,0 +1,73 @@
+<?page title="Array configuration" contentType="text/html;charset=UTF-8"?>
+<zk>
+<window id="windowSeasonArrayConfig" title="Cycle (season) and arrays configuration" border="normal" closable="true" maximizable="true"
+apply="alma.scheduling.psm.web.SeasonArraysConfigComposer" width="500px" height="650px">
+	<borderlayout>
+		<center>
+		<borderlayout>
+		<north title="Cycle (season) configuration">
+			<grid>
+				<rows>
+					<row>
+						Simulated start date:
+						<datebox id="dateboxStartDate" width="100%" value="${windowSeasonArrayConfig$composer.seasonStartDate}"/>							
+					</row>
+					<row>
+						Simulated stop date:
+						<datebox id="dateboxStopDate" width="100%" value="${windowSeasonArrayConfig$composer.seasonStopDate}"/>
+					</row>
+					<row>
+						Allow observation daily schedule:
+						<checkbox id="checkboxAllowDailyInterval" tooltiptext="If the checkbox is marked the simulation will be constrained to the hours defined below.
+						Otherwise the simulation will be carried over 24 hrs"/>
+					</row>
+					<row>
+						Start time:
+						<timebox id="timeboxStartTime" width="100%" value="${windowSeasonArrayConfig$composer.startTime}"/>
+					</row>
+					<row>
+						End time:
+						<timebox id="timeboxEndTime" width="100%" value="${windowSeasonArrayConfig$composer.stopTime}"/>
+					</row>
+				</rows>
+			</grid>
+		</north>
+		<center title="Array configuration" autoscroll="true">
+			<borderlayout>
+			<south>
+				<vlayout sclass="z-valign-center" >
+					<button id="buttonLoadConfig" label="Load arrays configuration" upload="true"/>
+					<!--<button id="buttonSaveToDiskConfig" label="Save to disk"/> -->
+				</vlayout>
+			</south>
+			<center>
+				<grid id="gridArrayConfigs" height="120px">
+					<columns>
+						<column label="Array name"/>
+						<column label="Configuration name"/>
+						<column label="Num antennas." />
+						<column label="Min. baseline" />
+						<column label="Max. baseline" />
+						<column label="Start date" />
+						<column label="End Date" />
+					</columns>
+				</grid>
+			</center>
+			</borderlayout>
+		</center>
+		<south title="Configuration overview" >
+			<timeline id="tl1"  height="220px">
+				<bandinfo width="60%" id="b1" intervalUnit="month" intervalPixels="100"/>
+				<bandinfo width="40%" id="b2" intervalUnit="year" intervalPixels="500"/>
+			</timeline> 
+		</south> 
+		</borderlayout>
+		</center>
+		<south>
+			<div>
+				<button id="buttonSave" label="Save configuration"/>
+			</div>
+		</south>
+	</borderlayout>
+</window>
+</zk>
