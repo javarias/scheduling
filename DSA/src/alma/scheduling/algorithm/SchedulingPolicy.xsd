@@ -14,40 +14,88 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
 	<xs:element name="Policies">
+		<xs:annotation>
+			<xs:documentation>This Document defines a set of Policies to be used within the ALMA Dynamic
+				Scheduling Algorithm (DSA). The DSA is used in scheduling online system as part of
+				the dynamic array, as well in the Scheduling Planning Mode Simulator (also called
+				APRC simulator). How the policies are used is responsibility of the implementation
+				of the each part of the software. This documentation does not cover these topics,
+				please refer to the respective documentation of each implementation using DSA
+				Policies for more details. </xs:documentation>
+		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="SchedulingPolicy" type="SchedulingPolicyT"
-					minOccurs="1" maxOccurs="unbounded" />
+				<xs:element name="SchedulingPolicy" type="SchedulingPolicyT" minOccurs="1"
+					maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name="sim" type="xs:boolean" use="optional" />
+			<xs:attribute name="sim" type="xs:boolean" use="optional">
+				<xs:annotation>
+					<xs:documentation>Attribute used internally by scheduling subsystem to know if the DSA should
+						be used with simulated beans or not. The end user must never set this
+						parameter since it is handled internally by the online system or the
+						simulator. </xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
 
 	<xs:complexType name="SchedulingPolicyT">
+		<xs:annotation>
+			<xs:documentation>The DSA policy is represented by this entity. A DSA policy consists of a set of
+				Selection Criterion and a set of Scorers. The current DSA implemented in ALMA works
+				as very simple perceptron model where the first step is select the candidates
+				Scheduling Blocks based on the selection criteria formed by the conjunction of every
+				criterion available in the set of selection criterion defined in this Policy. Then,
+				the second step for the DSA is to assign a Score for the selected Scheduling Blocks,
+				these scores are calculated as weighted sum based on the information found in every
+				Scorer defined in the set of scorers in the policy.    </xs:documentation>
+		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="SelectionCriteria" type="SelectionCriteriaT"
-				maxOccurs="1" />
-			<xs:element name="Scorers" type="ScorersT" maxOccurs="1" />
+			<xs:element name="SelectionCriteria" type="SelectionCriteriaT" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>This is the criteria to be executed as part of the Policy. By default the
+						following criteria are included: Source Selector, which selects only the
+						visible targets in the sky; Interactive Projects selector, which selects
+						only the protects to be suitable to run in a Interactive (Dynamic) Array </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Scorers" type="ScorersT" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>This are the scorers to be used over the candidate Scheduling
+						Blocks to determine which of them are more suitable to run at the given
+						time. By default no Scorers are included to the defined
+						set.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 		</xs:sequence>
-		<xs:attribute name="name" type="xs:ID" use="required" />
-		<xs:attribute name="version" type="xs:string" use="optional" />
+		<xs:attribute name="name" type="xs:ID" use="required">
+			<xs:annotation>
+				<xs:documentation>Required value used to identify within the document the Policy
+					defined. The name will work as ID for the policy in the context of this
+					document.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="version" type="xs:string" use="optional"/>
 	</xs:complexType>
 
 	<xs:complexType name="SelectionCriteriaT">
+		<xs:annotation>
+			<xs:documentation>List of usable selectors</xs:documentation>
+		</xs:annotation>
 		<xs:sequence>
 			<xs:choice minOccurs="0" maxOccurs="unbounded">
-				<xs:element name="ExecutiveSelector" type="ExecutiveSelectorT" />
+				<xs:element name="ExecutiveSelector" type="ExecutiveSelectorT"/>
 				<!-- There is no weather forecast available in the online system for 
 					this selector -->
 				<!-- <xs:element name="WeatherSelector" type="WeatherSelectorT"/> -->
 				<!-- <xs:element name="SourceSelector" type="SourceSelectorT"/> -->
-				<xs:element name="ArrayConfigSelector" type="ArrayConfigSelectorT" />
-				<xs:element name="HourAngleSelector" type="HourAngleSelectorT" />
-				<xs:element name="MoonAvoidanceSelector" type="MoonAvoidanceSelectorT" />
-				<xs:element name="SunAvoidanceSelector" type="SunAvoidanceSelectorT" />
-				<xs:element name="OpacitySelector" type="OpacitySelectorT" />
-				<xs:element name="AltitudeSelector" type="AltitudeSelectorT" />
-				<xs:element name="ProjectCodeSelector" type="ProjectCodeSelectorT" />
+				<xs:element name="ArrayConfigSelector" type="ArrayConfigSelectorT"/>
+				<xs:element name="HourAngleSelector" type="HourAngleSelectorT"/>
+				<xs:element name="MoonAvoidanceSelector" type="MoonAvoidanceSelectorT"/>
+				<xs:element name="SunAvoidanceSelector" type="SunAvoidanceSelectorT"/>
+				<xs:element name="OpacitySelector" type="OpacitySelectorT"/>
+				<xs:element name="AltitudeSelector" type="AltitudeSelectorT"/>
+				<xs:element name="ProjectCodeSelector" type="ProjectCodeSelectorT"/>
 				<xs:element name="ProjectGradeSelector" type="ProjectGradeSelectorT"/>
 				<xs:element name="CSVProjectSelector" type="CSVProjectSelectorT"/>
 			</xs:choice>
@@ -55,17 +103,25 @@
 	</xs:complexType>
 
 	<xs:complexType name="ScorersT">
+		<xs:annotation>
+			<xs:documentation>List of usabe Scorers</xs:documentation>
+		</xs:annotation>
 		<xs:sequence>
 			<xs:choice minOccurs="0" maxOccurs="unbounded">
-				<xs:element name="SciScorer" type="SciScorerT" />
-				<xs:element name="HourAngleScorer" type="HourAngleScorerT" />
-				<xs:element name="TsysScorer" type="TsysScorerT" />
+				<xs:element name="SciScorer" type="SciScorerT"/>
+				<xs:element name="HourAngleScorer" type="HourAngleScorerT"/>
+				<xs:element name="TsysScorer" type="TsysScorerT"/>
 				<xs:element name="ExecutiveBalancingScorer" type="ExecutiveBalancingScorerT"/>
 			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>
 
 	<xs:complexType name="ScorerT">
+		<xs:annotation>
+			<xs:documentation>Base type for the scorer, this base type request for a mandatory weight which
+				could be any positive or negative number. This weight will be used as factor of the
+				result obtained in the scorer.</xs:documentation>
+		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="weight">
 				<xs:simpleType>
@@ -76,31 +132,74 @@
 	</xs:complexType>
 
 	<!-- Definition of available selection Criterion -->
-	<xs:complexType name="ExecutiveSelectorT" />
+	<xs:complexType name="ExecutiveSelectorT">
+		<xs:annotation>
+			<xs:documentation>This selector adds a constraint to select the Scheduling Blocks with an
+				Executive that have enough time to execute a new observation.</xs:documentation>
+		</xs:annotation>
+	</xs:complexType>
 
 	<xs:complexType name="WeatherSelectorT">
+		<xs:annotation>
+			<xs:documentation>This selector adds a constraint to select the Scheduling Blocks which requiring
+				no much variation of the tSys. To know how the tSys is calculated, please refer to
+				the ALMA DSA document.</xs:documentation>
+		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="tsysVariation" minOccurs="1" maxOccurs="1">
 				<xs:simpleType>
 					<xs:restriction base="xs:double">
-						<xs:minInclusive value="0.0" />
+						<xs:minInclusive value="0.0"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:complexType name="SourceSelectorT" />
+	<xs:complexType name="SourceSelectorT">
+		<xs:annotation>
+			<xs:documentation>This selector adds a constraint to select only the Scheduling Blocks having the
+				representative source visible at the given time. This selector is used by default in
+				every DSA Policy and it cannot be added or removed manually from the
+				policies.</xs:documentation>
+		</xs:annotation>
+	</xs:complexType>
 
-	<xs:complexType name="ArrayConfigSelectorT" />
+	<xs:complexType name="ArrayConfigSelectorT">
+		<xs:annotation>
+			<xs:documentation>This selector adds a constraint to select only the Scheduling Blocks having an
+				expected execution time equals or less than the array available
+				time.</xs:documentation>
+		</xs:annotation>
+	</xs:complexType>
 
-	<xs:complexType name="HourAngleSelectorT" />
+	<xs:complexType name="HourAngleSelectorT">
+		<xs:annotation>
+			<xs:documentation>This selector adds a constraint to select only the Scheduling Blocks having
+				their representative sources between HA -8 and HA +8.</xs:documentation>
+		</xs:annotation>
+	</xs:complexType>
 
-	<xs:complexType name="SunAvoidanceSelectorT" />
+	<xs:complexType name="SunAvoidanceSelectorT">
+		<xs:annotation>
+			<xs:documentation>This selector adds a constraint to select only the Scheduling Blocks having
+				their representative sources outside of the sun area in the sky.</xs:documentation>
+		</xs:annotation>
+	</xs:complexType>
 
-	<xs:complexType name="MoonAvoidanceSelectorT" />
+	<xs:complexType name="MoonAvoidanceSelectorT">
+		<xs:annotation>
+			<xs:documentation>This selector adds a constraint to select only the Scheduling Blocks having
+				their representative sources outside of the moon area in the sky.</xs:documentation>
+		</xs:annotation>
+	</xs:complexType>
 
-	<xs:complexType name="ProjectGradeSelectorT" >
+	<xs:complexType name="ProjectGradeSelectorT">
+		<xs:annotation>
+			<xs:documentation>This selector adds a constraint to select only the Scheduling Blocks having the
+				given grades. During the import process Scheduling Blocks will inherit the science
+				grade from its parent, the ObsProject.</xs:documentation>
+		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="grade" minOccurs="1" maxOccurs="4">
 				<xs:simpleType>
@@ -115,19 +214,45 @@
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:complexType name="OpacitySelectorT" />
+	<xs:complexType name="OpacitySelectorT">
+		<xs:annotation>
+			<xs:documentation>This selector adds a constraint to select only the Scheduling Blocks having the
+				representative frequency, or representative band adequate for the current weather
+				conditions calculated if form of opacity. How the opacity is calculated in the
+				algorithm is explained in the DSA Documentation.</xs:documentation>
+		</xs:annotation>
+	</xs:complexType>
 
-	<xs:complexType name="InteractiveProjectsSelectorT" />
+	<xs:complexType name="InteractiveProjectsSelectorT">
+		<xs:annotation>
+			<xs:documentation>This selector adds a constraint to select only the Scheduling Blocks to be
+				suitable to run in a Interactive or Dynamic Array.</xs:documentation>
+		</xs:annotation>
+	</xs:complexType>
 
-	<xs:complexType name="AltitudeSelectorT" />
-	
+	<xs:complexType name="AltitudeSelectorT">
+		<xs:annotation>
+			<xs:documentation>This selector adds a constraint to select only the Scheduling Blocks having
+				their representative sources above 15 degrees of altitude.</xs:documentation>
+		</xs:annotation>
+	</xs:complexType>
+
 	<xs:complexType name="ProjectCodeSelectorT">
+		<xs:annotation>
+			<xs:documentation>This selector adds a constraint to select only the ObsProjects having the code
+				according the value set in this Selector. SQL wildcards are supported. e.g.:
+				2013.1.%, 2012.1.[SLT], 2013.1._, etc</xs:documentation>
+		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="code" type="xs:string" />
+			<xs:element name="code" type="xs:string"/>
 		</xs:sequence>
 	</xs:complexType>
-	
+
 	<xs:complexType name="CSVProjectSelectorT">
+		<xs:annotation>
+			<xs:documentation>This selector adds a constraint to select only the Obs Projects that are or are
+				not CSV designated projects.</xs:documentation>
+		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="isCSV" minOccurs="1" maxOccurs="1">
 				<xs:simpleType>
@@ -140,24 +265,50 @@
 	<!-- Definition of available scorers -->
 
 	<xs:complexType name="SciScorerT">
+		<xs:annotation>
+			<xs:documentation>This scorer will return a value between 0 and 1 for the given Scheduling Block
+				based on the science score given the ObsProject containing the Scheduling
+				Block.</xs:documentation>
+		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="ScorerT" />
+			<xs:extension base="ScorerT"/>
 		</xs:complexContent>
 	</xs:complexType>
 
 	<xs:complexType name="HourAngleScorerT">
+		<xs:annotation>
+			<xs:documentation>This scorer will return a value between 0 and 1 for the given Scheduling Block
+				based on Hour Angle Position in the sky of the representative target. How this score
+				is calculated is explained in the DSA Documentation.</xs:documentation>
+		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="ScorerT" />
+			<xs:extension base="ScorerT"/>
 		</xs:complexContent>
 	</xs:complexType>
 
 	<xs:complexType name="TsysScorerT">
+		<xs:annotation>
+			<xs:documentation>This scorer will return a value between 0 and 1 for the given Scheduling Block
+				based on the current weather condition. How this score is calculated is explained in
+				the DSA Documentation.</xs:documentation>
+		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="ScorerT" />
+			<xs:extension base="ScorerT"/>
 		</xs:complexContent>
 	</xs:complexType>
 
 	<xs:complexType name="ExecutiveBalancingScorerT">
+		<xs:annotation>
+			<xs:documentation>This scorer will return a value of 0 or 1. This scorer will return 1 for the
+				Scheduling Blocks belonging to just one executive, the rest of the Scheduling Blocks
+				will get 0. Which executive gets 1 is based in chance, this chance is based on a
+				pesudo-random value and in the probability assigned to each of the executive
+				assigned in this selector. If the sum of the probability is more than 1.0 for all
+				the Executives, then the software internally will normalize the sum of the
+				probability to 1.0. This Scorer should be used to allow to the Scheduling Blocks of
+				different executives to be observed according to the probability given across the
+				observation time. e.g.: season, night, or another time frame.</xs:documentation>
+		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="ScorerT">
 				<xs:sequence>
@@ -166,17 +317,17 @@
 							<xs:attribute name="name">
 								<xs:simpleType>
 									<xs:restriction base="xs:string">
-										<xs:enumeration value="CL" />
-										<xs:enumeration value="EA" />
-										<xs:enumeration value="EU" />
-										<xs:enumeration value="NA" />
-										<xs:enumeration value="OTHER" />
+										<xs:enumeration value="CL"/>
+										<xs:enumeration value="EA"/>
+										<xs:enumeration value="EU"/>
+										<xs:enumeration value="NA"/>
+										<xs:enumeration value="OTHER"/>
 									</xs:restriction>
 								</xs:simpleType>
 							</xs:attribute>
 							<xs:attribute name="value">
 								<xs:simpleType>
-									<xs:restriction base="xs:double" >
+									<xs:restriction base="xs:double">
 										<xs:minInclusive value="0.0"/>
 									</xs:restriction>
 								</xs:simpleType>
