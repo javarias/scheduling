@@ -213,7 +213,7 @@ public class Console {
         }
         else if(args[0].compareTo("ph1m") == 0){
             if(args[1].compareTo("list") == 0){
-            	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+            	PsmContext.setApplicationContext( DSAContextFactory.getSimulationContextFromPropertyFile() );
             	Ph1mSynchronizer ph1mSychronizer = new Ph1mSynchronizerImpl(workDir); 
             	try {
 					ph1mSychronizer.listPh1mProposals();
@@ -223,7 +223,7 @@ public class Console {
 				}
             }                
             else if(args[1].compareTo("sync") == 0){
-            	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+            	PsmContext.setApplicationContext( DSAContextFactory.getSimulationContextFromPropertyFile() );
             	Ph1mSynchronizer ph1mSychronizer = new Ph1mSynchronizerImpl(workDir); 
             	try {
 					ph1mSychronizer.synchPh1m();
@@ -237,7 +237,7 @@ public class Console {
 			}
         }
         else if (args[0].compareTo("export") == 0){
-        	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+        	PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile() );
         	Porter porter = Porter.getInstance(workDir);
         	porter.obsprojectExport();
         }
