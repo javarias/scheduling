@@ -1,7 +1,9 @@
-package alma.scheduling.psm.util;
+ package alma.scheduling.psm.util;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 import alma.scheduling.datamodel.obsproject.ObsProject;
@@ -18,6 +20,7 @@ import alma.scheduling.psm.sim.InputActions;
 public class Porter extends PsmContext {
 
 	static Porter instance = null;
+	private static final Logger logger = LoggerFactory.getLogger(Porter.class);
 	
 	private Porter(String workDir) {
 		super(workDir);
@@ -32,6 +35,7 @@ public class Porter extends PsmContext {
 		List<ObsProject> obsProjects = obsProjectDao.getObsProjectsOrderBySciRank();
 		
 		for( ObsProject tmpObsProject : obsProjects ){
+			logger.info("Exporting ObsProject: " + tmpObsProject.getCode() + " (" + tmpObsProject.getUid() + ")");
 			obsProjectDao.hydrateSchedBlocks( tmpObsProject );
 			xmlObsProjectDao.saveObsProject( tmpObsProject );
 		}
