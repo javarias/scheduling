@@ -9,6 +9,7 @@
                 <xs:element name="PrincipalInvestigator" type="xs:string"/>
                 <xs:element name="ScientificScore" type="xs:float"/>
                 <xs:element name="ScientificRank" type="xs:int"/>
+                <xs:element name="Grade" type="GradeT"/>
                 <xs:element name="ObsUnitSet" type="ObsUnitSetT"/>
             </xs:sequence>
         </xs:complexType>
@@ -179,6 +180,14 @@
 			<xs:enumeration value="SEVEN_M"/>
 			<xs:enumeration value="TP_ARRAY"/>
 			<xs:enumeration value="TWELVE_M"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="GradeT">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="A" />
+			<xs:enumeration value="B" />
+			<xs:enumeration value="C" />
+			<xs:enumeration value="D" />
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>

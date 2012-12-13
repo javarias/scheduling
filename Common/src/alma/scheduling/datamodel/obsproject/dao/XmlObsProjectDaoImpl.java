@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.24 2012/12/13 20:52:36 javarias Exp $"
+ * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.25 2012/12/13 23:05:36 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
@@ -58,6 +58,7 @@ import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.SchedBlockControl;
 import alma.scheduling.datamodel.obsproject.SchedBlockState;
 import alma.scheduling.datamodel.obsproject.SchedulingConstraints;
+import alma.scheduling.datamodel.obsproject.ScienceGrade;
 import alma.scheduling.datamodel.obsproject.ScienceParameters;
 import alma.scheduling.datamodel.obsproject.SkyCoordinates;
 import alma.scheduling.datamodel.obsproject.Target;
@@ -145,6 +146,10 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                 prj.setScienceScore(xmlPrj.getScientificScore());
                 prj.setScienceRank(xmlPrj.getScientificRank());
                 prj.setPrincipalInvestigator(xmlPrj.getPrincipalInvestigator());
+                if (xmlPrj.getGrade() != null)
+                	prj.setLetterGrade(ScienceGrade.valueOf(xmlPrj.getGrade().toString()));
+                else
+                	prj.setLetterGrade(ScienceGrade.D);
                 prj.setStatus("ready");
                 alma.scheduling.input.obsproject.generated.ObsUnitSetT xmlObsUnitSet =
                     xmlPrj.getObsUnitSet();
