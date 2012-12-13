@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.27 2012/12/13 23:30:25 javarias Exp $"
+ * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.28 2012/12/13 23:43:11 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
@@ -302,6 +302,8 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
         alma.scheduling.input.obsproject.generated.ObsProject xmlPrj =
             new alma.scheduling.input.obsproject.generated.ObsProject();
         
+        xmlPrj.setCode(prj.getCode());
+        xmlPrj.setArchiveUID(prj.getUid());
         xmlPrj.setScientificScore(prj.getScienceScore());
         xmlPrj.setScientificRank(prj.getScienceRank());
         xmlPrj.setPrincipalInvestigator(prj.getPrincipalInvestigator());
@@ -362,7 +364,14 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
 	            wc.setMaxWindVelocity(sb.getWeatherConstraints().getMaxWindVelocity());
 	            wc.setMinPhaseStability(sb.getWeatherConstraints().getMinPhaseStability());
 	            xmlSchedBlock.setWeatherConstraints(wc);
-            }            
+            } else {
+            	WeatherConstraintsT wc = new WeatherConstraintsT();
+	            wc.setMaxOpacity(sb.getWeatherConstraints().getMaxOpacity());
+	            wc.setMaxSeeing(0.0);
+	            wc.setMaxWindVelocity(0.0);
+	            wc.setMinPhaseStability(0.0);
+	            xmlSchedBlock.setWeatherConstraints(wc);
+            }
             // ObservingParameters
             Set<ObservingParameters> obsParams = sb.getObservingParameters();
             Map<XmlDomainXRef, ObsParametersT> xmlObsParams =
