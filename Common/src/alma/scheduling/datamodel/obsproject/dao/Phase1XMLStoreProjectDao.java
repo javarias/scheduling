@@ -442,11 +442,12 @@ public class Phase1XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 			ArchiveInterface                             archive,
 			alma.entity.xmlbinding.obsproject.ObsProject apdmProject) {
 
-		alma.entity.xmlbinding.obsproject.ObsPhaseT phase;
+		alma.entity.xmlbinding.obsproject.ObsPhaseT phase = null;
 		
 		switch (archive.getPhase1Location(apdmProject.getObsProjectEntity().getEntityId())) {
 			case REVIEW_ONLY:
-				phase = archive.cachedObsReview(apdmProject.getObsReviewRef().getEntityId());
+				if (apdmProject.getObsReviewRef() != null)
+					phase = archive.cachedObsReview(apdmProject.getObsReviewRef().getEntityId());
 				break; 
 			case PROPOSAL_ONLY:
 				phase = archive.cachedObsProposal(apdmProject.getObsProposalRef().getEntityId());
@@ -524,6 +525,11 @@ public class Phase1XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 		
 		final alma.entity.xmlbinding.obsproject.ObsUnitSetT top =
 			getTopLevelOUSForProject(archive, apdmProject);
+		
+		if (top == null) {
+			logger.warning("Could not found ObsUnitSet for ObsProject: " + apdmProject.getObsProjectEntity().getEntityId());
+			return;
+		}
 		
 		getAPDMSchedBlocksFor(archive, top);
 	}

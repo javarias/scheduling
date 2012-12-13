@@ -70,8 +70,8 @@
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:ID" use="required">
 			<xs:annotation>
-				<xs:documentation>Required value used to identify within the document the Policy
-					defined. The name will work as ID for the policy in the context of this
+				<xs:documentation>Required value used to identify within the document the defined 
+					Policy. The name will work as an ID for the policy in the context of this
 					document.</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
