@@ -456,6 +456,8 @@ public class Phase1XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 				return null;
 		}
 		
+		if (phase == null)
+			return null;
 		return phase.getObsPlan();
 	}
 
