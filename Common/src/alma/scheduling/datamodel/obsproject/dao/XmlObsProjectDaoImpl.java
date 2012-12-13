@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.23 2012/02/23 20:54:50 javarias Exp $"
+ * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.24 2012/12/13 20:52:36 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
@@ -212,7 +212,7 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                     scip.setRepresentativeBandwidth(xmlSciParams.getRepresentativeBandwidth());
                     scip.setRepresentativeFrequency(xmlSciParams.getRepresentativeFrequency());
                     scip.setSensitivityGoal(xmlSciParams.getSensitivityGoal());
-					System.out.println("Sensitivity Goal: " + scip.getSensitivityGoal() + " XXXX " + xmlSciParams.getSensitivityGoal() );
+					logger.debug("Sensitivity Goal: " + scip.getSensitivityGoal() + " XXXX " + xmlSciParams.getSensitivityGoal() );
                     schedBlock.addObservingParameters(scip);
                     for (Target t : targets.values()) { // TODO fix this
                         HashSet<ObservingParameters> obsParams = new HashSet<ObservingParameters>();
@@ -228,6 +228,8 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                 ou.setArrayRequested(ArrayType.valueOf(sbControl.getArrayRequested().toString()));
                 ou.setEstimatedExecutionTime(sbControl.getMaximumTime());
                 ou.setMaximumTime(sbControl.getMaximumTime());
+                if (sbControl.getArrayRequested() != null)
+                	ou.setArrayRequested(ArrayType.valueOf(sbControl.getArrayRequested().toString()));
                 schedBlock.setObsUnitControl(ou);
                 SchedBlockControl sbc = new SchedBlockControl();
                 sbc.setIndefiniteRepeat(sbControl.getIndefiniteRepeat());
@@ -298,7 +300,7 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
         ObsUnit obsUnit = prj.getObsUnit();
         xmlPrj.setObsUnitSet((alma.scheduling.input.obsproject.generated.ObsUnitSetT) getXmlObsUnit(obsUnit));
         
-        String fileName = String.format("%s/ObsProject%05d.xml", absPrjDir, prj.getId()); 
+        String fileName = String.format("%s/ObsProject_%s.xml", absPrjDir, prj.getCode()); 
         File newFile = new File(fileName);
         if (newFile.exists()) {
             logger.warn(newFile + " already exists");
@@ -366,7 +368,7 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                     xmlSciParams.setRepresentativeBandwidth(scp.getRepresentativeBandwidth());
                     xmlSciParams.setRepresentativeFrequency(scp.getRepresentativeFrequency());
                     xmlSciParams.setSensitivityGoal(scp.getSensitivityGoal());
-					System.out.println("Sensitivity Goal: " + scp.getSensitivityGoal() + " XXXX " + xmlSciParams.getSensitivityGoal() );
+					logger.debug("Sensitivity Goal: " + scp.getSensitivityGoal() + " XXXX " + xmlSciParams.getSensitivityGoal() );
                     xmlOP.setScienceParameters(xmlSciParams);
                     xmlObsParams.put(new XmlDomainXRef(ObsParametersT.class, scp.getId()), xmlOP);
                     theOne = xmlOP;
@@ -418,7 +420,10 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
             ObsUnitControl ouCtrl = sb.getObsUnitControl();
             SchedBlockControl sbCtrl = sb.getSchedBlockControl();
             SchedBlockControlT xmlSbCtrl = new SchedBlockControlT();
-            xmlSbCtrl.setArrayRequested(ArrayTypeT.TWELVE_M);
+            if (ouCtrl.getArrayRequested() != null)
+            	xmlSbCtrl.setArrayRequested(ArrayTypeT.valueOf(ouCtrl.getArrayRequested().toString()));
+            else 
+            	xmlSbCtrl.setArrayRequested(ArrayTypeT.TWELVE_M);
             xmlSbCtrl.setEstimatedExecutionTime(sbCtrl.getSbMaximumTime());
             xmlSbCtrl.setIndefiniteRepeat(sbCtrl.getIndefiniteRepeat());
             xmlSbCtrl.setMaximumTime(ouCtrl.getMaximumTime());
