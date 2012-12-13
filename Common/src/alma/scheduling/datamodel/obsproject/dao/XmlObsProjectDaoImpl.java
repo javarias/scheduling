@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.26 2012/12/13 23:19:48 javarias Exp $"
+ * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.27 2012/12/13 23:30:25 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
@@ -140,6 +140,7 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
             try {
                 alma.scheduling.input.obsproject.generated.ObsProject xmlPrj =
                     alma.scheduling.input.obsproject.generated.ObsProject.unmarshalObsProject(new FileReader(prjFile));
+                logger.info("Processing ObsProject: " + xmlPrj.getCode() + " (" + xmlPrj.getArchiveUID() + ")");
                 ObsProject prj = new ObsProject();
                 prj.setUid(xmlPrj.getArchiveUID());
                 prj.setCode(xmlPrj.getCode());
