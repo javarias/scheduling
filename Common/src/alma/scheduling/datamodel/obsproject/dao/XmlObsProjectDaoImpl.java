@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.25 2012/12/13 23:05:36 javarias Exp $"
+ * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.26 2012/12/13 23:19:48 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
@@ -74,6 +74,7 @@ import alma.scheduling.input.obsproject.generated.ScienceParametersT;
 import alma.scheduling.input.obsproject.generated.TargetT;
 import alma.scheduling.input.obsproject.generated.WeatherConstraintsT;
 import alma.scheduling.input.obsproject.generated.types.ArrayTypeT;
+import alma.scheduling.input.obsproject.generated.types.GradeT;
 
 /**
  * A DAO for ObsProject XML files.
@@ -294,6 +295,7 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
     
     @Transactional(readOnly=true)
     public void saveObsProject(ObsProject prj) {
+    	logger.info("Exporting ObsProject: " + prj.getCode() + " (" + prj.getUid() + ")");
         String prjDir = configurationDao.getConfiguration().getProjectDirectory();
         String absPrjDir = System.getenv("APRC_WORK_DIR") + "/" + prjDir;
         alma.scheduling.input.obsproject.generated.ObsProject xmlPrj =
@@ -302,6 +304,8 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
         xmlPrj.setScientificScore(prj.getScienceScore());
         xmlPrj.setScientificRank(prj.getScienceRank());
         xmlPrj.setPrincipalInvestigator(prj.getPrincipalInvestigator());
+        if (prj.getLetterGrade() != null)
+        	xmlPrj.setGrade(GradeT.valueOf(prj.getLetterGrade().toString()));
         ObsUnit obsUnit = prj.getObsUnit();
         xmlPrj.setObsUnitSet((alma.scheduling.input.obsproject.generated.ObsUnitSetT) getXmlObsUnit(obsUnit));
         
