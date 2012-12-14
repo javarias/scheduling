@@ -109,7 +109,7 @@ public class DSAPoliciesLoaderListener implements ServletContextListener {
 		}
 		
 		//Set the ACS.manager property
-		System.setProperty("ACS.manager", "corbaloc::localhost:3000/Manager");
+//		System.setProperty("ACS.manager", "corbaloc::localhost:3000/Manager");
 	}
 
 	public void contextDestroyed(ServletContextEvent sce) {
