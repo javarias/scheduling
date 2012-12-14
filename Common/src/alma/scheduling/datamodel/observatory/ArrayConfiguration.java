@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ArrayConfiguration.java,v 1.3 2012/11/09 17:40:17 javarias Exp $"
+ * "@(#) $Id: ArrayConfiguration.java,v 1.4 2012/12/14 18:41:29 javarias Exp $"
  */
 package alma.scheduling.datamodel.observatory;
 
@@ -155,5 +155,16 @@ public class ArrayConfiguration {
 	public void setAntennaDiameter(Double antennaDiameter) {
 		this.antennaDiameter = antennaDiameter;
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof ArrayConfiguration) {
+			ArrayConfiguration param = (ArrayConfiguration) obj;
+			if (this.id == param.getId())
+				return true;
+		}
+		return false;
+	}
     
+	
 }
