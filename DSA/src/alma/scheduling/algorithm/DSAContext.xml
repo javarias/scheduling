@@ -132,7 +132,7 @@
 	</bean>
 	
 	<bean id="altitudeSelector"
-		class="alma.scheduling.algorithm.obsproject.InteractiveSchedBlockSelector"
+		class="alma.scheduling.algorithm.obsproject.AltitudeSelector"
 		scope="singleton">
 		<constructor-arg>
 			<value>altitudeSelector</value>
