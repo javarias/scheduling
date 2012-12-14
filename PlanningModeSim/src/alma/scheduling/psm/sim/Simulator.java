@@ -309,7 +309,7 @@ public class Simulator extends PsmContext {
                 TimeHandler.getHandler().step( ev.getTime() );
                 // Replace second argument with the proper execution time when it gets simulated.
                 Date d = sbExecutor.execute(sb, ev.getArray(), time);
-                System.out.println("ARRAY_CREATION End Date given by executor: " + d);
+                System.out.println("ARRAY_CREATION End Date given by executor: " + d + " Initial time: " + time);
                 rc.notifySchedBlockStart(sb, ev.getArray().getId() );
                 //If there is a valid interval of time where the observation is carried over, use it!
                 Date endIntervalDate = null;
@@ -345,7 +345,8 @@ public class Simulator extends PsmContext {
                 System.out.println(TimeUtil.getUTString(time)
                         + " DSA for array " + ev.getArray().getId().toString()
                         + " -- No suitable SBs to be scheduled");
-                freeArrays.add(ev.getArray());
+                if (!freeArrays.contains(ev.getArray())) 
+                	freeArrays.add(ev.getArray());
                 break;
             }
             break;
@@ -383,7 +384,7 @@ public class Simulator extends PsmContext {
                 TimeHandler.getHandler().step( ev.getTime() );
                 // Replace second argument with the proper execution time when it gets simulated.
                 Date d = sbExecutor.execute(sb, ev.getArray(), time);
-                System.out.println("SCHEDBLOCK_EXECUTION_FINISH End Date given by executor: " + d);
+                System.out.println("SCHEDBLOCK_EXECUTION_FINISH End Date given by executor: " + d + " Initial time: " + time);
                 rc.notifySchedBlockStart(sb, ev.getArray().getId());
               //If there is a valid interval of time where the observation is carried over, use it!
                 Date endIntervalDate = null;
@@ -419,7 +420,8 @@ public class Simulator extends PsmContext {
                 System.out.println("DSA for array "
                         + ev.getArray().getId().toString()
                         + " No suitable SBs to be scheduled");
-                freeArrays.add(ev.getArray());
+                if (!freeArrays.contains(ev.getArray())) 
+                	freeArrays.add(ev.getArray());
                 break;
             }catch (NullPointerException ex){
                 // The array was destroyed already
@@ -458,7 +460,7 @@ public class Simulator extends PsmContext {
                 TimeHandler.getHandler().step( ev.getTime() );
                 // Replace second argument with the proper execution time when it gets simulated.
                 Date d = sbExecutor.execute(sb, ev.getArray(), time);
-                System.out.println("FREE_ARRAY End Date given by executor: " + d);
+                System.out.println("FREE_ARRAY End Date given by executor: " + d + " Initial time: " + time);
                 rc.notifySchedBlockStart(sb, ev.getArray().getId() );
                 //If there is a valid interval of time where the observation is carried over, use it!
                 Date endIntervalDate = null;
@@ -490,7 +492,8 @@ public class Simulator extends PsmContext {
                 System.out.println("DSA for array "
                         + ev.getArray().getId().toString()
                         + " No suitable SBs to be scheduled");
-                freeArrays.add(ev.getArray());
+                if (!freeArrays.contains(ev.getArray())) 
+                	freeArrays.add(ev.getArray());
                 break;
             }
             break;
@@ -515,7 +518,7 @@ public class Simulator extends PsmContext {
                 TimeHandler.getHandler().step( ev.getTime() );
                 // Replace second argument with the proper execution time when it gets simulated.
                 Date d = sbExecutor.execute(sb, ev.getArray(), time);
-                System.out.println("ARRAY_CREATION End Date given by executor: " + d);
+                System.out.println("START_NEXT_OBSERVATION_TIME_INTERVAL End Date given by executor: " + d + " Initial time: " + time);
                 //If there is a valid interval of time where the observation is carried over, use it!
                 Date endIntervalDate = null;
                 if (ti != null && ti.isValid()) {
@@ -550,7 +553,8 @@ public class Simulator extends PsmContext {
                 System.out.println(TimeUtil.getUTString(time)
                         + " DSA for array " + ev.getArray().getId().toString()
                         + " -- No suitable SBs to be scheduled");
-                freeArrays.add(ev.getArray());
+                if (!freeArrays.contains(ev.getArray())) 
+                	freeArrays.add(ev.getArray());
                 break;
             }
         	break;
@@ -574,6 +578,7 @@ public class Simulator extends PsmContext {
                 freeEv.setType(EventType.FREE_ARRAY);
                 timesToCheck.add(freeEv);
             }
+            freeArrays.clear();
         }
         // Sort in ascending order the timeline
         Collections.sort(timesToCheck);
