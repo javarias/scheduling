@@ -212,11 +212,11 @@ eq.subscribe(new org.zkoss.zk.ui.event.EventListener() {
 						</row>
 						<row>
 						<radio id="radioArchive" label="Archive Projects DAO" selected="true" radiogroup="sg1"/>
-						<radio id="radioXML" label="XML Projects DAO" radiogroup="sg1"/> 
+						<radio id="radioXML" label="XML Projects DAO" radiogroup="sg1" selected="true"/> 
 						</row>
 						<row>
 						ACS Manager address:
-						<textbox id="textBoxManagerConfig" value="corbaloc::localhost:3000/Manager" width="100%">
+						<textbox id="textBoxManagerConfig" value="corbaloc::localhost:3000/Manager" width="100%" disabled="true">
 						<attribute name="onChange">
 						System.out.println(self.getValue());
 						System.setProperty("ACS.manager", self.getValue());

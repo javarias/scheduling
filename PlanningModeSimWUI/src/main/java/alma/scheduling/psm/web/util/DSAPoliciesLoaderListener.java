@@ -110,6 +110,7 @@ public class DSAPoliciesLoaderListener implements ServletContextListener {
 		
 		//Set the ACS.manager property
 //		System.setProperty("ACS.manager", "corbaloc::localhost:3000/Manager");
+		System.setProperty(alma.scheduling.utils.SchedulingProperties.PROP_PMS_XML_PROJECT_IMPORT_FLAG, "");
 	}
 
 	public void contextDestroyed(ServletContextEvent sce) {
