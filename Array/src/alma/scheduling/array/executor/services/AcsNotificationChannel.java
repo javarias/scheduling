@@ -46,7 +46,7 @@ public class AcsNotificationChannel implements EventPublisher, EventReceiver {
     
     private ContainerServices container;
     
-    private HashMap<Callback<IDLEntity>, AcsEventSubscriber<IDLEntity>> activeNcSubscribers;
+    private HashMap<Callback<IDLEntity>, AcsEventSubscriber<IDLEntity>> activeNcSubscribers = new HashMap<Callback<IDLEntity>, AcsEventSubscriber<IDLEntity>>();
     
     /*
      * CorbaNotificationChannel is a wrapper that Allen Farris wrote that
