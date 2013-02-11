@@ -43,16 +43,16 @@ import alma.acs.container.ContainerServices;
 import alma.acs.entityutil.EntityDeserializer;
 import alma.acs.entityutil.EntityException;
 import alma.acs.entityutil.EntitySerializer;
-import alma.asdmIDLTypes.IDLArrayTime;
 import alma.entity.xmlbinding.ousstatus.OUSStatus;
 import alma.entity.xmlbinding.ousstatus.OUSStatusRefT;
 import alma.entity.xmlbinding.projectstatus.ProjectStatus;
 import alma.entity.xmlbinding.sbstatus.SBStatus;
 import alma.entity.xmlbinding.sbstatus.SBStatusRefT;
 import alma.entity.xmlbinding.schedblock.SchedBlock;
+import alma.lifecycle.config.StateSystemContextFactory;
+import alma.lifecycle.persistence.StateArchive;
+import alma.lifecycle.persistence.domain.StateChangeRecord;
 import alma.lifecycle.persistence.domain.StateEntityType;
-import alma.projectlifecycle.StateChangeData;
-import alma.projectlifecycle.StateSystemOperations;
 import alma.scheduling.acsFacades.ACSComponentFactory;
 import alma.scheduling.acsFacades.ComponentFactory;
 import alma.scheduling.acsFacades.ComponentFactory.ComponentDiagnosticTypes;
@@ -62,7 +62,7 @@ import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.utils.ErrorHandling;
 import alma.scheduling.utils.SchedulingProperties;
-import alma.statearchiveexceptions.StateIOFailedEx;
+import alma.statearchiveexceptions.wrappers.AcsJStateIOFailedEx;
 import alma.xmlstore.OperationalOperations;
 
 /**
@@ -89,7 +89,8 @@ public abstract class AbstractXMLStoreProjectDao
     // ACS Components
     private ComponentFactory componentFactory;
     protected OperationalOperations xmlStore;
-    protected StateSystemOperations stateSystem;
+//    protected StateSystemOperations stateSystem;
+    protected StateArchive stateArchive;
     
     protected ArchiveInterface archive;
     protected Bookkeeper bookie = null;
@@ -150,15 +151,15 @@ public abstract class AbstractXMLStoreProjectDao
 		this.componentFactory = new ACSComponentFactory(client.getContainerServices());
 		this.logger = client.getContainerServices().getLogger();
 		this.xmlStore = componentFactory.getDefaultArchive(xmlStoreDiags);
-		this.stateSystem = componentFactory.getDefaultStateSystem(stateSystemDiags);
+//		this.stateSystem = componentFactory.getDefaultStateSystem(stateSystemDiags);
 		this.entityDeserializer = EntityDeserializer.getEntityDeserializer(
         		client.getContainerServices().getLogger());
 		this.entitySerializer = EntitySerializer.getEntitySerializer(
         		client.getContainerServices().getLogger());
 		if (SchedulingProperties.isSchedulingUsingExperimetalArchiveIF())
-			archive = new HibernateArchiveInterface(this.xmlStore, this.stateSystem, entityDeserializer, entitySerializer);
+			archive = new HibernateArchiveInterface(this.xmlStore, this.stateArchive, entityDeserializer, entitySerializer);
 		else
-			archive = new CorbaComponentArchiveInterface(this.xmlStore, this.stateSystem, entityDeserializer, entitySerializer);
+			archive = new CorbaComponentArchiveInterface(this.xmlStore, this.stateArchive, entityDeserializer, entitySerializer);
 		bookie = new Bookkeeper(archive, logger);
 	}
 	
@@ -167,15 +168,16 @@ public abstract class AbstractXMLStoreProjectDao
 		this.componentFactory = new ACSComponentFactory(containerServices);
 		this.logger = containerServices.getLogger();
 		this.xmlStore = componentFactory.getDefaultArchive(xmlStoreDiags);
-		this.stateSystem = componentFactory.getDefaultStateSystem(stateSystemDiags);
+		this.stateArchive = StateSystemContextFactory.INSTANCE.getStateArchive();
+		this.stateArchive = componentFactory.getDefaultStateSystem();
 		this.entityDeserializer = EntityDeserializer.getEntityDeserializer(
         		containerServices.getLogger());
 		this.entitySerializer = EntitySerializer.getEntitySerializer(
         		containerServices.getLogger());
 		if (SchedulingProperties.isSchedulingUsingExperimetalArchiveIF())
-			archive = new HibernateArchiveInterface(this.xmlStore, this.stateSystem, entityDeserializer, entitySerializer);
+			archive = new HibernateArchiveInterface(this.xmlStore, this.stateArchive, entityDeserializer, entitySerializer);
 		else
-			archive = new CorbaComponentArchiveInterface(this.xmlStore, this.stateSystem, entityDeserializer, entitySerializer);
+			archive = new CorbaComponentArchiveInterface(this.xmlStore, this.stateArchive, entityDeserializer, entitySerializer);
 		bookie = new Bookkeeper(archive, logger);
 	}
 	
@@ -480,12 +482,12 @@ public abstract class AbstractXMLStoreProjectDao
 	private List<String> getProjectIdsForChangedSBStatuses(
 			final Date since) {
 		final List<String> result = new ArrayList<String>();
-		final List<StateChangeData> changes = getStatusChanges(
+		final List<StateChangeRecord> changes = getStatusChanges(
 				StateEntityType.SBK,
 				since);
 		
-		for (StateChangeData scd :changes) {
-			String sbId = scd.domainEntityId;
+		for (StateChangeRecord scd :changes) {
+			String sbId = scd.getDomainEntityId();
 			SchedBlock sb = null;
 			
 			try {
@@ -496,7 +498,7 @@ public abstract class AbstractXMLStoreProjectDao
 		    			String.format(
 		    				"Error finding changed SchedBlock %s from StateChange %d - %s",
 		    				sbId,
-		    				scd.id,
+		    				scd.getId(),
 		    				e.getMessage()),
 		    			e);
 		    	continue; // move on to next change data
@@ -528,12 +530,12 @@ public abstract class AbstractXMLStoreProjectDao
 	private List<String> getProjectIdsForChangedOUSStatuses(
 			final Date since) {
 		final List<String> result = new ArrayList<String>();
-		final List<StateChangeData> changes = getStatusChanges(
+		final List<StateChangeRecord> changes = getStatusChanges(
 				StateEntityType.OUT,
 				since);
 		
-		for (StateChangeData scd : changes) {
-			String projectId = scd.domainEntityId;
+		for (StateChangeRecord scd : changes) {
+			String projectId = scd.getDomainEntityId();
 			result.add(projectId);
 		}
 
@@ -555,13 +557,13 @@ public abstract class AbstractXMLStoreProjectDao
 			final Date    since,
 			final Set<String> changedProjects,
 			final Set<String> deletedProjects) {
-		final List<StateChangeData> changes = getStatusChanges(
+		final List<StateChangeRecord> changes = getStatusChanges(
 				StateEntityType.PRJ,
 				since);
 		
-		for (StateChangeData scd : changes) {
-			final String projectId = scd.domainEntityId;
-			final String state     = scd.domainEntityState;
+		for (StateChangeRecord scd : changes) {
+			final String projectId = scd.getDomainEntityId();
+			final String state     = scd.getDomainEntityState();
 			if (interestedInObsProject(state)) {
 				changedProjects.add(projectId);
 			} else {
@@ -577,43 +579,40 @@ public abstract class AbstractXMLStoreProjectDao
 	 * @return List<StateChangeData> - the last change for each changed
 	 *                                 status id.
 	 */
-	private List<StateChangeData> getStatusChanges(
+	private List<StateChangeRecord> getStatusChanges(
 			final StateEntityType type,
-			final Date       since) {
+			final Date       start) {
 		
-		final Map<String, StateChangeData> build =
-			new HashMap<String, StateChangeData>();
-		final List<StateChangeData> result =
-			new ArrayList<StateChangeData>();
+		final Map<String, StateChangeRecord> build =
+			new HashMap<String, StateChangeRecord>();
+		final List<StateChangeRecord> result =
+			new ArrayList<StateChangeRecord>();
 		
-		final IDLArrayTime start =
-			new IDLArrayTime(since.getTime());
-		final IDLArrayTime end   =
-			new IDLArrayTime(System.currentTimeMillis());
+		final Date end = new Date();
 
 		try {
-			final StateChangeData[] stateChanges =
-				stateSystem.findStateChangeRecords(
+			final List<StateChangeRecord> stateChanges =
+				stateArchive.findStateChangeRecords(
 						start,
 						end, "", "", "",
-						type.toString());
+						type);
 			
 			logger.finer(String.format(
 					"stateChanges(%s).length: %d (start = %d, end = %d)",
-					type.toString(), stateChanges.length, start.value, end.value));
+					type.toString(), stateChanges.size(), start.getTime(), end.getTime()));
 			
-			for (StateChangeData sc : stateChanges) {
-				if (build.containsKey(sc.statusEntityId)) {
-					final StateChangeData previous = build.get(sc.statusEntityId);
-					if (previous.timestamp.value < sc.timestamp.value) {
-						build.put(sc.statusEntityId, sc);
+			for (StateChangeRecord sc : stateChanges) {
+				if (build.containsKey(sc.getStatusEntityId())) {
+					final StateChangeRecord previous = build.get(sc.getStatusEntityId());
+					if (previous.getTimestamp().getTime() < sc.getTimestamp().getTime()) {
+						build.put(sc.getStatusEntityId(), sc);
 					}
 				} else {
-					build.put(sc.statusEntityId, sc);
+					build.put(sc.getStatusEntityId(), sc);
 				}
 				
 			}
-		} catch (StateIOFailedEx e) {
+		} catch (AcsJStateIOFailedEx e) {
 			ErrorHandling.warning(
 					logger,
 					String.format("Can not get changes(%s) from State Archive - %s",

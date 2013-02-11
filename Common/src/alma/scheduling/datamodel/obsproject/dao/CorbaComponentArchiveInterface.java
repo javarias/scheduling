@@ -26,7 +26,7 @@ import alma.entity.xmlbinding.obsproject.ObsProject;
 import alma.entity.xmlbinding.obsproposal.ObsProposal;
 import alma.entity.xmlbinding.obsreview.ObsReview;
 import alma.entity.xmlbinding.schedblock.SchedBlock;
-import alma.projectlifecycle.StateSystemOperations;
+import alma.lifecycle.persistence.StateArchive;
 import alma.xmlentity.XmlEntityStruct;
 import alma.xmlstore.OperationalOperations;
 
@@ -35,7 +35,7 @@ public class CorbaComponentArchiveInterface extends AbstractArchiveInterface
 
 
 	public CorbaComponentArchiveInterface(OperationalOperations archive,
-			StateSystemOperations stateSystem,
+			StateArchive stateSystem,
 			EntityDeserializer entityDeserializer,
 			EntitySerializer entitySerializer) {
 		super(archive, stateSystem, entityDeserializer, entitySerializer);

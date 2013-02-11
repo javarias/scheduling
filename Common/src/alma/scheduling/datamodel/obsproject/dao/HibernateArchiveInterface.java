@@ -44,7 +44,7 @@ import alma.entity.xmlbinding.obsproject.ObsProject;
 import alma.entity.xmlbinding.obsproposal.ObsProposal;
 import alma.entity.xmlbinding.obsreview.ObsReview;
 import alma.entity.xmlbinding.schedblock.SchedBlock;
-import alma.projectlifecycle.StateSystemOperations;
+import alma.lifecycle.persistence.StateArchive;
 import alma.xmlstore.OperationalOperations;
 
 public final class HibernateArchiveInterface extends AbstractArchiveInterface
@@ -54,7 +54,7 @@ public final class HibernateArchiveInterface extends AbstractArchiveInterface
 	private StatelessSession session = null;
 
 	public HibernateArchiveInterface(OperationalOperations archive,
-			StateSystemOperations stateSystem,
+			StateArchive stateSystem,
 			EntityDeserializer entityDeserializer,
 			EntitySerializer entitySerializer) {
 		super(archive, stateSystem, entityDeserializer, entitySerializer);

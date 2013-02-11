@@ -36,6 +36,7 @@ import java.util.Map;
 import org.omg.CORBA.UserException;
 
 import alma.ACSErrTypeCommon.IllegalArgumentEx;
+import alma.ACSErrTypeCommon.wrappers.AcsJIllegalArgumentEx;
 import alma.acs.entityutil.EntityDeserializer;
 import alma.acs.entityutil.EntityException;
 import alma.acs.entityutil.EntitySerializer;
@@ -53,12 +54,19 @@ import alma.entity.xmlbinding.sbstatus.SBStatus;
 import alma.entity.xmlbinding.sbstatus.SBStatusEntityT;
 import alma.entity.xmlbinding.schedblock.SchedBlock;
 import alma.entity.xmlbinding.schedblock.SchedBlockEntityT;
+import alma.lifecycle.persistence.StateArchive;
+import alma.lifecycle.stateengine.StateEngine;
 import alma.lifecycle.stateengine.constants.Subsystem;
 import alma.projectlifecycle.StateSystemOperations;
 import alma.scheduling.utils.SchedulingProperties.Phase1SBSourceValue;
 import alma.statearchiveexceptions.InappropriateEntityTypeEx;
 import alma.statearchiveexceptions.NoSuchEntityEx;
 import alma.statearchiveexceptions.NullEntityIdEx;
+import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
+import alma.statearchiveexceptions.wrappers.AcsJNoSuchEntityEx;
+import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
+import alma.statearchiveexceptions.wrappers.AcsJStateIOFailedEx;
+import alma.statearchiveexceptions.wrappers.AcsJstatearchiveexceptionsEx;
 import alma.xmlentity.XmlEntityStruct;
 import alma.xmlstore.OperationalOperations;
 
@@ -127,7 +135,8 @@ public abstract class AbstractArchiveInterface implements ArchiveInterface  {
 	protected EntitySerializer entitySerializer;
 
 	/** The connection to the state system */
-	protected StateSystemOperations stateSystem;
+//	protected StateSystemOperations stateSystem;
+	protected StateArchive stateArchive;
 	
 	/** How to lay out dates */
 	protected DateFormat dateFormat;
@@ -142,11 +151,11 @@ public abstract class AbstractArchiveInterface implements ArchiveInterface  {
 	 * ================================================================
 	 */
 	public AbstractArchiveInterface(OperationalOperations archive,
-            				StateSystemOperations stateSystem,
+            				StateArchive stateArchive,
             				EntityDeserializer    entityDeserializer,
             				EntitySerializer      entitySerializer) {
 		this.archive     = archive;
-		this.stateSystem = stateSystem;
+		this.stateArchive = stateArchive;
 		this.entityDeserializer = entityDeserializer;
 		this.entitySerializer   = entitySerializer;
 		this.dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
@@ -163,7 +172,7 @@ public abstract class AbstractArchiveInterface implements ArchiveInterface  {
 
 	protected AbstractArchiveInterface(AbstractArchiveInterface that) {
 		this.archive            = that.archive;
-		this.stateSystem        = that.stateSystem;
+		this.stateArchive       = that.stateArchive;
 		this.entityDeserializer = that.entityDeserializer;
 		this.dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
@@ -517,10 +526,12 @@ public abstract class AbstractArchiveInterface implements ArchiveInterface  {
 		if (hasProjectStatus(id)) {
 			result = cachedProjectStatus(id);
 		} else {
-			final XmlEntityStruct xml = stateSystem.getProjectStatus(id);
-			result = (ProjectStatus) entityDeserializer.
-				deserializeEntity(xml, ProjectStatus.class);
-			projectStatuses.put(id, result);
+			ProjectStatusEntityT idT = new ProjectStatusEntityT();  idT.setEntityId(id);
+			try {
+				result = stateArchive.getProjectStatus(idT);
+			} catch (AcsJstatearchiveexceptionsEx ex) {
+				throw new EntityException(ex);
+			}
 		}
 		return result;
 	}
@@ -602,10 +613,12 @@ public abstract class AbstractArchiveInterface implements ArchiveInterface  {
 	@Override
 	public void write(ProjectStatus status)
 			throws EntityException, UserException {
-		XmlEntityStruct e = entitySerializer.serializeEntity(
-				status, status.getProjectStatusEntity());
-		stateSystem.insertOrUpdateProjectStatus(e, Subsystem.SCHEDULING);
-		refreshProjectStatus(status);	// Forces a refresh when asked
+		try {
+			stateArchive.insertOrUpdate(status, Subsystem.SCHEDULING);
+			refreshProjectStatus(status);	// Forces a refresh when asked
+		} catch (AcsJstatearchiveexceptionsEx ex) {
+			throw new EntityException(ex);
+		} 
 	}
 	/* End of ProjectStatuses
 	 * ============================================================= */
@@ -627,10 +640,14 @@ public abstract class AbstractArchiveInterface implements ArchiveInterface  {
 		if (hasOUSStatus(id)) {
 			result = cachedOUSStatus(id);
 		} else {
-			final XmlEntityStruct xml = stateSystem.getOUSStatus(id);
-			result = (OUSStatus) entityDeserializer.
-				deserializeEntity(xml, OUSStatus.class);
-			ousStatuses.put(id, result);
+			OUSStatusEntityT idT = new OUSStatusEntityT(); idT.setEntityId(id);
+			try {
+				result = stateArchive.getOUSStatus(idT);
+				ousStatuses.put(id, result);
+			} catch (AcsJstatearchiveexceptionsEx ex) {
+				throw new EntityException(ex);
+			}
+			
 		}
 		return result;
 	}
@@ -711,10 +728,12 @@ public abstract class AbstractArchiveInterface implements ArchiveInterface  {
 	@Override
 	public void write(OUSStatus status)
 			throws EntityException, UserException {
-		XmlEntityStruct e = entitySerializer.serializeEntity(
-				status, status.getOUSStatusEntity());
-		stateSystem.insertOrUpdateOUSStatus(e, Subsystem.SCHEDULING);
-		refreshOUSStatus(status);	// Forces a refresh when asked
+		try {
+			stateArchive.insertOrUpdate(status, Subsystem.SCHEDULING);
+			refreshOUSStatus(status);	// Forces a refresh when asked
+		} catch (AcsJstatearchiveexceptionsEx ex) {
+			throw new EntityException(ex);
+		} 
 	}
 	/* End of OUSStatuses
 	 * ============================================================= */
@@ -737,10 +756,13 @@ public abstract class AbstractArchiveInterface implements ArchiveInterface  {
 		if (hasSBStatus(id)) {
 			result = cachedSBStatus(id);
 		} else {
-			final XmlEntityStruct xml = stateSystem.getSBStatus(id);
-			result = (SBStatus) entityDeserializer.
-				deserializeEntity(xml, SBStatus.class);
-			sbStatuses.put(id, result);
+			SBStatusEntityT idT = new SBStatusEntityT(); idT.setEntityId(id);
+			try {
+				result = stateArchive.getSBStatus(idT);
+				sbStatuses.put(id, result);
+			} catch (AcsJstatearchiveexceptionsEx ex ) {
+				throw new EntityException(ex);
+			} 
 		}
 		return result;
 	}
@@ -822,10 +844,12 @@ public abstract class AbstractArchiveInterface implements ArchiveInterface  {
 	@Override
 	public void write(SBStatus status)
 			throws EntityException, UserException {
-		XmlEntityStruct e = entitySerializer.serializeEntity(
-				status, status.getSBStatusEntity());
-		stateSystem.insertOrUpdateSBStatus(e, Subsystem.SCHEDULING);
-		refreshSBStatus(status);	// Forces a refresh when asked
+		try {
+			stateArchive.insertOrUpdate(status, Subsystem.SCHEDULING);
+			refreshSBStatus(status);	// Forces a refresh when asked
+		} catch (AcsJstatearchiveexceptionsEx ex) {
+			throw new EntityException(ex);
+		} 
 	}
 	/* End of SBStatuses
 	 * ============================================================= */
@@ -845,13 +869,19 @@ public abstract class AbstractArchiveInterface implements ArchiveInterface  {
     		throws InappropriateEntityTypeEx, IllegalArgumentEx {
         final Collection<String> result = new ArrayList<String>();
         
-		XmlEntityStruct xml[] = null;
-		xml = stateSystem.findProjectStatusByState(states);
-		
-		for (final XmlEntityStruct xes : xml) {
-			result.add(xes.entityId);
+		ProjectStatus[] xml = null;
+		try {
+			xml = stateArchive.findProjectStatusByState(states);
+			
+			for (final ProjectStatus xes : xml) {
+				result.add(xes.getProjectStatusEntity().getEntityId());
+			}
+			return result;
+		} catch (AcsJIllegalArgumentEx ex) {
+			throw ex.toIllegalArgumentEx();
+		} catch (AcsJInappropriateEntityTypeEx ex) {
+			throw ex.toInappropriateEntityTypeEx();
 		}
-		return result;
 	}
     
 	/*
@@ -865,17 +895,24 @@ public abstract class AbstractArchiveInterface implements ArchiveInterface  {
     			   NoSuchEntityEx,
     			   EntityException {
         final Collection<SBStatus> result = new ArrayList<SBStatus>();
-        final XmlEntityStruct[] xmlList =
-        	stateSystem.getSBStatusListForProjectStatus(projectStatusId);
-        
-        for (final XmlEntityStruct xml : xmlList) {
-			final SBStatus sbs = (SBStatus) entityDeserializer.
-				deserializeEntity(xml, SBStatus.class);
-			sbStatuses.put(sbs.getSBStatusEntity().getEntityId(), sbs);
-			result.add(sbs);
-        }
-        
-		return result;
+        ProjectStatusEntityT idT = new ProjectStatusEntityT(); idT.setEntityId(projectStatusId);
+        SBStatus[] xmlList;
+		try {
+			xmlList = stateArchive.getSBStatusList(idT);
+	        
+	        for (final SBStatus sbs : xmlList) {
+				sbStatuses.put(sbs.getSBStatusEntity().getEntityId(), sbs);
+				result.add(sbs);
+	        }
+	        
+			return result;
+		} catch (AcsJNullEntityIdEx ex) {
+			throw ex.toNullEntityIdEx();
+		} catch (AcsJNoSuchEntityEx ex) {
+			throw ex.toNoSuchEntityEx();
+		} catch (AcsJInappropriateEntityTypeEx ex) {
+			throw ex.toInappropriateEntityTypeEx();
+		}
     }
 
 	/* (non-Javadoc)

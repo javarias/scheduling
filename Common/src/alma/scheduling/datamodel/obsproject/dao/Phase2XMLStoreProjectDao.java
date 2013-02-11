@@ -40,8 +40,12 @@ import alma.acs.container.ContainerServices;
 import alma.acs.entityutil.EntityException;
 import alma.entity.xmlbinding.ousstatus.OUSStatus;
 import alma.entity.xmlbinding.projectstatus.ProjectStatus;
+import alma.entity.xmlbinding.projectstatus.ProjectStatusEntityT;
+import alma.entity.xmlbinding.projectstatus.StatusBaseT;
 import alma.entity.xmlbinding.sbstatus.SBStatus;
 import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
+import alma.lifecycle.config.StateSystemContextFactory;
+import alma.lifecycle.stateengine.StateEngine;
 import alma.lifecycle.stateengine.constants.Role;
 import alma.lifecycle.stateengine.constants.Subsystem;
 import alma.scheduling.datamodel.DAOException;
@@ -56,6 +60,8 @@ import alma.xmlentity.XmlEntityStruct;
  *
  */
 public class Phase2XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
+	
+	private StateEngine stateEngine;
 	
     final private static String[] OPPhase2RunnableStates = {
     	alma.entity.xmlbinding.valuetypes.types.StatusTStateType.READY.toString(),
@@ -87,10 +93,12 @@ public class Phase2XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
     
 	public Phase2XMLStoreProjectDao() throws Exception {
 		super(Phase2XMLStoreProjectDao.class.getSimpleName());
+		stateEngine = StateSystemContextFactory.INSTANCE.getStateEngine();
 	}
 	
 	public Phase2XMLStoreProjectDao(ContainerServices containerServices) throws AcsJContainerServicesEx, UserException {
 		super(containerServices);
+		stateEngine = StateSystemContextFactory.INSTANCE.getStateEngine();
 	}
 
 	@Override
@@ -114,9 +122,9 @@ public class Phase2XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 	private void getOUSandSBStatuses(ProjectStatus    projectStatus,
 			                         ArchiveInterface archive) {
 		
-		XmlEntityStruct xml[] = null;
+		StatusBaseT[] xml = null;
 		try {
-			xml = stateSystem.getProjectStatusList(projectStatus.getProjectStatusEntity().getEntityId());
+			xml = stateArchive.getProjectStatusList(projectStatus.getProjectStatusEntity());
 		} catch (Exception e) {
         	logger.warning(String.format(
         			"can not pull Status objects for ProjectStatus %s from State System",
@@ -124,12 +132,10 @@ public class Phase2XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
             e.printStackTrace(System.out);
 		}
 		
-		for (final XmlEntityStruct xes : xml) {
-			if (xes.entityTypeName.equals(OUSStatus.class.getSimpleName())) {
+		for (final StatusBaseT xes : xml) {
+			if (xes instanceof OUSStatus) {
 				try {
-					final OUSStatus status = (OUSStatus) entityDeserializer.
-						deserializeEntity(xes, OUSStatus.class);
-					archive.cache(status);
+					final OUSStatus status = (OUSStatus) xes;
 					logger.info(String.format(
 							"Got APDM OUSStatus %s",						
 							status.getOUSStatusEntity().getEntityId()));
@@ -137,11 +143,9 @@ public class Phase2XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 		        	logger.warning("can not deserialise OUSStatus from State System (skipping)");
 		            e.printStackTrace(System.out);
 				}
-			} else if (xes.entityTypeName.equals(SBStatus.class.getSimpleName())) {
+			} else if (xes instanceof SBStatus) {
 				try {
-					final SBStatus status = (SBStatus) entityDeserializer.
-						deserializeEntity(xes, SBStatus.class);
-					archive.cache(status);
+					final SBStatus status = (SBStatus) xes;
 					logger.info(String.format(
 							"Got APDM SBStatus %s",						
 							status.getSBStatusEntity().getEntityId()));
@@ -149,12 +153,12 @@ public class Phase2XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 		        	logger.warning("can not deserialise SBStatus from State System (skipping)");
 		            e.printStackTrace(System.out);
 				}
-			} else if (xes.entityTypeName.equals(ProjectStatus.class.getSimpleName())) {
+			} else if (xes instanceof ProjectStatus) {
 				// Skip, we've already got the ProjectStatus.
 			} else {
 	        	logger.warning(String.format(
 	        			"Unexpected entity type (%s) as child of ProjectStatus %s (skipping)",
-	        			xes.entityTypeName,
+	        			xes.getClass().getSimpleName(),
 	        			projectStatus.getProjectStatusEntity().getEntityId()));
 			}
 		}
@@ -173,19 +177,17 @@ public class Phase2XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 			ArchiveInterface archive) {
         final List<ProjectStatus> result = new Vector<ProjectStatus>();
         
-		XmlEntityStruct xml[] = null;
+		ProjectStatus[] pss = null;
 		try {
-			xml = stateSystem.findProjectStatusByState(OPPhase2RunnableStates);
+			pss = stateArchive.findProjectStatusByState(OPPhase2RunnableStates);
 		} catch (Exception e) {
 			logger.severe(String.format(
 					"Cannot get APDM ProjectStatuses - %s",
 					e.getMessage()));
 		}
 		
-		for (final XmlEntityStruct xes : xml) {
+		for (final ProjectStatus ps : pss) {
 			try {
-				final ProjectStatus ps = (ProjectStatus) entityDeserializer.
-						deserializeEntity(xes, ProjectStatus.class);
 				result.add(ps);
 				archive.cache(ps);
 				logger.info(String.format(
@@ -328,9 +330,10 @@ public class Phase2XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 
     	for (final String psID : fromPSIds) {
     		try {
-				stateSystem.changeProjectStatus(
-						psID,
-						to.toString(),
+    			ProjectStatusEntityT idT = new ProjectStatusEntityT(); idT.setEntityId(psID);
+				stateEngine.changeState(
+						idT,
+						to,
 						Subsystem.SCHEDULING,
 						Role.AOD);
 				worked ++;
