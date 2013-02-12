@@ -39,6 +39,8 @@ import alma.acs.container.ContainerServices;
 import alma.alarmsystem.source.ACSAlarmSystemInterface;
 import alma.alarmsystem.source.ACSAlarmSystemInterfaceFactory;
 import alma.alarmsystem.source.ACSFaultState;
+import alma.lifecycle.config.StateSystemContextFactory;
+import alma.lifecycle.persistence.StateArchive;
 import alma.projectlifecycle.StateSystem;
 import alma.projectlifecycle.StateSystemHelper;
 import alma.projectlifecycle.StateSystemOperations;
@@ -123,106 +125,19 @@ public class ACSComponentFactory implements ComponentFactory {
 	 * State System
 	 * ================================================================
 	 */
-    /**
-     * Wrap the provided ACS component (start) with other
-     * implementations of the same interface which provide diagnostic
-     * information. Which wrappers to use are determined by the list of
-     * ComponentDiagnosticTypes. Return the outermost wrapper. Goes to
-     * a bit of trouble to ensure that the wrappers take effect in the
-     * order specified.
-     * 
-     * @param start - the actual component you ultimately want to use
-     * @param diags - the list of diagnostic types you want.
-     * @return the outermost wrapper created, which you use just as you
-     *         would have used <code>start</code>.
-     */
-    private StateSystemOperations wrapStateSystemComponent(
-		    StateSystemOperations start,
-		    ComponentDiagnosticTypes... diags) {
-    	StateSystemOperations result = start;
-    	String tag = " ";
-    	try {
-    		for (int i = diags.length-1; i >= 0; i--) {
-    			final ComponentDiagnosticTypes diag = diags[i];
-    			switch(diag) {
-    			case LOGGING:
-    				result = new LoggingStateSystem(containerServices, result);
-    				break;
-    			case PROFILING:
-    				result = new ProfilingStateSystem(containerServices, result);
-    				break;
-    			case BARFING:
-    				result = new BarfingStateSystem(containerServices, result);
-    				break;
-    			default:
-    				logger.warning(String.format(
-    						"Asking for a %s State System component, no implementation of which is known - ignoring",
-    						diag));
-    				break;
-    			}
-    			tag = String.format(" %s%s", diag, tag);
-    		}
-    	} catch(AcsJContainerServicesEx e) {
-    		logger.severe("SCHEDULING: AcsJContainerServicesEx: "+e.toString());
-    		sendAlarm("Scheduling","SchedStateSystemConnAlarm",1,ACSFaultState.ACTIVE);
-    		result = null;
-    	}
-    	if (result != null) {
-    		logger.fine(String.format(
-    				"SCHEDULING: The ALMA%sState Engine has been constructed.",
-    				tag));
-    	} else {
-    		logger.warning(String.format(
-    				"SCHEDULING: The ALMA%sState Engine has NOT been constructed.",
-    				tag));
-    	}
-    	return result;
-    }
 
 	/* (non-Javadoc)
 	 * @see alma.scheduling.acsFacades.ComponentFactory#getDefaultStateSystem(alma.scheduling.acsFacades.ComponentFactory.ComponentDiagnosticTypes[])
 	 */
 	@Override
-	public StateSystemOperations getDefaultStateSystem(
-			ComponentDiagnosticTypes... diags)
+	public StateArchive getDefaultStateSystem()
 		throws AcsJContainerServicesEx {
 		
-		final org.omg.CORBA.Object obj = containerServices.getDefaultComponent(StateSystemIFName);
-		final StateSystem con = StateSystemHelper.narrow(obj);
-		StateSystemOperations result = null;
+		StateArchive result = StateSystemContextFactory.INSTANCE.getStateArchive();
 
-		if (con != null) {
-			components.add(con);
-			result = wrapStateSystemComponent(con, diags);
-		} else {
-			logger.warning("SCHEDULING: Cannot find default ALMA State System component.");
-		}
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see alma.scheduling.acsFacades.ComponentFactory#getStateSystem(java.lang.String, alma.scheduling.acsFacades.ComponentFactory.ComponentDiagnosticTypes[])
-	 */
-	@Override
-	public StateSystemOperations getStateSystem(
-			String name,
-			ComponentDiagnosticTypes... diags)
-		throws AcsJContainerServicesEx {
-		
-		final org.omg.CORBA.Object obj = containerServices.getComponent(name);
-		final StateSystem con = StateSystemHelper.narrow(obj);
-		StateSystemOperations result = null;
-
-		if (con != null) {
-			components.add(con);
-			result = wrapStateSystemComponent(con, diags);
-		} else {
-			logger.warning(String.format(
-					"SCHEDULING: Cannot find ALMA State System component called %s.",
-					name));
-		}
-		return result;
-	}
    /* end of State System
     * -------------------------------------------------------------- */
 

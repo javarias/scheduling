@@ -28,6 +28,7 @@ package alma.scheduling.acsFacades;
 import org.omg.CORBA.UserException;
 
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
+import alma.lifecycle.persistence.StateArchive;
 import alma.projectlifecycle.StateSystemOperations;
 import alma.xmlstore.IdentifierOperations;
 import alma.xmlstore.OperationalOperations;
@@ -37,7 +38,7 @@ import alma.xmlstore.OperationalOperations;
  * Done as an interface so that we can insert facades for them and do
  * useful things like tracing.
  *
- * @version $Id: ComponentFactory.java,v 1.3 2012/05/29 17:46:36 dclarke Exp $
+ * @version $Id: ComponentFactory.java,v 1.4 2013/02/12 16:12:19 javarias Exp $
  * @author David Clarke
  */
 public interface ComponentFactory {
@@ -46,20 +47,8 @@ public interface ComponentFactory {
     	LOGGING, PROFILING, BARFING
     }
 
-	// State System
-	// ============
-	final public static String StateSystemIFName =
-		"IDL:alma/projectlifecycle/StateSystem:1.0";
-
-	public StateSystemOperations getDefaultStateSystem(
-			ComponentDiagnosticTypes... diags)
+	public StateArchive getDefaultStateSystem()
 		throws AcsJContainerServicesEx;
-	
-	public StateSystemOperations getStateSystem(
-			String name,
-			ComponentDiagnosticTypes... diags)
-		throws AcsJContainerServicesEx;
-	
 	
 	// Archive XMLStore
 	// ================
