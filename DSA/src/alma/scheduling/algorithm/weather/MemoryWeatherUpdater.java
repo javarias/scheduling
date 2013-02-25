@@ -59,14 +59,21 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
             latitude = configDao.getConfiguration().getArrayCenterLatitude();
 
         // get current PWV
-        TemperatureHistRecord tr = weatherDao.getTemperatureForTime(date);
-        ErrorHandling.getInstance().info("temperature record: time = " + tr.getTime() + "; value = "
-                + tr.getValue());
-        HumidityHistRecord hr = weatherDao.getHumidityForTime(date);
-        ErrorHandling.getInstance().info("humidity record: time = " + hr.getTime() + "; value = "
-                + hr.getValue());
-        double pwv = estimatePWV(hr.getValue(), tr.getValue()); // mm
-
+        double pwv;
+        //Check if the time to get the PWV is current of future
+        //check if dao supports get value of PWV first
+        //In practical terms the current time is now plus half an hour in the future
+        if (weatherDao.hasPWV() && date.getTime() > System.currentTimeMillis() + 29 * 60 * 1000) {
+        	TemperatureHistRecord tr = weatherDao.getTemperatureForTime(date);
+        	ErrorHandling.getInstance().info("temperature record: time = " + tr.getTime() + "; value = "
+        			+ tr.getValue());
+        	HumidityHistRecord hr = weatherDao.getHumidityForTime(date);
+        	ErrorHandling.getInstance().info("humidity record: time = " + hr.getTime() + "; value = "
+        			+ hr.getValue());
+        	pwv = estimatePWV(hr.getValue(), tr.getValue()); // mm
+        } else {
+        	pwv = weatherDao.getPwvForTime(date);
+        }
         long deltaT = (long) (projTimeIncr * 3600.0 * 1000.0); // delta T in
                                                                // milliseconds
         Date projDate = new Date(date.getTime() + deltaT);
@@ -75,8 +82,7 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
         double ppwv = estimatePWV(phr.getValue(), ptr.getValue()); // projected
                                                                    // PWV, in mm
 
-        for (Iterator<SchedBlock> iter = sbs.iterator(); iter.hasNext();) {
-            SchedBlock sb = iter.next();
+        for (SchedBlock sb: sbs) {
             ErrorHandling.getInstance().debug("Calculations for SchedBlock: " + sb.getUid());
             double frequency = sb.getSchedulingConstraints()
                     .getRepresentativeFrequency(); // GHz

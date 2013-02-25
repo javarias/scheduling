@@ -160,5 +160,7 @@ public abstract class WeatherHistoryDAOImpl extends GenericDaoImpl implements We
         Query q = this.getSession().createQuery("from " + t.getName() +" wp order by wp.time asc");
         return q.list();
     }
+    
+    
 
 }

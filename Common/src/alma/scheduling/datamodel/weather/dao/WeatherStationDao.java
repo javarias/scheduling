@@ -20,8 +20,21 @@
  *******************************************************************************/
 package alma.scheduling.datamodel.weather.dao;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Formatter;
 import java.util.List;
+import java.util.TimeZone;
+import java.util.TreeMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +43,6 @@ import alma.Control.CurrentWeather;
 import alma.Control.CurrentWeatherPackage.Humidity;
 import alma.Control.CurrentWeatherPackage.Temperature;
 import alma.ControlExceptions.IllegalParameterErrorEx;
-import alma.acs.exceptions.CorbaExceptionConverter;
 import alma.scheduling.datamodel.GenericDaoImpl;
 import alma.scheduling.datamodel.weather.HumidityHistRecord;
 import alma.scheduling.datamodel.weather.OpacityHistRecord;
@@ -41,6 +53,8 @@ import alma.scheduling.datamodel.weather.WindSpeedHistRecord;
 /**
  * The weather Station DAO will return just the weather values for the current time
  * parameters, all the method who try to load for history will throw a RuntimeException.
+ * 
+ * The PWV value is based on a forecast taken from APEX website: 'http://www.eso.org/gen-fac/pubs/astclim/forecast/gfs/APEX/'
  * 
  * @author javarias
  * 
@@ -60,7 +74,12 @@ public class WeatherStationDao extends GenericDaoImpl implements WeatherHistoryD
 	 * Weather Station names
 	 */
 	static private final String[] WS_NAMES = {"WSOSF", "WSTB1", "WSTB2"};
-	/**
+	
+	
+	private TreeMap<Date, Double> cachedPWVValues = null;
+	private String lastChecksumForPage = null;
+	private long lastCheckPWV = 0;
+	/*
 	 * Nothing to load
 	 */
 	@Override
@@ -68,7 +87,7 @@ public class WeatherStationDao extends GenericDaoImpl implements WeatherHistoryD
 		throw new RuntimeException("The weather station doesn't handle history for the weather parameters");
 	}
 
-	/**
+	/*
 	 * Nothing to load
 	 */
 	@Override
@@ -76,7 +95,7 @@ public class WeatherStationDao extends GenericDaoImpl implements WeatherHistoryD
 		throw new RuntimeException("The weather station doesn't handle history for the weather parameters");
 	}
 
-	/**
+	/*
 	 * Nothing to load
 	 */
 	@Override
@@ -84,7 +103,7 @@ public class WeatherStationDao extends GenericDaoImpl implements WeatherHistoryD
 		throw new RuntimeException("The weather station doesn't handle history for the weather parameters");
 	}
 
-	/**
+	/*
 	 * Nothing to load
 	 */
 	@Override
@@ -168,6 +187,141 @@ public class WeatherStationDao extends GenericDaoImpl implements WeatherHistoryD
 	public PathFluctHistRecord getPathFluctForTime(Date ut) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	@Override
+	public boolean hasPWV() {
+		return true;
+	}
+
+	@Override
+	public double getPwvForTime(Date ut) throws UnsupportedOperationException {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(ut);
+		calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
+		int year = calendar.get(Calendar.YEAR);
+		
+		if (cachedPWVValues == null)
+			try {
+				if ((System.currentTimeMillis() - lastCheckPWV) > (2 * 60 * 60 * 1000)) { //Check every 2 hours
+					cachedPWVValues = refreshPWVforecast(year);
+					lastCheckPWV = System.currentTimeMillis();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+				logger.error("Problem trying to retrieve PWV forecast. Error: " + e.getMessage());
+				if (cachedPWVValues != null) {
+					logger.error("Returning already stored value...");
+				}
+			}
+		
+		if (cachedPWVValues != null)
+			return getInterpolatedPWVValue(ut);
+		
+		return 0;
+	}
+	
+	/*
+	 * The ascii file contains 4 columns of data that represent: 
+	 * [Date of forecast initiation, Hour of forecast initiation, Forecast hour, PWV forecast]
+	 */
+	private TreeMap<Date, Double> refreshPWVforecast(long year) throws IOException {
+		final TreeMap<Date, Double> retVal = new TreeMap<Date, Double>();
+		final String urlStr = new String("http://www.eso.org/gen-fac/pubs/astclim/forecast/gfs/APEX/forecast/text/"+ year +"/gfs_pwv_for.txt");
+		URL url = null;
+		InputStream is = null;
+		URLConnection connection = null;
+		BufferedReader reader = null;
+		try {
+			url = new URL(urlStr);
+			connection = url.openConnection();
+			//Check if it is necessary to refresh the data
+			String currentChecksum = getPageChecksum(connection.getInputStream());
+			if (lastChecksumForPage != null && cachedPWVValues != null &&
+					lastChecksumForPage.compareTo(currentChecksum) == 0) {
+				logger.debug("Ignoring values get from forecast file. Same values stored in cache ");
+				return cachedPWVValues;
+			}
+			connection = url.openConnection();
+			is = connection.getInputStream();
+			reader =  new BufferedReader(new InputStreamReader(is));
+			String line = reader.readLine();
+			String[] s = line.split("\\s+");
+			Calendar initialCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+			initialCal.set(
+					Integer.valueOf(s[1].substring(0,4)),
+					Integer.valueOf(s[1].substring(4,6)) - 1,
+					Integer.valueOf(s[1].substring(6,8)),
+					Integer.valueOf(s[2]), 0);
+			do {
+				s = line.split("\\s+");
+				Date forecastDate = new Date(initialCal.getTimeInMillis() + Integer.valueOf(s[3]) * 3600000);
+				retVal.put(forecastDate, new Double(s[4]));
+			} while ((line = reader.readLine()) != null);
+			lastChecksumForPage = currentChecksum;
+		} catch (MalformedURLException e) {
+			logger.error("URL: '" + urlStr + "' could be invalid.");
+			throw e;
+		} catch (IOException e) {
+			throw e;
+		} finally {
+			if (reader != null)
+				try {
+					reader.close();
+				} catch (IOException e) {
+					//It is not possible to fix the things ant this point
+				}
+		}
+		
+		return retVal;
+	}
+	
+	private String getPageChecksum(InputStream is) throws IOException {
+		try {
+			Formatter formatter = new Formatter();
+			MessageDigest digest = MessageDigest.getInstance("SHA");
+			BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+			StringBuilder builder = new StringBuilder();
+			int c;
+			while ((c = reader.read()) != -1) {
+				builder.append((char)c);
+			}
+			for (byte b: digest.digest(builder.toString().getBytes())) {
+				formatter.format("%02x", b);
+			}
+			return formatter.toString();
+		} catch (NoSuchAlgorithmException ex) {
+			//If something goes wrong the value of the hash will be always different
+			return String.valueOf(System.currentTimeMillis());
+		} finally {
+			is.close();
+		}
+	}
+	
+	private double getInterpolatedPWVValue(Date ut) {
+		Date pd = null;
+		for (Date d: cachedPWVValues.keySet()) {
+			if (ut.compareTo(d) > 0) {
+				pd = d;
+			} else {
+				if (pd == null) {
+					logger.warn("Requested date: " + ut.toString() + 
+							" to get PWV value is outside of the range. Returning initial value got from forecast");
+					return cachedPWVValues.get(d);
+				}
+//				double pwv_low, pwv_high;
+//				pwv_low = cachedPWVValues.get(pd);
+//				pwv_high = cachedPWVValues.get(d);
+				double m = (cachedPWVValues.get(d) - cachedPWVValues.get(pd)) / (d.getTime() - pd.getTime());
+				double i = cachedPWVValues.get(pd) - m * pd.getTime() ;
+				return m * ut.getTime() + i;
+			}
+		}
+		
+		logger.warn("Requested date: " + ut.toString() + 
+							" to get PWV value is outside of the range. Returning last value got from forecast.");
+		return cachedPWVValues.get(pd);
+		
 	}
 
 }

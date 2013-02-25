@@ -120,4 +120,14 @@ public class MemoryWeatherHistoryDAOImpl extends WeatherHistoryDAOImpl
 			}
 		}
 	}
+
+	@Override
+	public boolean hasPWV() {
+		return false;
+	}
+
+	@Override
+	public double getPwvForTime(Date ut) throws UnsupportedOperationException {
+		throw new UnsupportedOperationException(this.getClass().getCanonicalName() + " does not have the pwv value. You should ask first!");
+	}
 }

@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherHistoryDAO.java,v 1.6 2012/05/03 21:54:08 javarias Exp $"
+ * "@(#) $Id: WeatherHistoryDAO.java,v 1.7 2013/02/25 22:31:45 javarias Exp $"
  */
 package alma.scheduling.datamodel.weather.dao;
 
@@ -60,4 +60,21 @@ public interface WeatherHistoryDAO {
      * @param ut Start time
      */
     public void setSimulationStartTime(Date ut);
+    
+    /**
+     * 
+     * @return <b>True</b> if the implementor class can give the PWV value for a given time.
+     * <b>False</b> if the PWV is not given by the implementation of this interface  
+     */
+    public boolean hasPWV();
+    
+    /**
+     * 
+     * @param ut the time which the pwv gas been requested.
+     * @return the value of the pwv, for the given time
+     * @throws UnsupportedOperationException if the implementor does not has access to the pwv value.
+     * 
+     * @see WeatherHistoryDAO#hasPWV()
+     */
+    public double getPwvForTime(Date ut) throws UnsupportedOperationException;
 }
