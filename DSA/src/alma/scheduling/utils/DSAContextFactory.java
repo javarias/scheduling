@@ -47,7 +47,6 @@ import javax.xml.transform.stream.StreamResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -65,7 +64,7 @@ import alma.scheduling.algorithm.SchedulingPolicyValidator;
  * 
  * @since ALMA 8.1.0
  * @author javarias
- * $Id: DSAContextFactory.java,v 1.20 2012/05/03 21:54:32 javarias Exp $
+ * $Id: DSAContextFactory.java,v 1.21 2013/02/26 23:10:30 javarias Exp $
  */
 public class DSAContextFactory extends CommonContextFactory {
 
@@ -97,35 +96,15 @@ public class DSAContextFactory extends CommonContextFactory {
 	}
 	
 	/**
-	 * Create a new instance of a spring context using the resource defined in 
-	 * scheduling properties file. 
-	 * <br/>
-	 * The property to be read from file is <b>dsa.policy.file</b>
+	 * Creates a new instance, or return the current instance of a spring context for scheduling
 	 * 
-	 * @see SchedulingContextFactory#getContext(String)
-	 * @return a spring Context initialized and ready to be used.
-	 * 
-	 * @since ALMA 8.1.1
+	 * @param policyFilePath the path of the DSA Policy file to initialize the spring context
+	 * @since ALMA-9.1.5
+	 * @return a spring Context for scheduling initialized and ready to be used.
 	 */
-	public static synchronized ApplicationContext getContextFromPropertyFile(){
+	public static synchronized ApplicationContext getContextFromPoliciesFile(String policyFilePath) {
 		if (context != null)
 			return context;
-		String path = SchedulingContextFactory.getPropertyFilePath();
-		InputStream isProp;
-		try {
-			isProp = new FileInputStream(path);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return getContext();
-		} 
-		Properties properties = new Properties();
-		try {
-			properties.load(isProp);
-		} catch (IOException e) {
-			e.printStackTrace();
-			return getContext();
-		}
-		String policyFilePath = properties.getProperty(DSA_POLICY_FILE_PROP);
 		if(policyFilePath == null)
 			return getContext();
 		String contextString = SchedulingPolicyValidator.convertPolicyFile(policyFilePath);
@@ -144,6 +123,55 @@ public class DSAContextFactory extends CommonContextFactory {
 		}
 		PoliciesContainersDirectory.getInstance().put(container.getUuid(), container);
 		return context;
+	}
+	
+	/**
+	 * Create a new instance, or return the current instance of a spring context for scheduling 
+	 * using the resource defined in scheduling properties file. 
+	 * <br/>
+	 * The property to be read from file is <b>dsa.policy.file</b>
+	 * 
+	 * This convenience method calls {@link #getContextFromPoliciesFile(String)} with parameter equals to the
+	 * the path read from scheduling property file.
+	 * 
+	 * @see SchedulingContextFactory#getContext(String)
+	 * @param filePath the path to the scheduling.properties file
+	 * @return a spring Context initialized and ready to be used.
+	 * 
+	 * @since ALMA 9.1.5
+	 */
+	public static synchronized ApplicationContext getContextFromPropertyFile(String filePath){
+		if (context != null)
+			return context;
+		String path = filePath;
+		InputStream isProp;
+		try {
+			isProp = new FileInputStream(path);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return getContext();
+		} 
+		Properties properties = new Properties();
+		try {
+			properties.load(isProp);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return getContext();
+		}
+		String policyFilePath = properties.getProperty(DSA_POLICY_FILE_PROP);
+		return getContextFromPoliciesFile(policyFilePath);
+
+	}
+
+	/**
+	 * Convenience method to call {@link #getContextFromPropertyFile(String)} with parameter equals to
+	 * {@link SchedulingContextFactory#getPropertyFilePath()}
+	 * 
+	 * @return a spring Context initialized and ready to be used.
+	 * @since ALMA 8.1.1
+	 */
+	public static synchronized ApplicationContext getContextFromPropertyFile() {
+		return getContextFromPropertyFile(SchedulingContextFactory.getPropertyFilePath());
 	}
 	
 	public static synchronized ApplicationContext getSimulationContextFromPropertyFile() throws IOException, ParserConfigurationException, SAXException, TransformerFactoryConfigurationError, TransformerException{
