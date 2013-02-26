@@ -23,7 +23,7 @@
  *
  */
 
-package alma.scheduling.psm.util;
+package alma.scheduling.psm.ph1m;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +41,8 @@ import alma.scheduling.dataload.DataLoader;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ScienceGrade;
 import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
+import alma.scheduling.psm.util.ProposalComparison;
+import alma.scheduling.psm.util.PsmContext;
 
 public class Ph1mSynchronizerImpl extends PsmContext implements
 		Ph1mSynchronizer {
@@ -65,8 +67,8 @@ public class Ph1mSynchronizerImpl extends PsmContext implements
 		RelationalDbConfig ph1mDbConfig;
 		try {
 			ph1mDbConfig = new RelationalDbConfig(logger);
-			Ph1mContextFactory.INSTANCE.init("/ph1mContext.xml", ph1mDbConfig);
-
+//			Ph1mContextFactory.INSTANCE.init("/ph1mContext.xml", ph1mDbConfig);
+			Ph1mContextFactory.INSTANCE.init("/ph1mContext.xml", logger);
 		} catch (DbConfigException e) {
 			throw new RuntimeException(e);
 		}

@@ -14,13 +14,14 @@ NORTH_AMERICA_EXEC = "NA"
 EUROPE_EXEC = "EU"
 ASIA_EXEC = "EA"
 CHILE_EXEC = "CHILE"
+OTHER_EXEC = "NONALMA"
 countryToExecutive = {
     "USA" : NORTH_AMERICA_EXEC,
     "Canada" : NORTH_AMERICA_EXEC,
     "Russia" : EUROPE_EXEC,
     "Germany" : EUROPE_EXEC,
     "France" : EUROPE_EXEC,
-    "Australia" : EUROPE_EXEC,
+    "Australia" : OTHER_EXEC,
     "Spain" : EUROPE_EXEC,
     "Netherlands" : EUROPE_EXEC,
     "Belgium" : EUROPE_EXEC,

@@ -45,11 +45,11 @@ import alma.scheduling.SchedulingPolicyFile;
 import alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl;
 import alma.scheduling.algorithm.PoliciesContainersDirectory;
 import alma.scheduling.algorithm.VerboseLevel;
+//import alma.scheduling.psm.ph1m.Ph1mSynchronizer;
+//import alma.scheduling.psm.ph1m.Ph1mSynchronizerImpl;
 import alma.scheduling.psm.sim.InputActions;
 import alma.scheduling.psm.sim.ReportGenerator;
 import alma.scheduling.psm.sim.Simulator;
-import alma.scheduling.psm.util.Ph1mSynchronizer;
-import alma.scheduling.psm.util.Ph1mSynchronizerImpl;
 import alma.scheduling.psm.util.Porter;
 import alma.scheduling.psm.util.PsmContext;
 import alma.scheduling.psm.util.SchedulingPolicyWrapper;
@@ -212,29 +212,31 @@ public class Console {
             
         }
         else if(args[0].compareTo("ph1m") == 0){
-            if(args[1].compareTo("list") == 0){
-            	PsmContext.setApplicationContext( DSAContextFactory.getSimulationContextFromPropertyFile() );
-            	Ph1mSynchronizer ph1mSychronizer = new Ph1mSynchronizerImpl(workDir); 
-            	try {
-					ph1mSychronizer.listPh1mProposals();
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-            }                
-            else if(args[1].compareTo("sync") == 0){
-            	PsmContext.setApplicationContext( DSAContextFactory.getSimulationContextFromPropertyFile() );
-            	Ph1mSynchronizer ph1mSychronizer = new Ph1mSynchronizerImpl(workDir); 
-            	try {
-					ph1mSychronizer.synchPh1m();
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-            }else{
-				help();
-            	System.exit(1);
-			}
+        	throw new RuntimeException("No ph1m synchronization available");
+//            if(args[1].compareTo("list") == 0){
+//            	
+////            	PsmContext.setApplicationContext( DSAContextFactory.getSimulationContextFromPropertyFile() );
+////            	Ph1mSynchronizer ph1mSychronizer = new Ph1mSynchronizerImpl(workDir); 
+////            	try {
+////					ph1mSychronizer.listPh1mProposals();
+////				} catch (RemoteException e) {
+////					// TODO Auto-generated catch block
+////					e.printStackTrace();
+////				}
+//            }                
+//            else if(args[1].compareTo("sync") == 0){
+////            	PsmContext.setApplicationContext( DSAContextFactory.getSimulationContextFromPropertyFile() );
+////            	Ph1mSynchronizer ph1mSychronizer = new Ph1mSynchronizerImpl(workDir); 
+////            	try {
+////					ph1mSychronizer.synchPh1m();
+////				} catch (RemoteException e) {
+////					// TODO Auto-generated catch block
+////					e.printStackTrace();
+////				}
+//            }else{
+//				help();
+//            	System.exit(1);
+//			}
         }
         else if (args[0].compareTo("export") == 0){
         	PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile() );

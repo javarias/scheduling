@@ -7,7 +7,7 @@
 
 import math
 import random
-from users import users
+from users import users, execLimit
 from sensitivity import pointSourceSensitivity
 
 ###############################################################################
@@ -178,7 +178,7 @@ def createObsProjectFile(i, params):
     file = open(fileName, 'w')
     srcName = "%.4f-%.3f" % (params[0][0], params[0][1])
     prjxml = prjHeader
-    prjxml = prjxml.replace("%piid%", pis[random.randint(0, len(pis)-1)])
+    prjxml = prjxml.replace("%piid%", pis[execLimit.items()[random.randint(0, len(execLimit)-1)][1]])
     prjxml = prjxml.replace("%score%", str(params[6]))
     prjxml = prjxml.replace("%rank%", str(int(params[7])))
     sbxml = sbTemplate

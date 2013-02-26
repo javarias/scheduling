@@ -21,7 +21,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.22 2012/02/09 18:48:32 javarias Exp $"
+# "@(#) $Id: Makefile,v 1.23 2013/02/26 18:26:02 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -158,7 +158,10 @@ SchedulingPMS_EXTRAS=alma/scheduling/psm/reports/general_report.xsl \
 					 alma/scheduling/algorithm/weather/data/simulation/WindDirection_good_15min_all.dat \
 					 alma/scheduling/algorithm/weather/data/simulation/WindSpeed_average_15min_all.dat \
 					 alma/scheduling/algorithm/weather/data/simulation/WindSpeed_bad_15min_all.dat \
-					 alma/scheduling/algorithm/weather/data/simulation/WindSpeed_good_15min_all.dat
+					 alma/scheduling/algorithm/weather/data/simulation/WindSpeed_good_15min_all.dat \
+					 alma/scheduling/algorithm/weather/data/simulation/PathLenght_fluct_zenith_ave_all.dat \
+					 alma/scheduling/algorithm/weather/data/simulation/PathLenght_fluct_zenith_good_all.dat \
+					 alma/scheduling/algorithm/weather/data/simulation/PathLenght_fluct_zenith_bad_all.dat
 					 
 SchedulingPMSCli_DIRS=alma/scheduling/psm/cli
 

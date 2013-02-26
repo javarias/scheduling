@@ -1,10 +1,11 @@
-package alma.scheduling.psm.util;
+package alma.scheduling.psm.ph1m;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
 
 import alma.scheduling.datamodel.obsproject.ObsProject;
+import alma.scheduling.psm.util.ProposalComparison;
 
 public interface Ph1mSynchronizer extends Remote {
 	

@@ -13,38 +13,39 @@
     </copyright>
 
     <authorgroup>
-      <author>
-        <firstname>Rafael</firstname>
-        <surname>Hiriart</surname>
-        <affiliation>
-          <orgname>NRAO</orgname>
-          <address>
-            <email>rhiriart@nrao.edu</email>
+        <author>
+            <firstname>Jorge</firstname>
+            <surname>Avarias</surname>
+            <affiliation>
+                <orgname>NRAO</orgname>
+                <address>
+            <email>javarias@nrao.edu</email>
           </address>
-        </affiliation>
-      </author>
-
+            </affiliation>
+        </author>
+        
       <author>
         <firstname>Arturo</firstname>
         <surname>Hoffstadt</surname>
           <affiliation>
-          <orgname>UTFSM</orgname>
+          <orgname>ALMA</orgname>
           <address>
-            <email>ahoffsta@inf.utfsm.cl</email>
+            <email>ahoffsta@alma.cl</email>
           </address>
         </affiliation>
       </author>
       
-      <author>
-        <firstname>Jorge</firstname>
-        <surname>Avarias</surname>
-        <affiliation>
-          <orgname>NRAO</orgname>
-          <address>
-            <email>javarias@nrao.edu</email>
+    <author>
+          <firstname>Rafael</firstname>
+          <surname>Hiriart</surname>
+          <affiliation>
+              <orgname>NRAO</orgname>
+              <address>
+            <email>rhiriart@nrao.edu</email>
           </address>
-        </affiliation>
+          </affiliation>
       </author>
+      
     </authorgroup>
 
     <legalnotice>

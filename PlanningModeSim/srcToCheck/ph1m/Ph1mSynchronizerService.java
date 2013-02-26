@@ -23,13 +23,14 @@
  *
  */
 
-package alma.scheduling.psm.util;
+package alma.scheduling.psm.ph1m;
 
 
 import java.util.List;
 import java.util.logging.Logger;
 
 import alma.scheduling.datamodel.obsproject.ObsProject;
+import alma.scheduling.psm.util.ProposalComparison;
 
 public class Ph1mSynchronizerService implements Ph1mSynchronizer {
 
