@@ -39,6 +39,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 import java.util.TimeZone;
 import java.util.TreeMap;
@@ -181,7 +182,7 @@ public class ReportGenerator extends PsmContext {
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
 
-		TreeMap<String, String> props = new TreeMap<String, String>();
+		TreeMap<String, Object> props = new TreeMap<String, Object>();
 //		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
 //		props.put("scientificTime", Double.toString( outDao.getResults().get(0).getScientificTime() ) );
 //		props.put("seasonStart", formatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
@@ -271,7 +272,7 @@ public class ReportGenerator extends PsmContext {
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
 
-		TreeMap<String, String> props = new TreeMap<String, String>();
+		TreeMap<String, Object> props = new TreeMap<String, Object>();
 		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
 		props.put("scientificTime", Double.toString( outDao.getResults().get(0).getScientificTime() ) );
 		props.put("seasonStart", dateFormatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
@@ -368,7 +369,7 @@ public class ReportGenerator extends PsmContext {
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
 
-		TreeMap<String, String> props = new TreeMap<String, String>();
+		TreeMap<String, Object> props = new TreeMap<String, Object>();
 		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
 		props.put("scientificTime", Double.toString( outDao.getResults().get(0).getScientificTime() ) );
 		props.put("seasonStart", dateFormatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
@@ -430,7 +431,7 @@ public class ReportGenerator extends PsmContext {
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
 
-		TreeMap<String, String> props = new TreeMap<String, String>();
+		TreeMap<String, Object> props = new TreeMap<String, Object>();
 		
 		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
 		props.put("seasonStart", dateFormatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
@@ -542,7 +543,7 @@ public class ReportGenerator extends PsmContext {
 		ExecutiveDAO execDao = (ExecutiveDAO) ctx.getBean("execDao");
 
 		ObservingSeason currObsSeason = execDao.getCurrentSeason();
-		TreeMap<String, String> props = new TreeMap<String, String>();
+		TreeMap<String, Object> props = new TreeMap<String, Object>();
 //		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
 		props.put("seasonStart", dateFormatter.format( currObsSeason.getStartDate() ) );
 		props.put("seasonEnd", dateFormatter.format( currObsSeason.getEndDate() ) );
@@ -628,7 +629,7 @@ public class ReportGenerator extends PsmContext {
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
 
 
-		TreeMap<String, String> props = new TreeMap<String, String>();
+		TreeMap<String, Object> props = new TreeMap<String, Object>();
 		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
 		props.put("seasonStart", dateFormatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
 		props.put("seasonEnd", dateFormatter.format( outDao.getResults().get(0).getObsSeasonEnd() ) );
