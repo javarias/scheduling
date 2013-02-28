@@ -23,7 +23,6 @@ package alma.scheduling.algorithm.weather;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import alma.scheduling.algorithm.astro.SystemTemperatureCalculator;
 import alma.scheduling.algorithm.modelupd.ModelUpdater;
@@ -60,10 +59,11 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
 
         // get current PWV
         double pwv;
-        //Check if the time to get the PWV is current of future
+        //Check if the time to get the PWV is current or future
         //check if dao supports get value of PWV first
         //In practical terms the current time is now plus half an hour in the future
-        if (weatherDao.hasPWV() && date.getTime() > System.currentTimeMillis() + 29 * 60 * 1000) {
+        //This will work only for online system, for simulation the weather DAo doesn't support the PWV value
+        if (weatherDao.hasPWV() && (date.getTime() < System.currentTimeMillis() + (29 * 60 * 1000))) {
         	TemperatureHistRecord tr = weatherDao.getTemperatureForTime(date);
         	ErrorHandling.getInstance().info("temperature record: time = " + tr.getTime() + "; value = "
         			+ tr.getValue());
@@ -133,13 +133,22 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
             // get current PWV
             System.out.println("Start Calculations");
             Date t1 = new Date();
-            TemperatureHistRecord tr = weatherDao.getTemperatureForTime(date);
-            ErrorHandling.getInstance().debug("temperature record: time = " + tr.getTime()
-                    + "; value = " + tr.getValue());
-            HumidityHistRecord hr = weatherDao.getHumidityForTime(date);
-            ErrorHandling.getInstance().debug("humidity record: time = " + hr.getTime()
-                    + "; value = " + hr.getValue());
-            double pwv = estimatePWV(hr.getValue(), tr.getValue()); // mm
+            //Check if the time to get the PWV is current or future
+            //check if dao supports get value of PWV first
+            //In practical terms the current time is now plus half an hour in the future
+            //This will work only for online system, for simulation the weather DAo doesn't support the PWV value
+            double pwv;
+            if (weatherDao.hasPWV() && (date.getTime() < System.currentTimeMillis() + (29 * 60 * 1000))) {
+	            TemperatureHistRecord tr = weatherDao.getTemperatureForTime(date);
+	            ErrorHandling.getInstance().debug("temperature record: time = " + tr.getTime()
+	                    + "; value = " + tr.getValue());
+	            HumidityHistRecord hr = weatherDao.getHumidityForTime(date);
+	            ErrorHandling.getInstance().debug("humidity record: time = " + hr.getTime()
+	                    + "; value = " + hr.getValue());
+	            pwv = estimatePWV(hr.getValue(), tr.getValue()); // mm
+            } else {
+            	pwv = weatherDao.getPwvForTime(date);
+            }
 
             long deltaT = (long) (projTimeIncr * 3600.0 * 1000.0); // delta T in
             // milliseconds
