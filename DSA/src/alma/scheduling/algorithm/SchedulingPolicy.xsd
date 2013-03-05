@@ -98,13 +98,14 @@
 				<xs:element name="ProjectCodeSelector" type="ProjectCodeSelectorT"/>
 				<xs:element name="ProjectGradeSelector" type="ProjectGradeSelectorT"/>
 				<xs:element name="CSVProjectSelector" type="CSVProjectSelectorT"/>
+				<xs:element name="BandSelector" type="BandSelectorT"/>
 			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>
 
 	<xs:complexType name="ScorersT">
 		<xs:annotation>
-			<xs:documentation>List of usabe Scorers</xs:documentation>
+			<xs:documentation>List of usable Scorers</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
 			<xs:choice minOccurs="0" maxOccurs="unbounded">
