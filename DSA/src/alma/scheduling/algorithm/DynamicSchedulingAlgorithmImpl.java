@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.17 2011/03/17 22:58:03 javarias Exp $"
+ * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.18 2013/03/05 22:51:34 javarias Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -205,10 +205,11 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
             } catch (NoSbSelectedException e) {
                 logger.warn("DSA cannot continue if selector " + s.toString()
                         + " cannot get at least one SB");
-                throw new NoSbSelectedException(e.getMessage());
+                throw new NoSbSelectedException(e);
             } catch (NullPointerException e) {
                 logger.warn("DSA cannot continue if selector " + s.toString()
                         + " cannot get at least one SB");
+                throw new NoSbSelectedException(e);
             }
             i++;
         }
