@@ -80,6 +80,21 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
                 </bean>
             </xsl:if>
             
+            <xsl:if test="count(SelectionCriteria/BandSelector) = 1">
+            	<bean id="{concat('schedBlockBandSelector', '_', @name)}" class="alma.scheduling.algorithm.obsproject.BandSelector"
+            		scope="prototype">
+            		<constructor-arg><value>bandSelector</value></constructor-arg>
+            		<property name="schedBlockDao" ref="sbDao"/>
+            		<property name="allowedBands">
+            			<set>
+            			<xsl:for-each select="SelectionCriteria/BandSelector/band">
+            				<value><xsl:value-of select="text()"/></value>
+            			</xsl:for-each>
+            			</set>
+            		</property>
+            	</bean>
+            </xsl:if>
+            
             
             <bean id="{concat('preUpdateSelector', '_', @name)}" class="alma.scheduling.algorithm.sbselection.MasterSelector"
                 scope="prototype">
@@ -125,6 +140,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
                         </xsl:if>
                         <xsl:if test="count(SelectionCriteria/ProjectGradeSelector) = 1">
                             <ref bean="{concat('projectGradeSelector', '_', @name)}"/>
+                        </xsl:if>
+                        <xsl:if test="count(SelectionCriteria/BandSelector) = 1">
+                        	<ref bean="{concat('schedBlockBandSelector', '_', @name)}" />
                         </xsl:if>
                     </set>
                 </property>

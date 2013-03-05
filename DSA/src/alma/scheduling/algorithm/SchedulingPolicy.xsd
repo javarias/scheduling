@@ -213,6 +213,31 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
+	
+	<xs:complexType name="BandSelectorT">
+		<xs:annotation>
+			<xs:documentation>This selector adds a constraint to select only the Scheduling Block which have
+				their representative bands matching the selection criteria defined in this selector.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="band" minOccurs="1" maxOccurs="10">
+				<xs:simpleType>
+					<xs:restriction base="xs:int">
+						<xs:enumeration value="1"/>
+						<xs:enumeration value="2"/>
+						<xs:enumeration value="3"/>
+						<xs:enumeration value="4"/>
+						<xs:enumeration value="5"/>
+						<xs:enumeration value="6"/>
+						<xs:enumeration value="7"/>
+						<xs:enumeration value="8"/>
+						<xs:enumeration value="9"/>
+						<xs:enumeration value="10"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
 
 	<xs:complexType name="OpacitySelectorT">
 		<xs:annotation>
