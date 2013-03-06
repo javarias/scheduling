@@ -1,0 +1,3 @@
+#!/bin/bash
+
+acsStartJava -maxHeapSize 1024m alma.scheduling.psm.cli.DailyPlanningSim $@

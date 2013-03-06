@@ -21,7 +21,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.23 2013/02/26 18:26:02 javarias Exp $"
+# "@(#) $Id: Makefile,v 1.24 2013/03/06 21:46:22 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -86,7 +86,7 @@ lllll_OBJECTS   =
 #
 # Scripts (public and local)
 # ----------------------------
-SCRIPTS         =
+SCRIPTS         := schedulingDailyPlanningSim
 #SCRIPTS_L       =
 
 #
