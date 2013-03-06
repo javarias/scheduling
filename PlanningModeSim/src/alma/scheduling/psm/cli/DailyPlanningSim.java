@@ -40,6 +40,7 @@ public class DailyPlanningSim {
 	private ApplicationContext context;
 	private String arrayName;
 	private boolean answerYesToQuestions;
+	private int selectedArrayConfig;
 	
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"); 
 	private static final long OBSERVING_TIME_MS = 80 * 60 * 1000; 
@@ -90,6 +91,12 @@ public class DailyPlanningSim {
 				.withDescription("Answers yes to all the questions")
 				.create("y");
 		options.addOption(yes);
+		Option configToUse = OptionBuilder.withArgName("number").withLongOpt("array-config").hasArg().
+				withDescription("The array configuration read from array-config-file to use in the simulation. By default will use the first one." +
+						"To select another use this option with the number of the configuration starting from 0. e.g. 1st - 0, 2nd - 1 and so on.").
+						create("c");
+		options.addOption(configToUse);
+		
 	}
 	
 	public void help() {
@@ -264,6 +271,8 @@ public class DailyPlanningSim {
 			policyFile = cl.getOptionValue('d');
 		if(cl.hasOption('y'))
 			sim.answerYesToQuestions = true;
+		if(cl.hasOption('c'))
+			sim.selectedArrayConfig = Integer.valueOf(cl.getOptionValue('c'));
 		
 		ArrayConfigurationLiteReader arrConfReader = null;
 		List<ArrayConfiguration> arrayConfigList = null;
@@ -281,9 +290,15 @@ public class DailyPlanningSim {
 				}
 		}
 		
+		if (sim.selectedArrayConfig > (arrayConfigList.size() - 1)) {
+			System.err.println("Selected invalid array configuration. There are only " + arrayConfigList.size() + " configurations available");
+			System.err.println("Array Config file path: " + arrayConfigFile.getAbsolutePath());
+			System.exit(1);
+		}
+		
 		if (policyFile != null)
-			sim.runSimulation(startSim, endSim, arrayConfigList.get(0), policyName, policyFile);
+			sim.runSimulation(startSim, endSim, arrayConfigList.get(sim.selectedArrayConfig), policyName, policyFile);
 		else
-			sim.runSimulation(startSim, endSim, arrayConfigList.get(0), policyName);
+			sim.runSimulation(startSim, endSim, arrayConfigList.get(sim.selectedArrayConfig), policyName);
 	}
 }
