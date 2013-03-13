@@ -1,14 +1,20 @@
 package alma.scheduling.psm.cli;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
+
+import net.sf.jasperreports.engine.util.FileBufferedWriter;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -29,7 +35,9 @@ import alma.scheduling.algorithm.sbranking.SBRank;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.observatory.dao.ArrayConfigurationLiteReader;
+import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
 import alma.scheduling.psm.util.SimpleClient;
 import alma.scheduling.utils.DSAContextFactory;
 
@@ -37,6 +45,7 @@ public class DailyPlanningSim {
 
 	private Options options;
 	private TreeMap<Date, SchedBlock> observationList;
+	private TreeMap<Date, List<SBRank>> resultsList;
 	private ApplicationContext context;
 	private String arrayName;
 	private boolean answerYesToQuestions;
@@ -48,6 +57,7 @@ public class DailyPlanningSim {
 	public DailyPlanningSim() {
 		initializeOptions();
 		observationList = new TreeMap<Date, SchedBlock>();
+		resultsList = new TreeMap<Date, List<SBRank>>();
 		answerYesToQuestions = false;
 	}
 
@@ -154,6 +164,8 @@ public class DailyPlanningSim {
 				}
 			}
 		}
+		
+		writeResultsToFiles();
 	}
 	
 	private Date step(DynamicSchedulingAlgorithm dsa, Date selectionTime) {
@@ -163,6 +175,7 @@ public class DailyPlanningSim {
 			dsa.selectCandidateSB(selectionTime);
 			dsa.updateCandidateSB(selectionTime);
 			results = dsa.rankSchedBlocks(selectionTime);
+			results = sortScores(results);
 			sb = dsa.getSelectedSchedBlock();
 		} catch (NoSbSelectedException e) {
 			System.out.println("No suitable SchedBlocks have been found for time: " + dateFormat.format(selectionTime));
@@ -170,6 +183,7 @@ public class DailyPlanningSim {
 		}
 		
 		if (results != null && sb != null) {
+			resultsList.put(selectionTime, results);
 			observationList.put(selectionTime, sb);
 			return new Date(selectionTime.getTime() + OBSERVING_TIME_MS);
 		}
@@ -180,12 +194,14 @@ public class DailyPlanningSim {
 	}
 	
 	private void printResultstoScreen() {
+		ObsProjectDao prjDao = (ObsProjectDao) context.getBean(DSAContextFactory.SCHEDULING_OBSPROJECT_DAO_BEAN);
 		System.out.println("-==Results==-");
-		System.out.println("Observation Time (UTC)\tSchedBlock UID\t\tProject grade");
+		System.out.println("Observation Time (UTC)\tSchedBlock UID\t\tProject Code\t\tProject grade");
 		for (Date d: observationList.keySet()) {
 			SchedBlock sb = observationList.get(d);
+			ObsProject prj = prjDao.findByEntityId(sb.getProjectUid());
 			System.out.println(
-					String.format("%s\t%s\t%s", dateFormat.format(d), sb.getUid(), sb.getLetterGrade()));
+					String.format("%s\t%s\t%s\t%s", dateFormat.format(d), sb.getUid(), prj.getCode(), sb.getLetterGrade()));
 		}
 	}
 	
@@ -225,6 +241,86 @@ public class DailyPlanningSim {
 			e.printStackTrace();
 		}
 		return answer;
+	}
+	
+	private void writeResultsToFiles() {
+		String currentPath = null;
+		try {
+			currentPath = new java.io.File( "." ).getCanonicalPath();
+		} catch (IOException e) {
+			//The current path cannot be read nothin to do
+			e.printStackTrace();
+		}
+		
+		String answer = getAnswerForQuestion(
+				"Would you like to save the results to " + currentPath + "? (Y/n)" , this.answerYesToQuestions );
+		boolean done = false;
+		while (!done) {
+			if (answer.compareToIgnoreCase("n") == 0)
+				done = true;
+			else if (answer.compareToIgnoreCase("y") == 0 || answer.equals("")) {
+				System.out.println("Wrting to files...");
+				ObsProjectDao prjDao = (ObsProjectDao) context.getBean(DSAContextFactory.SCHEDULING_OBSPROJECT_DAO_BEAN);
+				done = true;
+				try {
+					if (observationList.size() == 0 ) {
+						//No results, nothing to do here
+						return;
+					}
+					System.out.print("summary.csv ...");
+					BufferedWriter summary = new BufferedWriter(new FileWriter("summary.csv"));
+					summary.write("\"time\",\"sb uid\",\"project code\",\"project grade\"\n");
+					for (Date d: observationList.keySet()) {
+						SchedBlock sb = observationList.get(d);
+						ObsProject prj = prjDao.findByEntityId(sb.getProjectUid());
+						String line = String.format("%s,%s,%s,%s\n", dateFormat.format(d), sb.getUid(), prj.getCode(), sb.getLetterGrade());
+						summary.write(line);
+					}
+					summary.close();
+					System.out.println("DONE.");
+					if (resultsList.size() == 0) {
+						//No results, nothing to so here
+						return;
+					}
+					System.out.print("details.csv ...");
+					BufferedWriter details = new BufferedWriter(new FileWriter("details.csv"));
+					String line = "\"time\",\"sb uid\",\"project code\",\"position\"";
+					for (SBRank scorer: resultsList.firstEntry().getValue().get(0).getBreakdownScore())
+						line += ",\"" + scorer.getDetails() + "\"";
+					line += ",\"final score\"\n";
+					details.write(line);
+					for (Date d: resultsList.keySet()) {
+						int position = 0;
+						for (SBRank r: resultsList.get(d)) {
+							SchedBlock sb = observationList.get(d);
+							ObsProject prj = prjDao.findByEntityId(sb.getProjectUid());
+							line = String.format("%s,%s,%s,%d", dateFormat.format(d), r.getUid(), prj.getCode(), (position + 1) );
+							for (SBRank scorer: r.getBreakdownScore())
+								line += "," + scorer.getRank();
+							line += "," + r.getRank() + "\n";
+							details.write(line);
+							position++;
+						}
+					}
+					details.close();
+					System.out.println("DONE.");
+				} catch (IOException e) {
+					e.printStackTrace();
+					return;
+				}
+			}
+		}
+	}
+	
+	private List<SBRank> sortScores(List<SBRank> scores) {
+		if (scores.size() == 0)
+			return scores;
+		Collections.sort(scores);
+		ArrayList<SBRank> descSortedList =  new ArrayList<SBRank>(scores.size());
+		for (int i = scores.size() - 1; i >= 0; i--){
+			descSortedList.add(scores.get(i));
+		}
+		return descSortedList;
 	}
 	
 	public static void main(String[] args) {
