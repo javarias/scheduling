@@ -101,6 +101,7 @@ public class ConfigurationDaoImpl extends GenericDaoImpl implements
      */
     @Override
     public void updateConfig(Date lastUpdateTime){
+    	if (config == null ) getConfiguration();
     	config.setLastLoad(lastUpdateTime);
     	saveOrUpdate(config);
     }
