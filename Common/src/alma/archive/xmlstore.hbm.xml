@@ -3,6 +3,7 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
 	<class name="alma.archive.xml.ObsProjectEntity" table="XML_OBSPROJECT_ENTITIES">
+<!--		<cache usage="read-only"/> -->
 		<id name="uid" type="string">
 			<column name="ARCHIVE_UID" />
 			<generator class="assigned"></generator>
@@ -12,6 +13,7 @@
 		</property>
 	</class>
 	<class name="alma.archive.xml.ObsProposalEntity" table="XML_OBSPROPOSAL_ENTITIES">
+<!--		<cache usage="read-only"/> -->
 		<id name="uid" type="string">
 			<column name="ARCHIVE_UID" />
 			<generator class="assigned"></generator>
@@ -21,6 +23,7 @@
 		</property>
 	</class>
 	<class name="alma.archive.xml.ObsReviewEntity" table="XML_OBSREVIEW_ENTITIES">
+<!--		<cache usage="read-only"/> -->
 		<id name="uid" type="string">
 			<column name="ARCHIVE_UID" />
 			<generator class="assigned"></generator>
@@ -29,7 +32,8 @@
 			<column name="XML" />
 		</property>
 	</class>
-		<class name="alma.archive.xml.SchedBlockEntity" table="XML_SCHEDBLOCK_ENTITIES">
+	<class name="alma.archive.xml.SchedBlockEntity" table="XML_SCHEDBLOCK_ENTITIES">
+<!--		<cache usage="read-only"/> -->	
 		<id name="uid" type="string">
 			<column name="ARCHIVE_UID" />
 			<generator class="assigned"></generator>

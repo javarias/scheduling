@@ -8,8 +8,8 @@
 	<session-factory>
 
 		<property name="connection.url">jdbc:oracle:thin:@localhost:1521:ALMA</property>
-		<property name="connection.username">alma</property>
-		<property name="connection.password">alma$dba</property>
+		<property name="connection.username">none</property>
+		<property name="connection.password">none</property>
 		<property name="connection.driver_class">oracle.jdbc.driver.OracleDriver</property>
 		<property name="cache.provider_class"> org.hibernate.cache.NoCacheProvider </property>
 		<property name="dialect">org.hibernate.dialect.ExtendedOracle10gDialect</property>
