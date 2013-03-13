@@ -53,7 +53,6 @@ import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.dao.ProjectImportEvent.ImportStatus;
 import alma.scheduling.utils.ErrorHandling;
 import alma.scheduling.utils.SchedulingProperties;
-import alma.xmlentity.XmlEntityStruct;
 
 /**
  * @author dclarke
