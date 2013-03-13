@@ -106,11 +106,6 @@ public abstract class AbstractXMLStoreProjectDao
 //    	ComponentDiagnosticTypes.PROFILING
     };
     
-    private final static ComponentDiagnosticTypes[] stateSystemDiags = {
-//    	ComponentDiagnosticTypes.LOGGING,
-//    	ComponentDiagnosticTypes.PROFILING
-    };
-    
     //Import Notifications
     protected final XMLStoreImportNotifier notifier;
     
@@ -156,10 +151,10 @@ public abstract class AbstractXMLStoreProjectDao
         		client.getContainerServices().getLogger());
 		this.entitySerializer = EntitySerializer.getEntitySerializer(
         		client.getContainerServices().getLogger());
-		if (SchedulingProperties.isSchedulingUsingExperimetalArchiveIF())
-			archive = new HibernateArchiveInterface(this.xmlStore, this.stateArchive, entityDeserializer, entitySerializer);
-		else
+		if (SchedulingProperties.isSchedulingUsingClasicArchiveIF())
 			archive = new CorbaComponentArchiveInterface(this.xmlStore, this.stateArchive, entityDeserializer, entitySerializer);
+		else
+			archive = new HibernateArchiveInterface(this.xmlStore, this.stateArchive, entityDeserializer, entitySerializer);
 		bookie = new Bookkeeper(archive, logger);
 	}
 	
@@ -169,15 +164,14 @@ public abstract class AbstractXMLStoreProjectDao
 		this.logger = containerServices.getLogger();
 		this.xmlStore = componentFactory.getDefaultArchive(xmlStoreDiags);
 		this.stateArchive = StateSystemContextFactory.INSTANCE.getStateArchive();
-		this.stateArchive = componentFactory.getDefaultStateSystem();
 		this.entityDeserializer = EntityDeserializer.getEntityDeserializer(
         		containerServices.getLogger());
 		this.entitySerializer = EntitySerializer.getEntitySerializer(
         		containerServices.getLogger());
-		if (SchedulingProperties.isSchedulingUsingExperimetalArchiveIF())
-			archive = new HibernateArchiveInterface(this.xmlStore, this.stateArchive, entityDeserializer, entitySerializer);
-		else
+		if (SchedulingProperties.isSchedulingUsingClasicArchiveIF())
 			archive = new CorbaComponentArchiveInterface(this.xmlStore, this.stateArchive, entityDeserializer, entitySerializer);
+		else
+			archive = new HibernateArchiveInterface(this.xmlStore, this.stateArchive, entityDeserializer, entitySerializer);
 		bookie = new Bookkeeper(archive, logger);
 	}
 	
@@ -264,6 +258,15 @@ public abstract class AbstractXMLStoreProjectDao
         for (alma.entity.xmlbinding.obsproject.ObsProject apdmProject : archive.obsProjects()) {
         	getAPDMSchedBlocksFor(archive, apdmProject);
         }
+//        executor.shutdown();
+//        try {
+//			if (!executor.awaitTermination(1, TimeUnit.HOURS)) {
+//				executor.shutdownNow();
+//			}
+//		} catch (InterruptedException e) {
+//			executor.shutdownNow();
+//			Thread.currentThread().interrupt();
+//		}
         end = new Date();
         logger.fine("Getting apdm SchedBlocks from archive took " + (end.getTime() - start.getTime()) + " ms");
         try {

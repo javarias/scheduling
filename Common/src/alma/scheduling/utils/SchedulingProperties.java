@@ -23,7 +23,7 @@
  * Centralised place for querying the scheduling properties.
  * 
  * @author dclarke
- * $Id: SchedulingProperties.java,v 1.11 2012/09/10 22:40:06 javarias Exp $
+ * $Id: SchedulingProperties.java,v 1.12 2013/03/13 18:06:43 javarias Exp $
  */
 package alma.scheduling.utils;
 
@@ -59,7 +59,9 @@ public abstract class SchedulingProperties {
 	/** This should enable the import of XML projects. */
 	public static String PROP_PMS_XML_PROJECT_IMPORT_FLAG  = "scheduling.pms.xmlProjects";
 	
-	private static String PROP_USE_EXPERIMENTAL_HIBERNATE_XMLSTORE_IF = "scheduling.archive.hibernate";
+	/** This enable the classic method to get data from archive using CORBA components*/
+	private static String PROP_USE_CLASSIC_ARCHIVE_IF		= "scheduling.archive.classic";
+//	private static String PROP_USE_EXPERIMENTAL_HIBERNATE_XMLSTORE_IF = "scheduling.archive.hibernate";
 	/* End of the properties we know about
 	 * ============================================================= */
 	
@@ -99,10 +101,15 @@ public abstract class SchedulingProperties {
 		return env != null;
 	}
 	
-	public static boolean isSchedulingUsingExperimetalArchiveIF() {
-		final String env = System.getProperty(PROP_USE_EXPERIMENTAL_HIBERNATE_XMLSTORE_IF);
+	public static boolean isSchedulingUsingClasicArchiveIF() {
+		final String env = System.getProperty(PROP_USE_CLASSIC_ARCHIVE_IF);
 		return env != null;
 	}
+	
+//	public static boolean isSchedulingUsingExperimetalArchiveIF() {
+//		final String env = System.getProperty(PROP_USE_EXPERIMENTAL_HIBERNATE_XMLSTORE_IF);
+//		return env != null;
+//	}
 	/* End of Boolean properties
 	 * ============================================================= */
 	
