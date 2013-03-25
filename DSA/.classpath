@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Common"/>
+	<classpathentry kind="con" path="acs.INTLIST_CONTAINER/export/home/ruffles/javarias/INTLIST/jar,zip"/>
+	<classpathentry kind="con" path="acs.ACSROOT_CONTAINER/alma/ACS-current/jar,zip"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Common-HEAD"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ACSROOT"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/INTROOT"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JACORB"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

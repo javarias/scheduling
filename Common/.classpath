@@ -2,9 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="con" path="acs.INTLIST_CONTAINER/export/home/ruffles/javarias/INTLIST/jar,zip"/>
+	<classpathentry kind="con" path="acs.ACSROOT_CONTAINER/alma/ACS-current/jar,zip"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="acs.INTROOT_CONTAINER/export/home/flaminia/dclarke/ALMA/Introots/TRUNK/HEAD/jar,zip"/>
-	<classpathentry kind="con" path="acs.INTLIST_CONTAINER/export/home/flaminia/dclarke/ALMA/Intlists/TRUNK/HEAD/jar,zip"/>
-	<classpathentry kind="con" path="acs.ACSROOT_CONTAINER/alma/ACS-10.0/jar,zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
