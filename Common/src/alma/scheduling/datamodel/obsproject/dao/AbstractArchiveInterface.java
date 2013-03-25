@@ -529,6 +529,7 @@ public abstract class AbstractArchiveInterface implements ArchiveInterface  {
 			ProjectStatusEntityT idT = new ProjectStatusEntityT();  idT.setEntityId(id);
 			try {
 				result = stateArchive.getProjectStatus(idT);
+				projectStatuses.put(id, result);
 			} catch (AcsJstatearchiveexceptionsEx ex) {
 				throw new EntityException(ex);
 			}
