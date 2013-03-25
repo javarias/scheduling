@@ -10,7 +10,7 @@
 export ACS_INSTANCE
 export ACS_TMP
 export ACS_CDB
-export ACS_LOG_STDOUT=4
+export ACS_LOG_STDOUT=1
 export RUNLOCATION
 JAVA_OPTIONS="$JAVA_OPTIONS -Dscheduling.convertPhase2ToReady"
 export JAVA_OPTIONS
@@ -145,12 +145,14 @@ startACS() {
         let COUNTER++
     done
     N=${#CONTAINERS[*]}
+	EXTRA_OPTIONS=""
     for (( COUNTER=0; COUNTER<$N; COUNTER++)) ; do
         CONTAINER_TYPE="java"
         
         echo "${CONTAINERS[$COUNTER]}" | grep -q java
         if [ $? -eq 0 ] ; then
             CONTAINER_TYPE="java"
+			EXTRA_OPTIONS="--passthroughProcessStart=-maxHeapSize=512m"
         fi
         echo "${CONTAINERS[$COUNTER]}" | grep -q python
         if [ $? -eq 0 ] ; then
@@ -166,7 +168,7 @@ startACS() {
         
         logfile=$ACS_TMP/container-$c.log
         acsutilBlock -t 60 -f $LOG_FILE -b "components activated." \
-           -x acsStartContainer -$CONTAINER_TYPE ${CONTAINERS[$COUNTER]} > \
+           -x acsStartContainer -$CONTAINER_TYPE ${CONTAINERS[$COUNTER]} $EXTRA_OPTIONS > \
            $ACS_TMP/acsutilBlock-$c.log 2>&1
         
     done

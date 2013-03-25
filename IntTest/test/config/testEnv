@@ -9,7 +9,7 @@ ACS_TMP=`pwd`/tmp_scheduling
 ACS_LOCK=${ACS_TMP}/.running
 ACS_INSTANCE=0
 ACS_CONTAINERS="ACC/javaContainer ACC/pythonContainer OBOPS/ACC/javaContainer SCHEDULING/ACC/javaContainer"
-IDL_FILES_TO_LOAD="SciPipeManager.idl QlDisplayManager.idl CurrentWeather.idl ControlMasterInterfaces.idl ControlDataInterfaces.idl ControlArrayInterfaces.idl TMCDBComponent.idl TMCDBAccessIF.idl projectlifecycle.idl Simulator.idl ProjectRepositoryIF.idl SchedulingArchiveUpdater.idl SchedulingArray.idl SchedulingTestArray.idl"
+IDL_FILES_TO_LOAD="QlDisplayManager.idl CurrentWeather.idl ControlMasterInterfaces.idl ControlDataInterfaces.idl ControlArrayInterfaces.idl TMCDBComponent.idl TMCDBAccessIF.idl projectlifecycle.idl Simulator.idl ProjectRepositoryIF.idl SchedulingArchiveUpdater.idl SchedulingArray.idl SchedulingTestArray.idl"
 
 # Hibernate database configuration
 DBDIR=./hsqldb
@@ -25,10 +25,10 @@ export SCHEDULING_TEST_OPTIONS="-Dscheduling.`whoami` -Dscheduling.autoPopupPlug
 
 JAVA_OPTIONS="-Darchive.configFile=$TESTDIR/archiveConfig.properties $JAVA_OPTIONS"
 JAVA_OPTIONS="-DACS.managerhost=localhost $JAVA_OPTIONS"
-JAVA_OPTIONS="-Xmx512M $JAVA_OPTIONS"
+JAVA_OPTIONS="-Xmx1024m $JAVA_OPTIONS"
 JAVA_OPTIONS="-Dalma.run.location=$RUNLOCATION $JAVA_OPTIONS"
 JAVA_OPTIONS="$SCHEDULING_TEST_OPTIONS $JAVA_OPTIONS"
-JAVA_OPTIONS="-DACS.log.minlevel.namedloggers=hibernate@SCHEDULING/ACC/javaContainer=1,1 $JAVA_OPTIONS"
+JAVA_OPTIONS="$JAVA_OPTIONS -DBLCorrelator=CORRELATOR_12m_1QUADRANT"
 
 PYTHONPATH="${PYTHONPATH}:${TESTDIR}"
 RUNLOCATION=tst
