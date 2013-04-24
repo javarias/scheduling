@@ -17,12 +17,6 @@ import alma.lifecycle.stateengine.StateEngine;
 import alma.lifecycle.stateengine.constants.Role;
 import alma.lifecycle.stateengine.constants.Subsystem;
 import alma.scheduling.external.CalibratorCheckPluginImpl.ProcessReader;
-import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
-import alma.statearchiveexceptions.wrappers.AcsJNoSuchEntityEx;
-import alma.stateengineexceptions.wrappers.AcsJNoSuchTransitionEx;
-import alma.stateengineexceptions.wrappers.AcsJNotAuthorizedEx;
-import alma.stateengineexceptions.wrappers.AcsJPostconditionFailedEx;
-import alma.stateengineexceptions.wrappers.AcsJPreconditionFailedEx;
 
 public class SchedBlockStatusChecker {
 
@@ -102,16 +96,6 @@ public class SchedBlockStatusChecker {
 								logger.severe("Exit code of the script was not 0.\n" + stderr.getOutput().toString());
 							}
 						} 						
-					} catch (AcsJNoSuchTransitionEx e) {
-						e.printStackTrace();
-					} catch (AcsJNotAuthorizedEx e) {
-						e.printStackTrace();
-					} catch (AcsJPreconditionFailedEx e) {
-						e.printStackTrace();
-					} catch (AcsJPostconditionFailedEx e) {
-						e.printStackTrace();
-					} catch (AcsJNoSuchEntityEx e) {
-						e.printStackTrace();
 					} catch (IOException e) {
 						e.printStackTrace();
 					} catch (InterruptedException e) {
@@ -119,10 +103,6 @@ public class SchedBlockStatusChecker {
 					}
 				}
 			}
-		} catch (AcsJIllegalArgumentEx e) {
-			e.printStackTrace();
-		} catch (AcsJInappropriateEntityTypeEx e) {
-			e.printStackTrace();
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
@@ -160,20 +140,6 @@ public class SchedBlockStatusChecker {
 					logger.severe("Exit code of the script was not 0.\n" + stderr.getOutput().toString());
 				}
 			}
-		} catch (AcsJIllegalArgumentEx e) {
-			e.printStackTrace();
-		} catch (AcsJInappropriateEntityTypeEx e) {
-			e.printStackTrace();
-		} catch (AcsJNoSuchTransitionEx e) {
-			e.printStackTrace();
-		} catch (AcsJNotAuthorizedEx e) {
-			e.printStackTrace();
-		} catch (AcsJPreconditionFailedEx e) {
-			e.printStackTrace();
-		} catch (AcsJPostconditionFailedEx e) {
-			e.printStackTrace();
-		} catch (AcsJNoSuchEntityEx e) {
-			e.printStackTrace();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
