@@ -55,10 +55,6 @@ import alma.scheduling.utils.AudienceFlogger;
 import alma.scheduling.utils.Constants;
 import alma.scheduling.utils.ErrorHandling;
 import alma.scheduling.utils.FakeAudienceFlogger;
-import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
-import alma.statearchiveexceptions.wrappers.AcsJNoSuchEntityEx;
-import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
-import alma.statearchiveexceptions.wrappers.AcsJStateIOFailedEx;
 
 /**
  * Keep track of observing sessions for an array & invoke Quicklook as
@@ -352,10 +348,7 @@ public class SessionManager {
 	 * @throws AcsJNoSuchEntityEx
 	 * @throws AcsJInappropriateEntityTypeEx
 	 */
-	private OUSStatus getOUSStatusFor(SchedBlock sb)
-				throws AcsJNullEntityIdEx,
-				       AcsJNoSuchEntityEx,
-				       AcsJInappropriateEntityTypeEx {
+	private OUSStatus getOUSStatusFor(SchedBlock sb) {
         ObsUnitSet ous = null;
         try {
         	SchedBlock freshSb = model.getSchedBlockDao().findByEntityId(sb.getUid());
@@ -403,9 +396,7 @@ public class SessionManager {
 	 * @throws AcsJStateIOFailedEx
 	 * @throws AcsJNoSuchEntityEx
 	 */
-	private void updateOUSStatus(OUSStatus ouss)
-				throws AcsJStateIOFailedEx,
-					   AcsJNoSuchEntityEx {
+	private void updateOUSStatus(OUSStatus ouss) {
        final StateArchive stateArchive = model.getStateArchive();
        stateArchive.insertOrUpdate(ouss, Subsystem.SCHEDULING);
 	}
@@ -513,9 +504,7 @@ public class SessionManager {
 	private void appendExecution(String       executionId,
 			                     IDLEntityRef currentSessionRef,
 			                     SessionT     currentSession)
-	 		throws SchedulingException,
-	 		       AcsJStateIOFailedEx,
-	 		       AcsJNoSuchEntityEx {
+	 		throws SchedulingException {
 
 		// Get the OUSStatus for the current session
 		final OUSStatus ouss = getOUSStatusFor(currentSessionRef.entityId);
@@ -538,9 +527,7 @@ public class SessionManager {
 	private void bookkeepingForEndOfSession(
 					IDLEntityRef currentSessionRef,
 					SessionT     currentSession)
-	 		throws SchedulingException,
-	 		       AcsJStateIOFailedEx,
-	 		       AcsJNoSuchEntityEx {
+	 		throws SchedulingException {
 
 		// Get the OUSStatus for the current session
 		final OUSStatus ouss = getOUSStatusFor(currentSessionRef.entityId);

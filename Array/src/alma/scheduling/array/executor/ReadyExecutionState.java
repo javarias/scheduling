@@ -19,21 +19,7 @@ package alma.scheduling.array.executor;
 
 import java.util.logging.Logger;
 
-import alma.Control.ExecBlockStartedEvent;
-import alma.acs.exceptions.AcsJException;
-import alma.acs.util.UTCUtility;
-import alma.asdmIDLTypes.IDLEntityRef;
-import alma.entity.xmlbinding.ousstatus.OUSStatus;
-import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
-import alma.lifecycle.persistence.StateArchive;
-import alma.scheduling.StartSessionEvent;
-import alma.scheduling.datamodel.obsproject.ObsUnitSet;
-import alma.scheduling.datamodel.obsproject.SchedBlock;
-import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
 import alma.scheduling.utils.LoggerFactory;
-import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
-import alma.statearchiveexceptions.wrappers.AcsJNoSuchEntityEx;
-import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
 
 /**
  * The ReadyExecutionState represents a SchedBlock that is ready for execution.
