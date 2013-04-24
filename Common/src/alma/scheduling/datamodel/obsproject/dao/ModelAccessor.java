@@ -48,7 +48,6 @@ import alma.scheduling.datamodel.weather.dao.AtmParametersDao;
 import alma.scheduling.datamodel.weather.dao.WeatherHistoryDAO;
 import alma.scheduling.utils.LoggerFactory;
 import alma.scheduling.weather.OpacityInterpolator;
-import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
 
 
 
@@ -143,7 +142,7 @@ public class ModelAccessor extends Observable {
 	}
 
 	public ProjectStatus[] getAllProjectStatuses()
-		throws AcsJIllegalArgumentEx, AcsJInappropriateEntityTypeEx {
+		throws AcsJIllegalArgumentEx {
 		String[] states = { StatusTStateType.ANYSTATE.toString() };
 		ProjectStatus[] prjstatuses =
 			stateArchive.findProjectStatusByState(states);

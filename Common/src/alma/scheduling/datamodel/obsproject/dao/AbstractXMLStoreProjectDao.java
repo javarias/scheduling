@@ -62,7 +62,6 @@ import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.utils.ErrorHandling;
 import alma.scheduling.utils.SchedulingProperties;
-import alma.statearchiveexceptions.wrappers.AcsJStateIOFailedEx;
 import alma.xmlstore.OperationalOperations;
 
 /**
@@ -593,34 +592,26 @@ public abstract class AbstractXMLStoreProjectDao
 		
 		final Date end = new Date();
 
-		try {
-			final List<StateChangeRecord> stateChanges =
-				stateArchive.findStateChangeRecords(
-						start,
-						end, "", "", "",
-						type);
-			
-			logger.finer(String.format(
-					"stateChanges(%s).length: %d (start = %d, end = %d)",
-					type.toString(), stateChanges.size(), start.getTime(), end.getTime()));
-			
-			for (StateChangeRecord sc : stateChanges) {
-				if (build.containsKey(sc.getStatusEntityId())) {
-					final StateChangeRecord previous = build.get(sc.getStatusEntityId());
-					if (previous.getTimestamp().getTime() < sc.getTimestamp().getTime()) {
-						build.put(sc.getStatusEntityId(), sc);
-					}
-				} else {
+		final List<StateChangeRecord> stateChanges = stateArchive
+				.findStateChangeRecords(start, end, "", "", "", type);
+
+		logger.finer(String.format(
+				"stateChanges(%s).length: %d (start = %d, end = %d)",
+				type.toString(), stateChanges.size(), start.getTime(),
+				end.getTime()));
+
+		for (StateChangeRecord sc : stateChanges) {
+			if (build.containsKey(sc.getStatusEntityId())) {
+				final StateChangeRecord previous = build.get(sc
+						.getStatusEntityId());
+				if (previous.getTimestamp().getTime() < sc.getTimestamp()
+						.getTime()) {
 					build.put(sc.getStatusEntityId(), sc);
 				}
-				
+			} else {
+				build.put(sc.getStatusEntityId(), sc);
 			}
-		} catch (AcsJStateIOFailedEx e) {
-			ErrorHandling.warning(
-					logger,
-					String.format("Can not get changes(%s) from State Archive - %s",
-							type, e.getMessage()),
-					e);
+
 		}
 
 		result.addAll(build.values());

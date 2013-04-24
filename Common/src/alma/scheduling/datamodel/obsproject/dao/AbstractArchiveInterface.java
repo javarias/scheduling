@@ -36,7 +36,6 @@ import java.util.Map;
 import org.omg.CORBA.UserException;
 
 import alma.ACSErrTypeCommon.IllegalArgumentEx;
-import alma.ACSErrTypeCommon.wrappers.AcsJIllegalArgumentEx;
 import alma.acs.entityutil.EntityDeserializer;
 import alma.acs.entityutil.EntityException;
 import alma.acs.entityutil.EntitySerializer;
@@ -55,19 +54,8 @@ import alma.entity.xmlbinding.sbstatus.SBStatusEntityT;
 import alma.entity.xmlbinding.schedblock.SchedBlock;
 import alma.entity.xmlbinding.schedblock.SchedBlockEntityT;
 import alma.lifecycle.persistence.StateArchive;
-import alma.lifecycle.stateengine.StateEngine;
 import alma.lifecycle.stateengine.constants.Subsystem;
-import alma.projectlifecycle.StateSystemOperations;
 import alma.scheduling.utils.SchedulingProperties.Phase1SBSourceValue;
-import alma.statearchiveexceptions.InappropriateEntityTypeEx;
-import alma.statearchiveexceptions.NoSuchEntityEx;
-import alma.statearchiveexceptions.NullEntityIdEx;
-import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
-import alma.statearchiveexceptions.wrappers.AcsJNoSuchEntityEx;
-import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
-import alma.statearchiveexceptions.wrappers.AcsJStateIOFailedEx;
-import alma.statearchiveexceptions.wrappers.AcsJstatearchiveexceptionsEx;
-import alma.xmlentity.XmlEntityStruct;
 import alma.xmlstore.OperationalOperations;
 
 /**
@@ -81,10 +69,8 @@ public abstract class AbstractArchiveInterface implements ArchiveInterface  {
 	 * Constants
 	 * ================================================================
 	 */
-    @SuppressWarnings("unused") // field is here for the future
 	protected static String projectQuery  = "/prj:ObsProject";
     protected static String projectSchema = "ObsProject";
-    @SuppressWarnings("unused") // field is here for the future
 	protected static String sbQuery       = "/sbl:SchedBlock";
     protected static String sbSchema      = "SchedBlock";
 	/* End of Constants
@@ -527,12 +513,8 @@ public abstract class AbstractArchiveInterface implements ArchiveInterface  {
 			result = cachedProjectStatus(id);
 		} else {
 			ProjectStatusEntityT idT = new ProjectStatusEntityT();  idT.setEntityId(id);
-			try {
 				result = stateArchive.getProjectStatus(idT);
 				projectStatuses.put(id, result);
-			} catch (AcsJstatearchiveexceptionsEx ex) {
-				throw new EntityException(ex);
-			}
 		}
 		return result;
 	}
@@ -614,12 +596,8 @@ public abstract class AbstractArchiveInterface implements ArchiveInterface  {
 	@Override
 	public void write(ProjectStatus status)
 			throws EntityException, UserException {
-		try {
-			stateArchive.insertOrUpdate(status, Subsystem.SCHEDULING);
-			refreshProjectStatus(status);	// Forces a refresh when asked
-		} catch (AcsJstatearchiveexceptionsEx ex) {
-			throw new EntityException(ex);
-		} 
+		stateArchive.insertOrUpdate(status, Subsystem.SCHEDULING);
+		refreshProjectStatus(status); // Forces a refresh when asked
 	}
 	/* End of ProjectStatuses
 	 * ============================================================= */
@@ -642,13 +620,8 @@ public abstract class AbstractArchiveInterface implements ArchiveInterface  {
 			result = cachedOUSStatus(id);
 		} else {
 			OUSStatusEntityT idT = new OUSStatusEntityT(); idT.setEntityId(id);
-			try {
-				result = stateArchive.getOUSStatus(idT);
-				ousStatuses.put(id, result);
-			} catch (AcsJstatearchiveexceptionsEx ex) {
-				throw new EntityException(ex);
-			}
-			
+			result = stateArchive.getOUSStatus(idT);
+			ousStatuses.put(id, result);
 		}
 		return result;
 	}
@@ -729,12 +702,8 @@ public abstract class AbstractArchiveInterface implements ArchiveInterface  {
 	@Override
 	public void write(OUSStatus status)
 			throws EntityException, UserException {
-		try {
-			stateArchive.insertOrUpdate(status, Subsystem.SCHEDULING);
-			refreshOUSStatus(status);	// Forces a refresh when asked
-		} catch (AcsJstatearchiveexceptionsEx ex) {
-			throw new EntityException(ex);
-		} 
+		stateArchive.insertOrUpdate(status, Subsystem.SCHEDULING);
+		refreshOUSStatus(status); // Forces a refresh when asked
 	}
 	/* End of OUSStatuses
 	 * ============================================================= */
@@ -758,12 +727,8 @@ public abstract class AbstractArchiveInterface implements ArchiveInterface  {
 			result = cachedSBStatus(id);
 		} else {
 			SBStatusEntityT idT = new SBStatusEntityT(); idT.setEntityId(id);
-			try {
-				result = stateArchive.getSBStatus(idT);
-				sbStatuses.put(id, result);
-			} catch (AcsJstatearchiveexceptionsEx ex ) {
-				throw new EntityException(ex);
-			} 
+			result = stateArchive.getSBStatus(idT);
+			sbStatuses.put(id, result);
 		}
 		return result;
 	}
@@ -845,12 +810,8 @@ public abstract class AbstractArchiveInterface implements ArchiveInterface  {
 	@Override
 	public void write(SBStatus status)
 			throws EntityException, UserException {
-		try {
-			stateArchive.insertOrUpdate(status, Subsystem.SCHEDULING);
-			refreshSBStatus(status);	// Forces a refresh when asked
-		} catch (AcsJstatearchiveexceptionsEx ex) {
-			throw new EntityException(ex);
-		} 
+		stateArchive.insertOrUpdate(status, Subsystem.SCHEDULING);
+		refreshSBStatus(status); // Forces a refresh when asked
 	}
 	/* End of SBStatuses
 	 * ============================================================= */
@@ -867,22 +828,16 @@ public abstract class AbstractArchiveInterface implements ArchiveInterface  {
 	 */
     @Override
 	public Collection<String> getProjectStatusIdsByState(String[] states)
-    		throws InappropriateEntityTypeEx, IllegalArgumentEx {
+    		throws IllegalArgumentEx {
         final Collection<String> result = new ArrayList<String>();
         
 		ProjectStatus[] xml = null;
-		try {
 			xml = stateArchive.findProjectStatusByState(states);
 			
 			for (final ProjectStatus xes : xml) {
 				result.add(xes.getProjectStatusEntity().getEntityId());
 			}
 			return result;
-		} catch (AcsJIllegalArgumentEx ex) {
-			throw ex.toIllegalArgumentEx();
-		} catch (AcsJInappropriateEntityTypeEx ex) {
-			throw ex.toInappropriateEntityTypeEx();
-		}
 	}
     
 	/*
@@ -891,29 +846,18 @@ public abstract class AbstractArchiveInterface implements ArchiveInterface  {
 	 */
     @Override
     public Collection<SBStatus> getSBStatusesForProjectStatus(String projectStatusId)
-    		throws InappropriateEntityTypeEx,
-    			   NullEntityIdEx,
-    			   NoSuchEntityEx,
-    			   EntityException {
+    		throws EntityException {
         final Collection<SBStatus> result = new ArrayList<SBStatus>();
         ProjectStatusEntityT idT = new ProjectStatusEntityT(); idT.setEntityId(projectStatusId);
-        SBStatus[] xmlList;
-		try {
-			xmlList = stateArchive.getSBStatusList(idT);
-	        
-	        for (final SBStatus sbs : xmlList) {
-				sbStatuses.put(sbs.getSBStatusEntity().getEntityId(), sbs);
-				result.add(sbs);
-	        }
-	        
-			return result;
-		} catch (AcsJNullEntityIdEx ex) {
-			throw ex.toNullEntityIdEx();
-		} catch (AcsJNoSuchEntityEx ex) {
-			throw ex.toNoSuchEntityEx();
-		} catch (AcsJInappropriateEntityTypeEx ex) {
-			throw ex.toInappropriateEntityTypeEx();
+		SBStatus[] xmlList;
+		xmlList = stateArchive.getSBStatusList(idT);
+
+		for (final SBStatus sbs : xmlList) {
+			sbStatuses.put(sbs.getSBStatusEntity().getEntityId(), sbs);
+			result.add(sbs);
 		}
+
+		return result;
     }
 
 	/* (non-Javadoc)

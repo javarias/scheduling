@@ -33,9 +33,6 @@ import alma.entity.xmlbinding.projectstatus.ProjectStatus;
 import alma.entity.xmlbinding.sbstatus.SBStatus;
 import alma.entity.xmlbinding.schedblock.SchedBlock;
 import alma.scheduling.utils.SchedulingProperties.Phase1SBSourceValue;
-import alma.statearchiveexceptions.InappropriateEntityTypeEx;
-import alma.statearchiveexceptions.NoSuchEntityEx;
-import alma.statearchiveexceptions.NullEntityIdEx;
 import alma.xmlstore.ArchiveInternalError;
 
 public interface ArchiveInterface {
@@ -762,8 +759,7 @@ public interface ArchiveInterface {
 	 * @throws InappropriateEntityTypeEx 
 	 */
 	public abstract Collection<String> getProjectStatusIdsByState(
-			String[] states) throws InappropriateEntityTypeEx,
-			IllegalArgumentEx;
+			String[] states) throws IllegalArgumentEx;
 
 	/**
 	 * Return the ids of all the ObsProjects which have changed since
@@ -836,7 +832,6 @@ public interface ArchiveInterface {
      * @throws EntityException
      */
 	Collection<SBStatus> getSBStatusesForProjectStatus(String projectStatusId)
-			throws InappropriateEntityTypeEx, NullEntityIdEx, NoSuchEntityEx,
-			EntityException;
+			throws EntityException;
 
 }
