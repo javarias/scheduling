@@ -28,7 +28,6 @@ import java.util.logging.Logger;
  * To get an instance of this class, use {@link ErrorHandling#getInstance()}
  *
  * @author dclarke
- * $Id: ErrorHandling.java,v 1.7 2011/09/14 22:03:09 dclarke Exp $
  */
 public final class ErrorHandling {
 	/*

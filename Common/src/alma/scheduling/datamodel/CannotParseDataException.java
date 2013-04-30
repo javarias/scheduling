@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: CannotParseDataException.java,v 1.3 2012/11/06 23:08:52 javarias Exp $"
  */
 package alma.scheduling.datamodel;
 

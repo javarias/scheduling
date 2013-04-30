@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutivePercentage.java,v 1.18 2012/03/09 23:15:29 javarias Exp $"
  */
 package alma.scheduling.datamodel.executive;
 

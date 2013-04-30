@@ -36,7 +36,6 @@ import alma.common.gui.standards.StandardColors;
  * alma.scheduling.datamodel.obsproject.SchedBlocks.
  * 
  * @author dclarke
- * $Id: SBExecutionTableModel.java,v 1.6 2012/08/17 22:18:33 dclarke Exp $
  */
 @SuppressWarnings("serial") // We are unlikely to need to serialise
 public class SBExecutionTableModel extends AbstractTableModel {

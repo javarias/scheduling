@@ -33,7 +33,6 @@ import alma.scheduling.datamodel.obsproject.ScienceGrade;
  * alma.scheduling.datamodel.obsproject.ObsProjects.
  * 
  * @author dclarke
- * $Id: ObsProjectTableModel.java,v 1.6 2012/03/08 21:00:25 dclarke Exp $
  */
 @SuppressWarnings("serial") // We are unlikely to need to serialise
 public class ObsProjectTableModel extends AbstractTableModel {

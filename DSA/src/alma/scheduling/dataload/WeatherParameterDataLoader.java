@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherParameterDataLoader.java,v 1.4 2012/02/14 22:37:37 javarias Exp $"
  */
 package alma.scheduling.dataload;
 

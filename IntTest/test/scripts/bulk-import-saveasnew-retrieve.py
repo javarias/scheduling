@@ -18,7 +18,6 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #*******************************************************************************
-# $Id: bulk-import-saveasnew-retrieve.py,v 1.4 2011/10/24 19:24:31 dclarke Exp $
 #
 # script to load each of the .aot files given as parameters,
 # store the project it contains to the archive and finally

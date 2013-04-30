@@ -24,7 +24,6 @@ import java.io.Serializable;
 /**
  *
  * @author dclarke
- * $Id: CurrentActivityPanelState.java,v 1.1 2012/03/08 21:00:25 dclarke Exp $
  */
 public class CurrentActivityPanelState implements Serializable {
 

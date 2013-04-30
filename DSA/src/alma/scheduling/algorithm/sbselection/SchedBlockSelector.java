@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockSelector.java,v 1.12 2012/03/20 22:38:10 javarias Exp $"
  */
 package alma.scheduling.algorithm.sbselection;
 

@@ -42,7 +42,6 @@ import java.util.Vector;
  * 
  * @author dclarke
  * <br>
- * $Id: Format.java,v 1.2 2012/06/19 23:12:20 dclarke Exp $
  */
 public final class Format {
 

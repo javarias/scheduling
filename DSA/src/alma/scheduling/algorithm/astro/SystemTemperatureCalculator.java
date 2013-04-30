@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SystemTemperatureCalculator.java,v 1.13 2012/02/22 16:28:14 javarias Exp $"
  */
 package alma.scheduling.algorithm.astro;
 

@@ -35,7 +35,6 @@ import alma.scheduling.utils.ErrorHandling;
 /**
  *
  * @author dclarke
- * $Id: TableState.java,v 1.2 2012/06/15 19:27:14 dclarke Exp $
  */
 public class TableState implements Serializable {
 

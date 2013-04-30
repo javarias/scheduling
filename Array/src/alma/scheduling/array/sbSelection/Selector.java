@@ -26,7 +26,6 @@ import alma.scheduling.array.compimpl.ArrayImpl;
 /**
  *
  * @author dclarke
- * $Id: Selector.java,v 1.4 2011/10/14 23:00:41 dclarke Exp $
  */
 public interface Selector extends Observer {
 

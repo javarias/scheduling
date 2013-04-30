@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObservingSeason.java,v 1.12 2012/09/10 20:26:12 javarias Exp $"
  */
 package alma.scheduling.datamodel.executive;
 

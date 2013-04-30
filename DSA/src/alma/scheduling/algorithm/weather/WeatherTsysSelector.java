@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherTsysSelector.java,v 1.8 2012/03/20 22:37:57 javarias Exp $"
  */
 package alma.scheduling.algorithm.weather;
 

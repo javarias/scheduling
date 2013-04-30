@@ -36,7 +36,6 @@ import alma.scheduling.datamodel.GenericDaoImpl;
  * 
  * @since ALMA 8.1.0
  * @author javarias
- * $Id: ResultsDaoImpl.java,v 1.9 2011/10/24 19:28:48 dclarke Exp $
  */
 public class ResultsDaoImpl extends GenericDaoImpl implements ResultsDao {
 

@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SensitivityCalculatorBase.java,v 1.3 2011/08/01 15:28:18 dclarke Exp $"
  */
 package alma.scheduling.algorithm.astro;
 

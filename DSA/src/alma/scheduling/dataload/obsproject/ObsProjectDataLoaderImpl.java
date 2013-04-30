@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsProjectDataLoaderImpl.java,v 1.5 2012/05/31 23:18:11 javarias Exp $"
  */
 package alma.scheduling.dataload.obsproject;
 

@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherDependentVariables.java,v 1.4 2011/08/30 23:05:00 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 

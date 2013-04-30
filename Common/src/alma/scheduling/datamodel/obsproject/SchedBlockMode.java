@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockMode.java,v 1.1 2011/09/14 22:09:16 dclarke Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 

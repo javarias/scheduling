@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherConstraints.java,v 1.2 2012/06/26 18:07:36 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 

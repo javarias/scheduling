@@ -27,7 +27,6 @@ import alma.acs.logging.domainspecific.AudienceLogger.Audience;
 /**
  *
  * @author dclarke
- * $Id: FakeAudienceFlogger.java,v 1.1 2011/07/13 21:47:44 dclarke Exp $
  */
 public class FakeAudienceFlogger {
     

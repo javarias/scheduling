@@ -41,7 +41,6 @@ import alma.xmlstore.OperationalPackage.TimestampInconsistency;
 /**
  * A facade for the XMLstore Operational which logs calls made to it.
  *
- * @version $Id: ProfilingOperational.java,v 1.3 2012/02/17 20:50:55 javarias Exp $
  * @author David Clarke
  */
 public class ProfilingOperational

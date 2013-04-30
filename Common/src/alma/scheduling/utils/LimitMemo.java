@@ -25,7 +25,6 @@ package alma.scheduling.utils;
  * is kept independently for each Category.
  *  
  * @author dclarke
- * $Id: LimitMemo.java,v 1.1 2011/09/14 22:14:18 dclarke Exp $
  */
 public interface LimitMemo<Category extends Enum<Category>, Value> {
 	public void addValue(Category c, Value v);

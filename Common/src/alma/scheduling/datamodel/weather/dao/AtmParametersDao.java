@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: AtmParametersDao.java,v 1.5 2012/06/26 18:00:18 javarias Exp $"
  */
 package alma.scheduling.datamodel.weather.dao;
 

@@ -27,7 +27,6 @@ import javax.swing.table.TableColumn;
  * interested in remembering.
  *  
  * @author dclarke
- * $Id: ColumnProperties.java,v 1.1 2012/02/13 23:11:38 dclarke Exp $
  */
 public class ColumnProperties implements Serializable {
 

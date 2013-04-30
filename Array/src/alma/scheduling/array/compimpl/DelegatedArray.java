@@ -45,7 +45,6 @@ import alma.scheduling.SchedBlockQueueManagerOperations;
  * interface.
  * 
  * @author dclarke
- * $Id: DelegatedArray.java,v 1.12 2011/10/14 23:00:23 dclarke Exp $
  */
 public class DelegatedArray implements ComponentLifecycle,
         ArrayOperations {

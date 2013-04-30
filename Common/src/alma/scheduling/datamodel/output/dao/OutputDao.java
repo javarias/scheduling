@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: OutputDao.java,v 1.6 2012/11/01 20:27:16 javarias Exp $"
  */
 package alma.scheduling.datamodel.output.dao;
 

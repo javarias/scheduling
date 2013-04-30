@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherUpdater.java,v 1.18 2011/08/30 23:05:01 javarias Exp $"
  */
 package alma.scheduling.algorithm.weather;
 

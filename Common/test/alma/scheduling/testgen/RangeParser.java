@@ -26,7 +26,6 @@ import alma.scheduling.SchedulingException;
 /**
  *
  * @author dclarke
- * $Id: RangeParser.java,v 1.1 2011/07/29 15:52:46 dclarke Exp $
  */
 public class RangeParser {
 	

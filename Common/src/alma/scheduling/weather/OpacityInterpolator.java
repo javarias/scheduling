@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: OpacityInterpolator.java,v 1.1 2012/08/29 20:23:31 javarias Exp $"
  */
 package alma.scheduling.weather;
 

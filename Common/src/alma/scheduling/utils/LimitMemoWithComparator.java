@@ -28,7 +28,6 @@ import java.util.Map;
  * with the greatest value according to a supplied Comparator<Value>.
  *  
  * @author dclarke
- * $Id: LimitMemoWithComparator.java,v 1.1 2011/09/14 22:14:19 dclarke Exp $
  */
 public class LimitMemoWithComparator<E extends Enum<E>, Value>
 	implements LimitMemo <E, Value> {

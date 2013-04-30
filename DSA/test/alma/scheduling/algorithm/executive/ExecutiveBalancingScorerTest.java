@@ -25,7 +25,6 @@ import junit.framework.TestCase;
  *
  * @author javarias
  *
- * @version $Revision: 1.2 $
  */
 public class ExecutiveBalancingScorerTest extends TestCase {
 

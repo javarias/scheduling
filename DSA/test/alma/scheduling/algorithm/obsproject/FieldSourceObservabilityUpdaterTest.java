@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: FieldSourceObservabilityUpdaterTest.java,v 1.2 2011/07/26 22:39:21 javarias Exp $"
  */
 package alma.scheduling.algorithm.obsproject;
 

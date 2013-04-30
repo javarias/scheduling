@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.18 2013/03/05 22:51:34 javarias Exp $"
  */
 package alma.scheduling.algorithm;
 

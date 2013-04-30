@@ -6,7 +6,6 @@ From:
    David Clarke
 
 Version: 
-   "@(#) $Id: RELEASE_NOTES,v 1.25 2011/06/08 21:31:45 dclarke Exp $"
 
 ********************************************************************
 
@@ -57,6 +56,9 @@ the Scheduling subsystem for R8.1:
 
  * Creation of extraneous Observing Sessions for a Manual scheduler
    has been corrected.
+
+ * [AIV-6226] 7m antennas are properly shown as unavailable when they
+   have been used in an array.
 
 
 Release 8.0

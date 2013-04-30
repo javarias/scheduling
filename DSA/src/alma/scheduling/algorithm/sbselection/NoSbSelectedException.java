@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: NoSbSelectedException.java,v 1.3 2012/02/07 21:48:03 javarias Exp $"
  */
 package alma.scheduling.algorithm.sbselection;
 

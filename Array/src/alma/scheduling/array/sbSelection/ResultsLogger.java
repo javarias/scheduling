@@ -29,7 +29,6 @@ import alma.scheduling.algorithm.sbranking.SBRank;
 /**
  *
  * @author dclarke
- * $Id: ResultsLogger.java,v 1.2 2011/12/02 23:08:20 dclarke Exp $
  */
 public class ResultsLogger implements Runnable {
     	

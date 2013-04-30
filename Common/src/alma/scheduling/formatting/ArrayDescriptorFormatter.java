@@ -23,7 +23,6 @@ import alma.scheduling.ArrayDescriptor;
 /**
  *
  * @author dclarke
- * $Id: ArrayDescriptorFormatter.java,v 1.1 2011/09/29 20:57:20 dclarke Exp $
  */
 public class ArrayDescriptorFormatter extends EntityFormatter {
 	/*

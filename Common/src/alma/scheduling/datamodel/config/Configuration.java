@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: Configuration.java,v 1.16 2012/04/11 22:03:28 dclarke Exp $"
  */
 package alma.scheduling.datamodel.config;
 

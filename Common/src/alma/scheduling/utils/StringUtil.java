@@ -21,7 +21,6 @@ package alma.scheduling.utils;
 /**
  *
  * @author dclarke
- * $Id: StringUtil.java,v 1.1 2011/08/11 22:48:35 dclarke Exp $
  */
 public class StringUtil {
 	

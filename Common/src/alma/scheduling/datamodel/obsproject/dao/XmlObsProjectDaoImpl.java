@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.29 2012/12/13 23:49:13 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 

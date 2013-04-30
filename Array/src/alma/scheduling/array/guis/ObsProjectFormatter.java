@@ -31,7 +31,6 @@ import alma.scheduling.formatting.EntityFormatter;
 /**
  *
  * @author dclarke
- * $Id: ObsProjectFormatter.java,v 1.2 2011/09/29 20:59:37 dclarke Exp $
  */
 public class ObsProjectFormatter extends EntityFormatter {
 	/*

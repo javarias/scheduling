@@ -29,6 +29,7 @@ import org.omg.CORBA.UserException;
 
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.lifecycle.persistence.StateArchive;
+import alma.projectlifecycle.StateSystemOperations;
 import alma.xmlstore.IdentifierOperations;
 import alma.xmlstore.OperationalOperations;
 
@@ -37,7 +38,6 @@ import alma.xmlstore.OperationalOperations;
  * Done as an interface so that we can insert facades for them and do
  * useful things like tracing.
  *
- * @version $Id: ComponentFactory.java,v 1.4 2013/02/12 16:12:19 javarias Exp $
  * @author David Clarke
  */
 public interface ComponentFactory {

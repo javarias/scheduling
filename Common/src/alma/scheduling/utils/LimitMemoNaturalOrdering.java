@@ -28,7 +28,6 @@ import java.util.Map;
  * ordering (as defined by Value implementing Comparable<Value>).
  *  
  * @author dclarke
- * $Id: LimitMemoNaturalOrdering.java,v 1.1 2011/09/14 22:14:19 dclarke Exp $
  */
 public class LimitMemoNaturalOrdering<Category extends Enum<Category>,
                                       Value extends Comparable<Value>>

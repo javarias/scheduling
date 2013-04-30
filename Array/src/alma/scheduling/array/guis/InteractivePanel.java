@@ -102,11 +102,14 @@ import alma.scheduling.swingx.CallbackFilter;
 import alma.scheduling.utils.DSAContextFactory;
 import alma.scheduling.utils.SchedBlockFormatter;
 import alma.scheduling.weather.OpacityInterpolator;
+import alma.statearchiveexceptions.wrappers.AcsJEntitySerializationFailedEx;
+import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
+import alma.statearchiveexceptions.wrappers.AcsJNoSuchEntityEx;
+import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
 
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.36 2012/11/06 23:08:53 javarias Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel
@@ -798,7 +801,10 @@ public class InteractivePanel extends AbstractArrayPanel
 	 * @throws AcsJNoSuchEntityEx 
 	 * @throws AcsJNullEntityIdEx 
 	 */
-	private SBStatus getSBStatus(SchedBlock sb) {
+	private SBStatus getSBStatus(SchedBlock sb)
+				throws AcsJNullEntityIdEx,
+					   AcsJNoSuchEntityEx,
+					   AcsJInappropriateEntityTypeEx {
 		final StateArchive sa = getModels().getStateArchive();
 		return sa.getSBStatus(sb.getStatusEntity());
 	}
@@ -814,7 +820,11 @@ public class InteractivePanel extends AbstractArrayPanel
 	 * @throws SchedulingException 
 	 */
 	private StatusCollection getProjectStatus(ObsProject op)
-					throws SchedulingException {
+					throws AcsJNullEntityIdEx,
+					       AcsJNoSuchEntityEx,
+					       AcsJInappropriateEntityTypeEx,
+					       AcsJEntitySerializationFailedEx,
+					       SchedulingException {
 		final StateArchive sa = getModels().getStateArchive();
 		final StatusBaseT[] statuses = sa.getProjectStatusList(op.getStatusEntity());
 		return new StatusCollection(statuses);
@@ -874,13 +884,43 @@ public class InteractivePanel extends AbstractArrayPanel
 				prevRank = previousRanks.get(entityId);
 			}
 		}
-
-		final SBStatus sbs = getSBStatus(sb);
-		if (array.isDynamic()) {
-			text = SchedBlockFormatter.formatted(sb, sbs, currScore, currRank,
-					prevScore, prevRank);
-		} else {
-			text = SchedBlockFormatter.formatted(sb, sbs);
+		
+		try {
+			final SBStatus sbs = getSBStatus(sb);
+			if (array.isDynamic()) {
+				text = SchedBlockFormatter.formatted(sb, sbs,
+						currScore, currRank, prevScore, prevRank);
+			} else {
+				text = SchedBlockFormatter.formatted(sb, sbs);
+			}
+		} catch (AcsJNullEntityIdEx e) {
+			excuse = "No reference to status object in SchedBlock";
+			if (array.isDynamic()) {
+				text = SchedBlockFormatter.formatted(sb, excuse,
+						currScore, currRank, prevScore, prevRank);
+			} else {
+				text = SchedBlockFormatter.formatted(sb, excuse);
+			}
+		} catch (AcsJNoSuchEntityEx e) {
+			excuse = String.format(
+					"Reference to non-existant status object %s in SchedBlock",
+					sb.getStatusEntity().getEntityId());
+			if (array.isDynamic()) {
+				text = SchedBlockFormatter.formatted(sb, excuse,
+						currScore, currRank, prevScore, prevRank);
+			} else {
+				text = SchedBlockFormatter.formatted(sb, excuse);
+			}
+		} catch (AcsJInappropriateEntityTypeEx e) {
+			excuse = String.format(
+					"Status reference %s for SchedBlock is to wrong type of object",
+					sb.getStatusEntity().getEntityId());
+			if (array.isDynamic()) {
+				text = SchedBlockFormatter.formatted(sb, excuse,
+						currScore, currRank, prevScore, prevRank);
+			} else {
+				text = SchedBlockFormatter.formatted(sb, excuse);
+			}
 		}
 		
 		sbDetails.setText(text);
@@ -923,6 +963,20 @@ public class InteractivePanel extends AbstractArrayPanel
 		try {
 			final StatusCollection statuses = getProjectStatus(op);
 			text = ObsProjectFormatter.formatted(op, statuses);
+		} catch (AcsJNullEntityIdEx e) {
+			text = ObsProjectFormatter.formatted(op, 
+					"No reference to status object in ObsProject");
+		} catch (AcsJNoSuchEntityEx e) {
+			text = ObsProjectFormatter.formatted(op, String.format(
+					"Reference to non-existant status object %s in ObsProject",
+					op.getStatusEntity().getEntityId()));
+		} catch (AcsJInappropriateEntityTypeEx e) {
+			text = ObsProjectFormatter.formatted(op, String.format(
+					"Status reference %s for ObsProject is to wrong type of object",
+					op.getStatusEntity().getEntityId()));
+		} catch (AcsJEntitySerializationFailedEx e) {
+			text = ObsProjectFormatter.formatted(op,
+					"Cannot deserialize one or more status entities");
 		} catch (SchedulingException e) {
 			text = ObsProjectFormatter.formatted(op, String.format(
 					"Problem with status entities for Project %s - %s",

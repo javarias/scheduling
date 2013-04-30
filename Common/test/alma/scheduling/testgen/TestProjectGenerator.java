@@ -35,7 +35,6 @@ import alma.scheduling.SchedulingException;
  * template projects into masses of real projects.
  * 
  * @author dclarke
- * $Id: TestProjectGenerator.java,v 1.4 2012/08/17 21:28:47 dclarke Exp $
  */
 public class TestProjectGenerator {
 

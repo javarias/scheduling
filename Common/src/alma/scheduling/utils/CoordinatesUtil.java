@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: CoordinatesUtil.java,v 1.1 2011/08/01 15:48:11 dclarke Exp $"
  */
 package alma.scheduling.utils;
 

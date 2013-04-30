@@ -30,7 +30,6 @@ import alma.scheduling.algorithm.results.Result;
  * 
  * @since ALMA 8.1.0
  * @author javarias
- * $Id: ResultsDao.java,v 1.4 2011/10/24 19:28:48 dclarke Exp $
  */
 public interface ResultsDao {
 

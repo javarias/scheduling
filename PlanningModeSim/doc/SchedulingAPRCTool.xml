@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!--<?xml version="1.0" encoding="UTF-8"?>
 <?oxygen RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"?>-->
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
@@ -789,3 +790,796 @@ Stopping HSQLDB</screen>
         </sect2>
     </sect1>
 </article>
+=======
+<!--<?xml version="1.0" encoding="UTF-8"?>
+<?oxygen RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"?>-->
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+          "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<article lang="en">
+  <articleinfo>
+
+    <copyright>
+      <year>2010</year>
+      <holder>ALMA - Atacama Large Millimeter Array</holder>
+      <holder>European Southern Observatory, 2002</holder>
+      <holder>Associated Universities Inc., 2002</holder>
+    </copyright>
+
+    <authorgroup>
+        <author>
+            <firstname>Jorge</firstname>
+            <surname>Avarias</surname>
+            <affiliation>
+                <orgname>NRAO</orgname>
+                <address>
+            <email>javarias@nrao.edu</email>
+          </address>
+            </affiliation>
+        </author>
+        
+      <author>
+        <firstname>Arturo</firstname>
+        <surname>Hoffstadt</surname>
+          <affiliation>
+          <orgname>ALMA</orgname>
+          <address>
+            <email>ahoffsta@alma.cl</email>
+          </address>
+        </affiliation>
+      </author>
+      
+    <author>
+          <firstname>Rafael</firstname>
+          <surname>Hiriart</surname>
+          <affiliation>
+              <orgname>NRAO</orgname>
+              <address>
+            <email>rhiriart@nrao.edu</email>
+          </address>
+          </affiliation>
+      </author>
+      
+    </authorgroup>
+
+    <legalnotice>
+      <title>Legal Notices</title>
+      <para>ALMA - Atacama Large Millimeter Array</para>
+      <para>(c) European Southern Observatory, 2002</para>
+      <para>(c) Associated Universities Inc., 2002</para>
+      <para>Copyright by ESO (in the framework of the ALMA collaboration), Copyright by AUI (in the framework of the ALMA collaboration),All rights reserved.</para>
+
+      <para>This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free software Foundation; either version 2.1 of the License, or (at your option) any later version.</para>
+
+      <para>This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY, without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.</para>
+
+      <para>You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA.</para>
+    </legalnotice>
+
+    <releaseinfo>
+      This version of the Planning Mode Simulator / ALMA Programme Review Committee Tool user manual only applies to version 0.8 of the software. Please refer to previous version in <ulink url="http://almasw.hq.eso.org/almasw/bin/view/SCHEDULING/PlanningModeSimulator"> this webpage</ulink>.
+    </releaseinfo>
+    <title>Scheduling APRC Tool</title>
+  </articleinfo>
+
+    <sect1>
+	<title>Introduction</title>
+        <sect2>
+	    <title>Abstract</title>
+	    <para>The ALMA Programme Review Committee Tool (APRC Tool) allows to simulate the execution
+		of observation projects for one or more observation seasons and analyse the results of
+		the simulation, as well as the distribution of projects with respect to several
+		parameters. The APRC Tool uses the same algorithm that the online scheduling system uses
+		to select the next scheduling block to run, the Dynamic Scheduling Algorithm, or
+		DSA.</para>
+	</sect2>
+	<sect2>
+	    <title>Scope</title>
+	    <para>This document only covers the description and user manual for the Planning Mode
+		Simulator and Scheduling internal data model. The explanation is throughout in this
+		sense, but the DSA is not covered by this document. Please refer to "ALMA Dynamic 
+		Scheduling Algorithm" by Rafael Hiriart for more information on this matter. For more information and software download, please go the <ulink url="http://almasw.hq.eso.org/almasw/bin/view/SCHEDULING/PlanningModeSimulator">this webpage</ulink></para>
+	</sect2>
+    </sect1>
+    <sect1>
+        <title>APRC and DSA Architecture</title>
+        <para><xref linkend="fig:arch"/> shows the general architecture of the APRC and the DSA. The
+            APRC integrates several data sources, depending on its configuration. These are shown in
+            the left side of the diagram. The data sources used by the APRC are configured in
+            $APRC_WORK_DIR/context.xml.</para>
+        <para>The APRC (and the DSA) uses an HSQLDB work database to perform its operations. Most of
+            the data retrieved from the data sources is loaded into this relational work database,
+            where it is stored in tables according to the DSA Data Model. Most of the DSA
+            functionality is implemented as operations over the work database. It is advisable to
+            gain some familiarity with the DSA Data Model, as it is the main model involved in the
+            current implementation of the DSA and future additions as well. A description of the
+            Data Model is given in <xref linkend="sec:datamodel"/>.</para>
+        <para>Both the input data sources and the work database are accessed through Data Access
+            Objects (DAOs). These are classes that allows access to the data through uniform
+            interfaces, hiding the specific details involved in getting the data and transforming it
+            to a common representation. This allows to connect the APRC (and the DSA) to different
+            but equivalent data sources. For example, weather information is retrieved from
+            historical files during simulation, but it is acquired by actual instrumentation when
+            the DSA runs in the online system.</para>
+        <figure id="fig:arch">
+            <title>Scheduling APRC Tool Architecture</title>
+            <mediaobject>
+                <imageobject><imagedata width="100%" fileref="APRCArch.png"/></imageobject>
+            </mediaobject>
+        </figure>
+        <para>We are now able to describe how the APRC works. The APRC:<orderedlist>
+                <listitem>
+                    <para>Loads data from different sources into the Work Database. This tasks is
+                        done by several Loaders.</para>
+                </listitem>
+                <listitem>
+                    <para>Instructs the Dynamic Scheduling Algorithm to run a simulation. The
+                        simulation can be done for the entire configured period (typically 6 months,
+                        an observation season) or step through just one SB selection. This last mode
+                        is used mainly for development and testing.</para>
+                </listitem>
+                <listitem>
+                    <para>When the simulation finishes, the APRC generates several reports. As all
+                        the data is persistent in the work database, it is possible to generate
+                        reports afterwards as well. Some reports that don't require a simulation run
+                        (such as the distribution of SBs though frequency bands, for example) can be
+                        generated as soon as the data is loaded.</para>
+                </listitem>
+            </orderedlist></para>
+        <para>The different data sources integrated by the APRC are:<variablelist>
+                <varlistentry>
+                    <term>ATM Tables</term>
+                    <listitem>
+                        <para>Atmospheric model tables. These tables hold opacity and brightness
+                            temperature for a range of frequency and PWV. These tables are stored in
+                            the $APRC_WORK_DIR/weather directory, and are loaded into memory when a
+                            simulation starts.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Weather Historical Tables/Weather Instrumentation</term>
+                    <listitem>
+                        <para>Historical data for several parameters (temperature, opacity, wind
+                            direction, wind speed), for one year, with a resolution of 15 minutes.
+                            These tables are also stored in $APRC_WORK_DIR/weather.</para>
+                        <para>This historical files are only used by the DSA when running in the
+                            context of the APRC. When the DSA runs with the online system, this data
+                            is retrieved directly from the instrumentation.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Light Project Files/APDM</term>
+                    <listitem>
+                        <para>ObsProposal, ObsProject and SchedBlock data. These two sources are
+                            complementary. Light Project files are XML files with a simplified
+                            structure (i.e., simpler than the APDM) that contains only the
+                            parameters needed by the DSA. This alternative source for project
+                            information was primary conceived as a development and testing aid.
+                            Light Projects are maintained in $APRC_WOR_DIR/projects. APDM entities,
+                            on the other hand, are retrieved from the ALMA Archive XML Store.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Executive Data</term>
+                    <listitem>
+                        <para>Definitions for the Executives (i.e., USA, Europe, Japan), and their
+                            respective observation time percentages. Currently this information is
+                            maintained in XML files stored in the $APRC_WORK_DIR/executives
+                            directory. Currently the definition of the PIs and their executive
+                            memberships are also defined here.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>User Repository</term>
+                    <listitem>
+                        <para>The definition of the PIs will be taken from the ALMA User Repository,
+                            an LDAP database that is used by the ALMA-OT for user authentication.
+                            Currently is not being used by the APRC.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Observatory Characteristic DB/TMCDB/CONTROL Subsystem</term>
+                    <listitem>
+                        <para>The array configurations, and a definition of the hardware state
+                            versus time is currently stored as an XML file in
+                            $APRC_WORK_DIR/observatory. Some of this information will come in the
+                            future from the Observatory Characteristic Database, which will also be
+                            used by OBSPREP. When the DSA runs in the context of the online system,
+                            this information is retrieved from the TMCDB and the CONTROL
+                            subsystem.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Ph1M</term>
+                    <listitem>
+                        <para>The Ph1M tool maintains its own database to handle project and
+                            proposal information such as their scores and ranks. The APRC tool can
+                            load the scores and ranks directly from the Ph1M database. It can also
+                            reload them on demand.</para>
+                    </listitem>
+                </varlistentry>
+            </variablelist></para>
+    </sect1>
+    <sect1 id="sec:datamodel">
+        <title>The DSA Data Model</title>
+        <para>The DSA works internally with a data model conformed by a collection of Java classes
+            that are made persistent (i.e., its fields are stored persistently so the state of the
+            class can be recovered) in the Work Database's relational tables. The structure of the
+            tables is very similar to the Java data model, although classes in Java use inheritance
+            and other object oriented constructs that don't exists in the relational model.</para>
+        <para>The Data Model is divided in the following packages: 
+        <itemizedlist>
+                <listitem>
+                    <para>executive</para>
+                </listitem>
+                <listitem>
+                    <para>obsproject</para>
+                </listitem>
+                <listitem>
+                    <para>observatory</para>
+                </listitem>
+                <listitem>
+                    <para>weather</para>
+                </listitem>
+                <listitem>
+                    <para>output</para>
+                </listitem>
+            </itemizedlist></para>
+        <para>The source code can be found in the SCHEDULING/Common module.</para>
+        <para>A class diagram for the executive package is shown in <xref linkend="exec_cd"/>. The
+            main classes are ObservingSeason and Executive. There are two many-to-many relationships
+            between these two classes, which are represented by ExecutivePercentage and
+            ExecutiveTimeSpent. The first represents how much time a given Executive has for a given
+            ObservingSeason. This class also holds the Executive remaining observation time. As a
+            simulation is executed, ExecutiveTimeSpent records are created, recording the SBs that
+            are executed and how much time should be charged to their corresponding
+            Executive.</para>
+        <figure id="exec_cd">
+            <title>Executive package class diagram</title>
+            <mediaobject>
+                <imageobject><imagedata width="100%" fileref="Executive.png"/></imageobject>
+            </mediaobject>
+        </figure>
+        <para>The relationship between a SB and an Executive is made though the PI. A PI can be
+            related to more than one Executive. This relationship is represented in the PIMembership
+            table. For convenience, this relationship is also maintained directly, as a link between
+            SchedBlock and Executive.</para>
+        <para>The obsproject package class diagram is shown in <xref linkend="proj_cd"/>. This
+            package follows closely the APDM structure, although only the fields that are relevant
+            for the DSA are used. Also, some additional classes and fields that are not present in
+            the APDM have been added.</para>
+        <figure id="proj_cd">
+            <title>ObsProject package class diagram</title>
+            <mediaobject>
+                <imageobject><imagedata width="100%" fileref="ObsProject.png"/></imageobject>
+            </mediaobject>
+        </figure>
+        <para>In some cases, the DSA needs to update some of the objects with a certain periodicity.
+            These are marked as "DatabaseUpdateable". For example, the WeatherDependenVariables
+            class, that contains the Tsys and projected Tsys, is updated for the relevant
+            SchedBlocks at the beginning of each DSA iteration. FieldSourceObservability, in the
+            other hand, which contains the LST rising and setting time for a source, only needs to
+            be updated once, at the beginning of a simulation run.</para>
+        <para>The observatory package can be seen in <xref linkend="obs_cd"/>. This section aims to
+            represent the state of the telescope hardware throughout the time interval covered by
+            the simulation, including the program of array configurations.</para>
+        <figure id="obs_cd">
+            <title>Observatory package class diagram</title>
+            <mediaobject>
+                <imageobject><imagedata width="100%" fileref="Observatory.png"/></imageobject>
+            </mediaobject>
+        </figure>
+        <para>The telescope hardware devices are modeled as being either an Assembly, or a
+            TelescopeEquipment, which can contain other TelescopeEquipment, and/or Assemblies. This
+            hierarchical structure follows the design of the TMCDB.</para>
+        <para>Changes in the hardware state are stored as operations over the assemblies or groups
+            of assemblies. The actual state of the hardware at a given point in time is dealt with
+            following the same design represented by "DatabaseUpdateable". Records are updated
+            periodically, following the defined operations.</para>
+        <para>An Antenna and a Pad are linked by AntennaInstallation, a link that is time-dependent.
+            Several AntennaInstallations conform an ArrayConfiguration. The DSA will start a
+            different scheduler for each ArrayConfiguration.</para>
+        <para>The weather section is very simple, and is shown in <xref linkend="weather_cd"/>. The
+            atmospheric model table is maintained as AtmParameters records, and historical weather
+            data is represented as different types of WeatherHistRecords.</para>
+        <figure id="weather_cd">
+            <title>Weather package class diagram</title>
+            <mediaobject>
+                <imageobject><imagedata width="100%" fileref="Weather.png"/></imageobject>
+            </mediaobject>
+        </figure>
+        <para>Lastly, <xref linkend="output_cd"/> displays the output package. This package
+            includes classes that represent and summarize the results of a simulation. Basically,
+            the simulation Results integrate both the Arrays that were created during the simulation
+            time, and the ObservationProjects that contained SBs that were executed in the Arrays.
+            SB executions are recorded as SchedBlockResult instances.</para>
+        <figure id="output_cd">
+            <title>Ouput package class diagram</title>
+            <mediaobject>
+                <imageobject><imagedata width="100%" fileref="Output.png"/></imageobject>
+            </mediaobject>
+        </figure>
+    </sect1>
+    <sect1>
+        <title>The APRC Command Line Interface (CLI)</title>
+        <para>The APRC Tool works with two different directories: the APRC distribution directory,
+            pointed by the environment variable $APRC_HOME; and the APRC work directory, pointed by
+            $APRC_WORK_DIR. It is possible to use multiple work directories with the same
+            distribution directory. For example, this allows to try different datasets and different
+            algorithms in the same machine.</para>
+        <para>All the functionalities of the APRC Tool are available through the CLI. One advantage
+            of this interface is the capability to automate the operation of the APRC by scripting.
+            For example, several long simulations can be ran in this way.</para>
+        <para>The APRC distribution directory contains all the executables, libraries and scripts
+            needed to run the APRC. It contains the following subdirectories:<variablelist>
+                <varlistentry>
+                    <term>bin/</term>
+                    <listitem>
+                        <para>Executables and scripts. Two important scripts are setup.sh, a shell
+                            script used to bootstrap the system; and aprc, the APRC command line
+                            tool.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>config/</term>
+                    <listitem>
+                        <para>Global configurations for the APRC tool. The most important file
+                            contained in this directory is aprc-env, which defined several global
+                            variables for the APRC.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>doc/</term>
+                    <listitem>
+                        <para>Documentation.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>lib/</term>
+                    <listitem>
+                        <para>Java and Python libraries.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>OO/</term>
+                    <listitem>
+                        <para>(Experimental) OpenOffice Base files. These are not used
+                            currently.</para>
+                    </listitem>
+                </varlistentry>
+            </variablelist></para>
+        <para>The APRC work directory, on the other hand, contains the datasets, the HSQLDB Work
+            database, and other specific configurations. Its contents are:<variablelist>
+                <varlistentry>
+                    <term>aprc-config.xml</term>
+                    <listitem>
+                        <para>Several configuration parameters, such as the name of the directories
+                            below, the Spring context file to use, and other parameters such as the
+                            Executive grades and the array center location.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>context.xml</term>
+                    <listitem>
+                        <para>The APRC tool works with Spring, a framework that allows to construct
+                            Java applications based on "beans", which are simply Java classes that
+                            act as components. How the beans are connected, and their static
+                            parameters can be set in this context file.</para>
+                        <para> The APRC Tool uses this facility to configure the algorithm. The
+                            steps that the algorithm will execute are configured in this
+                            file.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>executives/</term>
+                    <listitem>
+                        <para>As discussed above, this directory holds Executive data files.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>observatory/</term>
+                    <listitem>
+                        <para>As discussed above, this directory holds Observatory data
+                            files.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>projects/</term>
+                    <listitem>
+                        <para>As discussed above, this directory holds Light Project data
+                            files.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>weather</term>
+                    <listitem>
+                        <para>As discussed above, this directory holds weather data files.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>output/</term>
+                    <listitem>
+                        <para>As discussed above, this directory is used to output reports.</para>
+                    </listitem>
+                </varlistentry>
+		  <varlistentry>
+                    <term>reports/</term>
+                    <listitem>
+                        <para>This directory holds the reports created by the tool.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>hsqldb/</term>
+                    <listitem>
+                        <para>This directory is used by the HSQLDB Work database.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>logs/</term>
+                    <listitem>
+                        <para>Logs will be created in this directory. It is not currently
+                            used.</para>
+                    </listitem>
+                </varlistentry>
+            </variablelist></para>
+        <sect2>
+            <title>Running a simulation with the APRC CLI</title>
+            <para>Running a simulation with the APRC usually involves the following steps:<orderedlist>
+<!--                    <listitem>
+                        <para>Start the APRC work database.</para>
+                        <screen>$ aprc start
+Starting HSQLDB                        </screen>
+                        <para>Currently the HSQLDB database that the APRC uses run in client/server
+                            mode. This command will start the database server. It only needs to be
+                            done once in a simulation session.</para>
+                    </listitem>-->
+                    <listitem>
+                        <para>Load all the input files into the database.</para>
+                        <screen>$ aprc fullload
+sb.getPiName() = joe1@doe.edu
+sb.getPiName() = joe2@doe.edu
+sb.getPiName() = joe3@doe.edu
+sb.getPiName() = joe4@doe.edu
+...
+</screen>
+                        <para>This will load all the input files into the database, including the
+                            weather files. Weather files are big, so it usually takes some minutes
+                            for this command to complete. However, as loading the weather files only
+                            needs to be done once, the command <command>aprc load</command> is
+                            provided to perform subsequent loads. This command loads all the input
+                            files <emphasis>excluding</emphasis> the weather files, and it is
+                            usually much faster. An example will be given below.</para>
+                    </listitem>
+                    <listitem>
+                        <para>Run the simulation</para>
+                        <screen>$ aprc run
+Running first update Tue Sep 14 14:52:33 CLT 2010
+Finishing first update Tue Sep 14 14:52:35 CLT 2010
+[2011-01-02T00:00:00] Array 1 created
+[2011-01-02T00:00:00] Starting selection of candidate SchedBlocks for Array Id: 1
+Size of criteria query: 124
+Time used: 183 ms
+Pre Selectors takes: 184 ms
+Selection takes: 236
+Start Calculations
+6180
+6228
+Weather Calculations takes: 778 ms
+Update takes: 1913 ms
+Post Selectors takes: 0 ms
+508,508,-0.46073496876365416
+6180
+ARRAY_CREATION End Date given by executor: Sat Jan 01 21:30:00 CLST 2011
+SB EXEC END #: 508 Sen: 0.32644845140881207 ExecTime: 0.0
+Step takes: 2266
+[2011-01-02T00:30:00] Finishing Execution of SchedBlock Id: 508
+[2011-01-02T00:30:00] Starting selection of candidate SchedBlocks for Array Id: 1
+Size of criteria query: 118
+Time used: 68 ms
+Pre Selectors takes: 68 ms
+Selection takes: 114
+Start Calculations
+6228
+6276
+Weather Calculations takes: 1 ms
+Update takes: 18 ms
+Post Selectors takes: 0 ms
+1546,1546,-0.25186313880532074
+6228</screen>
+                        <para>The level of verbosity of the output to the console can be controlled
+                            by the the options <option>-v</option>, <option>-vv</option>, and
+                                <option>-vvv</option>, which configure the verbosity level to LOW,
+                            MEDIUM and HIGH, respectively. The timestamps that appear in some of the
+                            output messages is the simulation time, not the time of the computer
+                            when the log was output. In the above screenshoot, it can be seen that
+                            the simulation started at 2011-01-01T00:00:00, the observing season
+                            start date, and the first SchedBlock finished its execution 0.5 hour
+                            later.</para>
+                    </listitem>
+                    <listitem>
+                        <para>When the simulation finishes, an XML file will be created in the
+                            $APRC_WORK_DIR/output directory. This file contains the results of the
+                            simulation. This file can be converted to HTML with the <command>aprc
+                                report</command> command:</para>
+                        <screen>$ aprc report help
+[ahoffsta@ned APRC]$ aprc report help
+Reports help
+Usage: 
+aprc report &lt;command>
+
+List of Commands:
+1:      Generate statistics report containing SBs per ALMA Receiver Bands.
+2:      Generate result report (after run the simulation).
+3:      Generate statistics report containing SBs per LST ranges.
+help:   Show this help message.
+[ahoffsta@ned APRC]$ aprc report 2
+URL ofr xslt: jar:file:/home/ahoffsta/repos/SCHEDULING/PlanningModeSim/test/APRC/lib/alma-7.1/SchedulingPSM.jar!/alma/scheduling/psm/reports/general_report.xsl
+</screen>
+                        <para>This HTML file contains the results of the simulation.</para>
+                    </listitem>
+                    <listitem>
+                        <para>It is possible to change the input files and run another simulation.
+                            In order to do this, first it is needed to clean the database:</para>
+                        <screen>$ aprc clean</screen>
+                    </listitem>
+                    <listitem>
+                        <para>Now the input files can be modified. For example, you may be
+                            interested in modifying the grade setups, in the file
+                            $APRC_WORK_DIR/aprc-config.xml. Then the input files can be loaded
+                            intothe database:</para>
+                        <screen>$ aprc load</screen>
+                        <para>This command doesn't load the weather files, so it finishes faster
+                            than the <command>aprc fullload</command> command.</para>
+                    </listitem>
+                    <listitem>
+                        <para>The simulation can be executed again. This process can be repeated as
+                            many times as necessary.</para>
+                    </listitem>
+                    <!--<listitem>
+                        <para>When there is not more additional work to do with the APRC Tool. The
+                            database server can be shutdown:</para>
+                        <screen>$ aprc stop
+Stopping HSQLDB</screen>
+                    </listitem>-->
+                </orderedlist></para>
+        </sect2>
+        <sect2>
+            <title>Importing scores and ranks from the Ph1M database</title>
+            <para>The ObsProposal scores and ranks are managed in the Ph1M Tool. They can be
+                imported into the APRC Tool work database by means of the <command>aprc ph1m
+                    sync</command> command. This command iterates through the proposals in the work
+                database and retrieves their scores and ranks from the ph1m database, updating the
+                corresponding fields in the APRC database.</para>
+<!--	    <screen>
+	    
+	    </screen>-->
+            <para>It is possible to inspect the scores and ranks in the ph1m database for the
+                proposals stored in the work database by means of the <command>aprc ph1m
+                    list</command> command. This command is useful to verify that the communication
+                with the Ph1M Tool is working properly.</para>
+<!--	    <screen>
+	    
+	    </screen>-->
+        </sect2>
+    </sect1>
+    <sect1>
+        <title>The APRC Graphical User Interface</title>
+        <para>The APRC Graphical User Interface (or GUI), is a web application that allows access to
+            the simulator functionality. It has the same capabilities as the CLI, and the hability to
+            present multiple reports on screen. It uses the same technologies as the Ph1M tool, so it
+            can be easily integrated with this application.</para>
+        <sect2>
+            <title>Architecture</title>
+            <para>The architecture of the GUI follow a strict Model-Controller-View pattern. The
+                framework used to achieve this pattern is ZK, which is a rich internet
+                application (RIA) framework, that allows quick prototyping, but also has several
+                enterprise qualities, such as automatic data mapping from user interface to
+                controller, Spring framework and Hibernate integration, which are the
+                same layers of frameworks that the scheduling subsystem has selected to develop the APRC
+                simulator and the DSA. <variablelist>
+                    <varlistentry>
+                        <term>View</term>
+                        <listitem>
+                            <para>To construct the views, ZK provides ZUL, a language based on XML
+                                and XUL, which are both widely used for user interface definitions.
+                                It allows the developers to see exactly how the interfaces will look
+                                (using a provided eclipse plugin, called "ZK Studio"). ZUL is very
+                                powerful, even allowing to embed java code in the interface
+                                definition. This functionality will not be used, as to better
+                                separate the definition of the view, from the controller.</para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>Controller</term>
+                        <listitem>
+                            <para>In the MVC pattern, controller is that piece of software that
+                                handles the logic of the interface. The intention of this separation
+                                (between view definitions, and logic) is such that views can be
+                                easily changed, without much effort, enhancing maintainability of
+                                the software, and allowing make quick changes easy. Java classes
+                                that uses ZK's auto-mapping features allows transparent access to
+                                view definitions. Even changes to it can be made from java
+                                code.</para>
+			    <para>Controllers are automatically binded from the View definition. ZK 
+			    allows intelligent and automatic binding between attributes defined at
+			    view layer, with the controller actions. This helps to reduce coding time,
+			    and provides a cleaner code.</para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>Model</term>
+                        <listitem>
+                            <para>The model section of the MVC pattern, takes care of data handling.
+                                Not only it's storage, but also it's processing. In this case, it
+                                will be the APRC tool libraries, and the work database. This is
+                                intended to reuse all the code between the CLI and the GUI, and to
+                                allows the same tools, to have the same behaviour. All the specification
+                                of this layer, corresponds to the same in <xref linkend="sec:datamodel"/>
+                                </para>
+                        </listitem>
+                    </varlistentry>
+                </variablelist></para>
+        </sect2>
+        <sect2>
+            <title>Definition of Views</title>
+            <para>Views are the user interfaces. This section contains a few examples of user views
+                that are available in the GUI prototype. The prototype if not yet functional, but
+                his has data access capabilities, and navigation is possible. The views are not yet
+                settled, as this are only for technology-tests and to see if the selected stack of
+                frameworks integrates correctly.</para>
+            <variablelist>
+                <varlistentry>
+                    <term>Main window</term>
+                    <listitem>
+                        <para>This window (<xref linkend="mainWindow"/>) is the first screen a user
+                            will see. The selected framework imitates desktop applications, so users
+                            will not have to learn how to use a new application. The interface has a
+                            window, that uses the whole web page. It has menu bar, where all
+                            functionality can be found, according to the context of the selected
+                            window. A predetermined set of tasks are set when there is no other
+                            active window.</para>
+                        <para> The menu entry "Simulation", allows to create new simulations, load
+                            previous one, and save them. The menu "View" is set there to organize
+                            the windows, when there are too many in the web page. "Help" entry has
+                            links to this manual, download page, and information of the software
+                            itself.</para>
+                        <para> The large white-space is intended for window usage. As simulations
+                            are created, ran and reports gets generated, different window will
+                            become available and presented in there.
+                            </para>
+                    <figure id="mainWindow">
+			<title>Main window</title>
+			<mediaobject>
+			    <imageobject><imagedata align="center" width="93%" fileref="psmWUI-1.png"
+				/></imageobject>
+			</mediaobject>
+		    </figure>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>New simulation window</term>
+                    <listitem>
+                        <para>When a new simulation is requested by the user, the window in figure
+                                <xref linkend="simConfigWindow"/> is presented. It is a form that
+                            has a series of necessary information, which is covered in previous
+                            section of this manual. To make things easier to the user, there is a
+                            "Default values" button, which completes the form correct and default
+                            values.</para>
+                        <para>The form is automatically filled with default values, which will work
+                        create a working simulation. It will use a set or simulated sources in case
+                        of a standalone installation. In case of the ALMA STE deployment, it will
+                        be automatically configured to access Archive and Ph1m data.</para>
+                        <para>This same screen is used to reconfigure previous simulations. This screen
+                        corresponds to editting <command>aprc-config.xml</command> file.</para>
+                        <para>The basic panel covers configurations that are more likely to change, while
+                        advanced panel allows editing of configurations which corresponds to data sources path.</para>
+                        <figure id="simConfigWindow">
+                            <title>Simulation configuration window</title>
+                            <mediaobject>
+                                <imageobject><imagedata width="93%" fileref="psmWUI-2.png"
+                                    /></imageobject>
+                            </mediaobject>
+                        </figure>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Simulation window</term>
+                    <listitem>
+                        <para>When a simulation is created, different data sources needs to be
+                            selected. Data sources are provided by the APRC tool back-end, and the
+                            window depicted in <xref linkend="simWindow"/> presents to the user the
+                            different options available.</para>
+                        <para>At this moment, the simulator does not allow to change data sources. This
+                        functionallity will be available for 1.0 version (Next release, on december 2010).</para>
+                        <para> The same window also has two side panels. The upper one gives the
+                            status of the simulation, meanwhile the lower one, presents to the
+                            users the most common tasks to execute.</para>
+			<figure id="simWindow">
+                            <title>Simulation window</title>
+                            <mediaobject>
+                                <imageobject><imagedata width="93%" fileref="psmWUI-3.png"
+                                    /></imageobject>
+                            </mediaobject>
+                        </figure>
+			<variablelist>
+			    <varlistentry>
+				<term>Basic configuration</term>
+				<listitem>
+				    <para>This button opens (<xref linkend="simConfigWindow"/>) allowing to 
+				    chages basic and advances configurations of the simulation.</para>
+				</listitem>
+			    </varlistentry>
+			    <varlistentry>
+				<term>Full data load</term>
+				<listitem>
+				    <para>This begins the process of data acquisition, storing it on a working, local
+				    database, for faster processing.</para>
+				</listitem>
+			    </varlistentry>
+			    <varlistentry>
+				<term>Load data</term>
+				<listitem>
+				    <para>As most of the time is spent loading weather data, this action only loads
+				    non-weather related data.</para>
+				</listitem>
+			    </varlistentry>
+			    <varlistentry>
+				<term>Clean data</term>
+				<listitem>
+				    <para>This action allows to erase all data from the working DB. If the user
+				    wants a clean start for a simulation, this action erases any traces of it
+				    from database. Also erases all data from "Full data load" action.</para>
+				</listitem>
+			    </varlistentry>
+			    <varlistentry>
+				<term>Run simulation</term>
+				<listitem>
+				    <para>This starts the simulation, presenting <xref linkend="runSimWindow"/> to
+				    the user. Percentage is calculated in base of the start and end of the
+				    simulated observing season, and in which date the simulation currently is.</para>
+				</listitem>
+			    </varlistentry>
+			</variablelist>
+			<figure id="runSimWindow">
+                            <title>Simulation window</title>
+                            <mediaobject>
+                                <imageobject><imagedata width="93%" fileref="psmWUI-4.png"
+                                    /></imageobject>
+                            </mediaobject>
+                        </figure>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Reports windows</term>
+                    <listitem>
+                        <para>The reports can be accessed from the top appplication menu. Two categories of reports
+                        are available: pre and post simulation. Each menu entry presents a new window with the
+                        select report. Examples of them, can be seen in <xref linkend="bandReportWindow"/>, 
+                        <xref linkend="lstReportWindow"/>, <xref linkend="execReportWindow"/></para>
+                        <figure id="bandReportWindow">
+                            <title>Requested time per ALMA band</title>
+                            <mediaobject>
+                                <imageobject><imagedata width="93%" fileref="psmWUI-5.png"
+                                    /></imageobject>
+                            </mediaobject>
+                        </figure>
+                        <figure id="lstReportWindow">
+                            <title>Requested time per LST range</title>
+                            <mediaobject>
+                                <imageobject><imagedata width="93%" fileref="psmWUI-6.png"
+                                    /></imageobject>
+                            </mediaobject>
+                        </figure>
+                        <figure id="execReportWindow">
+                            <title>Executive percentage balancing</title>
+                            <mediaobject>
+                                <imageobject><imagedata width="93%" fileref="psmWUI-7.png"
+                                    /></imageobject>
+                            </mediaobject>
+                        </figure>
+                    </listitem>
+                </varlistentry>
+            </variablelist>
+        </sect2>
+    </sect1>
+</article>
+>>>>>>> f140de9... Merge commit '33b32c3cb26d612720dd6d1c2f695702674a8967' into alma-release-b

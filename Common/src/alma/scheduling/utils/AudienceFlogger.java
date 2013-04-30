@@ -26,7 +26,6 @@ import alma.acs.logging.domainspecific.AudienceLogger;
 /**
  *
  * @author dclarke
- * $Id: AudienceFlogger.java,v 1.1 2011/07/13 21:47:45 dclarke Exp $
  */
 public class AudienceFlogger extends AudienceLogger {
     

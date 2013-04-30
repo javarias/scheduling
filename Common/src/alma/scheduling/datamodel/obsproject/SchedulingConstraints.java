@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedulingConstraints.java,v 1.4 2011/09/14 22:09:15 dclarke Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 

@@ -25,7 +25,6 @@ import alma.scheduling.QueueOperation;
  * ObservableReorderingBlockingQueue<E>.
  * 
  * @author dclarke
- * $Id: DefaultSchedulingQueue.java,v 1.4 2011/05/05 21:46:20 javarias Exp $
  */
 public class DefaultSchedulingQueue<E> extends
 		ObservableReorderingBlockingQueue<E> {

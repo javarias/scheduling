@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlExecutiveDaoImpl.java,v 1.14 2012/11/15 22:10:00 javarias Exp $"
  */
 package alma.scheduling.datamodel.executive.dao;
 

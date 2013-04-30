@@ -15,7 +15,6 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  * 
- * $Id: SchedulingContextFactory.java,v 1.6 2012/02/15 23:57:19 javarias Exp $
  */
 
 package alma.scheduling.utils;

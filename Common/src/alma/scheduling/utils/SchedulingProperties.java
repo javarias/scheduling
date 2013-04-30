@@ -23,7 +23,6 @@
  * Centralised place for querying the scheduling properties.
  * 
  * @author dclarke
- * $Id: SchedulingProperties.java,v 1.12 2013/03/13 18:06:43 javarias Exp $
  */
 package alma.scheduling.utils;
 

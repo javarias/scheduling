@@ -38,7 +38,6 @@ import alma.scheduling.formatting.Format;
 /**
  *
  * @author dclarke
- * $Id: SchedBlockFormatter.java,v 1.2 2012/11/01 21:55:14 javarias Exp $
  */
 public class SchedBlockFormatter extends EntityFormatter {
 	/*

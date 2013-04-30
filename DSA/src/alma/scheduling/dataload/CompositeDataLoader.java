@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: CompositeDataLoader.java,v 1.9 2012/11/01 21:55:14 javarias Exp $"
  */
 package alma.scheduling.dataload;
 

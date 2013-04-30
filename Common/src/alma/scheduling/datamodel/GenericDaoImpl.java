@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: GenericDaoImpl.java,v 1.21 2012/11/14 21:56:16 javarias Exp $"
  */
 package alma.scheduling.datamodel;
 

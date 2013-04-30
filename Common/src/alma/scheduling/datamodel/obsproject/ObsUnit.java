@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsUnit.java,v 1.7 2011/08/11 22:48:35 dclarke Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 

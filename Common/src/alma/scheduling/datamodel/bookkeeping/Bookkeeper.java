@@ -64,7 +64,6 @@ import alma.scheduling.utils.ErrorHandling;
  * OUSStatuses and ProjectStatuses.
  *  
  * @author dclarke
- * $Id: Bookkeeper.java,v 1.2 2012/09/04 22:59:53 javarias Exp $
  */
 public final class Bookkeeper {
 

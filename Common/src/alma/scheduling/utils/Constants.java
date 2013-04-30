@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: Constants.java,v 1.2 2011/09/14 22:02:43 dclarke Exp $"
  */
 package alma.scheduling.utils;
 

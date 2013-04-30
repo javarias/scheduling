@@ -23,7 +23,6 @@ import java.util.Formatter;
 /**
  *
  * @author dclarke
- * $Id: EntityFormatter.java,v 1.1 2011/09/29 20:57:20 dclarke Exp $
  */
 public abstract class EntityFormatter {
 

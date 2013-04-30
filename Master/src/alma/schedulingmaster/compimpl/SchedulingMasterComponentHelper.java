@@ -41,7 +41,6 @@ import alma.acs.container.ComponentHelper;
  * Name="SCHEDULINGMASTERCOMPONENT2" Code="alma.schedulingmaster.compimpl.SchedulingMasterComponentHelper" Type="IDL:alma/ACS/MasterComponent:1.0" Container="java"
  * <p>
  * @author alma-component-helper-generator-tool
- * @version $Id: SchedulingMasterComponentHelper.java,v 1.3 2011/08/05 21:36:49 dclarke Exp $
  */
 public class SchedulingMasterComponentHelper extends ComponentHelper
 {

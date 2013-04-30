@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: AtmDataLoader.java,v 1.6 2011/05/04 23:21:21 javarias Exp $"
  */
 package alma.scheduling.dataload;
 

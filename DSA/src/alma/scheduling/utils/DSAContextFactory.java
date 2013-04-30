@@ -64,7 +64,6 @@ import alma.scheduling.algorithm.SchedulingPolicyValidator;
  * 
  * @since ALMA 8.1.0
  * @author javarias
- * $Id: DSAContextFactory.java,v 1.21 2013/02/26 23:10:30 javarias Exp $
  */
 public class DSAContextFactory extends CommonContextFactory {
 
