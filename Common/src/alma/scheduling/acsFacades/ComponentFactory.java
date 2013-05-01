@@ -29,7 +29,6 @@ import org.omg.CORBA.UserException;
 
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.lifecycle.persistence.StateArchive;
-import alma.projectlifecycle.StateSystemOperations;
 import alma.xmlstore.IdentifierOperations;
 import alma.xmlstore.OperationalOperations;
 
