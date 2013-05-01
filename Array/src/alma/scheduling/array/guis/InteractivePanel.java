@@ -106,7 +106,6 @@ import alma.scheduling.weather.OpacityInterpolator;
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.36 2012/11/06 23:08:53 javarias Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel

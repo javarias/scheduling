@@ -61,7 +61,6 @@ import alma.scheduling.utils.FakeAudienceFlogger;
  * appropriate.
  * 
  * @author dclarke
- * $Id: SessionManager.java,v 1.13 2012/12/04 00:16:21 javarias Exp $
  */
 public class SessionManager {
 
