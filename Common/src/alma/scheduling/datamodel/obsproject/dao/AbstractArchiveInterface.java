@@ -515,12 +515,6 @@ public abstract class AbstractArchiveInterface implements ArchiveInterface  {
 			ProjectStatusEntityT idT = new ProjectStatusEntityT();  idT.setEntityId(id);
 				result = stateArchive.getProjectStatus(idT);
 				projectStatuses.put(id, result);
-<<<<<<< HEAD
-=======
-			} catch (AcsJstatearchiveexceptionsEx ex) {
-				throw new EntityException(ex);
-			}
->>>>>>> f140de9... Merge commit '33b32c3cb26d612720dd6d1c2f695702674a8967' into alma-release-b
 		}
 		return result;
 	}
