@@ -30,6 +30,7 @@ import alma.Control.ControlMaster;
 import alma.Control.CorrelatorType;
 import alma.Control.InaccessibleException;
 import alma.Control.InvalidRequest;
+import alma.ControlExceptions.InvalidRequestEx;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.SchedulingMasterExceptions.ACSInternalExceptionEx;
 import alma.SchedulingMasterExceptions.ControlInternalExceptionEx;
@@ -78,7 +79,7 @@ public class MasterSchedulerUnitTests extends MockObjectTestCase {
 		}});
 	}
 	
-	public void testCreateAutomaticArray() throws ControlInternalExceptionEx, ACSInternalExceptionEx, SchedulingInternalExceptionEx, InaccessibleException, InvalidRequest, AcsJContainerServicesEx {
+	public void testCreateAutomaticArray() throws ControlInternalExceptionEx, ACSInternalExceptionEx, SchedulingInternalExceptionEx, InaccessibleException, InvalidRequest, AcsJContainerServicesEx, InvalidRequestEx {
 		final ArrayDescriptor details =  new ArrayDescriptor(antennas, photonics, CorrelatorType.NONE, ArrayModeEnum.INTERACTIVE, ArraySchedulerLifecycleType.NORMAL, null);
 		checking(new Expectations() { {
 			oneOf(controlMaster).createAutomaticArray(antennas, photonics,
@@ -92,7 +93,7 @@ public class MasterSchedulerUnitTests extends MockObjectTestCase {
 		schedMaster.createArray(details);
 	}
 	
-	public void testCreateCSVAutomaticArray() throws ControlInternalExceptionEx, ACSInternalExceptionEx, SchedulingInternalExceptionEx, InaccessibleException, InvalidRequest {
+	public void testCreateCSVAutomaticArray() throws ControlInternalExceptionEx, ACSInternalExceptionEx, SchedulingInternalExceptionEx, InaccessibleException, InvalidRequest, InvalidRequestEx {
 		final ArrayDescriptor details =  new ArrayDescriptor(antennas, photonics, CorrelatorType.NONE, ArrayModeEnum.INTERACTIVE, ArraySchedulerLifecycleType.COMMISSIONING, null);
 		checking(new Expectations() { {
 			oneOf(controlMaster).createAutomaticArray(antennas, photonics,
@@ -105,7 +106,7 @@ public class MasterSchedulerUnitTests extends MockObjectTestCase {
 		schedMaster.createArray(details);
 	}
 	
-	public void testCreateManualArray() throws ControlInternalExceptionEx, ACSInternalExceptionEx, SchedulingInternalExceptionEx, InaccessibleException, InvalidRequest {
+	public void testCreateManualArray() throws ControlInternalExceptionEx, ACSInternalExceptionEx, SchedulingInternalExceptionEx, InaccessibleException, InvalidRequest, InvalidRequestEx {
 		final ArrayDescriptor details =  new ArrayDescriptor(antennas, photonics, CorrelatorType.NONE, ArrayModeEnum.MANUAL, ArraySchedulerLifecycleType.NORMAL, null);
 		checking( new Expectations() { { 
 			oneOf(controlMaster).createManualArray(antennas, photonics,
@@ -118,7 +119,7 @@ public class MasterSchedulerUnitTests extends MockObjectTestCase {
 		schedMaster.createArray(details);
 	}
 	
-	public void testCreateDynamicArray() throws ControlInternalExceptionEx, ACSInternalExceptionEx, SchedulingInternalExceptionEx, InaccessibleException, InvalidRequest, AcsJContainerServicesEx {
+	public void testCreateDynamicArray() throws ControlInternalExceptionEx, ACSInternalExceptionEx, SchedulingInternalExceptionEx, InaccessibleException, InvalidRequest, AcsJContainerServicesEx, InvalidRequestEx {
 		final ArrayDescriptor details =  new ArrayDescriptor(antennas, photonics, CorrelatorType.NONE, ArrayModeEnum.DYNAMIC, ArraySchedulerLifecycleType.NORMAL, "DefaultPolicy");
 		checking(new Expectations() { {
 			oneOf(controlMaster).createAutomaticArray(antennas, photonics,
@@ -132,7 +133,7 @@ public class MasterSchedulerUnitTests extends MockObjectTestCase {
 		schedMaster.createArray(details);
 	}
 	
-	public void testCreateManualCSVArray() throws ControlInternalExceptionEx, ACSInternalExceptionEx, SchedulingInternalExceptionEx, InaccessibleException, InvalidRequest {
+	public void testCreateManualCSVArray() throws ControlInternalExceptionEx, ACSInternalExceptionEx, SchedulingInternalExceptionEx, InaccessibleException, InvalidRequest, InvalidRequestEx {
 		final ArrayDescriptor details =  new ArrayDescriptor(antennas, photonics, CorrelatorType.NONE, ArrayModeEnum.MANUAL, ArraySchedulerLifecycleType.COMMISSIONING, null);
 		checking( new Expectations() { { 
 			oneOf(controlMaster).createManualArray(antennas, photonics,
@@ -145,7 +146,7 @@ public class MasterSchedulerUnitTests extends MockObjectTestCase {
 		schedMaster.createArray(details);
 	}
 	
-	public void testDestroyArray() throws InaccessibleException, InvalidRequest, ControlInternalExceptionEx, ACSInternalExceptionEx, SchedulingInternalExceptionEx, AcsJContainerServicesEx {
+	public void testDestroyArray() throws InaccessibleException, InvalidRequest, ControlInternalExceptionEx, ACSInternalExceptionEx, SchedulingInternalExceptionEx, AcsJContainerServicesEx, InvalidRequestEx {
 		final ArrayDescriptor details =  new ArrayDescriptor(antennas, photonics, CorrelatorType.NONE, ArrayModeEnum.INTERACTIVE, ArraySchedulerLifecycleType.NORMAL, null);
 		checking(new Expectations() { {
 			oneOf(controlMaster).createAutomaticArray(antennas, photonics,
