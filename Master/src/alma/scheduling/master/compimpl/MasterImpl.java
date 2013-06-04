@@ -46,6 +46,7 @@ import alma.Control.CurrentWeather;
 import alma.Control.CurrentWeatherHelper;
 import alma.Control.InaccessibleException;
 import alma.Control.InvalidRequest;
+import alma.ControlExceptions.InvalidRequestEx;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.SchedulingArrayExceptions.NoRunningSchedBlockEx;
 import alma.SchedulingExceptions.InvalidOperationEx;
@@ -269,7 +270,7 @@ public class MasterImpl implements ComponentLifecycle, MasterOperations {
 					e);
 			ex.log(m_logger);
 			throw ex.toControlInternalExceptionEx();
-		} catch (InvalidRequest e) {
+		} catch (InvalidRequestEx e) {
 			operatorLog
 					.severe("Cannot create CONTROL component for array - CONTROL internal error");
 			AcsJControlInternalExceptionEx ex = new AcsJControlInternalExceptionEx(
@@ -444,7 +445,7 @@ public class MasterImpl implements ComponentLifecycle, MasterOperations {
 					e);
 			ex.log(m_logger);
 			throw ex.toControlInternalExceptionEx();
-		} catch (InvalidRequest e) {
+		} catch (InvalidRequestEx e) {
 			operatorLog
 					.warning(
 							"Cannot release CONTROL component for %s - CONTROL internal error",
@@ -513,7 +514,7 @@ public class MasterImpl implements ComponentLifecycle, MasterOperations {
 	 * @throws InvalidRequest
 	 */
 	private String createNewControlArray(ArrayDescriptor details)
-			throws InaccessibleException, InvalidRequest {
+			throws InaccessibleException, InvalidRequestEx {
 
 		if (controlMaster.getMasterState() == alma.Control.SystemState.OPERATIONAL) {
 			m_logger.info("Control master reference is OPERATIONAL. About to create CONTROL Array");
@@ -634,337 +635,7 @@ public class MasterImpl implements ComponentLifecycle, MasterOperations {
 	// return policies.toArray(retval);
 	// }
 
-	public static void main(String args[]) {
-		final FakeAudienceFlogger operatorLog = new FakeAudienceFlogger("Test",
-				Audience.OPERATOR);
-		final String arrayName = "Array666";
-		String schedArrayName;
-
-		try {
-			schedArrayName = NameTranslator.arrayToComponentName(arrayName);
-		} catch (TranslationException e) {
-			schedArrayName = e.getMessage();
-		}
-		final Array array = new Array() {
-			/**  */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void configure(String arrayName, ArraySchedulerMode[] modes,
-					ArrayDescriptor descriptor) {
-			}
-
-			@Override
-			public void configureDynamicScheduler(String policyName) {
-			}
-
-			@Override
-			public ArraySchedulerMode[] getModes() {
-				return null;
-			}
-
-			@Override
-			public ArraySchedulerLifecycleType getLifecycleType() {
-				return null;
-			}
-
-			@Override
-			public String getArrayName() {
-				return null;
-			}
-
-			@Override
-			public String name() {
-				return null;
-			}
-
-			@Override
-			public ComponentStates componentState() {
-				return null;
-			}
-
-			@Override
-			public void addMonitorQueue(String arg0,
-					SchedBlockQueueCallback arg1) {
-			}
-
-			@Override
-			public void delete(SchedBlockQueueItem arg0) {
-			}
-
-			@Override
-			public SchedBlockQueueItem[] getQueue() {
-				return null;
-			}
-
-			@Override
-			public int getQueueCapacity() {
-				return 0;
-			}
-
-			@Override
-			public SchedBlockQueueItem[] getExecutedQueue() {
-				return null;
-			}
-
-			@Override
-			public void moveDown(SchedBlockQueueItem arg0) {
-			}
-
-			@Override
-			public void moveUp(SchedBlockQueueItem arg0) {
-			}
-
-			@Override
-			public SchedBlockQueueItem pull() {
-				return null;
-			}
-
-			@Override
-			public void push(SchedBlockQueueItem arg0) {
-			}
-
-			@Override
-			public void removeMonitorQueue(String monitorName) {
-			}
-
-			@Override
-			public void start(String name, String role) {
-			}
-
-			@Override
-			public void stop(String name, String role) {
-			}
-
-			@Override
-			public String getRunningSchedBlock() throws NoRunningSchedBlockEx {
-				return "uid://A666//X0/Xfake";
-			}
-
-			@Override
-			public boolean hasRunningSchedBlock() {
-				return true;
-			}
-
-			@Override
-			public void stopRunningSchedBlock(String name, String role) {
-			}
-
-			@Override
-			public void addMonitorExecution(String monitorName,
-					SchedBlockExecutionCallback callback) {
-			}
-
-			@Override
-			public void removeMonitorExecution(String monitorName) {
-			}
-
-			@Override
-			public void addMonitorGUI(String monitorName,
-					ArrayGUICallback callback) {
-			}
-
-			@Override
-			public void removeMonitorGUI(String monitorName) {
-			}
-
-			@Override
-			public boolean isRunning() {
-				return false;
-			}
-
-			@Override
-			public boolean isManual() {
-				return false;
-			}
-
-			@Override
-			public boolean isFullAuto() {
-				return false;
-			}
-
-			@Override
-			public void setFullAuto(boolean on, String name, String role) {
-			}
-
-			@Override
-			public void destroyArray(String name, String role) {
-			}
-
-			@Override
-			public SchedBlockExecutionItem[] getExecutions() {
-				return null;
-			}
-
-			@Override
-			public IDLEntityRef startManualModeSession(String sbid)
-					throws InvalidOperationEx {
-				return null;
-			}
-
-			@Override
-			public boolean _is_a(String repositoryIdentifier) {
-				return false;
-			}
-
-			@Override
-			public boolean _is_equivalent(Object other) {
-				return false;
-			}
-
-			@Override
-			public boolean _non_existent() {
-				return false;
-			}
-
-			@Override
-			public int _hash(int maximum) {
-				return 0;
-			}
-
-			@Override
-			public Object _duplicate() {
-				return null;
-			}
-
-			@Override
-			public void _release() {
-			}
-
-			@Override
-			public Object _get_interface_def() {
-				return null;
-			}
-
-			@Override
-			public Request _request(String operation) {
-				return null;
-			}
-
-			@Override
-			public Request _create_request(Context ctx, String operation,
-					NVList arg_list, NamedValue result) {
-				return null;
-			}
-
-			@Override
-			public Request _create_request(Context ctx, String operation,
-					NVList arg_list, NamedValue result, ExceptionList exclist,
-					ContextList ctxlist) {
-				return null;
-			}
-
-			@Override
-			public Policy _get_policy(int policy_type) {
-				return null;
-			}
-
-			@Override
-			public DomainManager[] _get_domain_managers() {
-				return null;
-			}
-
-			@Override
-			public Object _set_policy_override(Policy[] policies,
-					SetOverrideType set_add) {
-				return null;
-			}
-
-			@Override
-			public ArrayDescriptor getDescriptor() {
-				return null;
-			}
-
-			@Override
-			public boolean isActiveDynamic() {
-				return false;
-			}
-
-			@Override
-			public void setActiveDynamic(boolean on, String name, String role) {
-			}
-
-			@Override
-			public String getSchedulingPolicy() {
-				return null;
-			}
-
-			@Override
-			public int getLogAmount() {
-				// TODO Auto-generated method stub
-				return 10;
-			}
-
-			@Override
-			public void setLogAmount(int n) {
-			}
-		};
-
-		// initialize()
-		operatorLog.info("Connected to Weather Station Controller Component");
-		operatorLog.warning(
-				"Unable to retrieve Weather Station Controller Component %s",
-				Constants.WEATHER_STATION_IF);
-		operatorLog.warning(
-				"Unable to retrieve Weather Station Controller Component %s",
-				Constants.WEATHER_STATION_IF);
-
-		// cleanUp()
-		operatorLog.warning("Automatically destroying %s at cleanUp. "
-				+ "You should destroy the arrays before component cleanUp",
-				arrayName);
-		operatorLog.info("%s destroyed", arrayName);
-		operatorLog
-				.warning("Cannot destroy %s - ACS internal error", arrayName);
-		operatorLog.warning(
-				"Cannot destroy %s - Control subsystem internal error",
-				arrayName);
-		operatorLog.warning("Cannot destroy %s - Scheduling internal error",
-				arrayName);
-
-		// createArray()
-		operatorLog.warning(
-				"Cannot create array - %s component is not OPERATIONAL",
-				Constants.CONTROL_MASTER_URL);
-		operatorLog.info("Created CONTROL component for %s", arrayName);
-		operatorLog
-				.severe("Cannot create CONTROL component for array - CONTROL internal error");
-		operatorLog
-				.severe("Cannot create CONTROL component for array - CONTROL internal error");
-		operatorLog
-				.severe("Cannot create CONTROL component for array - system error");
-		operatorLog.info("Created SCHEDULING component for %s", arrayName);
-		operatorLog
-				.severe("Cannot create CONTROL component for array - ACS internal error");
-		operatorLog
-				.severe("Cannot create CONTROL component for array - SCHEDULING internal error");
-		operatorLog.info("Created %s", arrayName);
-
-		// destroyArray()
-		operatorLog.info("Destroying %s", arrayName);
-		operatorLog
-				.warning("Cannot destroy %s - ACS internal error", arrayName);
-		operatorLog.warning("Cannot destroy %s - Scheduling internal error",
-				arrayName);
-		try {
-			operatorLog.info("Stopping SchedBlock %s on %s",
-					array.getRunningSchedBlock(), arrayName);
-		} catch (NoRunningSchedBlockEx e) {
-			operatorLog.info("Stopping SchedBlock %s on %s",
-					">> IT WENT WRONG <<", arrayName);
-		}
-		operatorLog.info("Releasing Scheduling component %s", schedArrayName);
-		operatorLog.info("Released Control component for %s", arrayName);
-		operatorLog
-				.warning(
-						"Cannot release CONTROL component for %s - CONTROL internal error",
-						arrayName);
-		operatorLog
-				.warning(
-						"Cannot release CONTROL component for %s - CONTROL internal error",
-						arrayName);
-
-	}
+	
 
 	// @Override
 	// public void addSchedulingPolicies(String fileName, String xmlString) {
