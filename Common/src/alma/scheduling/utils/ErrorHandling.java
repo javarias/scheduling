@@ -354,4 +354,61 @@ public final class ErrorHandling {
 			initialize(Logger.getLogger(Logger.GLOBAL_LOGGER_NAME));
 		return instance;
 	}
+	
+	  /**
+     * Get the complete error trace information as a String, including the
+     * nested error traces.
+     * 
+     * <br/> <br/> Copied from Control <br />
+     *      
+     * @param et Error trace.
+     * @return String representation of an error trace.
+     * 
+     */
+    public static String getNiceErrorTraceString(alma.ACSErr.ErrorTrace et) {
+        return getNiceErrorTraceString(et, 0);
+    }
+    
+    /**
+     * Gets the complete error trace information as a String, including the
+     * nested error traces. This is a recursive function. Invoke this function
+     * with level = 0, or even better, use getNiceErrorTraceString(ErrorTrace)
+     * instead.
+     * 
+     * <br/> <br/> Copied from Control <br />
+     *      
+     * @param et Error trace. This is an IDL structure that contains exception information
+     * and allows exception "chaining".
+     * @param level Level of the error trace. This is used internally to indent nested
+     * error traces recursively. Use level = 0 if calling this function directly. 
+     * @return String representation of an error trace.
+     * 
+     * @see getNiceErrorTraceString(alma.ACSErr.errorTrace)
+     */
+    private static String getNiceErrorTraceString(alma.ACSErr.ErrorTrace et, int level) {
+
+        String ws = "    ";
+        for (int i=0; i<level; i++) ws += "    ";
+        
+        String s = ws + "ERROR TRACE " + level + "\n" +
+                   ws + "Code = " + et.errorCode + "\n" +
+                   ws + "Type = " + et.errorType + "\n" +
+                   ws + "File = '" + et.file + "'\n" +
+                   ws + "Host = '" + et.host + "'\n" +
+                   ws + "Line Number = " + et.lineNum + "\n" +
+                   ws + "Process = '" + et.process + "'\n" +
+                   ws + "Routine = '" + et.routine + "'\n" +
+                   ws + "Short Description = '" + et.shortDescription + "'\n" +
+                   ws + "Source Object = '" + et.sourceObject + "'\n" +
+                   ws + "Thread = '" + et.thread + "'\n";
+        s += ws + "Additional Data " + "\n";
+        for (int di=0; di<et.data.length; di++) {
+            s += ws + "Name = '" + et.data[di].name + "'; Value = '" + et.data[di].value + "'\n";
+        }
+        
+        for (int err=0; err<et.previousError.length; err++)
+            s += getNiceErrorTraceString(et.previousError[err], ++level);
+            
+        return s;
+    }
 }
