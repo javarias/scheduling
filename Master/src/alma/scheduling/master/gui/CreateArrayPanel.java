@@ -34,6 +34,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -57,6 +58,9 @@ import javax.swing.border.TitledBorder;
 
 import alma.Control.CorrelatorType;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
+import alma.SchedulingMasterExceptions.ACSInternalExceptionEx;
+import alma.SchedulingMasterExceptions.ControlInternalExceptionEx;
+import alma.SchedulingMasterExceptions.SchedulingInternalExceptionEx;
 import alma.common.gui.chessboard.ChessboardEntry;
 import alma.common.gui.chessboard.ChessboardPanel;
 import alma.common.gui.chessboard.ChessboardStatusEvent;
@@ -709,14 +713,36 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
     				correlator,
     				policy);
     		allArrays.add(arrayName);
+    	} catch (ControlInternalExceptionEx e) {
+    		String acsErrorTrace = ErrorHandling.getNiceErrorTraceString(e.errorTrace);
+    		CreateArrayErrorDialog dialog = new CreateArrayErrorDialog(this,
+    				"Error creating array", "Make sure these antennas are really available to "+
+    				"create this array. \n Also check state of Control "+
+    				"System and its logs.\n\n", acsErrorTrace);
+    		dialog.setVisible(true);
+    		return false;
+    	} catch (SchedulingInternalExceptionEx e) {
+    		String acsErrorTrace = ErrorHandling.getNiceErrorTraceString(e.errorTrace);
+    		CreateArrayErrorDialog dialog = new CreateArrayErrorDialog(this,
+    				"Error creating array", "Make sure these antennas are really available to "+
+    				"create this array. \n Also check state of Control "+
+    				"System and its logs.\n\n", acsErrorTrace);
+    		dialog.setVisible(true);
+    		return false;
+    	} catch (ACSInternalExceptionEx e) {
+    		String acsErrorTrace = ErrorHandling.getNiceErrorTraceString(e.errorTrace);
+    		CreateArrayErrorDialog dialog = new CreateArrayErrorDialog(this,
+    				"Error creating array", "Make sure these antennas are really available to "+
+    				"create this array. \n Also check state of Control "+
+    				"System and its logs.\n\n", acsErrorTrace);
+    		dialog.setVisible(true);
+    		return false;
     	} catch(Exception e) {
-    		e.printStackTrace();
-    		JOptionPane.showMessageDialog(this, e.toString()+
-    				"\nMake sure these antennas are really available to "+
-    				"create this array. Also check state of Control "+
-    				"System and its logs.\n\n" +
-    				ErrorHandling.printedStackTrace(e), 
-    				"Error creating array", JOptionPane.ERROR_MESSAGE);
+    		CreateArrayErrorDialog dialog = new CreateArrayErrorDialog(this,
+    				"Error creating array", "Make sure these antennas are really available to "+
+    				"create this array. \n Also check state of Control "+
+    				"System and its logs.\n\n", ErrorHandling.printedStackTrace(e));
+    		dialog.setVisible(true);
     		return false;
     	}
     	

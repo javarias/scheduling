@@ -40,6 +40,9 @@ import alma.Control.ControlMaster;
 import alma.Control.CorrelatorType;
 import alma.Control.InaccessibleException;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
+import alma.SchedulingMasterExceptions.ACSInternalExceptionEx;
+import alma.SchedulingMasterExceptions.ControlInternalExceptionEx;
+import alma.SchedulingMasterExceptions.SchedulingInternalExceptionEx;
 import alma.TMCDB.Access;
 import alma.TMCDB.AccessHelper;
 import alma.TMCDB_IDL.StartupAntennaIDL;
@@ -347,7 +350,7 @@ public class CreateArrayController extends SchedulingPanelController
     						  String[] photonicsChoice,
     						  CorrelatorType correlator,
     						  String schedulingPolicy) 
-        throws SchedulingException 
+        throws SchedulingException, ControlInternalExceptionEx, SchedulingInternalExceptionEx, ACSInternalExceptionEx 
     {
     	final List<String> antennas = new Vector<String>();
     	boolean ok = true; // until proven otherwise
@@ -383,8 +386,7 @@ public class CreateArrayController extends SchedulingPanelController
         
         ArrayCreationInfo arrayInfo = null;
         getMSRef();
-        try {
-        	final ArrayDescriptor details = new ArrayDescriptor(
+        final ArrayDescriptor details = new ArrayDescriptor(
         			antennaArray,
         			photonicsChoice,
         			correlator,
@@ -392,12 +394,6 @@ public class CreateArrayController extends SchedulingPanelController
         			ArraySchedulerLifecycleType.NORMAL,
         			schedulingPolicy);
             arrayInfo = masterScheduler.createArray(details);
-        } catch(Exception e) {
-            //releaseMSRef();
-            e.printStackTrace();
-            throw new SchedulingException (e);
-        }
-        //releaseMSRef();
         return arrayInfo.arrayId;
 
     }
