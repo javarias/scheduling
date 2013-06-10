@@ -194,8 +194,8 @@ ASCII_TO_MIF =
 #
 # other files to be installed
 #----------------------------
-INSTALL_FILES += ../lib/jmock-2.5.1.jar ../lib/jmock-junit3-2.5.1.jar \
-				 ../lib/cglib-nodep-2.1_3.jar ../lib/jmock-legacy-2.5.1.jar
+INSTALL_FILES =	
+
 #
 # list of all possible C-sources (used to create automatic dependencies)
 # ------------------------------
