@@ -55,6 +55,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
 
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
+import alma.common.gui.components.button.StandardButton;
 import alma.scheduling.ArrayGUIOperation;
 import alma.scheduling.Master;
 import alma.scheduling.MasterHelper;
@@ -227,6 +228,14 @@ public class CurrentActivityPanel extends AbstractArrayPanel
 		return result;
 	}
 	
+	private StandardButton newConfirmActionButton(String label, String tooltip) {
+		final StandardButton result = new StandardButton(label);
+		result.setToolTipText(tooltip);
+		result.setEnabled(false);
+		result.setConfirmationEnabled(true);
+		return result;
+	}
+	
 	/**
 	 * Create those widgets which we want to keep track of.
 	 */
@@ -334,7 +343,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel
 						}
 					}});
 		
-		stopSB = newButton("Stop SB",
+		stopSB = newConfirmActionButton("Stop SB",
 				   "Stop the execution of the current SchedBlock at the end of the current scan");
 		stopSB.addActionListener(
 				new ActionListener(){
@@ -450,7 +459,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel
 				});
 		setPolicy.setEnabled(true);
 
-		startExec = newButton("Start Queue",
+		startExec = newConfirmActionButton("Start Queue",
 							  "Start execution of SchedBlocks on this array");
 		startExec.addActionListener(
 				new ActionListener(){
@@ -464,7 +473,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel
 						}
 					}});
 		startExec.setEnabled(true);
-		stopExec = newButton("Stop Queue",
+		stopExec = newConfirmActionButton("Stop Queue",
 		  "Stop execution of SchedBlocks on this array");
 		stopExec.addActionListener(
 				new ActionListener(){
@@ -478,7 +487,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel
 					}});
 		stopExec.setEnabled(true);
 		
-		destroyArray = newButton("Destroy Array",
+		destroyArray = newConfirmActionButton("Destroy Array",
 			"Destroy the array");
 		destroyArray.addActionListener(
 				new ActionListener(){
