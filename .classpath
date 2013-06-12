@@ -15,10 +15,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="acs.INTLIST_CONTAINER/export/home/ruffles/javarias/INTLIST/jar,zip"/>
 	<classpathentry kind="con" path="acs.ACSROOT_CONTAINER/alma/ACS-current/jar,zip"/>
-	<classpathentry kind="lib" path="Common/lib/cglib-nodep-2.1_3.jar"/>
-	<classpathentry kind="lib" path="Common/lib/jmock-2.5.1.jar"/>
-	<classpathentry kind="lib" path="Common/lib/jmock-junit3-2.5.1.jar"/>
-	<classpathentry kind="lib" path="Common/lib/jmock-legacy-2.5.1.jar"/>
 	<classpathentry kind="lib" path="ArchiveUpdater/lib/SchedulingArchiveUpdater.jar"/>
 	<classpathentry kind="output" path="Scheduling/object/schedulingComp"/>
 </classpath>
