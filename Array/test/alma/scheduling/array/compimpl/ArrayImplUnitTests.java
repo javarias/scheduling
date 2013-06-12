@@ -1,5 +1,6 @@
 package alma.scheduling.array.compimpl;
 
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import org.jmock.Expectations;
@@ -25,6 +26,7 @@ import alma.scheduling.array.executor.Executor;
 import alma.scheduling.array.executor.services.AcsNotificationChannel;
 import alma.scheduling.array.executor.services.AcsProvider;
 import alma.scheduling.array.sbSelection.DSASelector;
+import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
 
 public class ArrayImplUnitTests extends MockObjectTestCase  {
@@ -114,6 +116,7 @@ public class ArrayImplUnitTests extends MockObjectTestCase  {
 			atLeast(1).of(model).getStateEngine(); will(returnValue(stateEngine));
 			atLeast(1).of(model).getObsProjectDao();
 			atLeast(1).of(model).getSchedBlockDao();
+			atLeast(1).of(model).getAllSchedBlocks(true); will(returnValue(new ArrayList<SchedBlock>()));
 			atLeast(1).of(provider).getControlArray();
 			atLeast(1).of(provider).getControlEventReceiver(); will(returnValue(controlEventReceiver));
 			oneOf(controlEventReceiver).begin();
