@@ -85,7 +85,7 @@ lllll_OBJECTS   =
 #
 # Scripts (public and local)
 # ----------------------------
-SCRIPTS         =
+SCRIPTS         = schedulingManualSbStatusConvert
 SCRIPTS_L       =
 
 #
