@@ -35,6 +35,9 @@ import alma.acs.container.ContainerServices;
 import alma.acs.exceptions.AcsJException;
 import alma.acs.nc.AcsEventSubscriber;
 import alma.asdmIDLTypes.IDLEntityRef;
+import alma.entity.xmlbinding.sbstatus.SBStatus;
+import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
+import alma.lifecycle.persistence.StateArchive;
 import alma.scheduling.ArrayDescriptor;
 import alma.scheduling.ArrayGUICallback;
 import alma.scheduling.ArrayOperations;
@@ -190,6 +193,13 @@ public class ArrayImpl implements ComponentLifecycle,
 			executor.setFullAuto(true, "Master Scheduler",
 					"array configuration");
 			executor.start("Master Scheduler", "array configuration");
+			//Push immediately a SchedBlock Item
+			SchedBlockQueueItem item = getCSVReadySB();
+			if (item != null)
+				push(item);
+			else
+				logger.warning("Unable to find a CSVREADY SB to push into the Array queue. " +
+						"Check a valid SB and push it manually into the queue");
 		}
 	}
 
@@ -505,6 +515,17 @@ public class ArrayImpl implements ComponentLifecycle,
 		return diameter;
 	}
 	
+	private SchedBlockQueueItem getCSVReadySB () {
+		String[] states = {StatusTStateType.CSVREADY.toString()};
+		SchedBlockQueueItem retval = null;
+		StateArchive sa = executor.getServices().getModel().getStateArchive();
+		SBStatus[] sbStatuses = sa.findSBStatusByState(states);
+		if (sbStatuses.length > 0) {
+			retval = new SchedBlockQueueItem(System.nanoTime(), sbStatuses[0].getSBStatusEntity().getEntityId());
+		}
+		return retval;
+	}
+	
 	//Methods for testing purposes
 	void setServiceProvider(AcsProvider provider) {
 		this.serviceProvider = provider;
@@ -519,4 +540,6 @@ public class ArrayImpl implements ComponentLifecycle,
     	this.selector = selector;
     	this.activeDynListener = new ActiveDynamicArrayListener(this);
     }
+    
+    
 }
