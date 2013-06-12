@@ -65,6 +65,7 @@ import alma.scheduling.array.sbSelection.DSASelector;
 import alma.scheduling.array.sbSelection.Selector;
 import alma.scheduling.array.sessions.SessionManager;
 import alma.scheduling.array.util.NameTranslator.TranslationException;
+import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.utils.ErrorHandling;
 import alma.scheduling.utils.LoggerFactory;
 
@@ -516,12 +517,15 @@ public class ArrayImpl implements ComponentLifecycle,
 	}
 	
 	private SchedBlockQueueItem getCSVReadySB () {
-		String[] states = {StatusTStateType.CSVREADY.toString()};
 		SchedBlockQueueItem retval = null;
+		List<SchedBlock> sbs = executor.getServices().getModel().getAllSchedBlocks(isManual());
 		StateArchive sa = executor.getServices().getModel().getStateArchive();
-		SBStatus[] sbStatuses = sa.findSBStatusByState(states);
-		if (sbStatuses.length > 0) {
-			retval = new SchedBlockQueueItem(System.nanoTime(), sbStatuses[0].getSBStatusEntity().getEntityId());
+		for (SchedBlock sb : sbs) {
+			SBStatus status = sa.getSBStatus(sb.getStatusEntity());
+			if (status.getStatus().getState().getType() == StatusTStateType.CSVREADY_TYPE) {
+				retval = new SchedBlockQueueItem(System.nanoTime(), sb.getUid());
+				break;
+			}
 		}
 		return retval;
 	}

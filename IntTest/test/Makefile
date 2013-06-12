@@ -133,7 +133,7 @@ CDB_SCHEMAS =
 # 
 # IDL Files and flags
 # 
-IDL_FILES := SchedulingTestArray
+IDL_FILES := 
 TAO_IDLFLAGS =
 USER_IDL =
 #
