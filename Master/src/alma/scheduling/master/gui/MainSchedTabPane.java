@@ -41,11 +41,18 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.border.TitledBorder;
 
+import org.omg.CORBA.portable.IDLEntity;
+
+import alma.ACSErrTypeCommon.wrappers.AcsJCouldntPerformActionEx;
+import alma.ACSErrTypeCommon.wrappers.AcsJIllegalStateEventEx;
 import alma.Control.CreatedAutomaticArrayEvent;
 import alma.Control.CreatedManualArrayEvent;
 import alma.Control.DestroyedAutomaticArrayEvent;
 import alma.Control.DestroyedManualArrayEvent;
-import alma.acs.nc.Consumer;
+import alma.acs.nc.AcsEventSubscriber;
+import alma.acs.nc.AcsEventSubscriberImplBase;
+import alma.acs.nc.NCSubscriber;
+import alma.acsnc.EventDescription;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.scheduling.ArrayModeEnum;
 
@@ -73,7 +80,7 @@ public class MainSchedTabPane extends JTabbedPane {
     private Color selectedButtonColor;
     private Dimension maxSize;
     private JPanel parent;
-    private Consumer consumer;
+    private AcsEventSubscriber<IDLEntity> subscriber;
     
 
     /**
@@ -119,12 +126,12 @@ public class MainSchedTabPane extends JTabbedPane {
         controller.checkOperationalState();
         logger.fine("SCHEDULING_PANEL: Second setup, connected to manager");
         try {
-            consumer = new Consumer(alma.Control.CHANNELNAME_CONTROLSYSTEM.value, cs);            
-            consumer.addSubscription(alma.Control.CreatedManualArrayEvent.class, this);
-            consumer.addSubscription(alma.Control.CreatedAutomaticArrayEvent.class, this);
-            consumer.addSubscription(alma.Control.DestroyedAutomaticArrayEvent.class, this);
-            consumer.addSubscription(alma.Control.DestroyedManualArrayEvent.class, this);
-            consumer.consumerReady();
+            subscriber = container.createNotificationChannelSubscriber(alma.Control.CHANNELNAME_CONTROLSYSTEM.value, IDLEntity.class);
+            subscriber.addSubscription(new MainSchedTabPane.CreatedAutomaticArrayEvCallback());
+            subscriber.addSubscription(new MainSchedTabPane.CreatedManualArrayEvCallback());
+            subscriber.addSubscription(new MainSchedTabPane.DestroyedAutomaticArrayEvCallback());
+            subscriber.addSubscription(new MainSchedTabPane.DestroyedManualArrayEvCallback());
+            subscriber.startReceivingEvents();
         } catch(Exception e){
             e.printStackTrace();
             logger.warning("SCHEDULING_PANEL: Problem getting NC consumer for control system channel, won't see existing arrays");
@@ -399,7 +406,67 @@ public class MainSchedTabPane extends JTabbedPane {
     private boolean areWeConnected(){
         return controller.areWeConnected();
     }
-    public void exit(){
+    
+	public void exit() {
+		try {
+			subscriber.disconnect();
+		} catch (AcsJIllegalStateEventEx e) {
+			e.printStackTrace();
+		} catch (AcsJCouldntPerformActionEx e) {
+			e.printStackTrace();
+		}
+	}
+    
+    private class CreatedManualArrayEvCallback implements alma.acs.nc.AcsEventSubscriber.Callback<CreatedManualArrayEvent> {
+		@Override
+		public void receive(CreatedManualArrayEvent eventData, EventDescription eventDescrip) {
+			MainSchedTabPane.this.receive(eventData);
+		}
+
+		@Override
+		public Class<CreatedManualArrayEvent> getEventType() {
+			return CreatedManualArrayEvent.class;
+		}
     }
     
+    private class CreatedAutomaticArrayEvCallback implements alma.acs.nc.AcsEventSubscriber.Callback<CreatedAutomaticArrayEvent> {
+		@Override
+		public void receive(CreatedAutomaticArrayEvent eventData, EventDescription eventDescrip) {
+			MainSchedTabPane.this.receive(eventData);
+		}
+
+		@Override
+		public Class<CreatedAutomaticArrayEvent> getEventType() {
+			return CreatedAutomaticArrayEvent.class;
+		}
+    }
+    
+    private class DestroyedManualArrayEvCallback implements alma.acs.nc.AcsEventSubscriber.Callback<DestroyedManualArrayEvent> {
+
+		@Override
+		public void receive(DestroyedManualArrayEvent eventData,
+				EventDescription eventDescrip) {
+			MainSchedTabPane.this.receive(eventData);
+		}
+
+		@Override
+		public Class<DestroyedManualArrayEvent> getEventType() {
+			return DestroyedManualArrayEvent.class;
+		}
+    }
+    
+    private class DestroyedAutomaticArrayEvCallback implements alma.acs.nc.AcsEventSubscriber.Callback<DestroyedAutomaticArrayEvent> {
+
+		@Override
+		public void receive(DestroyedAutomaticArrayEvent eventData,
+				EventDescription eventDescrip) {
+			MainSchedTabPane.this.receive(eventData);
+		}
+
+		@Override
+		public Class<DestroyedAutomaticArrayEvent> getEventType() {
+			return DestroyedAutomaticArrayEvent.class;
+		}
+    	
+    }
 }

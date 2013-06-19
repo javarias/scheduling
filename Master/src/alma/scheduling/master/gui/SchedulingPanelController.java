@@ -26,9 +26,12 @@ package alma.scheduling.master.gui;
 
 import java.util.logging.Logger;
 
+import org.omg.CORBA.portable.IDLEntity;
+
 import alma.Control.ControlMaster;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
-import alma.acs.nc.Consumer;
+import alma.acs.nc.AcsEventSubscriber;
+import alma.acsnc.EventDescription;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.exec.extension.subsystemplugin.SessionProperties;
 import alma.scheduling.Array;
@@ -44,7 +47,7 @@ public class SchedulingPanelController {
     protected Master masterScheduler;
     protected PluginContainerServices container;
     protected Logger logger;
-    protected Consumer consumer;
+    protected AcsEventSubscriber<IDLEntity> subscriber;
     protected boolean connected;
     protected boolean controlConnected;
 
@@ -52,7 +55,7 @@ public class SchedulingPanelController {
         masterScheduler=null;
         container=null;
         logger=null;
-        consumer =null;
+        subscriber =null;
         connected =false;
     }
 
@@ -67,9 +70,9 @@ public class SchedulingPanelController {
         logger = cs.getLogger();
         logger.fine("SP: online setup of SchedulingPanelController");
         try {
-            consumer = new Consumer(alma.scheduling.CHANNELNAME_SCHEDULING.value, cs);
-            consumer.addSubscription(SchedulingStateEvent.class, this);
-            consumer.consumerReady();
+            subscriber = container.createNotificationChannelSubscriber(alma.scheduling.CHANNELNAME_SCHEDULING.value, IDLEntity.class);
+            subscriber.addSubscription(new SchedulingPanelController.SchedulingStateEvCallback());
+            subscriber.startReceivingEvents();
         }catch(Exception e){
             logger.severe("SCHEDULING_PANEL: problem getting NC to get state event");
             logger.severe("SCHEDULING_PANEL: setting state to connected anyways: COULD CAUSE PROBLEMS");
@@ -218,6 +221,21 @@ public class SchedulingPanelController {
 					arrayName, message), e);
 		}
     	return result;
+    }
+    
+    private class SchedulingStateEvCallback implements AcsEventSubscriber.Callback<SchedulingStateEvent> {
+
+		@Override
+		public void receive(SchedulingStateEvent eventData,
+				EventDescription eventDescrip) {
+			SchedulingPanelController.this.receive(eventData);
+		}
+
+		@Override
+		public Class<SchedulingStateEvent> getEventType() {
+			return SchedulingStateEvent.class;
+		}
+    	
     }
 }
 
