@@ -44,7 +44,7 @@ public class ArchivePollerTest extends TestCase {
     }
     
     public void testArchivePoller() throws Exception {
-    	ArchivePoller ap = new ArchivePoller(logger);
+    	ArchivePoller ap = new ArchivePoller(logger, null);
     	boolean keepGoing = true;
     	
 //    	while (keepGoing) {
