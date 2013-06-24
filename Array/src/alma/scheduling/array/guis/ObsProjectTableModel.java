@@ -106,18 +106,18 @@ public class ObsProjectTableModel extends AbstractTableModel {
 	 * TableModel implementation
 	 * ================================================================
 	 */
-	private static final int               Column_Name =  0;
-	private static final int               Column_Code =  1;
-	private static final int            Column_Version =  2;
-	private static final int                 Column_PI =  3;
-	private static final int              Column_State =  4;
-	private static final int       Column_ScienceScore =  5;
-	private static final int        Column_ScienceRank =  6;
-	private static final int        Column_LetterGrade =  7;
-	private static final int           Column_EntityId =  8;
-	private static final int                Column_CSV =  9;
-	private static final int Column_TotalExecutionTime = 10;
-	private static final int               NUM_COLUMNS = 11;
+	protected static final int               Column_Name =  0;
+	protected static final int               Column_Code =  1;
+	protected static final int            Column_Version =  2;
+	protected static final int                 Column_PI =  3;
+	protected static final int              Column_State =  4;
+	protected static final int       Column_ScienceScore =  5;
+	protected static final int        Column_ScienceRank =  6;
+	protected static final int        Column_LetterGrade =  7;
+	protected static final int           Column_EntityId =  8;
+	protected static final int                Column_CSV =  9;
+	protected static final int Column_TotalExecutionTime = 10;
+	protected static final int               NUM_COLUMNS = 11;
 	
 
 	/* (non-Javadoc)

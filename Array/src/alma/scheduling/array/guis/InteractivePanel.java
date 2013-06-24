@@ -18,13 +18,6 @@
 
 package alma.scheduling.array.guis;
 
-import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_ATM_DAO_BEAN;
-import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_EXECUTIVE_DAO_BEAN;
-import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_OBSPROJECT_DAO_BEAN;
-import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_OPACITY_INTERPOLATOR_BEAN;
-import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_SCHEDBLOCK_DAO_BEAN;
-import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_WEATHER_DAO_BEAN;
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -36,17 +29,19 @@ import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import javax.swing.AbstractButton;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -68,10 +63,10 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.RowSorterEvent;
 import javax.swing.event.RowSorterListener;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
 
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.AbstractApplicationContext;
 
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.gui.standards.StandardIcons;
@@ -90,18 +85,12 @@ import alma.scheduling.array.util.FilterSet;
 import alma.scheduling.array.util.FilterSetPanel;
 import alma.scheduling.array.util.StatusCollection;
 import alma.scheduling.array.util.NameTranslator.TranslationException;
-import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
-import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
-import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
-import alma.scheduling.datamodel.weather.dao.AtmParametersDao;
-import alma.scheduling.datamodel.weather.dao.WeatherHistoryDAO;
 import alma.scheduling.swingx.CallbackFilter;
 import alma.scheduling.utils.DSAContextFactory;
 import alma.scheduling.utils.SchedBlockFormatter;
-import alma.scheduling.weather.OpacityInterpolator;
 
 /**
  *
@@ -136,6 +125,7 @@ public class InteractivePanel extends AbstractArrayPanel
     private JButton opFilterReset;
     /** The widget in which we show the ObsProjects */
     private JTable opTable;
+    private TreeMap<Integer, TableColumn> opTableColumns;
     /** The model behind the ObsProjects' table */
     private ObsProjectTableModel opModel;
     /** the thing which sorts the ObsProjects in our table */
@@ -159,6 +149,7 @@ public class InteractivePanel extends AbstractArrayPanel
     private JButton sbFilterReset;
     /** The widget in which we show the SchedBlocks */
     private JTable sbTable;
+    private TreeMap<Integer, TableColumn> sbTableColumns;
     /** The model behind the SchedBlocks' table */
     private SchedBlockTableModel sbModel;
     /** the thing which sorts the SchedBlocks in our table */
@@ -275,6 +266,9 @@ public class InteractivePanel extends AbstractArrayPanel
 		opModel = new ObsProjectTableModel();
 		opTable = new JTable(opModel);
 		opSorter = new TableRowSorter<ObsProjectTableModel>(opModel);
+		
+		opTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		
 		opTable.setRowSorter(opSorter);
 		opFilters = new FilterSet(opModel);
 		opFilterSummary = new JLabel(opFilters.toHTML(
@@ -290,7 +284,6 @@ public class InteractivePanel extends AbstractArrayPanel
 				           opFilterReset,
 				           opFilterPanel);
 		opFilters.addChangeListener(this);
-		opTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		
 		sbTitle = new JLabel(String.format(
 				"<html><font color=%s>SchedBlocks</font></html>",
@@ -298,6 +291,7 @@ public class InteractivePanel extends AbstractArrayPanel
 		sbModel = new SchedBlockTableModel();
 		sbTable = new JTable(sbModel);
 //		initialiseSBSorting();
+		
 		sbFilters = new FilterSet(sbModel);
 		sbFilterSummary = new JLabel();
 		sbFilterChange = newButton("Change", "Edit the filters to control which SchedBlocks are displayed");
@@ -416,6 +410,51 @@ public class InteractivePanel extends AbstractArrayPanel
 
 	}
 	
+	private void setupTablesColumns() {
+		opTableColumns = new TreeMap<Integer, TableColumn>();
+		for (int i = 0; i < ObsProjectTableModel.NUM_COLUMNS; i++)
+			opTableColumns.put(i, opTable.getColumnModel().getColumn(i));
+		
+		opTable.removeColumn(opTableColumns.get(ObsProjectTableModel.Column_EntityId));
+		opTable.removeColumn(opTableColumns.get(ObsProjectTableModel.Column_ScienceRank));
+		opTable.removeColumn(opTableColumns.get(ObsProjectTableModel.Column_ScienceScore));
+		opTable.removeColumn(opTableColumns.get(ObsProjectTableModel.Column_LetterGrade));
+		opTable.removeColumn(opTableColumns.get(ObsProjectTableModel.Column_TotalExecutionTime));
+		
+		opTableColumns.get(ObsProjectTableModel.Column_Name).setPreferredWidth(170);
+		opTableColumns.get(ObsProjectTableModel.Column_Code).setPreferredWidth(125);
+		opTableColumns.get(ObsProjectTableModel.Column_CSV).setPreferredWidth(35);
+		
+		opTable.getTableHeader().addMouseListener(new JTableHeaderMouseListener(opTable, opTableColumns));
+		
+		sbTableColumns = new TreeMap<Integer, TableColumn>();
+		for (int i = 0; i < sbTable.getColumnModel().getColumnCount(); i++) {
+			sbTableColumns.put(sbModel.viewToModelColumnMap[i], sbTable.getColumnModel().getColumn(i));
+		}
+		sbTable.removeColumn(sbTableColumns.get(SchedBlockTableModel.Column_Revision));
+		sbTable.removeColumn(sbTableColumns.get(SchedBlockTableModel.Column_Executive));
+		sbTable.removeColumn(sbTableColumns.get(SchedBlockTableModel.Column_Band));
+		sbTable.removeColumn(sbTableColumns.get(SchedBlockTableModel.Column_Frequency));
+		sbTable.removeColumn(sbTableColumns.get(SchedBlockTableModel.Column_EntityId));
+		sbTable.removeColumn(sbTableColumns.get(SchedBlockTableModel.Column_CSV));
+		sbTable.removeColumn(sbTableColumns.get(SchedBlockTableModel.Column_Project));
+		sbTable.removeColumn(sbTableColumns.get(SchedBlockTableModel.Column_Note));
+		sbTable.removeColumn(sbTableColumns.get(SchedBlockTableModel.Column_RA));
+		sbTable.removeColumn(sbTableColumns.get(SchedBlockTableModel.Column_Dec));
+		sbTable.removeColumn(sbTableColumns.get(SchedBlockTableModel.Column_HourAngle));
+//		sbTable.removeColumn(sbTableColumns.get(SchedBlockTableModel.Column_Elevation));
+		sbTable.removeColumn(sbTableColumns.get(SchedBlockTableModel.Column_Azimuth));
+		sbTable.removeColumn(sbTableColumns.get(SchedBlockTableModel.Column_minHA));
+		sbTable.removeColumn(sbTableColumns.get(SchedBlockTableModel.Column_maxHA));
+		sbTable.removeColumn(sbTableColumns.get(SchedBlockTableModel.Column_Mode));
+		
+		sbTableColumns.get(SchedBlockTableModel.Column_State).setPreferredWidth(65);
+		sbTableColumns.get(SchedBlockTableModel.Column_Elevation).setPreferredWidth(65);
+		
+		sbTable.getTableHeader().addMouseListener(new JTableHeaderMouseListener(sbTable, sbTableColumns));
+		
+	}
+	
 	/**
 	 * Create the pop-up menus for the two tables.
 	 */
@@ -451,6 +490,8 @@ public class InteractivePanel extends AbstractArrayPanel
 		
 		sbPopup.add(sbQueueSelected);
 		sbPopup.add(sbQueueHere);
+		
+		
 	}
 
 	/**
@@ -629,6 +670,7 @@ public class InteractivePanel extends AbstractArrayPanel
 		}
 		initialiseSBSorting();
 		showConnectivity();
+		setupTablesColumns();
     }
 
     /* (non-Javadoc)
@@ -1116,6 +1158,7 @@ public class InteractivePanel extends AbstractArrayPanel
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
+	    	setupTablesColumns();
 			return true;
 		}
 
@@ -1573,4 +1616,78 @@ public class InteractivePanel extends AbstractArrayPanel
 	/*
 	 * End IStateKeeping implementation
 	 * ============================================================= */
+	
+	private class JTableHeaderPopupMenuActionListener implements ActionListener {
+		
+		private JTable table;
+		private TableColumn column;
+		private JCheckBoxMenuItem menuItem;
+		
+		public JTableHeaderPopupMenuActionListener(JTable table, TableColumn column, JCheckBoxMenuItem menuItem) {
+			this.table = table;
+			this.column = column;
+			this.menuItem = menuItem;
+		}
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			//Here the checkbox has changed the selection already
+			if (!menuItem.isSelected())
+				table.getColumnModel().removeColumn(column);
+			else 
+				table.getColumnModel().addColumn(column);
+			table.repaint();
+			menuItem.repaint();
+		}
+	}
+	
+	private class JTableHeaderMouseListener implements MouseListener {
+
+		private JTable table;
+		private Map<Integer, TableColumn> columnsMap;
+		
+		private JPopupMenu menu;
+		
+		public JTableHeaderMouseListener(JTable table, Map<Integer, TableColumn> tableColumnsAvailable) {
+			this.table = table;
+			columnsMap = tableColumnsAvailable;
+			
+			//check visible columns first
+			Enumeration<TableColumn> tcs = table.getColumnModel().getColumns();
+			ArrayList<String> columnsNames = new ArrayList<String>(table.getColumnModel().getColumnCount());
+			while (tcs.hasMoreElements()) {
+				TableColumn tc = tcs.nextElement();
+				columnsNames.add(tc.getHeaderValue().toString());
+			}
+			
+			menu = new JPopupMenu();
+			JCheckBoxMenuItem menuItem = null;
+			for (TableColumn tc: tableColumnsAvailable.values()) {
+				menuItem = new JCheckBoxMenuItem(tc.getHeaderValue().toString());
+				menuItem.setSelected(columnsNames.remove(tc.getHeaderValue().toString()));
+				menuItem.addActionListener(new JTableHeaderPopupMenuActionListener(this.table, tc, menuItem));
+				menu.add(menuItem);
+			}
+		}
+		@Override
+		public void mouseClicked(MouseEvent e) {
+		}
+		@Override
+		public void mousePressed(MouseEvent e) {
+			if (!e.isPopupTrigger())
+				return;
+			menu.show(e.getComponent(), e.getX(), e.getY());
+		}
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			if (!e.isPopupTrigger())
+				return;
+			menu.show(e.getComponent(), e.getX(), e.getY());
+		}
+		@Override
+		public void mouseEntered(MouseEvent e) {
+		}
+		@Override
+		public void mouseExited(MouseEvent e) {
+		}
+	}
 }

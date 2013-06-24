@@ -54,7 +54,7 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	private Logger logger;
 	
 	/** Map the displayed columns to the internal logical columns */
-	private int viewToModelColumnMap[];
+	protected int viewToModelColumnMap[];
 	
 	/** The displayed columns which are to be updated periodically */
 	private Collection<Integer> liveDisplayColumns;
@@ -300,29 +300,29 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	 * TableModel implementation
 	 * ================================================================
 	 */
-	private static final int  Column_EntityId =  0;
-	private static final int        Column_PI =  1;
-	private static final int Column_Executive =  2;
-	private static final int      Column_Name =  3;
-	private static final int     Column_State =  4;
-	private static final int       Column_CSV =  5;
-	private static final int   Column_Project =  6;
-	private static final int      Column_Note =  7;
-	private static final int     Column_minHA =  8;
-	private static final int     Column_maxHA =  9;
-	private static final int        Column_RA = 10;
-	private static final int       Column_Dec = 11;
-	private static final int      Column_Rank = 12;
-	private static final int     Column_Score = 13;
-	private static final int  Column_PrevRank = 14;
-	private static final int Column_PrevScore = 15;
-	private static final int Column_HourAngle = 16;
-	private static final int Column_Elevation = 17;
-	private static final int   Column_Azimuth = 18;
-	private static final int      Column_Mode = 19;
-	private static final int Column_Frequency = 20;
-	private static final int      Column_Band = 21;
-	private static final int  Column_Revision = 22;
+	protected static final int  Column_EntityId =  0;
+	protected static final int        Column_PI =  1;
+	protected static final int Column_Executive =  2;
+	protected static final int      Column_Name =  3;
+	protected static final int     Column_State =  4;
+	protected static final int       Column_CSV =  5;
+	protected static final int   Column_Project =  6;
+	protected static final int      Column_Note =  7;
+	protected static final int     Column_minHA =  8;
+	protected static final int     Column_maxHA =  9;
+	protected static final int        Column_RA = 10;
+	protected static final int       Column_Dec = 11;
+	protected static final int      Column_Rank = 12;
+	protected static final int     Column_Score = 13;
+	protected static final int  Column_PrevRank = 14;
+	protected static final int Column_PrevScore = 15;
+	protected static final int Column_HourAngle = 16;
+	protected static final int Column_Elevation = 17;
+	protected static final int   Column_Azimuth = 18;
+	protected static final int      Column_Mode = 19;
+	protected static final int Column_Frequency = 20;
+	protected static final int      Column_Band = 21;
+	protected static final int  Column_Revision = 22;
 	
 	/**
 	 * All  of the columns which should be updated in (near) real time
