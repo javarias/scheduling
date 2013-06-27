@@ -365,16 +365,14 @@ public class CreateArrayController extends SchedulingPanelController
             		} else 
             			antennaMonitor = antennaComponents.get(antenna);
 	            	AntennaStateEvent state = antennaMonitor.getAntennaState();
-	            	System.out.println(antenna + " status: " + state.newState.toString() );
-	            	if (checkIfAntennaIsSelectable(antennaMonitor))
+	            	if (isAntennaSelectable(antenna, antennaMonitor))
 	            		goodAntennas.add(antenna);
             	} catch (SystemException e) {
             		try {
             			//Try to refresh the reference to the component if the antenna was restarted
 	            		antennaMonitor = AntennaMonitorHelper.narrow(container.getComponentNonSticky("CONTROL/" + antenna));
 	            		AntennaStateEvent state = antennaMonitor.getAntennaState();
-		            	System.out.println(antenna + "status: " + state.newState.toString() );
-		            	if (checkIfAntennaIsSelectable(antennaMonitor))
+		            	if (isAntennaSelectable(antenna, antennaMonitor))
 		            		goodAntennas.add(antenna);
 		            	antennaComponents.put(antenna, antennaMonitor);
             		} catch (SystemException e1) {
@@ -394,17 +392,21 @@ public class CreateArrayController extends SchedulingPanelController
         return antennas;
     }
     
-    private boolean checkIfAntennaIsSelectable(AntennaMonitor antennaMonitor)
+    private boolean isAntennaSelectable(String antenna, AntennaMonitor antennaMonitor)
     		throws SystemException {
     	AntennaStateEvent state = antennaMonitor.getAntennaState();
-    	if (antennaMonitor.isAssigned())
+    	boolean assigned = antennaMonitor.isAssigned();
+    	System.out.print(antenna + " status: " + state.newState.toString() );
+    	System.out.println(" Assigned to an Array?: " + assigned);
+    	if (assigned)
     		return false;
     	switch(state.newState.value()) {
 		case AntennaState._AntennaDegraded:
 		case AntennaState._AntennaOperational:
 			return true;
+		default:
+			return false;
 		}
-    	return false;
     }
     
     public String createArray(ArrayModeEnum arrayMode,
