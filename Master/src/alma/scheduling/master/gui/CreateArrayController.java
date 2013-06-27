@@ -55,7 +55,6 @@ import alma.TMCDB.AccessHelper;
 import alma.TMCDB_IDL.StartupAntennaIDL;
 import alma.common.gui.chessboard.ChessboardEntry;
 import alma.common.gui.chessboard.internals.MapToNumber;
-import alma.control.gui.antennachessboard.AntennaChessboardStatus;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.scheduling.Array;
 import alma.scheduling.ArrayCreationInfo;
