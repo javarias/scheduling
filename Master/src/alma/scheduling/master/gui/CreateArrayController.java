@@ -366,24 +366,16 @@ public class CreateArrayController extends SchedulingPanelController
             			antennaMonitor = antennaComponents.get(antenna);
 	            	AntennaStateEvent state = antennaMonitor.getAntennaState();
 	            	System.out.println(antenna + " status: " + state.newState.toString() );
-	            	switch(state.newState.value()) {
-	        		case AntennaState._AntennaDegraded:
-	        		case AntennaState._AntennaOperational:
-	        			goodAntennas.add(antenna);
-	        			break;
-	        		}
+	            	if (checkIfAntennaIsSelectable(antennaMonitor))
+	            		goodAntennas.add(antenna);
             	} catch (SystemException e) {
             		try {
             			//Try to refresh the reference to the component if the antenna was restarted
 	            		antennaMonitor = AntennaMonitorHelper.narrow(container.getComponentNonSticky("CONTROL/" + antenna));
 	            		AntennaStateEvent state = antennaMonitor.getAntennaState();
 		            	System.out.println(antenna + "status: " + state.newState.toString() );
-		            	switch(state.newState.value()) {
-		        		case AntennaState._AntennaDegraded:
-		        		case AntennaState._AntennaOperational:
-		        			goodAntennas.add(antenna);
-		        			break;
-		            	}
+		            	if (checkIfAntennaIsSelectable(antennaMonitor))
+		            		goodAntennas.add(antenna);
 		            	antennaComponents.put(antenna, antennaMonitor);
             		} catch (SystemException e1) {
             			logger.severe("Antenna " + antenna + "will be offline in the create array panel." +
@@ -400,6 +392,19 @@ public class CreateArrayController extends SchedulingPanelController
         }
         //return cbeNames;
         return antennas;
+    }
+    
+    private boolean checkIfAntennaIsSelectable(AntennaMonitor antennaMonitor)
+    		throws SystemException {
+    	AntennaStateEvent state = antennaMonitor.getAntennaState();
+    	if (antennaMonitor.isAssigned())
+    		return false;
+    	switch(state.newState.value()) {
+		case AntennaState._AntennaDegraded:
+		case AntennaState._AntennaOperational:
+			return true;
+		}
+    	return false;
     }
     
     public String createArray(ArrayModeEnum arrayMode,
