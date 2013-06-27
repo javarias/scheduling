@@ -27,6 +27,7 @@ package alma.scheduling.master.gui;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,12 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import org.omg.CORBA.SystemException;
+
+import alma.Control.AntennaMonitor;
+import alma.Control.AntennaMonitorHelper;
+import alma.Control.AntennaState;
+import alma.Control.AntennaStateEvent;
 import alma.Control.ControlMaster;
 import alma.Control.CorrelatorType;
 import alma.Control.InaccessibleException;
@@ -48,6 +55,7 @@ import alma.TMCDB.AccessHelper;
 import alma.TMCDB_IDL.StartupAntennaIDL;
 import alma.common.gui.chessboard.ChessboardEntry;
 import alma.common.gui.chessboard.internals.MapToNumber;
+import alma.control.gui.antennachessboard.AntennaChessboardStatus;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.scheduling.Array;
 import alma.scheduling.ArrayCreationInfo;
@@ -71,6 +79,7 @@ public class CreateArrayController extends SchedulingPanelController
     private Map<String,String> map12;
     private Map<String,String> map7;
     private Map<String,String> mapTP;
+    private Map<String, AntennaMonitor> antennaComponents;	
     private final static int NUMBER_OF_ACS_ANTENNAS = 50;
     private final static int NUMBER_OF_ACA_ANTENNAS = 12;
     private final static int NUMBER_OF_TP_ANTENNAS = 4;
@@ -92,6 +101,14 @@ public class CreateArrayController extends SchedulingPanelController
     					InetAddress.getLocalHost().getHostName() + "_"
     							+ this.toString() + "_"
     							+ System.currentTimeMillis(), callback._this());
+    			if (antennaComponents == null)
+    				antennaComponents = new TreeMap<String, AntennaMonitor>();
+    			getControlRef();
+    			String[] antennas = control.getAvailableAntennas();
+    			for (String antenna: antennas) {
+    				AntennaMonitor antennaMonitor = AntennaMonitorHelper.narrow(container.getComponentNonSticky("CONTROL/" + antenna));
+    				antennaComponents.put(antenna, antennaMonitor);
+    			}
     		} catch (AcsJContainerServicesEx e) {
     			e.printStackTrace();
     		} catch (UnknownHostException e) {
@@ -99,7 +116,9 @@ public class CreateArrayController extends SchedulingPanelController
     			masterScheduler.addMonitorMaster(
     					this.toString() + "_" + System.currentTimeMillis(),
     					callback._this());
-    		} finally {
+    		} catch (InaccessibleException e) {
+				e.printStackTrace();
+			} finally {
     		}
     		getArrayInformation();
         }
@@ -336,7 +355,46 @@ public class CreateArrayController extends SchedulingPanelController
 
         try {
             getControlRef();
-            antennas= control.getAvailableAntennas();
+            antennas = control.getAvailableAntennas();
+            ArrayList<String> goodAntennas = new ArrayList<String>(antennas.length);
+            for(String antenna: antennas) {
+            	AntennaMonitor antennaMonitor = null;
+            	try {
+            		if (!antennaComponents.containsKey(antenna)) {
+            			antennaMonitor = AntennaMonitorHelper.narrow(container.getComponentNonSticky("CONTROL/" + antenna));
+            			antennaComponents.put(antenna, antennaMonitor);
+            		} else 
+            			antennaMonitor = antennaComponents.get(antenna);
+	            	AntennaStateEvent state = antennaMonitor.getAntennaState();
+	            	System.out.println(antenna + " status: " + state.newState.toString() );
+	            	switch(state.newState.value()) {
+	        		case AntennaState._AntennaDegraded:
+	        		case AntennaState._AntennaOperational:
+	        			goodAntennas.add(antenna);
+	        			break;
+	        		}
+            	} catch (SystemException e) {
+            		try {
+            			//Try to refresh the reference to the component if the antenna was restarted
+	            		antennaMonitor = AntennaMonitorHelper.narrow(container.getComponentNonSticky("CONTROL/" + antenna));
+	            		AntennaStateEvent state = antennaMonitor.getAntennaState();
+		            	System.out.println(antenna + "status: " + state.newState.toString() );
+		            	switch(state.newState.value()) {
+		        		case AntennaState._AntennaDegraded:
+		        		case AntennaState._AntennaOperational:
+		        			goodAntennas.add(antenna);
+		        			break;
+		            	}
+		            	antennaComponents.put(antenna, antennaMonitor);
+            		} catch (SystemException e1) {
+            			logger.severe("Antenna " + antenna + "will be offline in the create array panel." +
+            					" Communication problem while trying to get antenna status");
+            			e.printStackTrace();
+            		}
+	            }
+            }
+            antennas = new String[goodAntennas.size()];
+            goodAntennas.toArray(antennas);
             logControlAntennas("Got the following", antennas);
         } catch (Exception e){
             e.printStackTrace();

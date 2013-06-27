@@ -39,7 +39,7 @@ declare PLUGIN=alma.scheduling.master.gui.SchedulingPanelMainFrame
 
 if [[ $# == 0 ]]
 then
-   acsStartJava -maxHeapSize 2g -endorsed $SCHEDULING_TEST_OPTIONS "$PLUGIN_STARTER" "$PLUGIN" &
+   acsStartJava -maxHeapSize 2g -endorsed -debugport 9999 $SCHEDULING_TEST_OPTIONS "$PLUGIN_STARTER" "$PLUGIN" &
 else
    LOGFILE=${ACS_TMP}/$1.log
    echo "logging to ${LOGFILE}"

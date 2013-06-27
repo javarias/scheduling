@@ -34,7 +34,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -579,6 +578,8 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
 
     public void prepareCreateArray(ArrayModeEnum mode){
         arrayMode = mode;
+        disableChessboards(false);
+        disableChessboards(true);
         GetAntennaThread ant = new GetAntennaThread();
         if(controller == null){
             logger.fine("crappy controller == null");

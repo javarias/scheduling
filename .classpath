@@ -12,6 +12,7 @@
 	<classpathentry kind="src" path="Common/test"/>
 	<classpathentry kind="src" path="DSA/test"/>
 	<classpathentry kind="src" path="Master/test"/>
+	<classpathentry kind="src" path="IntTest/test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="acs.INTLIST_CONTAINER/export/home/ruffles/javarias/INTLIST/jar,zip"/>
 	<classpathentry kind="con" path="acs.ACSROOT_CONTAINER/alma/ACS-current/jar,zip"/>
