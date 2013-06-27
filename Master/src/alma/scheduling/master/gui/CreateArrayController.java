@@ -364,14 +364,12 @@ public class CreateArrayController extends SchedulingPanelController
             			antennaComponents.put(antenna, antennaMonitor);
             		} else 
             			antennaMonitor = antennaComponents.get(antenna);
-	            	AntennaStateEvent state = antennaMonitor.getAntennaState();
 	            	if (isAntennaSelectable(antenna, antennaMonitor))
 	            		goodAntennas.add(antenna);
             	} catch (SystemException e) {
             		try {
             			//Try to refresh the reference to the component if the antenna was restarted
 	            		antennaMonitor = AntennaMonitorHelper.narrow(container.getComponentNonSticky("CONTROL/" + antenna));
-	            		AntennaStateEvent state = antennaMonitor.getAntennaState();
 		            	if (isAntennaSelectable(antenna, antennaMonitor))
 		            		goodAntennas.add(antenna);
 		            	antennaComponents.put(antenna, antennaMonitor);
