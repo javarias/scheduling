@@ -17,7 +17,22 @@
  */
 package alma.archive.xml;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.StringWriter;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 public abstract class XmlEntity {
 
@@ -28,13 +43,28 @@ public abstract class XmlEntity {
 	public String getUid() {
 		return uid;
 	}
+	
 	public void setUid(String uid) {
 		this.uid = uid;
 	}
+	
 	public Document getXmlDoc() {
 		return xmlDoc;
 	}
+	
 	public void setXmlDoc(Document xmlDoc) {
 		this.xmlDoc = xmlDoc;
 	}
+	
+	public String domToString()
+            throws TransformerException {
+        TransformerFactory tFactory = TransformerFactory.newInstance();
+        Transformer transformer = tFactory.newTransformer();
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        DOMSource source = new DOMSource(xmlDoc);
+        StringWriter sw = new StringWriter();
+        StreamResult result = new StreamResult(sw);
+        transformer.transform(source, result);
+        return sw.toString();
+    }
 }

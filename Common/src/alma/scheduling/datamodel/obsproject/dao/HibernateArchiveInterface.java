@@ -17,7 +17,10 @@
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
+import java.io.StringReader;
 import java.util.logging.Logger;
+
+import javax.xml.transform.TransformerException;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
@@ -105,7 +108,7 @@ public final class HibernateArchiveInterface extends AbstractArchiveInterface
 		CT retVal = null;
 		try {
 			XmlEntity hRet = (XmlEntity) session.get(hClass, id);
-			retVal = (CT) Unmarshaller.unmarshal(cClass, hRet.getXmlDoc().getFirstChild());
+			retVal = (CT) Unmarshaller.unmarshal(cClass, new StringReader(hRet.domToString()));
 		} catch (HibernateException e) {
 			AcsJSchedulingInternalExceptionEx ex = new AcsJSchedulingInternalExceptionEx(
 					e);
@@ -113,6 +116,8 @@ public final class HibernateArchiveInterface extends AbstractArchiveInterface
 		} catch (MarshalException e) {
 			throw new EntityException(e);
 		} catch (ValidationException e) {
+			throw new EntityException(e);
+		} catch (TransformerException e) {
 			throw new EntityException(e);
 		}
 		return retVal;
