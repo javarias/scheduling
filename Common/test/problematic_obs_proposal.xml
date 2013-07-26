@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ObsProposal xmlns="Alma/ObsPrep/ObsProposal" xmlns:val="Alma/ValueTypes" xmlns:prj="Alma/ObsPrep/ObsProject" xmlns:prp="Alma/ObsPrep/ObsProposal" schemaVersion="13" revision="1.102.2.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ObsProposal">
+ <ScienceGoal>
+  <prj:name></prj:name>
+  <prj:note>This is to test the system ability to switch correlator mode between broad (for calibration purpose) and narrow (for some science goals) bandwith in case all BB have to be configured with same correlator mode in ES</prj:note>
+  <prj:CalibrationSetupParameters selection="user">
+   <prj:QuerySource intendedUse="Polarization">
+    <prj:queryCenter system="J2000" type="ABSOLUTE">
+     <val:longitude unit="deg">84.7098375</val:longitude>
+     <val:latitude unit="deg">-44.08581638888889</val:latitude>
+    </prj:queryCenter>
+    <prj:searchRadius unit="deg">20.0</prj:searchRadius>
+    <prj:minFrequency unit="GHz">0.0</prj:minFrequency>
+    <prj:maxFrequency unit="GHz">0.0</prj:maxFrequency>
+    <prj:minFlux unit="Jy">0.0</prj:minFlux>
+    <prj:maxFlux unit="Jy">0.0</prj:maxFlux>
+    <prj:minTimeSinceObserved unit="s">0.0</prj:minTimeSinceObserved>
+    <prj:maxTimeSinceObserved unit="s">0.0</prj:maxTimeSinceObserved>
+    <prj:use>UNDEFINED</prj:use>
+    <prj:maxSources>1</prj:maxSources>
+    <prj:index>0</prj:index>
+   </prj:QuerySource>
+   <prj:QuerySource intendedUse="Polarization">
+    <prj:queryCenter system="J2000" type="ABSOLUTE">
+     <val:longitude unit="deg">84.7098375</val:longitude>
+     <val:latitude unit="deg">-44.08581638888889</val:latitude>
+    </prj:queryCenter>
+    <prj:searchRadius unit="deg">20.0</prj:searchRadius>
+    <prj:use>UNDEFINED</prj:use>
+    <prj:maxSources>1</prj:maxSources>
+    <prj:index>0</prj:index>
+   </prj:QuerySource>
+   <prj:QuerySource intendedUse="Amplitude">
+    <prj:queryCenter system="J2000" type="ABSOLUTE">
+     <val:longitude unit="deg">84.7098375</val:longitude>
+     <val:latitude unit="deg">-44.08581638888889</val:latitude>
+    </prj:queryCenter>
+    <prj:searchRadius unit="deg">20.0</prj:searchRadius>
+    <prj:use>UNDEFINED</prj:use>
+    <prj:maxSources>1</prj:maxSources>
+    <prj:index>0</prj:index>
+   </prj:QuerySource>
+   <prj:QuerySource intendedUse="Pointing">
+    <prj:queryCenter system="J2000" type="ABSOLUTE">
+     <val:longitude unit="deg">84.7098375</val:longitude>
+     <val:latitude unit="deg">-44.08581638888889</val:latitude>
+    </prj:queryCenter>
+    <prj:searchRadius unit="deg">20.0</prj:searchRadius>
+    <prj:use>UNDEFINED</prj:use>
+    <prj:maxSources>1</prj:maxSources>
+    <prj:index>0</prj:index>
+   </prj:QuerySource>
+   <prj:QuerySource intendedUse="Phase">
+    <prj:queryCenter system="J2000" type="ABSOLUTE">
+     <val:longitude unit="deg">84.7098375</val:longitude>
+     <val:latitude unit="deg">-44.08581638888889</val:latitude>
+    </prj:queryCenter>
+    <prj:searchRadius unit="deg">20.0</prj:searchRadius>
+    <prj:use>UNDEFINED</prj:use>
+    <prj:maxSources>1</prj:maxSources>
+    <prj:index>0</prj:index>
+   </prj:QuerySource>
+   <prj:QuerySource intendedUse="Bandpass">
+    <prj:queryCenter system="J2000" type="ABSOLUTE">
+     <val:longitude unit="deg">84.7098375</val:longitude>
+     <val:latitude unit="deg">-44.08581638888889</val:latitude>
+    </prj:queryCenter>
+    <prj:searchRadius unit="deg">20.0</prj:searchRadius>
+    <prj:use>UNDEFINED</prj:use>
+    <prj:maxSources>1</prj:maxSources>
+    <prj:index>0</prj:index>
+   </prj:QuerySource>
+   <prj:QuerySource intendedUse="Delay">
+    <prj:queryCenter system="J2000" type="ABSOLUTE">
+     <val:longitude unit="deg">84.7098375</val:longitude>
+     <val:latitude unit="deg">-44.08581638888889</val:latitude>
+    </prj:queryCenter>
+    <prj:searchRadius unit="deg">20.0</prj:searchRadius>
+    <prj:use>UNDEFINED</prj:use>
+    <prj:maxSources>1</prj:maxSources>
+    <prj:index>0</prj:index>
+   </prj:QuerySource>
+  </prj:CalibrationSetupParameters>
+  <PerformanceParameters desiredSensitivityFrequencyMeasure="AggregateBandWidth">
+   <prj:desiredAngularResolution unit="arcsec" userUnit="arcsec">3.0</prj:desiredAngularResolution>
+   <prj:desiredLargestScale unit="arcsec">5.0</prj:desiredLargestScale>
+   <prj:desiredSensitivity unit="Jy" userUnit="Jy">0.01</prj:desiredSensitivity>
+   <prj:desiredDynamicRange>100.0</prj:desiredDynamicRange>
+   <prj:representativeFrequency unit="GHz">90.0</prj:representativeFrequency>
+   <prj:useACA>false</prj:useACA>
+   <prj:isTimeConstrained>false</prj:isTimeConstrained>
+   <prj:useTP>false</prj:useTP>
+   <prj:desiredSDSensitivity unit="Jy" userUnit="Jy">0.0</prj:desiredSDSensitivity>
+   <prj:TemporalParameters>
+    <prj:startTime></prj:startTime>
+    <prj:endTime></prj:endTime>
+    <prj:allowedMargin unit="s">0.0</prj:allowedMargin>
+   </prj:TemporalParameters>
+   <desiredSensitivityReferenceFrequencyWidth unit="GHz">8.0</desiredSensitivityReferenceFrequencyWidth>
+   <isPointSource>false</isPointSource>
+   <needsMoreTime>false</needsMoreTime>
+  </PerformanceParameters>
+  <SpectralSetupParameters polarisation="FULL" type="full">
+   <prj:ScienceSpectralWindow groupResourceUse="FULL">
+    <prj:index>0</prj:index>
+    <prj:transitionName></prj:transitionName>
+    <prj:centerFrequency unit="GHz">90.0</prj:centerFrequency>
+    <prj:bandWidth unit="MHz" userUnit="GHz">62.5</prj:bandWidth>
+    <prj:spectralResolution unit="MHz" userUnit="GHz">0.030517578125</prj:spectralResolution>
+    <representativeWindow>true</representativeWindow>
+    <prj:groupIndex>0</prj:groupIndex>
+    <prj:isSkyFrequency>false</prj:isSkyFrequency>
+   </prj:ScienceSpectralWindow>
+   <representativeFrequency unit="GHz">90.0</representativeFrequency>
+   <userRepresentativeFrequency>true</userRepresentativeFrequency>
+  </SpectralSetupParameters>
+  <prj:TargetParameters type="F_MultiplePoints">
+   <prj:sourceName>J0538-441</prj:sourceName>
+   <prj:sourceCoordinates system="J2000" type="ABSOLUTE">
+    <val:longitude unit="deg">84.7098375</val:longitude>
+    <val:latitude unit="deg">-44.08581638888889</val:latitude>
+   </prj:sourceCoordinates>
+   <prj:pmRA unit="mas/yr">36.34</prj:pmRA>
+   <prj:pmDec unit="mas/yr">22.99</prj:pmDec>
+   <prj:parallax unit="mas">5.42</prj:parallax>
+   <prj:nonSiderealMotion>false</prj:nonSiderealMotion>
+   <prj:sourceEphemeris></prj:sourceEphemeris>
+   <prj:sourceVelocity referenceSystem="lsr" dopplerCalcType="RADIO">
+    <val:centerVelocity unit="km/s">0.0</val:centerVelocity>
+   </prj:sourceVelocity>
+   <prj:index>0</prj:index>
+   <ExpectedProperties>
+    <prj:expectedPeakFluxDensity unit="Jy">1.0</prj:expectedPeakFluxDensity>
+    <prj:expectedLineWidth unit="GHz" userUnit="km/s">0.0</prj:expectedLineWidth>
+    <prj:referenceFrequency unit="GHz">1.0</prj:referenceFrequency>
+    <expectedPeakLineFluxDensity unit="Jy">0.0</expectedPeakLineFluxDensity>
+    <expectedSpectralDynamicRange>0.0</expectedSpectralDynamicRange>
+    <expectedImageDynamicRange>0.0</expectedImageDynamicRange>
+   </ExpectedProperties>
+   <prj:SinglePoint>
+    <prj:centre system="J2000" type="RELATIVE">
+     <val:longitude unit="arcsec">0.0</val:longitude>
+     <val:latitude unit="arcsec">0.0</val:latitude>
+    </prj:centre>
+   </prj:SinglePoint>
+  </prj:TargetParameters>
+  <estimatedTotalTime unit="h">0.0</estimatedTotalTime>
+  <userPriority>0</userPriority>
+ </ScienceGoal>
+ <prj:ObsPlan status="NewPhase2" entityPartId="X6566237" almatype="APDM::ObsUnitSet">
+  <prj:name>ObsUnitSet</prj:name>
+  <prj:note></prj:note>
+  <prj:runSciencePipeline>false</prj:runSciencePipeline>
+ </prj:ObsPlan>
+ <ObsProposalEntity entityId="uid://A002/X19708c/X50" entityIdEncrypted="-- id encryption not yet implemented --" entityTypeName="ObsProposal" schemaVersion="13">
+ </ObsProposalEntity>
+ <prp:ObsProjectRef entityId="uid://A002/X19708c/X4f" entityTypeName="ObsProject" documentVersion="1">
+ </prp:ObsProjectRef>
+ <prp:abstract></prp:abstract>
+ <prp:relatedProposals></prp:relatedProposals>
+ <prp:previousProposals></prp:previousProposals>
+ <prp:dateReceived>2011-01-26T19:20:53.527Z</prp:dateReceived>
+ <prp:cycle>9999.4</prp:cycle>
+ <prp:recentPublications></prp:recentPublications>
+ <prp:scientificCategoryCode>10</prp:scientificCategoryCode>
+ <prp:proposalTypeCode>S</prp:proposalTypeCode>
+ <prp:scientificCategoryString></prp:scientificCategoryString>
+ <prp:proposalTypeString></prp:proposalTypeString>
+ <PrincipalInvestigator associatedExec="OTHER" allowedExec="OTHER">
+  <prp:fullName>Vincent</prp:fullName>
+  <prp:organisation></prp:organisation>
+  <prp:eMail>pvpietu@alma.cl</prp:eMail>
+  <prp:verfiedUser>true</prp:verfiedUser>
+  <prp:userId>vpietu</prp:userId>
+  <prp:index>1</prp:index>
+  <organisationId>0</organisationId>
+ </PrincipalInvestigator>
+ <prp:ProposalFeedback>
+  <TimeAllocationBreakdown>
+   <ExecutiveFraction name="OTHER">
+    <prp:timeFraction>0.0</prp:timeFraction>
+   </ExecutiveFraction>
+   <ExecutiveFraction name="CL">
+    <prp:timeFraction>1.0</prp:timeFraction>
+   </ExecutiveFraction>
+   <ExecutiveFraction name="EA">
+    <prp:timeFraction>0.0</prp:timeFraction>
+   </ExecutiveFraction>
+   <ExecutiveFraction name="EU">
+    <prp:timeFraction>0.0</prp:timeFraction>
+   </ExecutiveFraction>
+   <ExecutiveFraction name="NA">
+    <prp:timeFraction>0.0</prp:timeFraction>
+   </ExecutiveFraction>
+   <ExecutiveFraction name="NA_EA">
+    <timeFraction>0.0</timeFraction>
+   </ExecutiveFraction>
+  </TimeAllocationBreakdown>
+ </prp:ProposalFeedback><!--Converted to V12 by ObsProposal11-12.xslt--><!--Converted to V13 by ObsProposal12-13.xslt-->
+</ObsProposal>
