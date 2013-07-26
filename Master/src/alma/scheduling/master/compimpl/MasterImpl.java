@@ -728,6 +728,8 @@ public class MasterImpl implements ComponentLifecycle, MasterOperations {
 							+ ex.getMessage());
 			AcsJSchedulingInternalExceptionEx e = new AcsJSchedulingInternalExceptionEx(
 					ex);
+			System.err.println(xmlString);
+			ex.printStackTrace();
 			throw e.toSchedulingInternalExceptionEx();
 		} catch (IOException ex) {
 			m_logger.warning("Unable to add scheduling policies in the file. Reason: "

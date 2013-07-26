@@ -41,6 +41,7 @@ public class MasterSchedulerPolicyUnitTests extends MockObjectTestCase {
 	MasterImpl schedMaster;
 	AcsLogger logger;
 	
+	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		setImposteriser(ClassImposteriser.INSTANCE);
@@ -53,6 +54,13 @@ public class MasterSchedulerPolicyUnitTests extends MockObjectTestCase {
 		schedMaster.initialize(contServices);
 		schedMaster.setLogger(logger);
 		schedMaster.setControlMaster(controlMaster);
+	}
+	
+	@Override
+	protected void tearDown() throws Exception {
+		for (SchedulingPolicyFile f: schedMaster.getSchedulingPolicies()) {
+			schedMaster.removeSchedulingPolicies(f.uuid);
+		}
 	}
 
 	public void testAddNewPolicies() throws SchedulingInternalExceptionEx {
@@ -79,6 +87,10 @@ public class MasterSchedulerPolicyUnitTests extends MockObjectTestCase {
 	}
 	
 	public void testGetPolicies() throws SchedulingInternalExceptionEx {
+		final String xmlToLoad = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
+				"<Policies><SchedulingPolicy name=\"TestPolicy\">\n<SelectionCriteria></SelectionCriteria>" +
+				"<Scorers></Scorers></SchedulingPolicy></Policies>";
+		schedMaster.addSchedulingPolicies("localhost", "lala.xml", xmlToLoad);
 		SchedulingPolicyFile[] files = schedMaster.getSchedulingPolicies();
 		assertEquals(1, files.length);
 		assertEquals("TestPolicy", files[0].schedulingPolicies[0]);
@@ -86,6 +98,10 @@ public class MasterSchedulerPolicyUnitTests extends MockObjectTestCase {
 	
 	
 	public void testRemovePolicies() throws SchedulingInternalExceptionEx {
+		final String xmlToLoad = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
+				"<Policies><SchedulingPolicy name=\"TestPolicy\">\n<SelectionCriteria></SelectionCriteria>" +
+				"<Scorers></Scorers></SchedulingPolicy></Policies>";
+		schedMaster.addSchedulingPolicies("localhost", "lala.xml", xmlToLoad);
 		SchedulingPolicyFile[] files = schedMaster.getSchedulingPolicies();
 		schedMaster.removeSchedulingPolicies(files[0].uuid);
 		files = schedMaster.getSchedulingPolicies();
@@ -117,5 +133,13 @@ public class MasterSchedulerPolicyUnitTests extends MockObjectTestCase {
 		files = schedMaster.getSchedulingPolicies();
 		assertEquals(1, files.length);
 		assertEquals(2, files[0].schedulingPolicies.length);
+	}
+	
+	public void testBandPolicy() throws Exception {
+		final String xmlToLoad = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
+				"<Policies><SchedulingPolicy name=\"TestPolicy\">\n<SelectionCriteria>\n" +
+				"<BandSelector><band>3</band></BandSelector></SelectionCriteria>\n" +
+				"<Scorers></Scorers></SchedulingPolicy></Policies>";
+		schedMaster.addSchedulingPolicies("localhost", "lala.xml", xmlToLoad);
 	}
 }
