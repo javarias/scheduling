@@ -71,6 +71,7 @@ public class DynamicSchedulingPolicyFactory {
 			beanNamesToFix.add("weatherTsysSelector_" + beanName);
 			beanNamesToFix.add("projectCodeSelector_" + beanName);
 			beanNamesToFix.add("projectGradeSelector_" + beanName);
+			beanNamesToFix.add("schedBlockBandSelector_" + beanName);
 		}
 		for(String beanName: beanNamesToFix) {
 			xmlContextString = xmlContextString.replace("\"" + beanName + "\"", "\"uuid" + container.getUuid().toString() + "-" + beanName + "\"");

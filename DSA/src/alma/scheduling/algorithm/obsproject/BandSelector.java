@@ -52,7 +52,7 @@ public class BandSelector extends AbstractBaseSelector {
 	public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
 		Integer [] b = new Integer[allowedBands.size()];
 		allowedBands.toArray(b);
-		Criterion c = Restrictions.in("representativeBand", b);
+		Criterion c = Restrictions.in("schedulingConstraints.representativeBand", b);
 		return c;
 	}
 	
