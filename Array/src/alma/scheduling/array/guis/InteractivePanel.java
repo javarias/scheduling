@@ -1631,8 +1631,12 @@ public class InteractivePanel extends AbstractArrayPanel
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			//Here the checkbox has changed the selection already
-			if (!menuItem.isSelected())
-				table.getColumnModel().removeColumn(column);
+			if (!menuItem.isSelected()) {
+				if (table.getColumnModel().getColumnCount() <= 1)
+					menuItem.setSelected(!menuItem.isSelected());
+				else
+					table.getColumnModel().removeColumn(column);
+			}
 			else 
 				table.getColumnModel().addColumn(column);
 			table.repaint();
