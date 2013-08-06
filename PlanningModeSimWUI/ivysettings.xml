@@ -12,6 +12,8 @@
         <filesystem name="intlist" checksums="">
          	<artifact pattern="${env.INTLISTROOT}/SCHEDULING/lib/[artifact].[ext]" />
             <artifact pattern="${env.INTLISTROOT}/ICD/lib/[artifact].[ext]" />
+            <artifact pattern="${env.INTLISTROOT}/ICD-latest-stable/lib/[artifact].[ext]" />
+            <artifact pattern="${env.INTLISTROOT}/ICD-latest/lib/[artifact].[ext]" />
         </filesystem>
         <filesystem name="acsroot" checksums="">
             <artifact pattern="${env.ACSROOT}/lib/[artifact].[ext]" />
