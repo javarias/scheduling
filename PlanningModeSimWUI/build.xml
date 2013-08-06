@@ -1,195 +1,129 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
-        ahoffsta, UTFSM-NRAO, 01-06-2010
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.    
 -->
+<project name="Planning Mode Simulator" default="build" xmlns:ivy="antlib:org.apache.ivy.ant">
 
-<project name="SchedulingPMSWui" default="warfile">
-
-	<!-- useful definitions -->
-	<property name="webcontent" location="WebContent" />
-	<property name="webinf" location="${webcontent}/WEB-INF" />
-	<property name="src" location="src" />
-	<property name="test" location="test" />
-	<property name="bin" location="build/classes" />
-	<property name="lib" location="${webinf}/lib" />
-	<property name="doc" location="doc" />
-	<property name="dist" location="dist" />
-	<property name="jarfile" location="SchedulingPMSWui.jar" />
-	<property name="warfile" location="SchedulingPMSWui.war" />
-
-	<!-- 
-	   WARNING 
-	   The following definitions only work on Linux in the ALMA environment
-        -->
+	<!-- here is the version of ivy we will use. change this property to try a newer 
+         version if you want -->
 	<property environment="env" />
-	<property name="ACSROOT" value="${env.ACSROOT}" />
-	<property name="ACSDATA" value="${env.ACSDATA}" />
-	<property name="TOMCAT_LIB" value="${ACSROOT}/lib/tomcat5/common/lib" />
+	<property name="ivy.install.version" value="2.3.0" />
+	<property name="ivy.jar.dir" value="${basedir}/ivy" />
+	<property name="ivy.jar.file" value="${ivy.jar.dir}/ivy.jar" />
 
-	<!-- set INTROOT to the value from the users env if set; 
-             else use ACSROOT -->
-	<condition property="INTROOT" value="${env.INTROOT}" else="${env.ACSROOT}">
-		<isset property="env.INTROOT" />
-	</condition>
-	<echo message="INTROOT=${INTROOT}"/>
+	<property name="build.dir" value="build" />
+	<property name="src.dir" value="src" />
+	<property name="lib.dir" value="lib" />
+	<property name="war.output" value="pms.war" />
 
-
-
-	<!-- Build our classpath: depends on ALMA environment -->
-	<path id="PlanningModeSimulatorWUI.class.path">
-		
-		<pathelement location="${jarfile}" />
-		
-		<pathelement location="${TOMCAT_LIB}/servlet-api.jar" />
-		<pathelement location="${TOMCAT_LIB}/jsp-api.jar" />
-			
-		<pathelement location="${INTROOT}/lib/SchedulingPMS.jar" />
-		<pathelement location="${INTROOT}/lib/SchedulingPMSCli.jar" />
-		<pathelement location="${INTROOT}/lib/SchedulingCommon.jar" />
-		<pathelement location="${INTROOT}/lib/SchedulingDSA.jar" />
-	
-		<pathelement location="${ACSROOT}/lib/antlr.jar" />
-		<pathelement location="${ACSROOT}/lib/commons-collections-3.1.jar" />
-		<pathelement location="${ACSROOT}/lib/antlr.jar" />
-		<pathelement location="${ACSROOT}/lib/tomcat5/server/webapps/manager/WEB-INF/lib/commons-fileupload-1.2.jar" />
-		<pathelement location="${ACSROOT}/lib/tomcat5/server/webapps/manager/WEB-INF/lib/commons-io-1.4.jar" />
-		<pathelement location="${ACSROOT}/lib/dom4j-1.6.1.jar" />
-		<pathelement location="${ACSROOT}/lib/hibernate3.jar" />
-		<pathelement location="${ACSROOT}/lib/hibernate-annotations.jar" />
-		<pathelement location="${ACSROOT}/lib/hibernate-commons-annotations.jar" />
-		<pathelement location="${ACSROOT}/lib/hibernate-entitymanager.jar" />
-		<pathelement location="${ACSROOT}/lib/jta-1.1.jar" />
-		<pathelement location="${ACSROOT}/lib/log4j-1.2.15.jar" />
-		<pathelement location="${ACSROOT}/lib/slf4j-api-1.5.8.jar" />
-		<pathelement location="${ACSROOT}/lib/c3p0-0.9.1.2.jar" />
-		<pathelement location="${ACSROOT}/lib/dam.jar" />
-		<pathelement location="${ACSROOT}/lib/APDMEntities.jar" />
-		<pathelement location="${ACSROOT}/lib/systementities.jar" />
-
-		<pathelement location="${lib}/bsh.jar" />
-		<pathelement location="${lib}/cglib-nodep-2.1_3.jar" />
-		<pathelement location="${lib}/fckez.jar" />
-		<pathelement location="${lib}/groovy.jar" />
-		<pathelement location="${lib}/jruby.jar" />
-		<pathelement location="${lib}/js.jar" />
-		<pathelement location="${lib}/jython.jar" />
-		<pathelement location="${lib}/slf4j-log4j12-1.5.2-jar" />
-<!--		<pathelement location="${lib}/spring.jar" /> -->
-		<pathelement location="${ACSROOT}/lib/spring-2.5.5.jar" />
-		<pathelement location="${ACSROOT}/lib/spring-security-cas-client-2.0.5.RELEASE.jar" />
-		<pathelement location="${lib}/ehcache-core-2.1.0.jar" />
-		<pathelement location="${lib}/castor.jar" />
-		<pathelement location="${lib}/xalan.jar" />
-		<pathelement location="${lib}/xalan_serializer.jar" />
-		<pathelement location="${lib}/xercesImpl.jar" />
-		<pathelement location="${lib}/hsqldb.jar" />
-
-		<pathelement location="${lib}/zcommon.jar" />
-		<pathelement location="${lib}/zcommons-el.jar" />
-		<pathelement location="${lib}/zhtml.jar" />
-		<pathelement location="${lib}/zkex.jar" />
-		<pathelement location="${lib}/zk.jar" />
-		<pathelement location="${lib}/zkplus.jar" />
-		<pathelement location="${lib}/zml.jar" />
-		<pathelement location="${lib}/zul.jar" />
-		<pathelement location="${lib}/zweb.jar" />
-
-		<pathelement location="${lib}/jasperreports-3.7.4.jar" />
-		<pathelement location="${lib}/jasperreports-fonts-3.7.4.jar" />
-		<pathelement location="${lib}/jfreechart-1.0.13-experimental.jar" />
-		<pathelement location="${lib}/jfreechart-1.0.13.jar" />
-		<pathelement location="${lib}/jfreechart-1.0.13-swt.jar" />
-		<pathelement location="${lib}/jcommon-1.0.16.jar" />
-	</path>
-
-
-
-	<!-- cleanup  -->
-	<target name="clean">
-		<delete file="${warfile}" />
-		<delete file="${jarfile}" />
-		<delete dir="${bin}" />
-		<delete dir="${lib}" />
+	<target name="download-ivy" unless="skip.download">
+		<mkdir dir="${ivy.jar.dir}"/>
+		<!-- download Ivy from web site so that it can be used even without any special installation -->
+		<echo message="installing ivy..."/>
+		<get src="http://repo1.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar"
+    		 dest="${ivy.jar.file}" usetimestamp="true"/>
 	</target>
 
-	<target name="clear-dist" depends="clean">
-		<delete dir="${dist}" />
+	<!-- ================================= 
+          target: install-ivy         
+            this target is not necessary if you put ivy.jar in your ant lib directory
+            if you already have ivy in your ant lib, you can simply remove this
+            target and the dependency the 'go' target has on it
+         ================================= -->
+	<target name="install-ivy" depends="download-ivy" description="--> install ivy">
+		<!-- try to load ivy here from local ivy dir, in case the user has not already dropped
+    	      it into ant's lib dir (note that the latter copy will always take precedence).
+    	      We will not fail as long as local lib dir exists (it may be empty) and
+    	      ivy is in at least one of ant's lib dir or the local lib dir. -->
+		<path id="ivy.lib.path">
+			<fileset dir="${ivy.jar.dir}" includes="*.jar"/>
+		</path>
+		<taskdef resource="org/apache/ivy/ant/antlib.xml"
+    	          uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
 	</target>
 
-	<!-- create the distribution directory -->
-	<target name="dist" depends="clear-dist">
-		<delete dir="${dist}" />
-		<mkdir dir="${dist}" />
+	<target name="go" depends="install-ivy" >
+
+		<echo message="compiling..."/>
+		<mkdir dir="${build.dir}" />
+		<javac srcdir="${src.dir}" destdir="${build.dir}" classpathref="lib.path.id" />
+
 	</target>
 
-	<!-- create the distribution directory -->
-	<target name="bin">
-		<delete dir="${bin}" />
-		<mkdir dir="${bin}" />
-	</target>
-
-	
-	<!-- 
-	   WARNING
-	       The following task only works on Linux in the ALMA environment
-	       
-	   Compile all our sources 
-	-->
-	<target name="compile" depends="bin">
-		<javac srcdir="${src}" destdir="${bin}" debug="on">
-			<classpath refid="PlanningModeSimulatorWUI.class.path" />
+	<target name="build" depends="resolve">
+		<echo message="compiling..."/>
+		<mkdir dir="${build.dir}" />
+		<javac srcdir="${src.dir}" destdir="${build.dir}">
+			<classpath>
+				<fileset dir="${lib.dir}">
+					<exclude name="*-sources.jar"/>
+					<exclude name="*-javadoc.jar"/>
+					<exclude name="ant-*.jar" />
+					<exclude name="hibernate-3.2.6.ga.jar" />
+					<exclude name="hibernate-commons-annotations-3.0.0.ga.jar" />
+					<exclude name="portlet-api-1.0.jar" />
+				</fileset>
+			</classpath>
 		</javac>
-	</target>
-
-
-	<!-- build a Jarfile for this module -->
-	<target name="jarfile">
-
-		<jar destfile="${jarfile}">
-			<fileset dir="${bin}" />
-			<manifest>
-				<attribute name="Built-By" value="${user.name}" />
-			</manifest>
-		</jar>
-		<copy file="${jarfile}" todir="${lib}" />
-	</target>
-
-
-	<!-- 
-           ********************************************************
-	   copy all our source and classfiles into the distribution
-	   directory 
-           ********************************************************
-        -->
-	<target name="copy" depends="dist">
-		<mkdir dir="${lib}" />
-		<exec dir="." executable="scripts/prepare_war.sh" />
-		<copy todir="${dist}">
-			<!-- copy resources and config files -->
-			<fileset dir="${webcontent}" />
-		</copy>
-	</target>
-
-	<!-- 
-           ********************************************************
-	   build a WAR file for this application, assumes 'compile'
-           was run, but won't invoke it ('make all' will take care
-           of that)
-           ********************************************************
-        -->
-	<target name="warfile" depends="copy,compile,jarfile" >
-		<copy todir="${dist}/WEB-INF/classes">
-			<fileset dir="${src}">
-			</fileset>
-			<fileset dir="${bin}">
-			</fileset>
-		</copy>
-
-		<war destfile="${warfile}" >
-			<fileset dir="${dist}" />
-			<manifest>
-				<attribute name="Built-By" value="${user.name}" />
-			</manifest>
+		<war destfile="${war.output}" webxml="WebContent/WEB-INF/web.xml">
+			<fileset dir="WebContent" />
+			<classes dir="${build.dir}"/>
+			<lib dir="${lib.dir}">
+				<exclude name="*-sources.jar"/>
+				<exclude name="*-javadoc.jar"/>
+				<exclude name="ant-*.jar"/>
+				<exclude name="hibernate-3.2.6.ga.jar"/>
+				<exclude name="hibernate-commons-annotations-3.0.0.ga.jar"/>
+				<exclude name="portlet-api-1.0.jar"/>
+			</lib>
 		</war>
+	</target>
+
+	<target name="resolve" depends="install-ivy">
+		<ivy:retrieve validate="false" haltonfailure="false" setid="pms.classpath"/>
+	</target>
+
+	<!-- ================================= 
+          target: clean              
+         ================================= -->
+	<target name="clean" description="--> clean the project">
+		<delete includeemptydirs="true" quiet="true">
+			<fileset dir="${build.dir}" />
+			<fileset dir="${lib.dir}"/>
+			<fileset file="${war.output}"/>
+		</delete>
+	</target>
+
+	<!-- ================================= 
+          target: clean-ivy              
+         ================================= -->
+	<target name="clean-ivy" description="--> clean the ivy installation">
+		<delete dir="${ivy.jar.dir}"/>
+	</target>
+
+	<!-- ================================= 
+          target: clean-cache              
+         ================================= -->
+	<target name="clean-cache" depends="install-ivy" 
+			description="--> clean the ivy cache">
+		<ivy:cleancache />
+	</target>
+	
+	<target name="install">
+		<copy file="${war.output}" todir="${env.ACSDATA}/tomcat5/webapps/"/>
 	</target>
 </project>

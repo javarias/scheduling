@@ -2,6 +2,7 @@ package alma.scheduling.psm.web;
 
 import java.util.HashMap;
 
+import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.Path;
 import org.zkoss.zk.ui.SuspendNotAllowedException;
@@ -58,6 +59,7 @@ public class MainWindowController extends GenericForwardComposer {
     	HashMap<String, String> param = new HashMap<String, String>();
     	param.put("id", "reportWindowBeforeSimBand");
     	param.put("title", "Frequency Bands Usage (Before simulation)");
+    	param.put("controller", ReportBandBeforeSimController.class.getCanonicalName());
     	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
     	reportsWindow.doOverlapped();
     }
@@ -70,6 +72,7 @@ public class MainWindowController extends GenericForwardComposer {
     	HashMap<String, String> param = new HashMap<String, String>();
     	param.put("id", "reportWindowBeforeSimLST");
     	param.put("title", "Right Ascension Distribution (Before simulation)");
+    	param.put("controller", ReportLstBeforeSimController.class.getCanonicalName());
     	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
     	reportsWindow.doOverlapped();
     }
@@ -82,6 +85,7 @@ public class MainWindowController extends GenericForwardComposer {
     	HashMap<String, String> param = new HashMap<String, String>();
     	param.put("id", "reportWindowAfterSimExec");
     	param.put("title", "Executive Percentage Balance");
+    	param.put("controller", ReportExecAfterSimController.class.getCanonicalName());
     	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
     	reportsWindow.doOverlapped();
     }
@@ -94,6 +98,7 @@ public class MainWindowController extends GenericForwardComposer {
     	HashMap<String, String> param = new HashMap<String, String>();
     	param.put("id", "reportWindowAfterSimLST");
     	param.put("title", "Right Ascension Distribution (After simulation)");
+    	param.put("controller",  ReportLstAfterSimController.class.getCanonicalName());
     	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
     	reportsWindow.doOverlapped();
     }
@@ -106,6 +111,7 @@ public class MainWindowController extends GenericForwardComposer {
     	HashMap<String, String> param = new HashMap<String, String>();
     	param.put("id", "reportWindowAfterSimBand");
     	param.put("title", "Frequency Bands Usage (After simulation)");
+    	param.put("controller", ReportBandAfterSimController.class.getCanonicalName());
     	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
     	reportsWindow.doOverlapped();
     }
@@ -118,10 +124,22 @@ public class MainWindowController extends GenericForwardComposer {
     	HashMap<String, String> param = new HashMap<String, String>();
     	param.put("id", "reportWindowAfterSimCompletion");
     	param.put("title", "Observation Projects Completion");
+    	param.put("controller", ReportObsProjectCompletionController.class.getCanonicalName());
     	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
     	reportsWindow.doOverlapped();
     }
     
+    public void onClick$menuItemFinalReport(Event event) {
+    	Window mainWindow = (Window) Path.getComponent("//");
+    	Window reportsWindow = (Window) Executions.createComponents("final_report.zul", mainWindow, null);
+    	reportsWindow.doOverlapped();
+    }
+    
+    public void onClick$menuItemOlderResults(Event event) {
+    	Window mainWindow = (Window) Path.getComponent("//");
+    	Window reportsWindow = (Window) Executions.createComponents("results_list.zul", mainWindow, null);
+    	reportsWindow.doOverlapped();
+    }
     
     public void onClick$menuItemHelp(Event event) {
     	Window helpWindow = (Window) Path.getComponent("/mainWindow/helpWindow");
@@ -161,4 +179,17 @@ public class MainWindowController extends GenericForwardComposer {
     	}    	
     	aboutWindow.doOverlapped();
     }
+
+	@Override
+	public void doAfterCompose(Component comp) throws Exception {
+		super.doAfterCompose(comp);
+    	Window mainWindow = (Window) Path.getComponent("//");
+    	if( mainWindow == null ){
+    		System.out.println("mainWindow is null");
+    	}
+    	Window simulationWindow = (Window) Executions.createComponents("simulation.zul", mainWindow, null);
+		simulationWindow.doOverlapped();
+	}
+    
+    
 }

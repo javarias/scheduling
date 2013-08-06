@@ -58,7 +58,7 @@ endif
 SUBSYSTEM = SCHEDULING
 
 # MODULES =  Scheduling 
-MODULES = Common DSA Array ArchiveUpdater Master PlanningModeSim 
+MODULES = Common DSA Array ArchiveUpdater Master PlanningModeSim PlanningModeSimWUI
 
 
 MAKE_FLAGS = "-k"

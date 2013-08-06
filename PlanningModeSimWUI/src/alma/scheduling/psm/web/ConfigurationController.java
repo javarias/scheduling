@@ -18,12 +18,11 @@ import org.zkoss.zul.Panel;
 import org.zkoss.zul.api.Window;
 
 import alma.scheduling.input.config.generated.Configuration;
-import alma.scheduling.psm.cli.Console;
 import alma.scheduling.psm.util.PsmContext;
 
 public class ConfigurationController extends GenericForwardComposer implements Initiator {
 
-    private static Logger logger = LoggerFactory.getLogger(Console.class);
+    private static Logger logger = LoggerFactory.getLogger(ConfigurationController.class);
 
 	private static final long serialVersionUID = -7010591114060503476L;
 	private Button buttonCancel;
@@ -105,12 +104,10 @@ public class ConfigurationController extends GenericForwardComposer implements I
 		maxWindSpeed.setValue("40.0");
 	}
 
-	@Override
-	public void doAfterCompose(Page arg0) throws Exception {
+	public void doAfterCompose(Page page) throws Exception {
 		System.out.println("doAfterCompose(Page) called");		
 	}
 
-	@Override
 	public void doInit(Page arg0, Map arg1) throws Exception {
 		System.out.println("Configuration init() called");
 		arg0.setVariable("configuration", Sessions.getCurrent().getAttribute("configuration"));

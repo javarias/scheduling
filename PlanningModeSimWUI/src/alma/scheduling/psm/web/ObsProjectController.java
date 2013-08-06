@@ -14,7 +14,6 @@ public class ObsProjectController extends GenericForwardComposer implements Init
 
 	private static final long serialVersionUID = -2202514334580824679L;
 
-	@Override
 	public void doAfterCompose(Page arg0) throws Exception {
 		System.out.println("doAfterCompose(page) called");
 

@@ -206,16 +206,11 @@ endif
 # -------
 .PHONY: all clean install
 all: do_all
-	tar -xzf ../apache-maven-3.0.4-bin.tar.gz
-	cp -r apache-maven-3.0.4/bin/* ../bin
-	cp -r apache-maven-3.0.4/lib/* ../lib
-	cp -r apache-maven-3.0.4/boot ../
-	cp -r apache-maven-3.0.4/conf ../
-	cd ..
-	mvn package
+	cd .. && ./run_ant.sh
 	@echo " . . . 'all' done" 
 
 clean : clean_all 
+	cd .. && ./run_ant.sh clean
 	@echo " . . . clean done"
 
 clean_dist : clean_all clean_dist_all 
@@ -225,6 +220,7 @@ man   : do_man
 	@echo " . . . man page(s) done"
 
 install : install_all
+	cd .. && ./run_ant.sh install
 	@echo " . . . installation done"
 
 #___oOo___
