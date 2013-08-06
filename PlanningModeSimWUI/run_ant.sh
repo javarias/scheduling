@@ -1,7 +1,14 @@
 #!/bin/bash
 
-if [ -z $INTLISTROOT ]; then
-	export INTLISTROOT=/tmp
+if [ -n $INTLIST ]; then
+	for dir in `echo $INTLIST |tr ':' ' '`; do
+		fix_dir=${dir//\//\\\/}
+		REPLACE="$REPLACE<artifact pattern=\"$fix_dir\/lib\/\[artifact\]\.\[ext\]\" \/> "
+	done
+	echo $REPLACE
+	cp ivysettings.xml ivysettings.xml.orig
+	cat ivysettings.xml.orig | sed "s/<artifact\/>/$REPLACE/g"
+	cat ivysettings.xml.orig | sed "s/<artifact\/>/$REPLACE/g" > ivysettings.xml
 fi
 
 if [ -z $INTROOT ]; then
@@ -9,3 +16,4 @@ if [ -z $INTROOT ]; then
 fi
 
 ant $@
+mv ivysettings.xml.orig ivysettings.xml

@@ -6,16 +6,9 @@
         <ibiblio name="java-net-maven2" root="http://download.java.net/maven/2/" m2compatible="true" />
         <ibiblio name="maven" root="http://mvnrepository.com/artifact/" m2compatible="true" />
         <ibiblio name="seasar" root="http://maven.seasar.org/maven2/" m2compatible="true"/>
-        <filesystem name="introot" checksums="">
+        <filesystem name="local" checksums="">
             <artifact pattern="${env.INTROOT}/lib/[artifact].[ext]" />
-        </filesystem>
-        <filesystem name="intlist" checksums="">
-         	<artifact pattern="${env.INTLISTROOT}/SCHEDULING/lib/[artifact].[ext]" />
-            <artifact pattern="${env.INTLISTROOT}/ICD/lib/[artifact].[ext]" />
-            <artifact pattern="${env.INTLISTROOT}/ICD-latest-stable/lib/[artifact].[ext]" />
-            <artifact pattern="${env.INTLISTROOT}/ICD-latest/lib/[artifact].[ext]" />
-        </filesystem>
-        <filesystem name="acsroot" checksums="">
+            <artifact/>
             <artifact pattern="${env.ACSROOT}/lib/[artifact].[ext]" />
             <artifact pattern="${env.ACSROOT}/lib/endorsed/[artifact].[ext]" />
         </filesystem>
@@ -23,9 +16,7 @@
             <resolver ref="maven"/>
             <resolver ref="ibiblio-maven2"/>
             <resolver ref="java-net-maven2"/>
-            <resolver ref="introot"/>
-            <resolver ref="intlist"/>
-            <resolver ref="acsroot"/>
+            <resolver ref="local"/>
         </chain>
     </resolvers>
     <modules>

@@ -62,7 +62,6 @@
 		<dependency name="xmlentity"/>
 		<dependency name="APDMEntities"/>
 		<dependency name="StateSystem"/>
-		<dependency name="projectlifecyle"/>
 		<dependency name="SchedulingTypes"/>
 		<dependency name="SchedulingMasterExceptions"/>
 		<dependency name="SchedulingDSA"/>
