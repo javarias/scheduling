@@ -5,9 +5,7 @@ if [ -n $INTLIST ]; then
 		fix_dir=${dir//\//\\\/}
 		REPLACE="$REPLACE<artifact pattern=\"$fix_dir\/lib\/\[artifact\]\.\[ext\]\" \/> "
 	done
-	echo $REPLACE
 	cp ivysettings.xml ivysettings.xml.orig
-	cat ivysettings.xml.orig | sed "s/<artifact\/>/$REPLACE/g"
 	cat ivysettings.xml.orig | sed "s/<artifact\/>/$REPLACE/g" > ivysettings.xml
 fi
 
