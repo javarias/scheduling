@@ -26,14 +26,14 @@
 		<ant antfile="build.xml" dir="Master" target="test" />
 	</target>
 	<target name="clean">
-		<ant antfile="build.xml" dir="Common" target="test" />
+		<ant antfile="build.xml" dir="Common" target="clean" />
 		<ant antfile="build.xml" dir="DSA" target="clean" />
 		<ant antfile="build.xml" dir="Array" target="clean" />
 		<ant antfile="build.xml" dir="Master" target="clean" />
 	</target>
 	<target name="instrument" depends="build">
 		<delete file="cobertura.ser"/>
-		<ant antfile="build.xml" dir="Common" target="test" />
+		<ant antfile="build.xml" dir="Common" target="clean" />
 		<ant antfile="build.xml" dir="DSA" target="instrument" />
 		<ant antfile="build.xml" dir="Array" target="instrument" />
 		<ant antfile="build.xml" dir="Master" target="instrument" />

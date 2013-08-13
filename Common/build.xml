@@ -36,8 +36,6 @@
 		<delete dir="bin"/>
 	</target>
 	<target depends="clean" name="cleanall">
-		<ant antfile="build.xml" dir="${Common.location}" inheritAll="false" target="clean"/>
-		<ant antfile="build.xml" dir="${DSA.location}" inheritAll="false" target="clean"/>
 	</target>
 	<target depends="build-project" name="build"/>
 
@@ -69,7 +67,7 @@
 			<sysproperty key="net.sourceforge.cobertura.datafile"
         		file="cobertura.ser" />
 			<formatter type="xml" />
-			<test name="alma.scheduling.datamodel.bookkepping.BookkeepingTest" todir="${junit.output.dir}" />
+			<test name="alma.scheduling.datamodel.bookkeeping.BookkeepingTest" todir="${junit.output.dir}" />
 			<classpath>
 				<pathelement path="${instrumented.dir}"/>
 				<pathelement path="bin"/>
