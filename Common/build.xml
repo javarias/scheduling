@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 
-<project basedir="." default="build" name="Array">
+<project basedir="." default="build" name="Common">
 	<property environment="env"/>
 	<property name="Common.location" value="../Common"/>
 	<property name="Master.location" value="../Master"/>
