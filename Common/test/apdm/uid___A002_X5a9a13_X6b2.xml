@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SBStatus xmlns="Alma/Scheduling/SBStatus"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    schemaVersion="13" revision="1.105.6.1.16.2"
+    almatype="APDM::SBStatus" xsi:type="SBStatus">
+    <ns1:Status xmlns:ns1="Alma/Scheduling/ProjectStatus" State="Deleted"/>
+    <ns2:executionsRemaining xmlns:ns2="Alma/Scheduling/ProjectStatus">0</ns2:executionsRemaining>
+    <ns3:successfulExecutions xmlns:ns3="Alma/Scheduling/ProjectStatus">0</ns3:successfulExecutions>
+    <ns4:failedExecutions xmlns:ns4="Alma/Scheduling/ProjectStatus">0</ns4:failedExecutions>
+    <ns5:secondsRemaining xmlns:ns5="Alma/Scheduling/ProjectStatus">0</ns5:secondsRemaining>
+    <ns6:successfulSeconds xmlns:ns6="Alma/Scheduling/ProjectStatus">0</ns6:successfulSeconds>
+    <ns7:failedSeconds xmlns:ns7="Alma/Scheduling/ProjectStatus">0</ns7:failedSeconds>
+    <ns8:hasExecutionCount xmlns:ns8="Alma/Scheduling/ProjectStatus">false</ns8:hasExecutionCount>
+    <ns9:hasTimeLimit xmlns:ns9="Alma/Scheduling/ProjectStatus">false</ns9:hasTimeLimit>
+    <ns10:bookkeepingInitialized xmlns:ns10="Alma/Scheduling/ProjectStatus">false</ns10:bookkeepingInitialized>
+    <ns11:ContainingObsUnitSetRef
+        xmlns:ns11="Alma/Scheduling/ProjectStatus"
+        entityId="uid://A002/X5a9a13/X6b1" entityTypeName="OUSStatus" documentVersion="1"/>
+    <ns12:ProjectStatusRef xmlns:ns12="Alma/Scheduling/ProjectStatus"
+        entityId="uid://A001/Xa0/Xb49" entityTypeName="ProjectStatus" documentVersion="1"/>
+    <SBStatusEntity entityId="uid://A002/X5a9a13/X6b2"
+        entityIdEncrypted="-- id encryption not yet implemented --"
+        entityTypeName="SBStatus" schemaVersion="13"/>
+    <SchedBlockRef entityId="uid://A002/X5a9a13/X69f"
+        entityTypeName="SchedBlock" documentVersion="1"/>
+</SBStatus>

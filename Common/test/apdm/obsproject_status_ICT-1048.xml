@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ProjectStatus xmlns="Alma/Scheduling/ProjectStatus"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    schemaVersion="13" revision="1.105.6.1"
+    almatype="APDM::ProjectStatus" xsi:type="ProjectStatus">
+    <Status State="InProgress"/>
+    <executionsRemaining>0</executionsRemaining>
+    <successfulExecutions>0</successfulExecutions>
+    <failedExecutions>0</failedExecutions>
+    <secondsRemaining>0</secondsRemaining>
+    <successfulSeconds>0</successfulSeconds>
+    <failedSeconds>0</failedSeconds>
+    <hasExecutionCount>false</hasExecutionCount>
+    <hasTimeLimit>false</hasTimeLimit>
+    <bookkeepingInitialized>false</bookkeepingInitialized>
+    <ProjectStatusEntity entityId="uid://A001/Xa0/Xb49"
+        entityIdEncrypted="-- id encryption not yet implemented --"
+        entityTypeName="ProjectStatus" schemaVersion="13"/>
+    <ObsProjectRef entityId="uid://A001/Xa0/Xb45"
+        entityTypeName="ObsProject" documentVersion="1"/>
+    <ObsProposalRef entityId="uid://A001/Xa0/Xb46"
+        entityTypeName="ObsProposal" documentVersion="1"/>
+    <ObsProgramStatusRef entityId="uid://A001/Xa0/Xb4a" entityTypeName="OUSStatus"/>
+    <Name></Name>
+</ProjectStatus>

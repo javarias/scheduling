@@ -490,6 +490,8 @@ public final class Bookkeeper {
 		final String             partId     = status.getObsUnitSetRef().getPartId();
 		final ObsProject         obsProject = archive.getObsProject(opId);
 		final ObsUnitSetT        ous        = findOUS(obsProject, partId);
+		if (ous == null)
+			return;
 		final ObsUnitControlT    ouControl = ous.getObsUnitControl();
 
 		// Initial limits on time and executions

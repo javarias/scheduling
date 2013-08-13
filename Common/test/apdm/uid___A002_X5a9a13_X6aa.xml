@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OUSStatus xmlns="Alma/Scheduling/OUSStatus"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    schemaVersion="13" revision="1.105.6.1.16.2"
+    almatype="APDM::OUSStatus" xsi:type="OUSStatus">
+    <ns1:Status xmlns:ns1="Alma/Scheduling/ProjectStatus" State="Deleted"/>
+    <ns2:executionsRemaining xmlns:ns2="Alma/Scheduling/ProjectStatus">0</ns2:executionsRemaining>
+    <ns3:successfulExecutions xmlns:ns3="Alma/Scheduling/ProjectStatus">0</ns3:successfulExecutions>
+    <ns4:failedExecutions xmlns:ns4="Alma/Scheduling/ProjectStatus">0</ns4:failedExecutions>
+    <ns5:secondsRemaining xmlns:ns5="Alma/Scheduling/ProjectStatus">0</ns5:secondsRemaining>
+    <ns6:successfulSeconds xmlns:ns6="Alma/Scheduling/ProjectStatus">0</ns6:successfulSeconds>
+    <ns7:failedSeconds xmlns:ns7="Alma/Scheduling/ProjectStatus">0</ns7:failedSeconds>
+    <ns8:hasExecutionCount xmlns:ns8="Alma/Scheduling/ProjectStatus">false</ns8:hasExecutionCount>
+    <ns9:hasTimeLimit xmlns:ns9="Alma/Scheduling/ProjectStatus">false</ns9:hasTimeLimit>
+    <ns10:bookkeepingInitialized xmlns:ns10="Alma/Scheduling/ProjectStatus">false</ns10:bookkeepingInitialized>
+    <ns11:ContainingObsUnitSetRef
+        xmlns:ns11="Alma/Scheduling/ProjectStatus"
+        entityId="uid://A002/X5a9a13/X6a9" entityTypeName="OUSStatus" documentVersion="1"/>
+    <ns12:ProjectStatusRef xmlns:ns12="Alma/Scheduling/ProjectStatus"
+        entityId="uid://A001/Xa0/Xb49" entityTypeName="ProjectStatus" documentVersion="1"/>
+    <OUSStatusEntity entityId="uid://A002/X5a9a13/X6aa"
+        entityIdEncrypted="-- id encryption not yet implemented --"
+        entityTypeName="OUSStatus" schemaVersion="13"/>
+    <ObsUnitSetRef entityId="uid://A001/Xa0/Xb45" partId="X300047487" entityTypeName="ObsProject"/>
+    <OUSStatusRef entityId="uid://A002/X5a9a13/X6ab"
+        entityTypeName="OUSStatus" documentVersion="1"/>
+    <OUSStatusRef entityId="uid://A002/X5a9a13/X6ad"
+        entityTypeName="OUSStatus" documentVersion="1"/>
+    <OUSStatusRef entityId="uid://A002/X5a9a13/X6af"
+        entityTypeName="OUSStatus" documentVersion="1"/>
+    <OUSStatusRef entityId="uid://A002/X5a9a13/X6b1"
+        entityTypeName="OUSStatus" documentVersion="1"/>
+</OUSStatus>
