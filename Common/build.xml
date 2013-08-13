@@ -32,11 +32,14 @@
 			</fileset>
 		</copy>
 	</target>
+	
 	<target name="clean">
 		<delete dir="bin"/>
 	</target>
+	
 	<target depends="clean" name="cleanall">
 	</target>
+	
 	<target depends="build-project" name="build"/>
 
 	<target depends="init" name="build-project">

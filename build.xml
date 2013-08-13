@@ -33,7 +33,7 @@
 	</target>
 	<target name="instrument" depends="build">
 		<delete file="cobertura.ser"/>
-		<ant antfile="build.xml" dir="Common" target="clean" />
+		<ant antfile="build.xml" dir="Common" target="instrument" />
 		<ant antfile="build.xml" dir="DSA" target="instrument" />
 		<ant antfile="build.xml" dir="Array" target="instrument" />
 		<ant antfile="build.xml" dir="Master" target="instrument" />
