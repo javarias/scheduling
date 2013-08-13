@@ -13,23 +13,27 @@
 	<taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
 
 	<target name="build">
+		<ant antfile="build.xml" dir="Common" target="build"/>
 		<ant antfile="build.xml" dir="DSA" target="build"/>
 		<ant antfile="build.xml" dir="Array" target="build"/> 
 		<ant antfile="build.xml" dir="Master" target="build" />
 	</target>
 	<target name="test" depends="instrument, build">
 		<delete file="cobertura.ser"/>
+		<ant antfile="build.xml" dir="Common" target="test" />
 		<ant antfile="build.xml" dir="DSA" target="test" />
 		<ant antfile="build.xml" dir="Array" target="test" />
 		<ant antfile="build.xml" dir="Master" target="test" />
 	</target>
 	<target name="clean">
+		<ant antfile="build.xml" dir="Common" target="test" />
 		<ant antfile="build.xml" dir="DSA" target="clean" />
 		<ant antfile="build.xml" dir="Array" target="clean" />
 		<ant antfile="build.xml" dir="Master" target="clean" />
 	</target>
 	<target name="instrument" depends="build">
 		<delete file="cobertura.ser"/>
+		<ant antfile="build.xml" dir="Common" target="test" />
 		<ant antfile="build.xml" dir="DSA" target="instrument" />
 		<ant antfile="build.xml" dir="Array" target="instrument" />
 		<ant antfile="build.xml" dir="Master" target="instrument" />
