@@ -18,6 +18,7 @@ import alma.scheduling.datamodel.obsproject.dao.ArchiveInterface;
 public class BookkeepingTest extends MockObjectTestCase {
 	{
 		setImposteriser(ClassImposteriser.INSTANCE);
+		
 	}
 	
 	private ArchiveInterface archive = mock(ArchiveInterface.class);
@@ -126,6 +127,8 @@ public class BookkeepingTest extends MockObjectTestCase {
 			will(returnValue(SchedBlock.unmarshalSchedBlock(new FileReader(new File("Common/test/apdmuid___A002_X6ac013_X2.xml")))));
 			atLeast(1).of(archive).write(with(any(ProjectStatus.class)));
 		}});
+		 String current = new java.io.File( "." ).getCanonicalPath();
+	        System.out.println("Current dir:"+current);
 		Bookkeeper bk = new Bookkeeper(archive, Logger.getAnonymousLogger());
 		ProjectStatus ps = ProjectStatus.unmarshalProjectStatus(new FileReader(new File("Common/test/apdmobsproject_status_ICT-1048.xml")));
 		bk.initialise(ps);
