@@ -647,13 +647,19 @@ public class APDMtoSchedulingConverter {
 					apdmOUS.getEntityPartId(),
 					Format.ident(apdmProject)));
 		}
+		ObsUnitSet child = null;
 		for (alma.entity.xmlbinding.obsproject.ObsUnitSetT
 					childOUS : choice.getObsUnitSet()) {
-			ObsUnitSet child = createObsUnitSet(
-					childOUS,
-					apdmProject,
-					obsProject);
-			obsUnitSet.addObsUnit(child);
+			try {
+				child = createObsUnitSet(
+						childOUS,
+						apdmProject,
+						obsProject);
+			} catch (ConversionException ex) {
+				logger.warning(ex.getMessage());
+			}
+			if (child != null)
+				obsUnitSet.addObsUnit(child);
 		}
 		
 		// Secondly, any child SchedBlocks.
