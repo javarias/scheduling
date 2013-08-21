@@ -95,7 +95,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
             	</bean>
             </xsl:if>
             
-            
             <bean id="{concat('preUpdateSelector', '_', @name)}" class="alma.scheduling.algorithm.sbselection.MasterSelector"
                 scope="prototype">
                 <property name="selectors">
@@ -120,7 +119,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
                         <xsl:if test="count(SelectionCriteria/SchedBlockGradeSelector) = 1">
                             <ref bean="projectQualitySelector" />
                         </xsl:if>
-                            <ref bean="interactiveProjectsSelector" />
+                        <xsl:if test="count(SelectionCriteria/ArrayAngularResolutionSelector) = 1">
+                            <ref bean="arrayAngulatResolutionSelector" />
+                        </xsl:if>   
+                        	<ref bean="interactiveProjectsSelector" /> 
                         <xsl:if test="count(SelectionCriteria/ProjectCodeSelector) = 1">
                             <ref bean="{concat('projectCodeSelector', '_', @name)}" />
                         </xsl:if>
