@@ -1072,6 +1072,9 @@ public class APDMtoSchedulingConverter {
 		result.setMaxAngularResolution(AngleConverter.convertedValue(
 				constraints.getMaxAcceptableAngResolution(),
 				AngleTUnitType.ARCSEC));
+		result.setMinAngularResolution(AngleConverter.convertedValue(
+				constraints.getMinAcceptableAngResolution(),
+				AngleTUnitType.ARCSEC));
 		result.setRepresentativeFrequency(FrequencyConverter.convertedValue(
 				constraints.getRepresentativeFrequency(),
 				FrequencyTUnitType.GHZ));

@@ -138,6 +138,14 @@
 			<value>altitudeSelector</value>
 		</constructor-arg>
 	</bean>
+	
+	<bean id="arrayAngulatResolutionSelector"
+		class="alma.scheduling.algorithm.observatory.AngularResolutionSelector"
+		scope="singleton">
+		<constructor-arg>
+			<value>arrayAngulatResolutionSelector</value>
+		</constructor-arg>
+	</bean>
 
 	<bean id="weatherUpdater" class="alma.scheduling.algorithm.weather.MemoryWeatherUpdater">
 		<property name="dao" ref="atmDao" />

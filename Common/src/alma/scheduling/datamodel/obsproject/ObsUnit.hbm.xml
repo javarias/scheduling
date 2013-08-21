@@ -87,6 +87,8 @@
 					name="minAllowedHourAngle" type="double" />
 			</component>
 			<component class="SchedulingConstraints" name="schedulingConstraints">
+				<property column="MIN_ANG_RESOLUTION" generated="never"
+					lazy="false" name="minAngularResolution" type="double" />
 				<property column="MAX_ANG_RESOLUTION" generated="never"
 					lazy="false" name="maxAngularResolution" type="double" />
 				<property column="REPR_FREQ" generated="never" lazy="false"
