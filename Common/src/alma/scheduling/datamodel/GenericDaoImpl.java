@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.Query;
+import org.springframework.orm.hibernate3.HibernateAccessor;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -44,7 +45,7 @@ import alma.scheduling.datamodel.obsproject.ObsUnit;
  *
  */
 public abstract class GenericDaoImpl extends HibernateDaoSupport implements GenericDao {
-
+	
     @Override
     @Transactional(readOnly=false)
     public <T> void delete(T obj) {
@@ -62,9 +63,10 @@ public abstract class GenericDaoImpl extends HibernateDaoSupport implements Gene
     }
     
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly=false, isolation=Isolation.SERIALIZABLE)
     public <T> void saveOrUpdate(T obj) {
         getHibernateTemplate().saveOrUpdate(obj);
+        getHibernateTemplate().flush();
     }
 
     @Override

@@ -99,6 +99,7 @@
 				<xs:element name="ProjectGradeSelector" type="ProjectGradeSelectorT"/>
 				<xs:element name="CSVProjectSelector" type="CSVProjectSelectorT"/>
 				<xs:element name="BandSelector" type="BandSelectorT"/>
+				<xs:element name="ArrayAngularResolutionSelector" type="AngularResolutionSelectorT"/> 
 			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>
@@ -272,6 +273,14 @@
 		<xs:sequence>
 			<xs:element name="code" type="xs:string"/>
 		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="AngularResolutionSelectorT">
+		<xs:annotation>
+			<xs:documentation>This selector adds a constraint selecting only the SchedBlocks which have the 
+			angular resolution between the SB minimum acceptable and the SB maximum acceptable for the array 
+			to be used for the observation.</xs:documentation>
+		</xs:annotation>
 	</xs:complexType>
 
 	<xs:complexType name="CSVProjectSelectorT">

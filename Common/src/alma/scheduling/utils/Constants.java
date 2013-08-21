@@ -38,6 +38,8 @@ public class Constants {
     public static final double CHAJNANTOR_LATITUDE = -23.022778;
     /** Chajnantor longitude */
     public static final double CHAJNANTOR_LONGITUDE = -67.755;
+    /** Earth Mean radius in meters*/
+    public static final double EARTH_RADIUS = 6371000.0;
 
     // Component and interface names
     public static final String CONTROL_MASTER_URL = "CONTROL/MASTER";

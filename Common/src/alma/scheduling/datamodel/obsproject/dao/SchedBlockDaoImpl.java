@@ -46,7 +46,6 @@ import alma.scheduling.datamodel.obsproject.ScienceParameters;
 import alma.scheduling.datamodel.obsproject.SkyCoordinates;
 import alma.scheduling.datamodel.obsproject.Target;
 
-@Transactional
 public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
 
     @Override
@@ -211,13 +210,14 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
         return criteria.list();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<SchedBlock> findSchedBlocks(Criterion crit, List<SchedBlock> sbs) {
         Criteria criteria = createCriteria();
         Conjunction conj = Restrictions.conjunction();
         conj.add(crit);
         conj.add(Restrictions.in("id", sbs));
-        return null;
+        return criteria.list();
     }
     
     private Criteria createCriteria(){
