@@ -29,6 +29,9 @@ public class SchedulingConstraints {
     /** Maximum angular resolution (arcseconds) */
     private Double maxAngularResolution;
     
+    /** Maximum angular resolution (arcseconds) */
+    private Double minAngularResolution;
+    
     /** Representative frequency (GHz) */
     private Double representativeFrequency;
     
@@ -55,6 +58,14 @@ public class SchedulingConstraints {
 
     public void setMaxAngularResolution(Double maxAngularResolution) {
         this.maxAngularResolution = maxAngularResolution;
+    }
+    
+    public Double getMinAngularResolution() {
+        return minAngularResolution;
+    }
+
+    public void setMinAngularResolution(Double minAngularResolution) {
+        this.minAngularResolution = minAngularResolution;
     }
 
     public Double getRepresentativeFrequency() {
