@@ -18,14 +18,13 @@
 
 package alma.scheduling.array.compimpl;
 
+import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
-
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 
 import alma.ACS.ComponentStates;
 import alma.SchedulingArrayExceptions.NoRunningSchedBlockEx;
@@ -122,7 +121,7 @@ public class ArrayImpl implements ComponentLifecycle,
         	logger.info("Successfully coneccted to TMCDB.");
         } catch (Exception e) {
 			logger.warning("Unable to connect to TMCDB. Dynamic Scheduling Algorithm could not work at all!!.");
-			ByteOutputStream os = new ByteOutputStream();
+			ByteArrayOutputStream os = new ByteArrayOutputStream();
 			e.printStackTrace(new PrintWriter(os));
 			logger.warning(os.toString());
 		}
@@ -255,7 +254,7 @@ public class ArrayImpl implements ComponentLifecycle,
 			}
 		} catch (AcsJTmcdbNoSuchRowEx e) {
 			logger.severe("Unable to retrive info for " + arrayName +". Dynamic Scheduling Algorithm for this array could not work at all!!.");
-			ByteOutputStream os = new ByteOutputStream();
+			ByteArrayOutputStream os = new ByteArrayOutputStream();
 			e.printStackTrace(new PrintWriter(os));
 			logger.severe(os.toString());
 		}
