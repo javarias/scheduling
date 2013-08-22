@@ -60,6 +60,11 @@
 				<include name="**/*.class" />
 				<exclude name="**/*Test*.class" />
 				<exclude name="**/*Tests*.class" />
+				<exclude name="**/generated/**/*.class" />
+				<exclude name="alma/scheduling/testgen/*.class" />
+				<exclude name="alma/scheduling/testutils/*.class" />
+				<exclude name="alma/archive/**/*.class" />
+				<exclude name="org/hibernate/**/*.class" />
 			</fileset>
 		</cobertura-instrument>
 	</target>

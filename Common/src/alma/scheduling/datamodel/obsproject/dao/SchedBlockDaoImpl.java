@@ -49,6 +49,7 @@ import alma.scheduling.datamodel.obsproject.Target;
 public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
 
     @Override
+    @Transactional(readOnly=true)
     public List<SchedBlock> findAll() {
         List<SchedBlock> sbs = super.findAll(SchedBlock.class);
         for (Iterator<SchedBlock> iter = sbs.iterator(); iter.hasNext();) {
@@ -66,6 +67,7 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
     }
 
     @Override
+    @Transactional(readOnly=true)
     public List<SchedBlock> findSchedBlocksWithVisibleRepresentativeTarget(
             double lst) {
         Query query =
@@ -79,6 +81,7 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
     }
     
     @Override
+    @Transactional(readOnly=true)
     public List<SchedBlock> findSchedBlocksByEstimatedExecutionTime(double time) {
         Double [] args = {new Double(time)}; 
         executeNamedQuery("SchedBlock.findByEstimatedExecutionTime", args);
@@ -86,6 +89,7 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
     }
 
     @Override
+    @Transactional(readOnly=true)
     public void hydrateSchedBlockObsParams(SchedBlock schedBlock) {
         getHibernateTemplate().lock(schedBlock, LockMode.NONE);
         Set<ObservingParameters> obsParams = schedBlock.getObservingParameters();
@@ -108,6 +112,7 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
     
     @SuppressWarnings("unchecked")
     @Override
+    @Transactional(readOnly=true)
     public List<SchedBlock> findSchedBlocksWithoutTooMuchTsysVariation(
             double variation) {
         Query query =
@@ -119,6 +124,7 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
 
     @SuppressWarnings("unchecked")
     @Override
+    @Transactional(readOnly=true)
     public List<SchedBlock> findSchedBlocksWithEnoughTimeInExecutive(
             Executive exec, ObservingSeason os) throws NullPointerException {
         if (exec == null)
@@ -154,6 +160,7 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
     }
 
 	@Override
+	@Transactional(readOnly=true)
 	public List<SchedBlock> findSchedBlocksBetweenHourAngles(double lowLimit,
 			double highLimit) {
 		Object[] params = {lowLimit, highLimit};
@@ -161,6 +168,7 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
 	}
 	
     @SuppressWarnings("unchecked")
+    @Transactional(readOnly=true)
     public List<SchedBlock> findSchedBlocksOutOfArea(double lowRaLimit,
             double highRaLimit, double lowDecLimit, double highDecLimit) {
         Query query = null;
@@ -181,6 +189,7 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
 
     @SuppressWarnings("unchecked")
     @Override
+    @Transactional(readOnly=true)
     public List<SchedBlock> findSchedBlockWithStatusReady() {
         Query query = null;
         query = getSession().createQuery(
@@ -191,6 +200,7 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
 
     @SuppressWarnings("unchecked")
     @Override
+    @Transactional(readOnly=true)
     public List<SchedBlock> findSchedBlockBetweenFrequencies(double lowFreq,
             double highFreq) {
         Query query = null;
@@ -204,6 +214,7 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
 
     @SuppressWarnings("unchecked")
     @Override
+    @Transactional(readOnly=true)
     public List<SchedBlock> findSchedBlocks(Criterion crit) {
         Criteria criteria = createCriteria();
         criteria.add(crit);
@@ -212,6 +223,7 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
 
     @SuppressWarnings("unchecked")
     @Override
+    @Transactional(readOnly=true)
     public List<SchedBlock> findSchedBlocks(Criterion crit, List<SchedBlock> sbs) {
         Criteria criteria = createCriteria();
         Conjunction conj = Restrictions.conjunction();
@@ -249,6 +261,7 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
     }
     
     @SuppressWarnings("unchecked")
+    @Transactional(readOnly=true)
 	public List<SchedBlock> findSchedBlocksForProject(ObsProject project) {
         Query query = null;
         query = getSession().createQuery("from SchedBlock sb " +
@@ -259,6 +272,7 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
 
 
 	@Override
+	@Transactional(readOnly=true)
 	public int countAll() {
         Query query = null;
         query = getSession().createQuery("select count(x) from SchedBlock x ");
@@ -266,6 +280,7 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
 	}
 
     @Override
+    @Transactional(readOnly=true)
     public void hydrateObsUnitSet(ObsUnitSet ous) {
         getHibernateTemplate().lock(ous, LockMode.NONE);
         ous.getStatusEntity();
@@ -273,6 +288,7 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
     }
 
 	@Override
+	@Transactional(readOnly=false)
 	public void deleteAll() {
 		getSession().createQuery("delete from " + SchedBlock.class.getCanonicalName()).executeUpdate();
 		
