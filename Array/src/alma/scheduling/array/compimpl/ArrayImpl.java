@@ -18,16 +18,20 @@
 
 package alma.scheduling.array.compimpl;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
+
 import alma.ACS.ComponentStates;
 import alma.SchedulingArrayExceptions.NoRunningSchedBlockEx;
 import alma.SchedulingArrayExceptions.wrappers.AcsJNoRunningSchedBlockEx;
 import alma.SchedulingExceptions.InvalidOperationEx;
+import alma.TmcdbErrType.wrappers.AcsJTmcdbNoSuchRowEx;
 import alma.acs.component.ComponentLifecycle;
 import alma.acs.container.ContainerServices;
 import alma.acs.exceptions.AcsJException;
@@ -62,6 +66,9 @@ import alma.scheduling.array.sbSelection.DSASelector;
 import alma.scheduling.array.sbSelection.Selector;
 import alma.scheduling.array.sessions.SessionManager;
 import alma.scheduling.array.util.NameTranslator.TranslationException;
+import alma.scheduling.datamodel.observatory.ArrayConfiguration;
+import alma.scheduling.datamodel.observatory.dao.TmcdbDao;
+import alma.scheduling.datamodel.observatory.dao.TmcdbDaoImpl;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.utils.ErrorHandling;
 import alma.scheduling.utils.LoggerFactory;
@@ -95,6 +102,8 @@ public class ArrayImpl implements ComponentLifecycle,
     
     private ActiveDynamicArrayListener activeDynListener;
     
+	private TmcdbDao tmcdbDao;
+    
     /////////////////////////////////////////////////////////////
     // Implementation of ComponentLifecycle
     /////////////////////////////////////////////////////////////
@@ -105,6 +114,18 @@ public class ArrayImpl implements ComponentLifecycle,
         	this.logger = this.containerServices.getLogger();
         	LoggerFactory.SINGLETON.setLogger(logger);
         }
+        
+        try {
+        	logger.info("Trying to connect to TMCDB...");
+        	tmcdbDao = null;
+        	tmcdbDao = new TmcdbDaoImpl();
+        	logger.info("Successfully coneccted to TMCDB.");
+        } catch (Exception e) {
+			logger.warning("Unable to connect to TMCDB. Dynamic Scheduling Algorithm could not work at all!!.");
+			ByteOutputStream os = new ByteOutputStream();
+			e.printStackTrace(new PrintWriter(os));
+			logger.warning(os.toString());
+		}
         
         logger.finest("initialize() called...");
     }
@@ -221,10 +242,27 @@ public class ArrayImpl implements ComponentLifecycle,
 					UUID.fromString(fileUUID));
 		}
 		descriptor.policyName = policyName;
+		
+		//Get the configuration info for the current array
+		ArrayConfiguration arrConf = null;
+		try {
+			logger.info("Getting info for "+ arrayName +" from TMCDB...");
+			if (tmcdbDao != null) {
+				arrConf = tmcdbDao.getConfigurationForArray(arrayName, descriptor.antennaIdList);
+				logger.info("Successfully found Array info in the TMCDB.");
+			} else {
+				logger.severe("TMCDB DAO was not intilized properly. Dynamic Scheduling Algorithm for this array could not work at all!!.");
+			}
+		} catch (AcsJTmcdbNoSuchRowEx e) {
+			logger.severe("Unable to retrive info for " + arrayName +". Dynamic Scheduling Algorithm for this array could not work at all!!.");
+			ByteOutputStream os = new ByteOutputStream();
+			e.printStackTrace(new PrintWriter(os));
+			logger.severe(os.toString());
+		}
 		if (this.selector == null) {
 			final AbstractSelector dsa = new DSASelector(logger);
 			activeDynListener = new ActiveDynamicArrayListener(this);
-			dsa.configureArray(this, queue);
+			dsa.configureArray(this, arrConf, queue);
 			dsa.addObserver(guiNotifier);
 			dsa.addObserver(activeDynListener);
 			this.selector = dsa;

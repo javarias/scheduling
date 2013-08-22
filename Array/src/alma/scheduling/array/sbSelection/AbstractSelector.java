@@ -23,6 +23,7 @@ import java.util.Observable;
 import alma.scheduling.QueueOperation;
 import alma.scheduling.array.compimpl.ArrayImpl;
 import alma.scheduling.array.sbQueue.QueueNotification;
+import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 
 /**
  *
@@ -43,6 +44,9 @@ public abstract class AbstractSelector extends Observable
 	/** The source for our triggering events */
 	protected Observable source;
 	
+	/** Array configuration details to be used by DSA*/
+	protected ArrayConfiguration arrConf;
+	
 	private void subscribeToNewSource(Observable source) {
 		this.source = source;
 		source.addObserver(this);
@@ -59,8 +63,9 @@ public abstract class AbstractSelector extends Observable
 	 * @see alma.scheduling.array.sbSelection.Selector#configureArray(alma.scheduling.ArrayOperations)
 	 */
 	@Override
-	public void configureArray(ArrayImpl array, Observable source) {
+	public void configureArray(ArrayImpl array, ArrayConfiguration arrConf, Observable source) {
 		this.array = array;
+		this.arrConf = arrConf;
 		unsubscribeFromPreviousSource();
 		subscribeToNewSource(source);
 		
