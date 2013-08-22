@@ -34,7 +34,6 @@ import alma.scheduling.algorithm.results.dao.ResultsDao;
 import alma.scheduling.algorithm.sbranking.SBRank;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.array.guis.ArrayGUINotification;
-import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.utils.DSAContextFactory;
 import alma.scheduling.utils.ErrorHandling;
 
@@ -178,10 +177,7 @@ public class DSASelector extends AbstractSelector {
 					logger.info(b.toString());
 					dsa = lastDSA; // meaningless, but it keeps us running
 				}
-				ArrayConfiguration arrConf = new ArrayConfiguration();
-				arrConf.setStartTime(new Date());
-				arrConf.setEndTime(new Date(System.currentTimeMillis() + 365 * 24 * 3600 * 1000));
-				dsa.setArray(arrConf);
+				dsa.setArray(super.arrConf);
 			}
 
 			dsa.initialize(runDate);

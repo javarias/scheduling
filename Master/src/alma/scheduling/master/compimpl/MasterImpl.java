@@ -26,16 +26,7 @@ import java.util.UUID;
 
 import javax.xml.transform.TransformerException;
 
-import org.omg.CORBA.Context;
-import org.omg.CORBA.ContextList;
-import org.omg.CORBA.DomainManager;
-import org.omg.CORBA.ExceptionList;
-import org.omg.CORBA.NVList;
-import org.omg.CORBA.NamedValue;
 import org.omg.CORBA.Object;
-import org.omg.CORBA.Policy;
-import org.omg.CORBA.Request;
-import org.omg.CORBA.SetOverrideType;
 import org.xml.sax.SAXException;
 
 import alma.ACS.ComponentStates;
@@ -49,7 +40,6 @@ import alma.Control.InvalidRequest;
 import alma.ControlExceptions.InvalidRequestEx;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.SchedulingArrayExceptions.NoRunningSchedBlockEx;
-import alma.SchedulingExceptions.InvalidOperationEx;
 import alma.SchedulingMasterExceptions.ACSInternalExceptionEx;
 import alma.SchedulingMasterExceptions.ArrayNotFoundExceptionEx;
 import alma.SchedulingMasterExceptions.ControlInternalExceptionEx;
@@ -64,25 +54,17 @@ import alma.acs.component.ComponentQueryDescriptor;
 import alma.acs.container.ContainerServices;
 import alma.acs.logging.AcsLogger;
 import alma.acs.logging.domainspecific.AudienceLogger;
-import alma.acs.logging.domainspecific.AudienceLogger.Audience;
-import alma.asdmIDLTypes.IDLEntityRef;
 import alma.scheduling.Array;
 import alma.scheduling.ArrayCreationInfo;
 import alma.scheduling.ArrayDescriptor;
 import alma.scheduling.ArrayEvent;
-import alma.scheduling.ArrayGUICallback;
 import alma.scheduling.ArrayHelper;
 import alma.scheduling.ArrayModeEnum;
-import alma.scheduling.ArraySchedulerLifecycleType;
 import alma.scheduling.ArraySchedulerMode;
 import alma.scheduling.ArrayStatusCallback;
 import alma.scheduling.MasterOperations;
 import alma.scheduling.PolicyChangeCallback;
 import alma.scheduling.PolicyEvent;
-import alma.scheduling.SchedBlockExecutionCallback;
-import alma.scheduling.SchedBlockExecutionItem;
-import alma.scheduling.SchedBlockQueueCallback;
-import alma.scheduling.SchedBlockQueueItem;
 import alma.scheduling.SchedulingPolicyFile;
 import alma.scheduling.algorithm.PoliciesContainer;
 import alma.scheduling.algorithm.PoliciesContainersDirectory;
@@ -95,7 +77,6 @@ import alma.scheduling.utils.AudienceFlogger;
 import alma.scheduling.utils.Constants;
 import alma.scheduling.utils.DSAContextFactory;
 import alma.scheduling.utils.DynamicSchedulingPolicyFactory;
-import alma.scheduling.utils.FakeAudienceFlogger;
 
 public class MasterImpl implements ComponentLifecycle, MasterOperations {
 

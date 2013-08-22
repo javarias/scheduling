@@ -22,6 +22,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import alma.scheduling.array.compimpl.ArrayImpl;
+import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 
 /**
  *
@@ -32,9 +33,10 @@ public interface Selector extends Observer {
 	/**
 	 * Tell this Selector to run on the given array and its queue
 	 * @param array
+	 * @param arrConf
 	 * @param queue
 	 */
-	void configureArray(ArrayImpl array, Observable queue);
+	void configureArray(ArrayImpl array, ArrayConfiguration arrConf, Observable queue);
 	
 	/**
 	 * Select the next SB to run and queue it if appropriate 
