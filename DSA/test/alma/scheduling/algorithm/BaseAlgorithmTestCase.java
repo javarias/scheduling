@@ -1,13 +1,20 @@
 package alma.scheduling.algorithm;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
+
+import javax.xml.transform.TransformerException;
+
+import org.xml.sax.SAXException;
 
 import alma.entity.xmlbinding.obsproposal.types.InvestigatorTAssociatedExecType;
+import alma.scheduling.SchedulingPolicyFile;
 import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.executive.ExecutivePercentage;
 import alma.scheduling.datamodel.executive.ObservingSeason;
@@ -19,12 +26,23 @@ import alma.scheduling.datamodel.obsproject.SchedBlockControl;
 import alma.scheduling.datamodel.obsproject.SchedBlockState;
 import alma.scheduling.datamodel.obsproject.SchedulingConstraints;
 import alma.scheduling.datamodel.obsproject.Target;
+import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
+import alma.scheduling.utils.DSAContextFactory;
+import alma.scheduling.utils.DynamicSchedulingPolicyFactory;
 import junit.framework.TestCase;
 
 public abstract class BaseAlgorithmTestCase extends TestCase {
 
+	static {
+		if (System.getProperty("alma.scheduling.properties") == null) {
+			System.setProperty("alma.scheduling.properties", "Common/src/scheduling.properties");
+		}
+		DSAContextFactory.getContext();
+	}
+	
 	protected SchedBlock createBasicSB() {
 		SchedBlock sb = new SchedBlock();
+		sb.setUid("uid://A000/X0/X0");
 		sb.setCsv(false);
 		sb.setManual(false);
 		SchedBlockControl ctrl =  new SchedBlockControl();
@@ -84,4 +102,24 @@ public abstract class BaseAlgorithmTestCase extends TestCase {
     	execDao.saveObservingSeasonsAndExecutives(seasons, execs);
     	return execs.get(0);
 	}
+	
+	protected DynamicSchedulingAlgorithm convertAndRetrieveAlgorithmBean(final String DSAPolicyFileContent) 
+			throws TransformerException, SAXException, IOException {
+		DynamicSchedulingPolicyFactory pf = DynamicSchedulingPolicyFactory.getInstance();
+		String springCtxXml = SchedulingPolicyValidator.convertPolicyString(DSAPolicyFileContent);
+		pf.createDSAPolicyBeans("localhost", "nopath", springCtxXml);
+		SchedulingPolicyFile spf = PoliciesContainersDirectory.getInstance().getAllPoliciesFiles()[0];
+		return (DynamicSchedulingAlgorithm) DSAContextFactory.getContext().getBean("uuid" + spf.uuid + "-" + spf.schedulingPolicies[0]);
+	}
+
+	@Override
+	protected void tearDown() throws Exception {
+		SchedBlockDao sbDao = (SchedBlockDao) DSAContextFactory.getContext().getBean("sbDao");
+		sbDao.deleteAll();
+		for(SchedulingPolicyFile file: PoliciesContainersDirectory.getInstance().getAllPoliciesFiles())
+			PoliciesContainersDirectory.getInstance().remove(
+				UUID.fromString(file.uuid));
+	}
+	
+	
 }

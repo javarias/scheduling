@@ -143,7 +143,7 @@
 	<xs:complexType name="WeatherSelectorT">
 		<xs:annotation>
 			<xs:documentation>This selector adds a constraint to select the Scheduling Blocks which requiring
-				no much variation of the tSys (&lt; 0.2). To know how the tSys is calculated, please refer to
+				no much variation of the tsys. To know how the tsys is calculated, please refer to
 				the ALMA DSA document.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
