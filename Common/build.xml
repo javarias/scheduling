@@ -83,6 +83,18 @@
 				<pathelement path="${classpath}"/>
 			</classpath>
 		</junit>
+		<junit fork="yes" printsummary="withOutAndErr">
+			<sysproperty key="net.sourceforge.cobertura.datafile"
+        		file="cobertura.ser" />
+			<formatter type="xml" />
+			<test name="alma.scheduling.datamodel.observatory.dao.ArrayConfigurationLiteReaderTest" todir="${junit.output.dir}" />
+			<classpath>
+				<pathelement path="${instrumented.dir}"/>
+				<pathelement path="bin"/>
+				<path refid="cobertura.classpath"/>
+				<pathelement path="${classpath}"/>
+			</classpath>
+		</junit>
 		<delete file="coverage.xml" />
 		<cobertura-report format="xml" destdir="." >
 			<fileset dir="src">

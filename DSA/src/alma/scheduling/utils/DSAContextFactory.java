@@ -109,7 +109,8 @@ public class DSAContextFactory extends CommonContextFactory {
 		String contextString = SchedulingPolicyValidator.convertPolicyFile(policyFilePath);
 		context = SchedulingContextFactory.getContext(contextString.getBytes());
 		@SuppressWarnings("unchecked")
-		Map<String, Object> policies = context.getBeansOfType(alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl.class);
+		Map<String, alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl> policies = 
+			context.getBeansOfType(alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl.class);
 		PoliciesContainer container = null;
 		try {
 			container = new PoliciesContainer(
@@ -194,7 +195,8 @@ public class DSAContextFactory extends CommonContextFactory {
 		String contextString = SchedulingPolicyValidator.convertPolicyString(simPoliciesStr);
 		context = SchedulingContextFactory.getContext(contextString.getBytes());
 		@SuppressWarnings("unchecked")
-		Map<String, Object> policies = context.getBeansOfType(alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl.class);
+		Map<String, alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl> policies 
+			= context.getBeansOfType(alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl.class);
 		PoliciesContainer container = null;
 		try {
 			container = new PoliciesContainer(

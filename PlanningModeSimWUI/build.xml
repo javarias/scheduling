@@ -124,6 +124,6 @@
 	</target>
 	
 	<target name="install">
-		<copy file="${war.output}" todir="${env.ACSDATA}/tomcat5/webapps/"/>
+		<copy file="${war.output}" todir="lib/"/>
 	</target>
 </project>

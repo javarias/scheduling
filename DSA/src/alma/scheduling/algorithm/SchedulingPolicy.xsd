@@ -87,8 +87,7 @@
 				<xs:element name="ExecutiveSelector" type="ExecutiveSelectorT"/>
 				<!-- There is no weather forecast available in the online system for 
 					this selector -->
-				<!-- <xs:element name="WeatherSelector" type="WeatherSelectorT"/> -->
-				<!-- <xs:element name="SourceSelector" type="SourceSelectorT"/> -->
+			    <xs:element name="WeatherSelector" type="WeatherSelectorT"/>
 				<xs:element name="ArrayConfigSelector" type="ArrayConfigSelectorT"/>
 				<xs:element name="HourAngleSelector" type="HourAngleSelectorT"/>
 				<xs:element name="MoonAvoidanceSelector" type="MoonAvoidanceSelectorT"/>
@@ -144,7 +143,7 @@
 	<xs:complexType name="WeatherSelectorT">
 		<xs:annotation>
 			<xs:documentation>This selector adds a constraint to select the Scheduling Blocks which requiring
-				no much variation of the tSys. To know how the tSys is calculated, please refer to
+				no much variation of the tsys. To know how the tsys is calculated, please refer to
 				the ALMA DSA document.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
@@ -156,15 +155,6 @@
 				</xs:simpleType>
 			</xs:element>
 		</xs:sequence>
-	</xs:complexType>
-
-	<xs:complexType name="SourceSelectorT">
-		<xs:annotation>
-			<xs:documentation>This selector adds a constraint to select only the Scheduling Blocks having the
-				representative source visible at the given time. This selector is used by default in
-				every DSA Policy and it cannot be added or removed manually from the
-				policies.</xs:documentation>
-		</xs:annotation>
 	</xs:complexType>
 
 	<xs:complexType name="ArrayConfigSelectorT">
