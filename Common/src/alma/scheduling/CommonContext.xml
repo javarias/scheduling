@@ -124,7 +124,6 @@
 		class="alma.scheduling.datamodel.obsproject.dao.FieldSourceDaoImpl">
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
-
     <bean name="opacityInterpolator" 
     	class="alma.scheduling.weather.OpacityInterpolatorImpl"
     	scope="singleton"/>
@@ -145,14 +144,14 @@
 		<property name="configurationDao" ref="configDao" />
 	</bean>
 	<bean id="observatoryDao"
-		class="alma.scheduling.datamodel.observatory.dao.ObservatoryDaoImpl">
+		class="alma.scheduling.datamodel.observatory.dao.ObservatoryDaoImpl" >
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 	<!-- Archive/XMLStore Data Loader -->
-<!-- <bean id="archProjectDao"
+ 	<bean id="archProjectDao"
 		class="alma.scheduling.datamodel.obsproject.dao.Phase1XMLStoreProjectDao"
 		scope="prototype">
-	</bean> -->
+	</bean>
 
 <!-- DataLoaders Beans -->
 	<bean id="dataLinker" class="alma.scheduling.dataload.DataLinker">
@@ -162,11 +161,17 @@
 		<property name="obsPrjDao" ref="obsProjectDao" />
 	</bean>
 	
-	<bean id="obsProjectDataLoader" class="alma.scheduling.dataload.obsproject.ObsProjectDataLoaderImpl"
+	<bean id="obsProjectDataLoader" class="alma.scheduling.dataload.obsproject.XmlObsProjectDataLoaderImpl"
 	scope="singleton">
 		<property name="xmlDao" ref="xmlObsProjectDao" />
 		<property name="dao" ref="obsProjectDao" />
 	</bean> 
+	
+	<bean id="AlmaArchiveObsProjectDataLoader" class="alma.scheduling.dataload.obsproject.AlmaArchiveObsProjectLoaderImpl"
+	scope="singleton">
+		<property name="archiveProjectDao" ref="archProjectDao"/>
+		<property name="dao" ref="obsProjectDao" />
+	</bean>
 	
 	<bean id="fullDataLoader" class="alma.scheduling.dataload.CompositeDataLoader"
 	scope="singleton">
@@ -185,6 +190,25 @@
 			</list>
 		</property>
 	</bean>
+	
+	<bean id="AlmaArchiveFullDataLoader" class="alma.scheduling.dataload.CompositeDataLoader"
+	scope="singleton">
+		<property name="loaders">
+			<list>
+				<ref bean="AlmaArchiveObsProjectDataLoader"/>
+				<bean class="alma.scheduling.dataload.ExecutiveDataLoader">
+					<property name="dbDao" ref="execDao" />
+					<property name="xmlDao" ref="xmlExecDao" />
+				</bean>
+				<bean class="alma.scheduling.dataload.observatory.ObservatoryDataLoader">
+					<property name="dao" ref="observatoryDao" />
+					<property name="xmlDao" ref="xmlObservatoryDao" />
+				</bean>
+				<ref bean="dataLinker" />
+			</list>
+		</property>
+	</bean>
+	
 	<bean id="fullDataUnloader"
 		class="alma.scheduling.dataload.obsproject.ObsProjectDataUnloader">
 		<property name="xmlDao" ref="xmlObsProjectDao" />

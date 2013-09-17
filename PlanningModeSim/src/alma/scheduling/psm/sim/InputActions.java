@@ -44,7 +44,9 @@ public class InputActions extends PsmContext {
 	
 	public static final String WEATHER_PARAMS_LOADER_BEAN = "weatherSimDataLoader";
 	public static final String FULL_DATA_LOADER_BEAN = "fullDataLoader";
+	public static final String ALMA_ARCHIVE_FULL_DATA_LOADER = "AlmaArchiveFullDataLoader";
 	public static final String OBSPROJECT_DATA_LOADER_BEAN = "obsProjectDataLoader";
+	public static final String ALMA_ARCHIVE_OBSPROJECT_DATA_LOADER_BEAN = "AlmaArchiveObsProjectDataLoader";
 	public static final String ARCHIVE_PROJECT_DAO_BEAN = "archProjectDao";
 	public static final String CONFIGURATION_DAO_BEAN = "configDao";
 	
@@ -56,7 +58,7 @@ public class InputActions extends PsmContext {
 		super(workDir);
 	}
 	
-    public void fullLoad() throws Exception {
+    public void fullLoad(String dataLoader) throws Exception {
         ApplicationContext ctx = getApplicationContext();
         DataLoader weatherLoader = 
         		(DataLoader) ctx.getBean(WEATHER_PARAMS_LOADER_BEAN);
