@@ -26,6 +26,7 @@ import org.zkoss.zul.api.Button;
 import org.zkoss.zul.api.Combobox;
 import org.zkoss.zul.api.Datebox;
 import org.zkoss.zul.api.Panelchildren;
+import org.zkoss.zul.api.Radiogroup;
 import org.zkoss.zul.api.Window;
 
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
@@ -59,6 +60,7 @@ public class SimulationController extends GenericForwardComposer implements
 	private Label simulationPercentageLabel;
 	private Datebox dateboxStartDate;
 	private Datebox dateboxEndDate;
+	private Radiogroup sg1;
 	
 	private Panelchildren panelChildrenStatus;
 
@@ -68,7 +70,9 @@ public class SimulationController extends GenericForwardComposer implements
 			.getContext().getBean("execDao");
 	
 	public static final String PROGRESS_QUEUE = "simulationRun";
-
+	public static final String DATA_LOADER_ATTRNAME = "dataLoader";
+	
+	
 	public void onClick$buttonBasicConfiguration(Event event) {
 		System.out.println("Basic Configuration button pressed");
 		Window mainWindow = (Window) Path.getComponent("//");
@@ -94,9 +98,8 @@ public class SimulationController extends GenericForwardComposer implements
 		InputActions inputActions = InputActions.getInstance(((String) Sessions
 				.getCurrent().getAttribute("workDir")));
 		try {
-			inputActions.fullLoad();
+			inputActions.fullLoad((String) Sessions.getCurrent().getAttribute(DATA_LOADER_ATTRNAME));
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		System.out.println(panelChildrenStatus.getChildren().get(0).getClass());
@@ -111,10 +114,10 @@ public class SimulationController extends GenericForwardComposer implements
 		InputActions inputActions = InputActions.getInstance(((String) Sessions
 				.getCurrent().getAttribute("workDir")));
 		try {
-			inputActions.load();
+			inputActions.load((String) Sessions.getCurrent().getAttribute(DATA_LOADER_ATTRNAME));
 		} catch (NoSuchBeanDefinitionException e) {
 			logger.warn("No remote operations available, fallback to local");
-			inputActions.load();
+			inputActions.load((String) Sessions.getCurrent().getAttribute(DATA_LOADER_ATTRNAME));
 		}
 		System.out.println("Fullload finished");
 	}
@@ -137,12 +140,7 @@ public class SimulationController extends GenericForwardComposer implements
 
 		InputActions inputActions = InputActions.getInstance(((String) Sessions
 				.getCurrent().getAttribute("workDir")));
-		try {
-			inputActions.clean();
-		} catch (NoSuchBeanDefinitionException e) {
-			logger.warn("No remote operations available, fallback to local");
-			inputActions.clean();
-		}
+		inputActions.clean((String) Sessions.getCurrent().getAttribute(DATA_LOADER_ATTRNAME));
 
 		System.out.println("Clean finished");
 	}

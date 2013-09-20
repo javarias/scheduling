@@ -27,7 +27,6 @@ package alma.scheduling.psm.cli;
 
 import java.io.File;
 import java.io.IOException;
-import java.rmi.RemoteException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -35,14 +34,9 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.xml.sax.SAXException;
 
-import com.mchange.v2.c3p0.ComboPooledDataSource;
-
 import alma.scheduling.SchedulingPolicyFile;
-import alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl;
 import alma.scheduling.algorithm.PoliciesContainersDirectory;
 import alma.scheduling.algorithm.VerboseLevel;
 //import alma.scheduling.psm.ph1m.Ph1mSynchronizer;
@@ -101,7 +95,7 @@ public class Console {
         	InputActions inputActions = InputActions.getInstance(workDir);
         	inputActions.setVerboseLvl(verboseLvl);
         	try {
-				inputActions.fullLoad();
+				inputActions.fullLoad(InputActions.FULL_DATA_LOADER_BEAN);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -111,7 +105,7 @@ public class Console {
         	PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
         	InputActions inputActions = InputActions.getInstance(workDir);
         	inputActions.setVerboseLvl(verboseLvl);
-        	inputActions.load();
+        	inputActions.load(InputActions.FULL_DATA_LOADER_BEAN);
         }
         else if (args[0].compareTo("unload") == 0){
         	PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
@@ -123,7 +117,7 @@ public class Console {
         	PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
         	InputActions inputActions = InputActions.getInstance(workDir);
         	inputActions.setVerboseLvl(verboseLvl);
-        	inputActions.clean();
+        	inputActions.clean(InputActions.FULL_DATA_LOADER_BEAN);
         }
         else if (args[0].compareTo("run") == 0){
         	if (args.length < 2) {
@@ -153,18 +147,6 @@ public class Console {
         	simulator.setToBeInterrupted(true);
         	//TODO:Fix This
         	simulator.run(args[1]);
-        }
-        else if (args[0].compareTo("remoteFullLoad") == 0){
-        	PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
-        	InputActions inputActions = InputActions.getInstance(workDir);;
-        	inputActions.setVerboseLvl(verboseLvl);
-        	inputActions.remoteFullLoad();
-        }
-        else if (args[0].compareTo("remoteLoad") == 0){
-        	PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
-        	InputActions inputActions = InputActions.getInstance(workDir);
-        	inputActions.setVerboseLvl(verboseLvl);
-        	inputActions.remoteLoad();
         }
         else if (args[0].compareTo("report")==0){
         		if(args.length == 1){
