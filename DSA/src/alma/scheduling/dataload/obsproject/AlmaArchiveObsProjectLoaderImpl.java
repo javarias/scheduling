@@ -7,12 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
+import alma.scheduling.dataload.DataLoader;
 import alma.scheduling.datamodel.DAOException;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
 import alma.scheduling.datamodel.obsproject.dao.ProjectDao;
 
-public class AlmaArchiveObsProjectLoaderImpl implements ObsProjectDataLoader {
+public class AlmaArchiveObsProjectLoaderImpl implements DataLoader {
 	private static Logger logger = LoggerFactory.getLogger(AlmaArchiveObsProjectLoaderImpl.class);
 	private ProjectDao archiveProjectDao;
 	private ObsProjectDao dao;
@@ -67,18 +68,6 @@ public class AlmaArchiveObsProjectLoaderImpl implements ObsProjectDataLoader {
 		logger.info("Deleting projects from local DB...");
 		dao.deleteAll();
 		logger.info("Deleting complete.");
-	}
-
-	@Override
-	public void setArchProjectDao(ProjectDao archProjectDao) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public ProjectDao getArchProjectDao() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

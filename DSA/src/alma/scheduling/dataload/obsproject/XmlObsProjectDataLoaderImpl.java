@@ -24,21 +24,18 @@
  */
 package alma.scheduling.dataload.obsproject;
 
-import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-import alma.scheduling.datamodel.DAOException;
+import alma.scheduling.dataload.DataLoader;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
-import alma.scheduling.datamodel.obsproject.dao.ProjectDao;
 import alma.scheduling.datamodel.obsproject.dao.XmlObsProjectDao;
-import alma.scheduling.utils.SchedulingProperties;
 
-public class XmlObsProjectDataLoaderImpl implements ObsProjectDataLoader {
+public class XmlObsProjectDataLoaderImpl implements DataLoader {
     
 	private static Logger logger = LoggerFactory.getLogger(XmlObsProjectDataLoaderImpl.class);
 	
@@ -49,15 +46,6 @@ public class XmlObsProjectDataLoaderImpl implements ObsProjectDataLoader {
     public void setXmlDao(XmlObsProjectDao xmlDao) {
         this.xmlDao = xmlDao;
     }
-
-    /**
-     * DAO to get projects from ARCHIVE XML Store.
-     */
-    ProjectDao archProjectDao;
-    @Override
-	public void setArchProjectDao(ProjectDao archProjectDao) {
-		this.archProjectDao = archProjectDao;
-	}
     
     /**
      * DAO to store projects in work database.
@@ -90,10 +78,5 @@ public class XmlObsProjectDataLoaderImpl implements ObsProjectDataLoader {
     	logger.info("Deleting Projects");
     	dao.deleteAll();
     }
-
-	@Override
-	public ProjectDao getArchProjectDao() {
-		return archProjectDao;
-	}
 
 }

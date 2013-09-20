@@ -20,6 +20,11 @@ package alma.scheduling.dataload.obsproject;
 import alma.scheduling.dataload.DataLoader;
 import alma.scheduling.datamodel.obsproject.dao.ProjectDao;
 
+/**
+ * @deprecated
+ * @author javarias
+ *
+ */
 public interface ObsProjectDataLoader extends DataLoader {
 
 	/**
