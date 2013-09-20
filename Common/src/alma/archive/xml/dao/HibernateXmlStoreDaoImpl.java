@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -255,19 +256,25 @@ public class HibernateXmlStoreDaoImpl implements XmlStoreReaderDao {
 		hibConf.setProperty("hibernate.connection.driver_class", "oracle.jdbc.driver.OracleDriver");
 		hibConf.setProperty("hibernate.cache.use_query_cache", "true");
 		hibConf.setProperty("hibernate.cache.use_second_level_cache", "true");
-		hibConf.setProperty("hibernate.cache.provider_class", "net.sf.ehcache.hibernate.EhCacheRegionFactory");
+		hibConf.setProperty("hibernate.cache.provider_class", "org.hibernate.cache.EhCacheProvider");
 		hibConf.setProperty("hibernate.dialect", "org.hibernate.dialect.Oracle10gDialect");
 		hibConf.setProperty("hibernate.show_sql", "false");
+		
+		hibConf.addResource("alma/archive/xmlstore.hbm.xml");
 
 		sf = hibConf.buildSessionFactory();
 	}
 	
 	private void openSession() {
-		if (session != null)
+		try {
+			if (sf.getCurrentSession().isOpen())
+				session = sf.openSession();
+		}	catch (HibernateException e) {
 			session = sf.openSession();
+		}
 	}
 	
-	private void closeSession() {
+	public void closeSession() {
 		session.close();
 		session = null;
 	}
