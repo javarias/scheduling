@@ -28,6 +28,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import alma.scheduling.datamodel.obsproject.ArrayType;
+
 public class ArrayConfiguration {
 
     private Long id;
@@ -38,6 +40,7 @@ public class ArrayConfiguration {
     private Double uvCoverage;
     private String arrayName;
     private String configurationName;
+    private ArrayType arrayType;
     /**
      * Used by array configuration lite version. In the future this should be replaced by
      * a complete list of antennas saved in {@link ArrayConfiguration#antennaInstallations}
@@ -153,6 +156,14 @@ public class ArrayConfiguration {
 
 	public void setAntennaDiameter(Double antennaDiameter) {
 		this.antennaDiameter = antennaDiameter;
+	}
+	
+	public ArrayType getArrayType() {
+		return arrayType;
+	}
+
+	public void setArrayType(ArrayType arrayType) {
+		this.arrayType = arrayType;
 	}
 
 	@Override

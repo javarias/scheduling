@@ -10,6 +10,7 @@ import java.util.TimeZone;
 
 import alma.scheduling.datamodel.CannotParseDataException;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
+import alma.scheduling.datamodel.obsproject.ArrayType;
 
 /**
  * Reads the lite array configuration file.
@@ -62,6 +63,12 @@ public class ArrayConfigurationLiteReader extends BufferedReader {
 			try {
 				ArrayConfiguration tmp = new ArrayConfiguration();
 				tmp.setArrayName(fields[0].split("#")[0]);
+				if (tmp.getArrayName().equalsIgnoreCase("12-m"))
+					tmp.setArrayType(ArrayType.TWELVE_M);
+				else if (tmp.getArrayName().equalsIgnoreCase("7-m"))
+					tmp.setArrayType(ArrayType.SEVEN_M);
+				else if (tmp.getArrayName().equalsIgnoreCase("TP"))
+					tmp.setArrayType(ArrayType.TP_ARRAY);
 				tmp.setConfigurationName(fields[1].split("#")[0]);
 				tmp.setNumberOfAntennas(Integer.valueOf(fields[2].split("#")[0]));
 				tmp.setMinBaseline(Double.valueOf(fields[3].split("#")[0]));
@@ -70,7 +77,7 @@ public class ArrayConfigurationLiteReader extends BufferedReader {
 				tmp.setEndTime(dateFormatter.parse(fields[6].split("#")[0]));
 				tmp.setResolution(0.0);
 				tmp.setUvCoverage(0.0);
-        		if (tmp.getArrayName().toLowerCase().equals("12-m"))
+        		if (tmp.getArrayName().equals("12-m"))
         			tmp.setAntennaDiameter(12.0);
         		else if (tmp.getArrayName().toLowerCase().equals("7-m"))
         			tmp.setAntennaDiameter(7.0);
