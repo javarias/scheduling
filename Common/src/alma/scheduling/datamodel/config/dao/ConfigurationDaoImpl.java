@@ -27,10 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-import alma.correlatorSrc.CorrConfigValidator.SBConversionException;
 import alma.scheduling.datamodel.GenericDaoImpl;
 import alma.scheduling.datamodel.config.Configuration;
-import alma.scheduling.datamodel.config.ScienceGradeConfig;
 
 /* TODO Why it is necesarry to merge the XML with database? Wouldn't be cleaner to store
  * Why not to store the information from the XML in the database and then forget about the XML.

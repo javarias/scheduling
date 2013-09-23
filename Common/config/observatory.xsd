@@ -196,6 +196,7 @@
         <xs:attribute name="endTime" type="xs:dateTime"/>
         <xs:attribute name="uvCoverage" type="xs:double"/>
         <xs:attribute name="resolution" type="xs:double"/>
+        <xs:attribute name="arrayType" type="ArrayTypeT"/>
     </xs:complexType>
     <xs:complexType name="ArrayConfigurationLiteT">
     	<xs:attribute name="startTime" type="xs:dateTime" use="required"/>
@@ -205,5 +206,14 @@
     	<xs:attribute name="numberOfAntennas" type="xs:int" use="required"/>
     	<xs:attribute name="minBaseLine" type="xs:double" use="required"/>
     	<xs:attribute name="maxBaseLine" type="xs:double" use="required"/>
+    	<xs:attribute name="arrayType" type="ArrayTypeT"/>
     </xs:complexType>
+    <xs:simpleType name="ArrayTypeT">
+    	<xs:restriction base="xs:string">
+    		<xs:enumeration value="ACA"/>
+          	<xs:enumeration value="SEVEN_M"/>
+          	<xs:enumeration value="TP_ARRAY"/>
+         	<xs:enumeration value="TWELVE_M"/>
+    	</xs:restriction>
+    </xs:simpleType>
 </xs:schema>

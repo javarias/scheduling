@@ -37,4 +37,11 @@ public interface XmlObservatoryDao {
     List<ArrayConfiguration> getAllArrayConfigurations();
     
     void deleteAll();
+    
+    /**
+     * Save or update the xml file containing the array configurations in the
+     * APRC_WORK_DIR. 
+     * @param configs The configurations to save in the file.
+     */
+    void saveOrUpdate(List<ArrayConfiguration> configs);
 }

@@ -1,5 +1,6 @@
 package alma.scheduling.psm.web;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,6 +29,7 @@ import alma.scheduling.datamodel.executive.TimeInterval;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.observatory.dao.ObservatoryDao;
+import alma.scheduling.datamodel.observatory.dao.XmlObservatoryDao;
 import alma.scheduling.utils.DSAContextFactory;
 
 public class SeasonArraysConfigComposer extends GenericForwardComposer {
@@ -41,6 +43,7 @@ public class SeasonArraysConfigComposer extends GenericForwardComposer {
 	private TimeInterval previousTI;
 	private ExecutiveDAO execDao;
 	private ObservatoryDao obsDao;
+	private XmlObservatoryDao xmlObsDao;
 	private ArrayList<OccurEvent> eventsInTimeline;
 	private boolean changedArrayConfigs;
 	
@@ -53,10 +56,12 @@ public class SeasonArraysConfigComposer extends GenericForwardComposer {
 	Timeline tl1;
 	Bandinfo b1, b2;
 	Window windowSeasonArrayConfig;
+
 	
 	public SeasonArraysConfigComposer() {
 		execDao = (ExecutiveDAO) DSAContextFactory.getContext().getBean(DSAContextFactory.SCHEDULING_EXECUTIVE_DAO_BEAN);
-		obsDao = (ObservatoryDao) DSAContextFactory.getContext().getBean("observatoryDao");
+		obsDao = (ObservatoryDao) DSAContextFactory.getContext().getBean(DSAContextFactory.SCHEDULING_OBSERVATORY_DAO);
+		xmlObsDao = (XmlObservatoryDao) DSAContextFactory.getContext().getBean(DSAContextFactory.SCHEDULING_XML_OBSERVATORY_DAO);
 		arrayConfigs = obsDao.findArrayConfigurations();
 		obsSeason = execDao.getCurrentSeason();
 		eventsInTimeline = new ArrayList<OccurEvent>();
@@ -100,7 +105,13 @@ public class SeasonArraysConfigComposer extends GenericForwardComposer {
 			changedArrayConfigs = true;
 			setTimelineEvents();
 		} catch (Exception ex) {
-			throw new RuntimeException(ex);
+			throw new RuntimeException(ex.getMessage(), ex);
+		} finally {
+			try {
+				reader.close();
+			} catch (IOException e) {
+				throw new RuntimeException(e.getMessage(), e);
+			}
 		}
 	}
 	
@@ -130,6 +141,7 @@ public class SeasonArraysConfigComposer extends GenericForwardComposer {
 			obsDao.saveOrUpdate(arrayConfigs);
 		}
 		execDao.saveOrUpdate(obsSeason);
+		xmlObsDao.saveOrUpdate(arrayConfigs);
 		Event closeWindowEvent = new Event("onClose", windowSeasonArrayConfig);
 		Events.postEvent(closeWindowEvent);
 	}
