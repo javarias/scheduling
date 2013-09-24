@@ -67,7 +67,7 @@
 	<target name="build" depends="resolve">
 		<echo message="compiling..."/>
 		<mkdir dir="${build.dir}" />
-		<javac srcdir="${src.dir}" destdir="${build.dir}">
+		<javac srcdir="${src.dir}" destdir="${build.dir}" debug="true" debuglevel="lines,vars,source">
 			<classpath>
 				<fileset dir="${lib.dir}">
 					<exclude name="*-sources.jar"/>

@@ -212,7 +212,7 @@
 	<classpathentry kind="lib" path="lib/struts-1.2.9.jar"/>
 	<classpathentry kind="lib" path="lib/systementities-working@ruffles.jar"/>
 	<classpathentry kind="lib" path="lib/timelinez-2.3.1_50-sources.jar"/>
-	<classpathentry kind="lib" path="lib/timelinez-2.3.1_50.jar"/>
+	<classpathentry kind="lib" path="lib/timelinez-2.3.1_50.jar" sourcepath="lib/timelinez-2.3.1_50-sources.jar"/>
 	<classpathentry kind="lib" path="lib/velocity-1.7.jar"/>
 	<classpathentry kind="lib" path="lib/weld-servlet-1.0.1-Final.jar"/>
 	<classpathentry kind="lib" path="lib/xalan-2.7.1.jar"/>
@@ -238,13 +238,13 @@
 	<classpathentry kind="lib" path="lib/zcommons-el-1.1.0.jar"/>
 	<classpathentry kind="lib" path="lib/zk-5.0.10-javadoc.jar"/>
 	<classpathentry kind="lib" path="lib/zk-5.0.10-sources.jar"/>
-	<classpathentry kind="lib" path="lib/zk-5.0.10.jar"/>
+	<classpathentry kind="lib" path="lib/zk-5.0.10.jar" sourcepath="lib/zk-5.0.10-sources.jar"/>
 	<classpathentry kind="lib" path="lib/zkplus-5.0.10-javadoc.jar"/>
 	<classpathentry kind="lib" path="lib/zkplus-5.0.10-sources.jar"/>
 	<classpathentry kind="lib" path="lib/zkplus-5.0.10.jar"/>
 	<classpathentry kind="lib" path="lib/zul-5.0.10-javadoc.jar"/>
 	<classpathentry kind="lib" path="lib/zul-5.0.10-sources.jar"/>
-	<classpathentry kind="lib" path="lib/zul-5.0.10.jar"/>
+	<classpathentry kind="lib" path="lib/zul-5.0.10.jar" sourcepath="lib/zul-5.0.10-sources.jar"/>
 	<classpathentry kind="lib" path="lib/zweb-5.0.10-javadoc.jar"/>
 	<classpathentry kind="lib" path="lib/zweb-5.0.10-sources.jar"/>
 	<classpathentry kind="lib" path="lib/zweb-5.0.10.jar"/>
