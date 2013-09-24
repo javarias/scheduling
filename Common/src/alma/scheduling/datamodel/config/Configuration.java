@@ -55,6 +55,7 @@ public class Configuration {
     private Date simulationStartTime;
     private String contextFilePath;
     private Long dataModelVersion;
+    private String simulationStatus;
     
     /**
      * Contains the configuration of the grade of the projects.
@@ -298,6 +299,16 @@ public class Configuration {
 		}
 	}
 	
+	public String getSimulationStatus() {
+		return simulationStatus;
+	}
+
+	public void setSimulationStatus(String simulationStatus) {
+		this.simulationStatus = simulationStatus;
+	}
+
+
+
 	public class IncompatibleModelVersionException extends Exception {
 
 		/**

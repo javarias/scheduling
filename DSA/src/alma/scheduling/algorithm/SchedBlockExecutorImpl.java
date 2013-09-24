@@ -152,7 +152,8 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
 		//TODO: For Warning purposes. Sensitivity gets high values when observing to horizon.
         //      See http://jira.alma.cl/browse/COMP-5048 for more information.
 		if( sensJy > 1.0 ){
-			String msg = new String(" High Sensitivity detected in SchedBlock ID: " + schedBlock.getId() + "\n" +  
+			String msg = new String(" High Sensitivity detected in SchedBlock ID: " + schedBlock.getId() + 
+					"(" + schedBlock.getUid() + ", " + schedBlock.getName() +")\n" +  
 					"  Temp and Humi: " + hr.getValue() + ", " + tr.getValue() + "\n" + 
 					"  opacityInterpolator.estimatePWV(): " + pwv + "\n" + 
 					"  opacityInterpolator.interpolateOpacityAndTemperature().opacity: " + opacity + "\n" + 

@@ -1,13 +1,9 @@
-<?init class="alma.scheduling.psm.web.SimulationController"?>
-<!-- <?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?> -->
-<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" root="./simulationWindow" ?>
-
 <?page title="Simulation" contentType="text/html;charset=UTF-8" id="simulationPage"?>
 
 <zk>
 	<window title="Simulation" border="normal" mode="overlapped"
 		sizable="true" maximizable="true" closable="false" width="600px"
-		height="500px" apply="${sessionScope.simulationController}"
+		height="500px" apply="alma.scheduling.psm.web.SimulationController"
 		id="simulationWindow">
 		<radiogroup id="sg1">
 			<attribute name="onCheck">
@@ -119,7 +115,7 @@ eq.subscribe(new org.zkoss.zk.ui.event.EventListener() {
 							<datebox id="dateboxStartDate" width="100%" readonly="true" disabled="true">
 							<attribute name="onCreate"><![CDATA[
 	try {
-		dateboxStartDate.setTimeZone("UTC");
+		dateboxStartDate.setTimeZone(TimeZone.getTimeZone("UTC"));
 		dateboxStartDate.setValue(alma.scheduling.psm.web.SimulationController.execDao
 				.getCurrentSeason().getStartDate());
 	} catch (IndexOutOfBoundsException ex) {
@@ -134,7 +130,7 @@ eq.subscribe(new org.zkoss.zk.ui.event.EventListener() {
 							<datebox id="dateboxEndDate" width="100%" readonly="true" disabled="true">
 							<attribute name="onCreate"><![CDATA[
 	try {
-		dateboxStartDate.setTimeZone("UTC");
+		dateboxStartDate.setTimeZone(TimeZone.getTimeZone("UTC"));
 		dateboxEndDate.setValue(alma.scheduling.psm.web.SimulationController.execDao
 				.getCurrentSeason().getEndDate());
 	} catch (IndexOutOfBoundsException ex) {

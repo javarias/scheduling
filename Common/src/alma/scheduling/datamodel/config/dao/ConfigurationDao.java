@@ -36,11 +36,15 @@ public interface ConfigurationDao {
     void updateConfig();
     
 	void updateConfig(Date lastUpdateTime);
+	
+	void updateConfig(String simStatus);
     
     void updateNextStep(Date nextStepTime);
     
     void updateSimStartTime(Date simStartTime);
     
     void deleteAll();
+    
+    void deleteForSimulation();
     
 }

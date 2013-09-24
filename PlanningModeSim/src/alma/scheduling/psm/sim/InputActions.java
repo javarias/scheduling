@@ -49,9 +49,24 @@ public class InputActions extends PsmContext {
 	private static Logger logger = LoggerFactory.getLogger(InputActions.class);
 	
 	private static InputActions instance = null;
+	private SimulationStateContext simulationStateContext;
 		
     private InputActions(String workDir) {
 		super(workDir);
+		ApplicationContext ctx = getApplicationContext();
+		ConfigurationDao configDao = (ConfigurationDao) ctx.getBean(CONFIGURATION_DAO_BEAN);
+		configDao.getConfiguration();
+		if (configDao.getConfiguration().getSimulationStatus() == null || 
+				configDao.getConfiguration().getSimulationStatus().equals(SimulationStateEnum.START.toString()))
+			simulationStateContext = new SimulationStateContext();
+		else if (configDao.getConfiguration().getSimulationStatus().equals(SimulationStateEnum.DYNAMIC_DATA_LOADED.toString()))
+			simulationStateContext = new SimulationStateContext(SimulationStateEnum.DYNAMIC_DATA_LOADED);
+		else if (configDao.getConfiguration().getSimulationStatus().equals(SimulationStateEnum.STATIC_DATA_LOADED.toString()))
+			simulationStateContext = new SimulationStateContext(SimulationStateEnum.STATIC_DATA_LOADED);
+		else if (configDao.getConfiguration().getSimulationStatus().equals(SimulationStateEnum.SIMULATION_COMPLETED.toString()))
+			simulationStateContext = new SimulationStateContext(SimulationStateEnum.SIMULATION_COMPLETED);
+		else
+			simulationStateContext = new SimulationStateContext();
 	}
 	
     public void fullLoad(String dataLoader) throws Exception {
@@ -70,7 +85,8 @@ public class InputActions extends PsmContext {
         
         ConfigurationDao configDao = (ConfigurationDao) ctx.getBean(CONFIGURATION_DAO_BEAN);
         configDao.getConfiguration();
-        configDao.updateConfig();
+        simulationStateContext.getCurrentState().fullload();
+        configDao.updateConfig(simulationStateContext.getCurrentState().getCurrentState().toString());
     }
 
     public void load(String dataLoader){
@@ -83,7 +99,8 @@ public class InputActions extends PsmContext {
 			e.printStackTrace();
 		}
         ConfigurationDao configDao = (ConfigurationDao) ctx.getBean(CONFIGURATION_DAO_BEAN);
-        configDao.updateConfig();
+        simulationStateContext.getCurrentState().load();
+        configDao.updateConfig(simulationStateContext.getCurrentState().getCurrentState().toString());
     }
 
     public void unload() {
@@ -97,19 +114,12 @@ public class InputActions extends PsmContext {
     	DataLoader loader = (DataLoader) ctx.getBean(dataLoader);
     	loader.clear();
         ConfigurationDao configDao = (ConfigurationDao) ctx.getBean(CONFIGURATION_DAO_BEAN);
-        configDao.deleteAll();
+        simulationStateContext.getCurrentState().clean();
+        configDao.deleteForSimulation();
     }
     
-    public boolean isWeatherLoaded(){
-    	return false;
-    }
-    
-    public boolean isDataLoaded(){
-    	return false;
-    }
-    
-    public boolean hasSimulationRan(){
-    	return false;
+    public SimulationAbstractState getCurrentSimulationState() {
+    	return simulationStateContext.getCurrentState();
     }
 
     public static InputActions getInstance(String workDir){
@@ -117,5 +127,9 @@ public class InputActions extends PsmContext {
 			InputActions.instance = new InputActions(workDir);
 		return InputActions.instance;
 	}
+    
+    public SimulationStateContext getSimulationStateContext() {
+    	return simulationStateContext;
+    }
 	
 }
