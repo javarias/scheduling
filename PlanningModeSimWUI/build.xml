@@ -94,6 +94,9 @@
 				<exclude name="junit.*.jar"/>
 				<exclude name="servlet-api.*.jar"/>
 				<exclude name="ehcache-1.4.1.jar"/>
+				<exclude name="pull-parser-2.jar"/>
+				<exclude name="castor-1.2.jar"/>
+				<exclude name="servlet-api-2.5.jar"/>
 				<exclude name="*.war"/>
 			</lib>
 		</war>
