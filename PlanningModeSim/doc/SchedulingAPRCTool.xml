@@ -225,7 +225,7 @@
             <para>The simulation is bound to the availability of the data in the Working DB. For
                 this reason a very strict work flow is defined in the form of a state machine. This
                 State machine is handled internally by the simulator and it is exposed to the user
-                through the available actions at that point of the simulation. <xref
+                through the available actions at certain point of the simulation. <xref
                     linkend="fig:simStateMachine"/> shows the representation of the state machine
                 defined for the simulation work flow. </para>
             <figure id="fig:simStateMachine">
@@ -790,11 +790,14 @@ Stopping HSQLDB</screen>
                             open the window shown in <xref linkend="fig:array_season_config"/>. This
                             window contains all the array and cycle (season) configuration to be
                             used during the simulation.</para>
-                        <mediaobject id="fig:array_season_config">
+                        <figure id="fig:array_season_config">
+                            <title>Arrays and cycle (season) configuration window</title>
+                            <mediaobject>
                             <imageobject>
                                 <imagedata fileref="psmWUI-array_season_config.png" align="center"/>
                             </imageobject>
-                        </mediaobject>
+                            </mediaobject>
+                        </figure>
                         <variablelist>
                             <varlistentry>
                                 <term>Simulated start date and simulated stop date</term>
