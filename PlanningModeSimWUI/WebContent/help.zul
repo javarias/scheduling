@@ -6,7 +6,7 @@
 	<window title="Help (User Manual)" border="normal"
 		mode="overlapped" sizable="true" maximizable="true" closable="true"
 		width="600px" height="600px" id="helpWindow">
-	<iframe style="width:99%; height:99%;border:3px inset;" src="http://www.aoc.nrao.edu/~ahoffsta/APRC/0.8/doc/SchedulingAPRCTool.html" />
+	<iframe style="width:99%; height:99%;border:3px inset;" src="http://www.aoc.nrao.edu/~javarias/APRC/rc1/doc/SchedulingAPRCTool.html" />
 
 	</window>
 </zk>
