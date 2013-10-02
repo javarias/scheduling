@@ -61,7 +61,10 @@ public class ZippedReportsServlet extends HttpServlet {
 			out.reset();
 		}
 		
-		print = rg.createBandsBeforeSimReport();
+		if (id != null)
+			print = rg.createBandsBeforeSimReport(Long.valueOf(id));
+		else
+			print = rg.createBandsBeforeSimReport();
 		exporter.setParameter(JRPdfExporterParameter.JASPER_PRINT, print);
 		try {
 			exporter.exportReport();
@@ -87,7 +90,7 @@ public class ZippedReportsServlet extends HttpServlet {
 		}
 		
 		if (id != null)
-			print = rg.createExecutiveReport(Long.valueOf(Long.valueOf(id)));
+			print = rg.createExecutiveReport(Long.valueOf(id));
 		else
 			print = rg.createExecutiveReport();
 		exporter.setParameter(JRPdfExporterParameter.JASPER_PRINT, print);
@@ -114,7 +117,10 @@ public class ZippedReportsServlet extends HttpServlet {
 			out.reset();
 		}
 		
-		print = rg.createLstRangesBeforeSimReport();
+		if (id != null)
+			print = rg.createLstRangesBeforeSimReport(Long.valueOf(id));
+		else 
+			print = rg.createLstRangesBeforeSimReport();
 		exporter.setParameter(JRPdfExporterParameter.JASPER_PRINT, print);
 		try {
 			exporter.exportReport();
