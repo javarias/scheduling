@@ -39,7 +39,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Stack;
 import java.util.TimeZone;
 import java.util.TreeMap;
@@ -180,7 +179,7 @@ public class ReportGenerator extends PsmContext {
 	public JasperPrint createLstRangesBeforeSimReport(){
 		// Parameters
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
-		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+//		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
 
 		TreeMap<String, Object> props = new TreeMap<String, Object>();
 //		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
@@ -195,6 +194,31 @@ public class ReportGenerator extends PsmContext {
 		logger.info("Creating RA ranges before simulation report");
 		try {
 			JasperPrint print = JasperFillManager.fillReport(reportStream, props, dataSource);
+			print.setName("ra_time_requested_report");
+			return print;
+		} catch (JRException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public JasperPrint createLstRangesBeforeSimReport(Long id) {
+		// Parameters
+		ApplicationContext ctx = ReportGenerator.getApplicationContext();
+		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+		Results result = outDao.getResult(id);
+		TreeMap<String, Object> props = new TreeMap<String, Object>();
+		props.put("totalAvailableTime", Double.toString(result.getAvailableTime()));
+		props.put("seasonStart", dateFormatter.format(result.getObsSeasonStart()));
+		props.put("seasonEnd", dateFormatter.format(result.getObsSeasonEnd()));
+		props.put("title", "Frequency Bands Usage");
+		props.put("subtitle", "Requested time per frequency bands");
+		JRDataSource dataSource = getBandsBeforeSimData();
+		InputStream reportStream = getClass().getClassLoader().getResourceAsStream("alma/scheduling/psm/reports/lstRangesBeforeSim.jasper");
+		logger.info("Creating RA ranges before simulation report");
+		try {
+			JasperPrint print = JasperFillManager.fillReport(reportStream,
+					props, dataSource);
 			print.setName("ra_time_requested_report");
 			return print;
 		} catch (JRException e) {
@@ -272,11 +296,12 @@ public class ReportGenerator extends PsmContext {
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
 
+		Results result = outDao.getResult(id);
 		TreeMap<String, Object> props = new TreeMap<String, Object>();
-		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
-		props.put("scientificTime", Double.toString( outDao.getResults().get(0).getScientificTime() ) );
-		props.put("seasonStart", dateFormatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
-		props.put("seasonEnd", dateFormatter.format( outDao.getResults().get(0).getObsSeasonEnd() ) );
+		props.put("totalAvailableTime", Double.toString(result.getAvailableTime()));
+		props.put("scientificTime", Double.toString(result.getScientificTime()));
+		props.put("seasonStart", dateFormatter.format(result.getObsSeasonStart()));
+		props.put("seasonEnd", dateFormatter.format(result.getObsSeasonEnd()));
 		props.put("title", "Right Ascension Distribution");
 		props.put("subtitle", "Observed time per RA range");
 		JRDataSource dataSource = getLstRangeAfterSimData(outDao.getResult(id));
@@ -561,6 +586,36 @@ public class ReportGenerator extends PsmContext {
 			return null;
 		}
 	}
+	
+	/** Creates the bands requested time jasper report.
+	 * The returned object can then be rendered to screen, or other media, such as PDF.
+	 * @return JasperPrint object with the generated report
+	 */
+	public JasperPrint createBandsBeforeSimReport(long id){
+		// Parameters
+		ApplicationContext ctx = ReportGenerator.getApplicationContext();
+		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+
+		Results result = outDao.getResult(id);
+		TreeMap<String, Object> props = new TreeMap<String, Object>();
+		props.put("totalAvailableTime", Double.toString(result.getAvailableTime()));
+		props.put("seasonStart", dateFormatter.format(result.getObsSeasonStart()));
+		props.put("seasonEnd", dateFormatter.format(result.getObsSeasonEnd()));
+		props.put("title", "Frequency Bands Usage");
+		props.put("subtitle", "Requested time per frequency bands");
+		JRDataSource dataSource = getBandsBeforeSimData();
+		InputStream reportStream = getClass().getClassLoader().getResourceAsStream("alma/scheduling/psm/reports/bandsBeforeSim.jasper");
+		logger.info("Creating crowding report");
+		try {
+			JasperPrint print = JasperFillManager.fillReport(reportStream, props, dataSource);
+			print.setName("band_time_requested_report");
+			return print;
+		} catch (JRException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 
 	/** Pops up a report using Swing interface providad by JasperReports.
 	 * Useful for console version of PMS.
@@ -630,9 +685,10 @@ public class ReportGenerator extends PsmContext {
 
 
 		TreeMap<String, Object> props = new TreeMap<String, Object>();
-		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
-		props.put("seasonStart", dateFormatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
-		props.put("seasonEnd", dateFormatter.format( outDao.getResults().get(0).getObsSeasonEnd() ) );
+		Results result = outDao.getResult(id);
+		props.put("totalAvailableTime", Double.toString(result.getAvailableTime()));
+		props.put("seasonStart", dateFormatter.format(result.getObsSeasonStart()));
+		props.put("seasonEnd", dateFormatter.format(result.getObsSeasonEnd()));
 		props.put("title", "Receiver Bands Crowding");
 		props.put("subtitle", "Time observed per band");
 		JRDataSource dataSource = getBandsAfterSimData(id);

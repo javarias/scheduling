@@ -35,6 +35,7 @@ import java.util.logging.Logger;
 import org.omg.CORBA.UserException;
 
 import alma.acs.entityutil.EntityException;
+import alma.entity.xmlbinding.obsproject.types.ControlBlockTArrayRequestedType;
 import alma.entity.xmlbinding.obsproject.types.ObsUnitTStatusType;
 import alma.entity.xmlbinding.ousstatus.OUSStatus;
 import alma.entity.xmlbinding.projectstatus.ProjectStatus;
@@ -1094,21 +1095,31 @@ public class APDMtoSchedulingConverter {
 
 	private ArrayType determineArrayType (alma.entity.xmlbinding.schedblock.SchedBlock apdmSB,
 			String targetName) {
-		final alma.entity.xmlbinding.schedblock.TargetT apdmTarget = findTarget(
-				apdmSB, targetName);
-		final String spectralSpecName = apdmTarget
-				.getAbstractInstrumentSpecRef().getPartId();
-		final alma.entity.xmlbinding.schedblock.SpectralSpecT apdmSpectralSpec = findSpectralSpec(
-				apdmSB, spectralSpecName);
-
-		if (apdmSpectralSpec != null) {
-			final SpectralSpecTChoice choice = apdmSpectralSpec.getSpectralSpecTChoice();
-			if (choice.getACACorrelatorConfiguration() != null)
-				return ArrayType.ACA;
-			if (choice.getBLCorrelatorConfiguration() != null)
-				return ArrayType.TWELVE_M;
-			if (apdmSpectralSpec.getSquareLawSetup() != null)
-				return ArrayType.TP_ARRAY;
+//		final alma.entity.xmlbinding.schedblock.TargetT apdmTarget = findTarget(
+//				apdmSB, targetName);
+//		final String spectralSpecName = apdmTarget
+//				.getAbstractInstrumentSpecRef().getPartId();
+//		final alma.entity.xmlbinding.schedblock.SpectralSpecT apdmSpectralSpec = findSpectralSpec(
+//				apdmSB, spectralSpecName);
+//
+//		if (apdmSpectralSpec != null) {
+//			final SpectralSpecTChoice choice = apdmSpectralSpec.getSpectralSpecTChoice();
+//			if (choice.getACACorrelatorConfiguration() != null)
+//				return ArrayType.ACA;
+//			if (choice.getBLCorrelatorConfiguration() != null)
+//				return ArrayType.TWELVE_M;
+//			if (apdmSpectralSpec.getSquareLawSetup() != null)
+//				return ArrayType.TP_ARRAY;
+//		}
+		
+		switch (apdmSB.getObsUnitControl().getArrayRequested().getType()) {
+		case ControlBlockTArrayRequestedType.ACA_TYPE:
+		case ControlBlockTArrayRequestedType.SEVEN_M_TYPE:
+			return ArrayType.SEVEN_M;
+		case ControlBlockTArrayRequestedType.TWELVE_M_TYPE:
+			return ArrayType.TWELVE_M;
+		case ControlBlockTArrayRequestedType.TP_ARRAY_TYPE:
+			return ArrayType.TP_ARRAY;
 		}
 		return null;
 	}

@@ -24,15 +24,20 @@
  */
 package alma.scheduling.datamodel.observatory.dao;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -51,16 +56,22 @@ import alma.scheduling.datamodel.observatory.Pad;
 import alma.scheduling.datamodel.observatory.Receiver;
 import alma.scheduling.datamodel.observatory.ReceiverBand;
 import alma.scheduling.datamodel.observatory.TelescopeEquipment;
+import alma.scheduling.datamodel.obsproject.ArrayType;
 import alma.scheduling.input.observatory.generated.AntennaInstallationT;
 import alma.scheduling.input.observatory.generated.AntennaT;
+import alma.scheduling.input.observatory.generated.ArrayConfigurationLiteSetT;
 import alma.scheduling.input.observatory.generated.ArrayConfigurationLiteT;
 import alma.scheduling.input.observatory.generated.ArrayConfigurationT;
 import alma.scheduling.input.observatory.generated.AssemblyContainerOperationT;
+import alma.scheduling.input.observatory.generated.EquipmentOperationT;
 import alma.scheduling.input.observatory.generated.EquipmentT;
 import alma.scheduling.input.observatory.generated.FrontEndT;
 import alma.scheduling.input.observatory.generated.ObservatoryCharacteristics;
+import alma.scheduling.input.observatory.generated.ObservatoryCharacteristicsChoice;
 import alma.scheduling.input.observatory.generated.PadT;
 import alma.scheduling.input.observatory.generated.ReceiverT;
+import alma.scheduling.input.observatory.generated.TelescopeEquipmentT;
+import alma.scheduling.input.observatory.generated.types.ArrayTypeT;
 
 /**
  * XML DAO for Observatory Characteristics.
@@ -185,17 +196,28 @@ public class XmlObservatoryDaoImpl implements XmlObservatoryDao {
                 			ac.setAntennaDiameter(7.0);
                 		else
                 			ac.setAntennaDiameter(12.0);
+                		switch (xmlAC.getArrayType().getType()) {
+                		case ArrayTypeT.ACA_TYPE:
+                			ac.setArrayType(ArrayType.ACA);
+                			break;
+                		case ArrayTypeT.SEVEN_M_TYPE:
+                			ac.setArrayType(ArrayType.SEVEN_M);
+                			break;
+                		case ArrayTypeT.TP_ARRAY_TYPE:
+                			ac.setArrayType(ArrayType.TP_ARRAY);
+                			break;
+                		case ArrayTypeT.TWELVE_M_TYPE:
+                			ac.setArrayType(ArrayType.TWELVE_M);
+                			break;
+                		}
                     	arrayConfigurations.add(ac);
                 	}
                 }
             } catch (MarshalException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (ValidationException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (FileNotFoundException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }        
@@ -317,4 +339,77 @@ public class XmlObservatoryDaoImpl implements XmlObservatoryDao {
         arrayConfigurations = null;
         
     }
+    
+	@Override
+	public void saveOrUpdate(List<ArrayConfiguration> configs) {
+		
+		if (configs.get(0).getAntennaInstallations().size() != 0)
+			throw new RuntimeException("The full array configuration saving is not yet supported");
+		
+		for(File file: configurationDao.getConfiguration().getAllObservatoryFiles()) {
+			logger.debug("deleting observatory configuration file = " + file.getAbsolutePath());
+			file.delete();
+		}
+		Calendar cal = Calendar.getInstance();
+		String baseFilename = "ArrayConfig";
+		ObservatoryCharacteristics xmlRoot = new ObservatoryCharacteristics();
+		ObservatoryCharacteristicsChoice choice = new ObservatoryCharacteristicsChoice();
+		ArrayConfigurationLiteSetT xmlConfigSet = new ArrayConfigurationLiteSetT();
+		choice.setArrayLite(xmlConfigSet);
+		xmlRoot.setObservatoryCharacteristicsChoice(choice);
+		TelescopeEquipmentT equip = new TelescopeEquipmentT();
+		equip.setAntenna(new AntennaT[0]);
+		equip.setPad(new PadT[0]);
+		equip.setEquipment(new EquipmentT[0]);
+		EquipmentOperationT eqop = new EquipmentOperationT();
+		eqop.setOperation(new AssemblyContainerOperationT[0]);
+		xmlRoot.setTelescopeEquipment(equip);
+		xmlRoot.setEquipmentOperation(eqop);
+		for (ArrayConfiguration arrConf: configs) {
+			if (arrConf.getAntennaInstallations().size() == 0) {
+				ArrayConfigurationLiteT xmlConfig = new ArrayConfigurationLiteT();
+				xmlConfig.setArrayName(arrConf.getArrayName());
+				xmlConfig.setConfigurationName(arrConf.getConfigurationName());
+				cal.setTime(arrConf.getEndTime());
+				cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+				xmlConfig.setEndTime(cal.getTime());
+				xmlConfig.setMaxBaseLine(arrConf.getMaxBaseline());
+				xmlConfig.setMinBaseLine(arrConf.getMinBaseline());
+				xmlConfig.setNumberOfAntennas(arrConf.getNumberOfAntennas());
+				cal.setTime(arrConf.getStartTime());
+				cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+				xmlConfig.setStartTime(cal.getTime());
+				switch (arrConf.getArrayType()) {
+				case ACA:
+					xmlConfig.setArrayType(ArrayTypeT.ACA);
+					break;
+				case SEVEN_M:
+					xmlConfig.setArrayType(ArrayTypeT.SEVEN_M);
+					break;
+				case TP_ARRAY:
+					xmlConfig.setArrayType(ArrayTypeT.TP_ARRAY);
+					break;
+				case TWELVE_M:
+					xmlConfig.setArrayType(ArrayTypeT.TWELVE_M);
+				}
+				xmlConfigSet.addArrayConfiguration(xmlConfig);
+			}
+		}
+		
+		try {
+			xmlRoot.marshal(new FileWriter(configurationDao.getConfiguration().getObservatoryCharactericticsDir().getAbsolutePath()
+					+ "/" + baseFilename + ".xml"));
+		} catch (MarshalException e) {
+			e.printStackTrace();
+		} catch (ValidationException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		//Reload all the configs
+		deleteAll();
+		getAllEquipments();
+		getAllArrayConfigurations();
+	}
 }

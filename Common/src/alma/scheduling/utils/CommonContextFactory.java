@@ -36,7 +36,7 @@ public class CommonContextFactory {
 	
 	private static ApplicationContext context = null;
 	
-	/** URL for Scheduling/Common Spring context configuration*/
+	/** URI for Scheduling/Common Spring context configuration*/
 	protected static final String SCHEDULING_COMMON_SPRING_CONFIG = "classpath:alma/scheduling/CommonContext.xml";
 	public static final String SCHEDULING_OBSPROJECT_DAO_BEAN = "obsProjectDao";
 	public static final String SCHEDULING_SCHEDBLOCK_DAO_BEAN = "sbDao";
@@ -45,6 +45,8 @@ public class CommonContextFactory {
 	public static final String SCHEDULING_ATM_DAO_BEAN = "atmDao";
 	public static final String SCHEDULING_WEATHER_DAO_BEAN = "weatherStationDao";
 	public static final String SCHEDULING_OPACITY_INTERPOLATOR_BEAN = "opacityInterpolator";
+	public static final String SCHEDULING_XML_OBSERVATORY_DAO = "xmlObservatoryDao";
+	public static final String SCHEDULING_OBSERVATORY_DAO = "observatoryDao";
 	
 	/**
 	 * Create the instance of the context just for the Common subset of Scheduling

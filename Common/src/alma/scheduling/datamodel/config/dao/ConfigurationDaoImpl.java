@@ -27,10 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-import alma.correlatorSrc.CorrConfigValidator.SBConversionException;
 import alma.scheduling.datamodel.GenericDaoImpl;
 import alma.scheduling.datamodel.config.Configuration;
-import alma.scheduling.datamodel.config.ScienceGradeConfig;
 
 /* TODO Why it is necesarry to merge the XML with database? Wouldn't be cleaner to store
  * Why not to store the information from the XML in the database and then forget about the XML.
@@ -83,6 +81,7 @@ public class ConfigurationDaoImpl extends GenericDaoImpl implements
             config.setScienceGradeConfig(dbConf.getScienceGradeConfig());
     		config.setArrayCenterLatitude(-23.022894444444443);
     		config.setArrayCenterLongitude(-67.75492777777778);
+    		config.setSimulationStatus(dbConf.getSimulationStatus());
         }
         return config;
     }
@@ -95,6 +94,8 @@ public class ConfigurationDaoImpl extends GenericDaoImpl implements
         config.setLastLoad(new Date());
         saveOrUpdate(config);
     }
+    
+    
     
     /**
      * Store in the DB the given update time
@@ -124,4 +125,21 @@ public class ConfigurationDaoImpl extends GenericDaoImpl implements
         getHibernateTemplate().bulkUpdate("delete Configuration");
         config = null;
     }
+
+	@Override
+	public void updateConfig(String simStatus) {
+		config.setSimulationStatus(simStatus);
+		updateConfig();
+	}
+
+	@Override
+	public void deleteForSimulation() {
+		getHibernateTemplate().bulkUpdate("delete Configuration");
+		config = 	null;
+		getConfiguration();
+		config.setLastLoad(new Date(0));
+		config.setSimulationStartTime(null);
+		config.setSimulationStatus("STATIC_DATA_LOADED");
+		saveOrUpdate(config);
+	}
 }

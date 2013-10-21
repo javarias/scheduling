@@ -231,7 +231,7 @@ public class Simulator extends PsmContext {
         
 
         // Stop at end of season
-        while( time.before(stopTime) && !timesToCheck.isEmpty() ){
+        while(!timesToCheck.isEmpty() && timesToCheck.get(0).getTime().before(stopTime)){
             Date t1 = new Date();
         	setChanged();
         	notifyObservers(

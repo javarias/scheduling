@@ -67,7 +67,7 @@
 	<target name="build" depends="resolve">
 		<echo message="compiling..."/>
 		<mkdir dir="${build.dir}" />
-		<javac srcdir="${src.dir}" destdir="${build.dir}">
+		<javac srcdir="${src.dir}" destdir="${build.dir}" debug="true" debuglevel="lines,vars,source">
 			<classpath>
 				<fileset dir="${lib.dir}">
 					<exclude name="*-sources.jar"/>
@@ -86,9 +86,18 @@
 				<exclude name="*-sources.jar"/>
 				<exclude name="*-javadoc.jar"/>
 				<exclude name="ant-*.jar"/>
+				<exclude name="slf4j-log4j12-1.5.11.jar"/>
 				<exclude name="hibernate-3.2.6.ga.jar"/>
 				<exclude name="hibernate-commons-annotations-3.0.0.ga.jar"/>
 				<exclude name="portlet-api-1.0.jar"/>
+				<exclude name="weld-servlet-1.0.1-Final.jar"/>
+				<exclude name="junit.*.jar"/>
+				<exclude name="servlet-api.*.jar"/>
+				<exclude name="ehcache-1.4.1.jar"/>
+				<exclude name="pull-parser-2.jar"/>
+				<exclude name="castor-1.2.jar"/>
+				<exclude name="servlet-api-2.5.jar"/>
+				<exclude name="*.war"/>
 			</lib>
 		</war>
 	</target>

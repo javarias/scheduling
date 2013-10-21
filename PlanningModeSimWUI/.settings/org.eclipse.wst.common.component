@@ -3,6 +3,7 @@
     <wb-module deploy-name="PlanningModeSimWUI">
         <wb-resource deploy-path="/" source-path="/WebContent"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/WebContent"/>
         <property name="java-output-path" value="/PlanningModeSimulatorWUI/build/classes"/>
         <property name="context-root" value="pms"/>
     </wb-module>

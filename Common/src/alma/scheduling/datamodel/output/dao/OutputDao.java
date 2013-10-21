@@ -61,4 +61,5 @@ public interface OutputDao {
     public Results getLastResult();
     
     public long getLastResultId();
+    
 }

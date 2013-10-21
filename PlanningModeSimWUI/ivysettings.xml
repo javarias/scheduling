@@ -6,7 +6,7 @@
         <ibiblio name="java-net-maven2" root="http://download.java.net/maven/2/" m2compatible="true" />
         <ibiblio name="maven" root="http://mvnrepository.com/artifact/" m2compatible="true" />
         <ibiblio name="seasar" root="http://maven.seasar.org/maven2/" m2compatible="true"/>
-        <filesystem name="local" checksums="">
+        <filesystem name="local" checksums="" cache="avoid-cache">
             <artifact pattern="${env.INTROOT}/lib/[artifact].[ext]" />
             <artifact/>
             <artifact pattern="${env.ACSROOT}/lib/[artifact].[ext]" />
@@ -16,10 +16,14 @@
             <resolver ref="maven"/>
             <resolver ref="ibiblio-maven2"/>
             <resolver ref="java-net-maven2"/>
+            <resolver ref="seasar"/>
             <resolver ref="local"/>
         </chain>
     </resolvers>
     <modules>
       <module organisation="org.seasar" resolver="seasar"/>
     </modules>
+    <caches>
+    	<cache name="avoid-cache" useOrigin="true"/>
+    </caches>
 </ivysettings>

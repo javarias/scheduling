@@ -38,7 +38,9 @@
 		<dependency org="org.hibernate" name="hibernate-core" rev="3.3.1.GA" force="true"/>
 		<dependency org="org.hibernate" name="hibernate-entitymanager" rev="3.3.1.ga" force="true"/>
 		<dependency org="org.hibernate" name="hibernate-annotations" rev="3.3.1.GA" force="true"/>
-		<dependency org="net.sf.jasperreports" name="jasperreports" rev="3.7.4" />
+		<dependency org="org.hibernate" name="hibernate-ehcache" rev="3.3.1.GA"/>
+		<dependency org="net.sf.ehcache" name="ehcache-core" rev="2.1.0" force="true"/>
+		<dependency org="net.sf.jasperreports" name="jasperreports" rev="5.0.0"/>
 		<dependency org="org.zkoss.zkforge" name="timelinez" rev="2.3.1_50" />
 		<dependency org="org.springframework" name="spring-core" rev="2.5.5" />
 		<dependency org="org.springframework" name="spring-web" rev="2.5.5" />
@@ -52,10 +54,27 @@
 		<dependency org="org.zkoss.zk" name="zkplus" rev="5.0.10" />
 		<dependency org="org.zkoss.common" name="zcommon" rev="5.0.10"/>
 		<dependency org="org.zkoss.common" name="zweb" rev="5.0.10" force="true"/>
+		<dependency org="xerces" name="xercesImpl" rev="2.11.0"/>
 		
 		<!-- Scheduling dependencies -->
 		
 		<!-- Local dependencies-->
+		<dependency name="ojdbc6" />
+		<dependency name="xdb" />
+		<dependency name="xmlparserv2" />
+		<dependency name="acsjlog"/>
+		<dependency name="jcont"/>
+		<dependency name="acsASsources"/>
+		<dependency name="acsCallbacksSupport"/>
+		<dependency name="acscommon"/>
+		<dependency name="acscomponent"/>
+		<dependency name="acsContainerServices"/>
+		<dependency name="acserr"/>
+		<dependency name="acserrj"/>
+		<dependency name="acsErrTypeAlarmSourceFactory"/>
+		<dependency name="ACSErrTypeCommon"/>
+		<dependency name="archive_xmlstore_if"/>
+		<dependency name="archive_database"/>
 		<dependency name="castor" />
 		<dependency name="xercesImpl"/>
 		<dependency name="systementities"/>
@@ -68,18 +87,8 @@
 		<dependency name="SchedulingCommon"/>
 		<dependency name="SchedulingPMS"/>
 		<dependency name="SchedulingPMSCli"/>
+		<dependency name="CommonGUIComponents"/>
 <!--		
-		<dependency name="acsASsources"/>
-		<dependency name="acsCallbacksSupport"/>
-		<dependency name="acscommon"/>
-		<dependency name="acscomponent"/>
-		<dependency name="acsContainerServices"/>
-		<dependency name="acserr"/>
-		<dependency name="acserrj"/>
-		<dependency name="acsErrTypeAlarmSourceFactory"/>
-		<dependency name="ACSErrTypeCommon"/>
-		<dependency name="acsjlog"/>
-		<dependency name="archive_xmlstore_if"/>
 		<dependency name="jdom"/>
 		<dependency name="cdbDAL"/>
 		<dependency name="cdbErrType"/>

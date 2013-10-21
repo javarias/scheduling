@@ -25,7 +25,6 @@
 
 package alma.scheduling.psm.sim;
 
-import java.rmi.RemoteException;
 import java.util.Date;
 
 import org.slf4j.Logger;
@@ -34,33 +33,47 @@ import org.springframework.context.ApplicationContext;
 
 import alma.scheduling.dataload.DataLoader;
 import alma.scheduling.dataload.DataUnloader;
-import alma.scheduling.dataload.obsproject.ObsProjectDataLoader;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
-import alma.scheduling.datamodel.obsproject.dao.Phase1XMLStoreProjectDao;
-import alma.scheduling.psm.cli.RemoteConsole;
 import alma.scheduling.psm.util.PsmContext;
 
 public class InputActions extends PsmContext {
 	
 	public static final String WEATHER_PARAMS_LOADER_BEAN = "weatherSimDataLoader";
 	public static final String FULL_DATA_LOADER_BEAN = "fullDataLoader";
+	public static final String ALMA_ARCHIVE_FULL_DATA_LOADER = "AlmaArchiveFullDataLoader";
 	public static final String OBSPROJECT_DATA_LOADER_BEAN = "obsProjectDataLoader";
+	public static final String ALMA_ARCHIVE_OBSPROJECT_DATA_LOADER_BEAN = "AlmaArchiveObsProjectDataLoader";
 	public static final String ARCHIVE_PROJECT_DAO_BEAN = "archProjectDao";
 	public static final String CONFIGURATION_DAO_BEAN = "configDao";
 	
 	private static Logger logger = LoggerFactory.getLogger(InputActions.class);
 	
 	private static InputActions instance = null;
+	private SimulationStateContext simulationStateContext;
 		
     private InputActions(String workDir) {
 		super(workDir);
+		ApplicationContext ctx = getApplicationContext();
+		ConfigurationDao configDao = (ConfigurationDao) ctx.getBean(CONFIGURATION_DAO_BEAN);
+		configDao.getConfiguration();
+		if (configDao.getConfiguration().getSimulationStatus() == null || 
+				configDao.getConfiguration().getSimulationStatus().equals(SimulationStateEnum.START.toString()))
+			simulationStateContext = new SimulationStateContext();
+		else if (configDao.getConfiguration().getSimulationStatus().equals(SimulationStateEnum.DYNAMIC_DATA_LOADED.toString()))
+			simulationStateContext = new SimulationStateContext(SimulationStateEnum.DYNAMIC_DATA_LOADED);
+		else if (configDao.getConfiguration().getSimulationStatus().equals(SimulationStateEnum.STATIC_DATA_LOADED.toString()))
+			simulationStateContext = new SimulationStateContext(SimulationStateEnum.STATIC_DATA_LOADED);
+		else if (configDao.getConfiguration().getSimulationStatus().equals(SimulationStateEnum.SIMULATION_COMPLETED.toString()))
+			simulationStateContext = new SimulationStateContext(SimulationStateEnum.SIMULATION_COMPLETED);
+		else
+			simulationStateContext = new SimulationStateContext();
 	}
 	
-    public void fullLoad() throws Exception {
+    public void fullLoad(String dataLoader) throws Exception {
         ApplicationContext ctx = getApplicationContext();
         DataLoader weatherLoader = 
         		(DataLoader) ctx.getBean(WEATHER_PARAMS_LOADER_BEAN);
-        DataLoader fullDataLoader = getDataLoader(ctx);
+        DataLoader fullDataLoader = (DataLoader) ctx.getBean(dataLoader);
         Date start = new Date();
         weatherLoader.load();
         Date end = new Date();
@@ -72,12 +85,13 @@ public class InputActions extends PsmContext {
         
         ConfigurationDao configDao = (ConfigurationDao) ctx.getBean(CONFIGURATION_DAO_BEAN);
         configDao.getConfiguration();
-        configDao.updateConfig();
+        simulationStateContext.getCurrentState().fullload();
+        configDao.updateConfig(simulationStateContext.getCurrentState().getCurrentState().toString());
     }
 
-    public void load(){
+    public void load(String dataLoader){
     	ApplicationContext ctx = getApplicationContext();
-        DataLoader loader = getDataLoader(ctx);
+        DataLoader loader = (DataLoader) ctx.getBean(dataLoader);
         try {
 			loader.load();
 		} catch (Exception e) {
@@ -85,7 +99,8 @@ public class InputActions extends PsmContext {
 			e.printStackTrace();
 		}
         ConfigurationDao configDao = (ConfigurationDao) ctx.getBean(CONFIGURATION_DAO_BEAN);
-        configDao.updateConfig();
+        simulationStateContext.getCurrentState().load();
+        configDao.updateConfig(simulationStateContext.getCurrentState().getCurrentState().toString());
     }
 
     public void unload() {
@@ -94,111 +109,27 @@ public class InputActions extends PsmContext {
         loader.unload();
     }
 
-    public void clean() {
+    public void clean(String dataLoader) {
     	ApplicationContext ctx = getApplicationContext();
-    	DataLoader loader = getDataLoader(ctx);
+    	DataLoader loader = (DataLoader) ctx.getBean(dataLoader);
     	loader.clear();
         ConfigurationDao configDao = (ConfigurationDao) ctx.getBean(CONFIGURATION_DAO_BEAN);
-        configDao.deleteAll();
+        simulationStateContext.getCurrentState().clean();
+        configDao.deleteForSimulation();
     }
     
-    public boolean isWeatherLoaded(){
-    	return false;
-    }
-    
-    public boolean isDataLoaded(){
-    	return false;
-    }
-    
-    public boolean hasSimulationRan(){
-    	return false;
+    public SimulationAbstractState getCurrentSimulationState() {
+    	return simulationStateContext.getCurrentState();
     }
 
-    @Deprecated
-	public void remoteFullLoad() {
-		ApplicationContext ctx = getApplicationContext();
-		RemoteConsole console = (RemoteConsole) ctx.getBean("remoteConsoleService");
-		String[] args= new String[1];
-		args[0]="fullload";
-		try {
-			console.runTask(args);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
-
-	@Deprecated
-	public void remoteLoad() {
-		ApplicationContext ctx = getApplicationContext();
-		RemoteConsole console = (RemoteConsole) ctx.getBean("remoteConsoleService");
-		String[] args= new String[1];
-		args[0]="load";
-		try {
-			console.runTask(args);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
-	
-	@Deprecated
-	public void remoteClean() {
-		ApplicationContext ctx = getApplicationContext();
-		RemoteConsole console = (RemoteConsole) ctx.getBean("remoteConsoleService");
-		String[] args= new String[1];
-		args[0]="clean";
-		try {
-			console.runTask(args);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}    
-
-	@Deprecated
-	public void remoteRun() {
-		ApplicationContext ctx = getApplicationContext();
-		RemoteConsole console = (RemoteConsole) ctx.getBean("remoteConsoleService");
-		String[] args= new String[1];
-		args[0]="run";
-		try {
-			console.runTask(args);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
-    
-	public static InputActions getInstance(String workDir){
+    public static InputActions getInstance(String workDir){
 		if (InputActions.instance == null)
 			InputActions.instance = new InputActions(workDir);
 		return InputActions.instance;
 	}
+    
+    public SimulationStateContext getSimulationStateContext() {
+    	return simulationStateContext;
+    }
 	
-	private DataLoader getDataLoader(ApplicationContext ctx) {
-		String prop = System.getProperty("ACS.manager");
-		ObsProjectDataLoader loader = null;
-		loader = (ObsProjectDataLoader) ctx.getBean(OBSPROJECT_DATA_LOADER_BEAN);
-		if (prop == null) {
-			loader.setArchProjectDao(null);
-		} else {
-			try {
-				Phase1XMLStoreProjectDao prjDao = (Phase1XMLStoreProjectDao) loader.getArchProjectDao();
-				if(prjDao != null) {
-					prjDao.tidyUp();
-				}
-				loader.setArchProjectDao(new Phase1XMLStoreProjectDao());
-				logger.info("Phase1XMLStoreProjectDao was created");
-			} catch (Exception e) {
-				e.printStackTrace();
-				throw new RuntimeException(e);
-			}
-		}
-		return (DataLoader) ctx.getBean(FULL_DATA_LOADER_BEAN);
-	}
 }

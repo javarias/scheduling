@@ -55,6 +55,7 @@ public class Configuration {
     private Date simulationStartTime;
     private String contextFilePath;
     private Long dataModelVersion;
+    private String simulationStatus;
     
     /**
      * Contains the configuration of the grade of the projects.
@@ -214,6 +215,22 @@ public class Configuration {
     
     /**
      * 
+     * @return All the files in the $APRC_WORK_DIR/Observatory directory
+     */
+    public File[] getAllObservatoryFiles() {
+    	return getObservatoryCharactericticsDir().listFiles();
+    }
+    
+    /**
+     * 
+     * @return The directory containing all the observatory xml configuration files
+     */
+    public File getObservatoryCharactericticsDir() {
+    	return new File(workDirectory + "/" + observatoryDirectory);
+    }
+    
+    /**
+     * 
      * @return All the output XML files
      */
     public List<String> getAllOutputFiles(){
@@ -282,6 +299,16 @@ public class Configuration {
 		}
 	}
 	
+	public String getSimulationStatus() {
+		return simulationStatus;
+	}
+
+	public void setSimulationStatus(String simulationStatus) {
+		this.simulationStatus = simulationStatus;
+	}
+
+
+
 	public class IncompatibleModelVersionException extends Exception {
 
 		/**

@@ -139,11 +139,19 @@
 		</constructor-arg>
 	</bean>
 	
-	<bean id="arrayAngulatResolutionSelector"
+	<bean id="arrayAngularResolutionSelector"
 		class="alma.scheduling.algorithm.observatory.AngularResolutionSelector"
 		scope="singleton">
 		<constructor-arg>
 			<value>arrayAngulatResolutionSelector</value>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="arrayTypeSelector"
+		class="alma.scheduling.algorithm.observatory.ArrayTypeSelector"
+		scope="singleton">
+		<constructor-arg>
+			<value>arrayTypeSelector</value>
 		</constructor-arg>
 	</bean>
 

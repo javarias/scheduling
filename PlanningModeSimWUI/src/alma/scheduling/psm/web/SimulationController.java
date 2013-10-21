@@ -1,14 +1,14 @@
 package alma.scheduling.psm.web;
 
-import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.TimeZone;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
-import org.zkoss.zk.ui.Page;
 import org.zkoss.zk.ui.Path;
 import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.SuspendNotAllowedException;
@@ -19,18 +19,21 @@ import org.zkoss.zk.ui.event.EventQueue;
 import org.zkoss.zk.ui.event.EventQueues;
 import org.zkoss.zk.ui.http.WebManager;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
-import org.zkoss.zk.ui.util.Initiator;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Progressmeter;
 import org.zkoss.zul.api.Button;
 import org.zkoss.zul.api.Combobox;
 import org.zkoss.zul.api.Datebox;
 import org.zkoss.zul.api.Panelchildren;
+import org.zkoss.zul.api.Radiogroup;
 import org.zkoss.zul.api.Window;
 
+import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.psm.sim.InputActions;
 import alma.scheduling.psm.sim.ReportGenerator;
+import alma.scheduling.psm.sim.SimulationAbstractState;
+import alma.scheduling.psm.sim.SimulationActionsEnum;
 import alma.scheduling.psm.sim.SimulationProgressEvent;
 import alma.scheduling.psm.sim.Simulator;
 import alma.scheduling.psm.util.SchedulingPolicyWrapper;
@@ -40,7 +43,7 @@ import alma.scheduling.psm.web.util.DSAPoliciesLoaderListener;
 import alma.scheduling.utils.DSAContextFactory;
 
 public class SimulationController extends GenericForwardComposer implements
-		Initiator, Observer {
+		 Observer {
 
 	private static Logger logger = LoggerFactory
 			.getLogger(SimulationController.class);
@@ -53,12 +56,15 @@ public class SimulationController extends GenericForwardComposer implements
 	private Button buttonUnload;
 	private Button buttonClean;
 	private Button buttonRun;
+	private Button buttonFullLoad;
 	private Button buttonReports;
 	private Combobox DSAPoliciesComboBox;
 	private Progressmeter simulationProgress;
 	private Label simulationPercentageLabel;
 	private Datebox dateboxStartDate;
 	private Datebox dateboxEndDate;
+	private Radiogroup sg1;
+	private InputActions inputActions;
 	
 	private Panelchildren panelChildrenStatus;
 
@@ -68,7 +74,9 @@ public class SimulationController extends GenericForwardComposer implements
 			.getContext().getBean("execDao");
 	
 	public static final String PROGRESS_QUEUE = "simulationRun";
-
+	public static final String DATA_LOADER_ATTRNAME = "dataLoader";
+	
+	
 	public void onClick$buttonBasicConfiguration(Event event) {
 		System.out.println("Basic Configuration button pressed");
 		Window mainWindow = (Window) Path.getComponent("//");
@@ -94,13 +102,14 @@ public class SimulationController extends GenericForwardComposer implements
 		InputActions inputActions = InputActions.getInstance(((String) Sessions
 				.getCurrent().getAttribute("workDir")));
 		try {
-			inputActions.fullLoad();
+			inputActions.fullLoad((String) Sessions.getCurrent().getAttribute(DATA_LOADER_ATTRNAME));
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		System.out.println(panelChildrenStatus.getChildren().get(0).getClass());
+		enableButtonsForActions(inputActions.getCurrentSimulationState().getAvailableActions());
 		System.out.println("Fullload finished");
+		updateDates();
 	}
 
 	public void onClick$buttonLoad(Event event) {
@@ -111,12 +120,14 @@ public class SimulationController extends GenericForwardComposer implements
 		InputActions inputActions = InputActions.getInstance(((String) Sessions
 				.getCurrent().getAttribute("workDir")));
 		try {
-			inputActions.load();
+			inputActions.load((String) Sessions.getCurrent().getAttribute(DATA_LOADER_ATTRNAME));
 		} catch (NoSuchBeanDefinitionException e) {
 			logger.warn("No remote operations available, fallback to local");
-			inputActions.load();
+			inputActions.load((String) Sessions.getCurrent().getAttribute(DATA_LOADER_ATTRNAME));
 		}
+		enableButtonsForActions(inputActions.getCurrentSimulationState().getAvailableActions());
 		System.out.println("Fullload finished");
+		updateDates();
 	}
 
 	public void onClick$buttonUnload(Event event) {
@@ -137,14 +148,12 @@ public class SimulationController extends GenericForwardComposer implements
 
 		InputActions inputActions = InputActions.getInstance(((String) Sessions
 				.getCurrent().getAttribute("workDir")));
-		try {
-			inputActions.clean();
-		} catch (NoSuchBeanDefinitionException e) {
-			logger.warn("No remote operations available, fallback to local");
-			inputActions.clean();
-		}
-
+		inputActions.clean((String) Sessions.getCurrent().getAttribute(DATA_LOADER_ATTRNAME));
+		
+		enableButtonsForActions(inputActions.getCurrentSimulationState().getAvailableActions());
+		simulationPercentageLabel.setValue("Simulation not started");
 		System.out.println("Clean finished");
+		updateDates();
 	}
 
 	public void onClick$buttonReports(Event event) {
@@ -184,6 +193,7 @@ public class SimulationController extends GenericForwardComposer implements
 					simt.run(((SchedulingPolicyWrapper) DSAPoliciesComboBox
 							.getSelectedItemApi().getValue()).getSpringBeanName());
 					System.out.println("Run finished");
+					
 					simt.deleteObserver(o);
 					simt.deleteObserver(tlo);
 					eq.publish(new Event("endSimulation"));
@@ -191,6 +201,11 @@ public class SimulationController extends GenericForwardComposer implements
 			}
 		}, true);
 		eq.publish(new Event("startSimulation"));
+		inputActions.getCurrentSimulationState().runSimulation();
+		enableButtonsForActions(inputActions.getCurrentSimulationState().getAvailableActions());
+		ConfigurationDao configDao = (ConfigurationDao) alma.scheduling.utils.DSAContextFactory
+				.getContext().getBean(InputActions.CONFIGURATION_DAO_BEAN);
+        configDao.updateConfig(inputActions.getSimulationStateContext().getCurrentState().getCurrentState().toString());
 	}
 
 	public void onClick$buttonPh1mSynch(Event event) {
@@ -209,15 +224,65 @@ public class SimulationController extends GenericForwardComposer implements
 		}
 	}
 	
-	public void doAfterCompose(Page arg0) throws Exception {
+	
+	@Override
+	public void doAfterCompose(Component comp) throws Exception {
+		super.doAfterCompose(comp);
 		System.out.println("SimulatorController.doAfterCompose()");
 		webapp = Sessions.getCurrent().getWebApp();
+		InputActions inputActions = InputActions.getInstance(((String) Sessions
+				.getCurrent().getAttribute("workDir")));
+		SimulationAbstractState simState = inputActions
+				.getSimulationStateContext().getCurrentState();
+		enableButtonsForActions(simState.getAvailableActions());
+	}
+	
+	@Override
+	public void doFinally() throws Exception {
+		super.doFinally();
+		inputActions = InputActions.getInstance(((String) Sessions
+				.getCurrent().getAttribute("workDir")));
 	}
 
-	public void doInit(Page arg0, Map arg1) throws Exception {
-		System.out.println("SimulatorController.doInit()");
-		System.out.println((String) Sessions.getCurrent().getAttribute(
-				"workDir"));
+	private void enableButtonsForActions(SimulationActionsEnum[] actions) {
+		buttonClean.setDisabled(true);
+		buttonLoad.setDisabled(true);
+		buttonRun.setDisabled(true);
+		buttonFullLoad.setDisabled(true);
+		buttonRun.setDisabled(true);
+		for(SimulationActionsEnum action: actions) {
+			switch(action) {
+			case CLEAN:
+				buttonClean.setDisabled(false);
+				break;
+			case FULLLOAD:
+				buttonFullLoad.setDisabled(false);
+				break;
+			case LOAD:
+				buttonLoad.setDisabled(false);
+				break;
+			case RUN_SIMULATION:
+				buttonRun.setDisabled(false);
+				break;
+			}
+		}
+	}
+	
+	private void updateDates() {
+		try {
+			dateboxStartDate.setTimeZone(TimeZone.getTimeZone("UTC"));
+			dateboxStartDate.setValue(alma.scheduling.psm.web.SimulationController.execDao
+					.getCurrentSeason().getStartDate());
+		} catch (IndexOutOfBoundsException ex) {
+//			dateboxStartDate.setValue(null);
+		}
+		try {
+			dateboxStartDate.setTimeZone(TimeZone.getTimeZone("UTC"));
+			dateboxEndDate.setValue(alma.scheduling.psm.web.SimulationController.execDao
+					.getCurrentSeason().getEndDate());
+		} catch (IndexOutOfBoundsException ex) {
+			//Do nothing the database is empty
+		}
 	}
 	
 	@Override
