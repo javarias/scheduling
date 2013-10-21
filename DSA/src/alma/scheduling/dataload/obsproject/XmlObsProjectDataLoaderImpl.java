@@ -24,24 +24,20 @@
  */
 package alma.scheduling.dataload.obsproject;
 
-import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-import alma.scheduling.datamodel.DAOException;
+import alma.scheduling.dataload.DataLoader;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
-import alma.scheduling.datamodel.obsproject.dao.ProjectDao;
 import alma.scheduling.datamodel.obsproject.dao.XmlObsProjectDao;
-import alma.scheduling.utils.SchedulingProperties;
 
-@Transactional
-public class ObsProjectDataLoaderImpl implements ObsProjectDataLoader {
+public class XmlObsProjectDataLoaderImpl implements DataLoader {
     
-	private static Logger logger = LoggerFactory.getLogger(ObsProjectDataLoaderImpl.class);
+	private static Logger logger = LoggerFactory.getLogger(XmlObsProjectDataLoaderImpl.class);
 	
 	/**
 	 * DAO to get Light Projects from files.
@@ -50,15 +46,6 @@ public class ObsProjectDataLoaderImpl implements ObsProjectDataLoader {
     public void setXmlDao(XmlObsProjectDao xmlDao) {
         this.xmlDao = xmlDao;
     }
-
-    /**
-     * DAO to get projects from ARCHIVE XML Store.
-     */
-    ProjectDao archProjectDao;
-    @Override
-	public void setArchProjectDao(ProjectDao archProjectDao) {
-		this.archProjectDao = archProjectDao;
-	}
     
     /**
      * DAO to store projects in work database.
@@ -72,33 +59,17 @@ public class ObsProjectDataLoaderImpl implements ObsProjectDataLoader {
     @Transactional (readOnly=false)
     public void load() {
     	List<ObsProject> projects = null;
-    	if (xmlDao != null && SchedulingProperties.isPMSUsingXMLProjects()) {
-    		projects = xmlDao.getAllObsProjects();
-    	} else if (archProjectDao != null) {
-    		try {
-    			Date start = new Date();
-				projects = archProjectDao.getAllObsProjects();
-				Date end = new Date();
-				logger.info("To convert projects from archive took " + (end.getTime() - start.getTime()) + " ms");
-				logger.info("Total projects: " + projects.size());
-			} catch (DAOException ex) {
-				logger.error("error getting projects from XML Store");
-				ex.printStackTrace();
-			}
-    	} else {
-    		logger.error("no DAO to retrieve projects has been setup");
-    		return;
-    	}
-//    	for(ObsProject p: projects){
-//    	    dao.saveOrUpdate(p);
-//    	}
+    	projects = xmlDao.getAllObsProjects();
     	try{
     		dao.saveOrUpdate(projects);
     	}catch(NullPointerException e){
     		logger.error("List of project to save or update has " + projects.size() + " elements.");
     		if( projects.size() == 0 )
     			logger.error("No obs projects retrived. Please check your sources.");
-    		else e.printStackTrace();
+    		else {
+    			logger.error("Unexpected exception", e);
+    			e.printStackTrace();
+    		}
     	}
     }
 
@@ -107,10 +78,5 @@ public class ObsProjectDataLoaderImpl implements ObsProjectDataLoader {
     	logger.info("Deleting Projects");
     	dao.deleteAll();
     }
-
-	@Override
-	public ProjectDao getArchProjectDao() {
-		return archProjectDao;
-	}
 
 }

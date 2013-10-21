@@ -110,8 +110,14 @@ public class ResultComposer {
 		arr.setDeletionDate( arrcfg.getEndTime() );
 		arr.setAvailableTime( (arr.getDeletionDate().getTime() - arr.getCreationDate().getTime())/3600/1000);
 		arr.setOriginalId(arrcfg.getId());
-		arr.setResolution( arrcfg.getResolution());
-		arr.setUvCoverage(arrcfg.getUvCoverage());
+		if (arrcfg.getResolution() == null)
+			arr.setResolution(0.0);
+		else
+			arr.setResolution( arrcfg.getResolution());
+		if (arrcfg.getUvCoverage() == null)
+			arr.setUvCoverage(0.0);
+		else
+			arr.setUvCoverage(arrcfg.getUvCoverage());
 		results.getArray().add(arr);
 	}
 	

@@ -99,6 +99,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
                 scope="prototype">
                 <property name="selectors">
                     <set>
+                    	 <ref bean="sbStatusSelector" />
+                    	 <ref bean="arrayTypeSelector" />
                         <xsl:if test="count(SelectionCriteria/ExecutiveSelector) = 1">
                             <ref bean="execSelector"/>
                         </xsl:if>
@@ -115,12 +117,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
                         <xsl:if test="count(SelectionCriteria/MoonAvoidanceSelector) = 1">
                             <ref bean="moonAvoidanceSelector" />
                         </xsl:if>
-                            <ref bean="sbStatusSelector" />
                         <xsl:if test="count(SelectionCriteria/SchedBlockGradeSelector) = 1">
                             <ref bean="projectQualitySelector" />
                         </xsl:if>
                         <xsl:if test="count(SelectionCriteria/ArrayAngularResolutionSelector) = 1">
-                            <ref bean="arrayAngulatResolutionSelector" />
+                            <ref bean="arrayAngularResolutionSelector" />
                         </xsl:if>   
                         	<ref bean="interactiveProjectsSelector" /> 
                         <xsl:if test="count(SelectionCriteria/ProjectCodeSelector) = 1">

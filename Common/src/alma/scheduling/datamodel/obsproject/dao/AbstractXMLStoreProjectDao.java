@@ -157,6 +157,20 @@ public abstract class AbstractXMLStoreProjectDao
 		bookie = new Bookkeeper(archive, logger);
 	}
 	
+	/**
+	 * This constructor shall be called only to retrieve data from Phase 1 Projects
+	 * @throws AcsJContainerServicesEx
+	 * @throws UserException
+	 */
+	protected AbstractXMLStoreProjectDao() throws AcsJContainerServicesEx, UserException {
+		notifier = new XMLStoreImportNotifier();
+		this.logger = Logger.getAnonymousLogger();
+//		this.xmlStore = componentFactory.getDefaultArchive(xmlStoreDiags);
+		this.entityDeserializer = EntityDeserializer.getEntityDeserializer(this.logger);
+		this.entitySerializer = EntitySerializer.getEntitySerializer(this.logger);
+		archive = new HibernateArchiveInterface(this.xmlStore, this.stateArchive, entityDeserializer, entitySerializer);
+	}
+	
 	protected AbstractXMLStoreProjectDao(ContainerServices containerServices) throws AcsJContainerServicesEx, UserException {
 		notifier = new XMLStoreImportNotifier();
 		this.componentFactory = new ACSComponentFactory(containerServices);

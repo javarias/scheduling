@@ -23,21 +23,28 @@
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintWriter;
+import java.io.StringReader;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import javax.xml.transform.TransformerException;
+
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 import org.omg.CORBA.UserException;
 
 import alma.acs.entityutil.EntityException;
+import alma.archive.exceptions.general.DatabaseException;
+import alma.archive.xml.ObsProposalEntity;
+import alma.archive.xml.dao.HibernateXmlStoreDaoImpl;
 import alma.entity.xmlbinding.obsproject.ObsUnitSetT;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.utils.SchedulingProperties;
 import alma.scheduling.utils.SchedulingProperties.Phase1SBSourceValue;
-import alma.xmlstore.ArchiveInternalError;
-import alma.xmlstore.Cursor;
-import alma.xmlstore.CursorPackage.QueryResult;
 
 /**
  * @author dclarke
@@ -56,7 +63,7 @@ public class Phase1XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
     private Phase1SBSourceValue sbLocation;
 
 	public Phase1XMLStoreProjectDao() throws Exception {
-		super(Phase1XMLStoreProjectDao.class.getSimpleName());
+		super();
 		
 		// The call to getPhase1SBSource() will throw an InvalidPropertyValueException
 		// if the user has specified an invalid value for the property. Thus, the rest
@@ -258,50 +265,39 @@ public class Phase1XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 //		String query = makeQuery(OPPhase1RunnableStates); //No longer useful
 		String query = "/prp:ObsProposal[prp:cycle=\""+ cycle +"\"]";
 		String schema = new String("ObsProposal");
-		Cursor cursor = null;
 		
 		logger.info(String.format(
 				"Getting interesting proposals, query = %s, schema = %s",
 				query, schema));
 		try {
-			cursor = xmlStore.query(query, schema);
-			if (cursor == null) {
-				logger.severe(String.format(
-						"Cannot get APDM ObsProposals - cursor returned by query is null"));
-			} else {
-				while (cursor.hasNext()) {
-					QueryResult res = cursor.next();
-					try {
-						alma.entity.xmlbinding.obsproposal.ObsProposal proposal =
-							archive.getObsProposal(res.identifier);
-						result.add(proposal);
-						logger.info(String.format(
-								"Succesfully got %d APDM ObsProposal %s", result.size(), 
-								res.identifier));
-						
-					} catch (EntityException e) {
-						logger.warning(String.format(
-								"Cannot get APDM ObsProposal %s - %s (skipping)",
-								res.identifier,
-								e.getMessage()));
-					} catch (UserException e) {
-						logger.warning(String.format(
-								"Cannot get APDM ObsProposal %s - %s (skipping)",
-								res.identifier,
-								e.getMessage()));
-					}
-				}
+			HibernateXmlStoreDaoImpl xmlStoreDao = new HibernateXmlStoreDaoImpl();
+			for (ObsProposalEntity prp : xmlStoreDao.getObsProposalsIterator(query)) {
+				try {
+				alma.entity.xmlbinding.obsproposal.ObsProposal proposal = 
+						alma.entity.xmlbinding.obsproposal.ObsProposal.unmarshalObsProposal(new StringReader(prp.domToString()));
+				result.add(proposal);
+				logger.info(String.format(
+						"Succesfully got %d APDM ObsProposal %s", result.size(), 
+						prp.getUid()));
+				} catch (MarshalException e) {
+					ByteArrayOutputStream os = new ByteArrayOutputStream();
+					e.printStackTrace(new PrintWriter(os));
+					logger.severe("Cannot get APDM ObsProposals\n" + os.toString());
+				} catch (ValidationException e) {
+					ByteArrayOutputStream os = new ByteArrayOutputStream();
+					e.printStackTrace(new PrintWriter(os));
+					logger.severe("Cannot get APDM ObsProposals\n" + os.toString());
+				} catch (TransformerException e) {
+					ByteArrayOutputStream os = new ByteArrayOutputStream();
+					e.printStackTrace(new PrintWriter(os));
+					logger.severe("Cannot get APDM ObsProposals\n" + os.toString());
+				} 
 			}
-		} catch(ArchiveInternalError e) {
-			logger.severe(String.format(
-					"Cannot get APDM ObsProposals - %s",
-					e.getMessage()));
-		} finally {
-			if (cursor != null) {
-				cursor.close();
-				cursor = null;
-			}
-		}
+		} catch (DatabaseException e) {
+			ByteArrayOutputStream os = new ByteArrayOutputStream();
+			e.printStackTrace(new PrintWriter(os));
+			logger.severe("Cannot get APDM ObsProposals\n" + os.toString());
+		} 
 		return result;
 	}
 

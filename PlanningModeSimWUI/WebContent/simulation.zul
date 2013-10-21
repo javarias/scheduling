@@ -1,24 +1,20 @@
-<?init class="alma.scheduling.psm.web.SimulationController"?>
-<!-- <?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?> -->
-<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" root="./simulationWindow" ?>
-
 <?page title="Simulation" contentType="text/html;charset=UTF-8" id="simulationPage"?>
 
 <zk>
 	<window title="Simulation" border="normal" mode="overlapped"
 		sizable="true" maximizable="true" closable="false" width="600px"
-		height="500px" apply="${sessionScope.simulationController}"
+		height="500px" apply="alma.scheduling.psm.web.SimulationController"
 		id="simulationWindow">
 		<radiogroup id="sg1">
 			<attribute name="onCheck">
 				if (self.getSelectedItem().getId().equals("radioArchive")) {
-					textBoxManagerConfig.setDisabled(false);
-					System.getProperties().remove(alma.scheduling.utils.SchedulingProperties.PROP_PMS_XML_PROJECT_IMPORT_FLAG);
-					System.setProperty("ACS.manager", textBoxManagerConfig.getValue());
+					textBoxManagerConfig.setDisabled(true);
+					Sessions.getCurrent().setAttribute(alma.scheduling.psm.web.SimulationController.DATA_LOADER_ATTRNAME, 
+						alma.scheduling.psm.sim.InputActions.ALMA_ARCHIVE_FULL_DATA_LOADER);
 				} else if (self.getSelectedItem().getId().equals("radioXML")) {
 					textBoxManagerConfig.setDisabled(true);
-					System.getProperties().remove("ACS.manager");
-					System.setProperty(alma.scheduling.utils.SchedulingProperties.PROP_PMS_XML_PROJECT_IMPORT_FLAG, "");
+					Sessions.getCurrent().setAttribute(alma.scheduling.psm.web.SimulationController.DATA_LOADER_ATTRNAME, 
+						alma.scheduling.psm.sim.InputActions.FULL_DATA_LOADER_BEAN);
 				}
 			</attribute>
 		</radiogroup>
@@ -116,10 +112,10 @@ eq.subscribe(new org.zkoss.zk.ui.event.EventListener() {
 						</row>
 						<row>
 							Simulated start date:
-							<datebox id="dateboxStartDate" width="100%" readonly="true" >
+							<datebox id="dateboxStartDate" width="100%" readonly="true" disabled="true">
 							<attribute name="onCreate"><![CDATA[
 	try {
-		dateboxStartDate.setTimeZone("UTC");
+		dateboxStartDate.setTimeZone(TimeZone.getTimeZone("UTC"));
 		dateboxStartDate.setValue(alma.scheduling.psm.web.SimulationController.execDao
 				.getCurrentSeason().getStartDate());
 	} catch (IndexOutOfBoundsException ex) {
@@ -131,10 +127,10 @@ eq.subscribe(new org.zkoss.zk.ui.event.EventListener() {
 						</row>
 						<row>
 							Simulated stop date:
-							<datebox id="dateboxEndDate" width="100%" readonly="true" >
+							<datebox id="dateboxEndDate" width="100%" readonly="true" disabled="true">
 							<attribute name="onCreate"><![CDATA[
 	try {
-		dateboxStartDate.setTimeZone("UTC");
+		dateboxStartDate.setTimeZone(TimeZone.getTimeZone("UTC"));
 		dateboxEndDate.setValue(alma.scheduling.psm.web.SimulationController.execDao
 				.getCurrentSeason().getEndDate());
 	} catch (IndexOutOfBoundsException ex) {
@@ -211,8 +207,13 @@ eq.subscribe(new org.zkoss.zk.ui.event.EventListener() {
 						<row spans="2" align="left"> <label value="Which ObsProject DAO would you like to use?" style="font-weight: bold"/>
 						</row>
 						<row>
-						<radio id="radioArchive" label="Archive Projects DAO" selected="true" radiogroup="sg1"/>
-						<radio id="radioXML" label="XML Projects DAO" radiogroup="sg1" selected="true"/> 
+						<radio id="radioArchive" label="Archive Projects DAO" radiogroup="sg1"/>
+						<radio id="radioXML" label="XML Projects DAO" radiogroup="sg1" selected="true">
+							<attribute name="onCreate">
+								Sessions.getCurrent().setAttribute(alma.scheduling.psm.web.SimulationController.DATA_LOADER_ATTRNAME, 
+								alma.scheduling.psm.sim.InputActions.FULL_DATA_LOADER_BEAN);
+							</attribute>
+						</radio> 
 						</row>
 						<row>
 						ACS Manager address:

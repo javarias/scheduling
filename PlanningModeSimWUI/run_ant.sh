@@ -14,4 +14,6 @@ if [ -z $INTROOT ]; then
 fi
 
 ant $@
+RET=$?
 mv ivysettings.xml.orig ivysettings.xml
+exit $RET

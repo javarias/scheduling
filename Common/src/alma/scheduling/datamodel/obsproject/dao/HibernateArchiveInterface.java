@@ -61,7 +61,7 @@ public final class HibernateArchiveInterface extends AbstractArchiveInterface
 			EntityDeserializer entityDeserializer,
 			EntitySerializer entitySerializer) {
 		super(archive, stateSystem, entityDeserializer, entitySerializer);
-		//TODO: At some point the session and the transaction should be closed
+		//The session and the transaction are closed at the end of the thread execution. this is handled by Hibernate
 		System.out.println("************************************************************************************");
 		System.out.println("Using hibernate to access to xmlstore, some people just want to watch the world burn");
 		System.out.println("************************************************************************************");

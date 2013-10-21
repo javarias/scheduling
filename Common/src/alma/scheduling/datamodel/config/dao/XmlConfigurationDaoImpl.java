@@ -133,5 +133,23 @@ public class XmlConfigurationDaoImpl implements ConfigurationDao {
 	public void updateConfig(Date lastUpdateTime) {
 		
 	}
+
+    /**
+     * Not implemented 
+     */
+	@Override
+	public void updateConfig(String simStatus) {
+		// TODO Auto-generated method stub
+		
+	}
+
+    /**
+     * Not implemented 
+     */
+	@Override
+	public void deleteForSimulation() {
+		// TODO Auto-generated method stub
+		
+	}
     
 }

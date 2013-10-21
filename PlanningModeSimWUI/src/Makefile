@@ -180,7 +180,7 @@ ASCII_TO_MIF =
 #
 # other files to be installed
 #----------------------------
-INSTALL_FILES += 
+INSTALL_FILES += ../lib/aprc-tool.war
 #
 # list of all possible C-sources (used to create automatic dependencies)
 # ------------------------------
@@ -220,7 +220,6 @@ man   : do_man
 	@echo " . . . man page(s) done"
 
 install : install_all
-	cd .. && ./run_ant.sh install
 	@echo " . . . installation done"
 
 #___oOo___
