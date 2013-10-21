@@ -24,7 +24,8 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.ByteArrayResource;
@@ -101,16 +102,23 @@ public class SchedulingContextFactory {
      * @return a spring Context initialized and ready to be used. 
      */
 	public static AbstractApplicationContext getContext(String contextFileURL) {
-        XmlBeanFactory factory = null;
+		DefaultListableBeanFactory factory = new DefaultListableBeanFactory();
+		XmlBeanDefinitionReader beanReader = new XmlBeanDefinitionReader(factory);
+//        XmlBeanFactory factory = null;
         getPropertyFilePath();
         if (contextFileURL.startsWith("file:")) {
-            factory = new XmlBeanFactory(new FileSystemResource(contextFileURL
+        	beanReader.loadBeanDefinitions(new FileSystemResource(contextFileURL
                     .substring(5)));
+//            factory = new XmlBeanFactory(new FileSystemResource(contextFileURL
+//                    .substring(5)));
         } else if (contextFileURL.startsWith("classpath:")) {
-            factory = new XmlBeanFactory(new ClassPathResource(contextFileURL
+        	beanReader.loadBeanDefinitions(new ClassPathResource(contextFileURL
                     .substring(10)));
+//            factory = new XmlBeanFactory(new ClassPathResource(contextFileURL
+//                    .substring(10)));
         } else {
-            factory = new XmlBeanFactory(new FileSystemResource(contextFileURL));
+        	beanReader.loadBeanDefinitions(new FileSystemResource(contextFileURL));
+//            factory = new XmlBeanFactory(new FileSystemResource(contextFileURL));
         }
         PropertyPlaceholderConfigurer cfg = new PropertyPlaceholderConfigurer();
         cfg.setLocation(new FileSystemResource(path));
@@ -144,10 +152,14 @@ public class SchedulingContextFactory {
 	 */
 	public static AbstractApplicationContext getContext(byte[] context) {
 		getPropertyFilePath();
+		
 		if (context == null) {
 			throw new IllegalArgumentException("Spring context byte array cannot be null");
 		}
-		XmlBeanFactory factory = new XmlBeanFactory(new ByteArrayResource(context));
+//		XmlBeanFactory factory = new XmlBeanFactory(new ByteArrayResource(context));
+		DefaultListableBeanFactory factory = new DefaultListableBeanFactory();
+		XmlBeanDefinitionReader beanReader = new XmlBeanDefinitionReader(factory);
+		beanReader.loadBeanDefinitions(new ByteArrayResource(context));
 		PropertyPlaceholderConfigurer cfg = new PropertyPlaceholderConfigurer();
         cfg.setLocation(new FileSystemResource(path));
         cfg.postProcessBeanFactory(factory);

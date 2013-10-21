@@ -138,7 +138,7 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
             //In practical terms the current time is now plus half an hour in the future
             //This will work only for online system, for simulation the weather DAo doesn't support the PWV value
             double pwv;
-            if (weatherDao.hasPWV() && (date.getTime() < System.currentTimeMillis() + (29 * 60 * 1000))) {
+            if (!weatherDao.hasPWV() && (date.getTime() < System.currentTimeMillis() + (29 * 60 * 1000))) {
 	            TemperatureHistRecord tr = weatherDao.getTemperatureForTime(date);
 	            ErrorHandling.getInstance().debug("temperature record: time = " + tr.getTime()
 	                    + "; value = " + tr.getValue());
