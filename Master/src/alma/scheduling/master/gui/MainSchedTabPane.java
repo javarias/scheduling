@@ -148,7 +148,7 @@ public class MainSchedTabPane extends JTabbedPane {
     			queuedB.getBackground().equals(selectedButtonColor) ||
     			dynamicB.getBackground().equals(selectedButtonColor) ||
     			manualB.getBackground().equals(selectedButtonColor)) {
-    	middlePanel.updateOnlineAntenna();
+//    	middlePanel.updateOnlineAntenna();
     	}
     	
         
@@ -162,7 +162,7 @@ public class MainSchedTabPane extends JTabbedPane {
     			queuedB.getBackground().equals(selectedButtonColor) ||
     			dynamicB.getBackground().equals(selectedButtonColor) ||
     			manualB.getBackground().equals(selectedButtonColor)) {
-    	middlePanel.updateOnlineAntenna();
+//    	middlePanel.updateOnlineAntenna();
     	}
         }
     
@@ -174,7 +174,7 @@ public class MainSchedTabPane extends JTabbedPane {
     			queuedB.getBackground().equals(selectedButtonColor) ||
     			dynamicB.getBackground().equals(selectedButtonColor) ||
     			manualB.getBackground().equals(selectedButtonColor)) {
-    	middlePanel.updateOnlineAntenna();
+//    	middlePanel.updateOnlineAntenna();
     	}
         }
 
@@ -186,7 +186,7 @@ public class MainSchedTabPane extends JTabbedPane {
 			queuedB.getBackground().equals(selectedButtonColor) ||
 			dynamicB.getBackground().equals(selectedButtonColor) ||
 			manualB.getBackground().equals(selectedButtonColor)) {
-	middlePanel.updateOnlineAntenna();
+//	middlePanel.updateOnlineAntenna();
 	}
     
     	}
