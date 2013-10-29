@@ -14,6 +14,7 @@ public class Array implements Serializable {
 	
 	private String name;
 	private Date creationDate;
+	private Date destructionDate;
 	private ArrayType arrayType;
 	
 	public Array() {
@@ -48,6 +49,14 @@ public class Array implements Serializable {
 
 	public void setArrayType(ArrayType arrayType) {
 		this.arrayType = arrayType;
+	}
+	
+	public Date getDestructionDate() {
+		return destructionDate;
+	}
+
+	public void setDestructionDate(Date destructionDate) {
+		this.destructionDate = destructionDate;
 	}
 
 	@Override
