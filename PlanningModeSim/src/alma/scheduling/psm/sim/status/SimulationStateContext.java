@@ -1,4 +1,6 @@
-package alma.scheduling.psm.sim;
+package alma.scheduling.psm.sim.status;
+
+import alma.scheduling.psm.sim.SimulationStateEnum;
 
 public class SimulationStateContext {
 
