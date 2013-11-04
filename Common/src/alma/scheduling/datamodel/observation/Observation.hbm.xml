@@ -6,7 +6,7 @@
         <param name="enumClassName">alma.scheduling.datamodel.obsproject.ArrayType</param>
     </typedef>
 	
-	<class name="alma.scheduling.datamodel.observation.Array" table="ARRAY">
+	<class name="alma.scheduling.datamodel.observation.CreatedArray" table="CREATED_ARRAY">
 		<composite-id>
 			<key-property name="name" column="NAME" type="string"/>
 			<key-property name="creationDate" column="CREATION_DATE" type="timestamp"/>
@@ -53,7 +53,7 @@
 			<one-to-many class="alma.scheduling.datamodel.observation.ExecBlock" />
 		</list>
 		<many-to-one name="array"
-			class="alma.scheduling.datamodel.observation.Array" fetch="join">
+			class="alma.scheduling.datamodel.observation.CreatedArray" fetch="join">
 			<column name="ARRAY_NAME" />
 			<column name="ARRAY_CREATION_DATE"/>
 		</many-to-one>

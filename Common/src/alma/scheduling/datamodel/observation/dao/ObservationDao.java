@@ -2,7 +2,7 @@ package alma.scheduling.datamodel.observation.dao;
 
 import java.util.List;
 
-import alma.scheduling.datamodel.observation.Array;
+import alma.scheduling.datamodel.observation.CreatedArray;
 import alma.scheduling.datamodel.observation.ExecBlock;
 import alma.scheduling.datamodel.observation.Session;
 
@@ -30,13 +30,13 @@ public interface ObservationDao {
 	 * Saves a Array info in storage
 	 * @param array The new Array to save
 	 */
-	public void save(Array array);
+	public void save(CreatedArray array);
 	
 	/**
 	 * Updates the array info in the storage
 	 * @param array The Array to update
 	 */
-	public void update(Array array);
+	public void update(CreatedArray array);
 	
 	/**
 	 * Saves an observation session in storage
