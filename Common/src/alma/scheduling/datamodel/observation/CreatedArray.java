@@ -5,7 +5,7 @@ import java.util.Date;
 
 import alma.scheduling.datamodel.obsproject.ArrayType;
 
-public class Array implements Serializable {
+public class CreatedArray implements Serializable {
 
 	/**
 	 * 
@@ -17,10 +17,10 @@ public class Array implements Serializable {
 	private Date destructionDate;
 	private ArrayType arrayType;
 	
-	public Array() {
+	public CreatedArray() {
 	}
 
-	public Array(String name, Date creationDate, ArrayType arrayType) {
+	public CreatedArray(String name, Date creationDate, ArrayType arrayType) {
 		super();
 		this.name = name;
 		this.creationDate = creationDate;
@@ -77,7 +77,7 @@ public class Array implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Array other = (Array) obj;
+		CreatedArray other = (CreatedArray) obj;
 		if (creationDate == null) {
 			if (other.creationDate != null)
 				return false;

@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.datamodel.GenericDao;
 import alma.scheduling.datamodel.GenericDaoImpl;
-import alma.scheduling.datamodel.observation.Array;
+import alma.scheduling.datamodel.observation.CreatedArray;
 import alma.scheduling.datamodel.observation.ExecBlock;
 import alma.scheduling.datamodel.observation.Session;
 
@@ -23,13 +23,13 @@ public class ObservationDaoImpl extends GenericDaoImpl implements GenericDao,
 
 	@Override
 	@Transactional(readOnly=false)
-	public void save(Array array) {
+	public void save(CreatedArray array) {
 		getHibernateTemplate().save(array);
 	}
 
 	@Override
 	@Transactional(readOnly=false)
-	public void update(Array array) {
+	public void update(CreatedArray array) {
 		getHibernateTemplate().update(array);
 	}
 

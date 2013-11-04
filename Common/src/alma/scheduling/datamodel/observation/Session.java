@@ -13,7 +13,7 @@ public class Session implements Serializable {
 	private String partUid;
 	private String entityType;
 	private List<ExecBlock> execBlocks;
-	private Array array;
+	private CreatedArray array;
 	
 	public List<ExecBlock> getExecBlocks() {
 		return execBlocks;
@@ -23,11 +23,11 @@ public class Session implements Serializable {
 		this.execBlocks = execBlocks;
 	}
 	
-	public Array getArray() {
+	public CreatedArray getArray() {
 		return array;
 	}
 	
-	public void setArray(Array array) {
+	public void setArray(CreatedArray array) {
 		this.array = array;
 	}
 
