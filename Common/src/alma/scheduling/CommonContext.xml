@@ -58,6 +58,8 @@
 				</value>
 				<value>alma/scheduling/datamodel/observatory/TelescopeEquipment.hbm.xml
 				</value>
+				<value>alma/scheduling/datamodel/observation/Observation.hbm.xml
+				</value>
 			</list>
 		</property>
 		<property name="hibernateProperties">
@@ -146,6 +148,10 @@
 	<bean id="observatoryDao"
 		class="alma.scheduling.datamodel.observatory.dao.ObservatoryDaoImpl" >
 		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="execBlockDao" 
+		class="alma.scheduling.datamodel.observation.dao.ObservationDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
 	<!-- Archive/XMLStore Data Loader -->
  	<bean id="archProjectDao"
