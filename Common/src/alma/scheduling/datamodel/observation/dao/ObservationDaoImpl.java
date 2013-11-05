@@ -69,7 +69,8 @@ public class ObservationDaoImpl extends GenericDaoImpl implements GenericDao,
 		DetachedCriteria crit = DetachedCriteria.forClass(ExecBlock.class);
 		crit.setProjection(Projections.sum("timeOnSource"));
 		crit.add(Restrictions.eq("schedBlockUid", SbUid));
-		return (Double) getHibernateTemplate().findByCriteria(crit).get(0);
+		List retVal = getHibernateTemplate().findByCriteria(crit);
+		return retVal.get(0) == null? 0.0: (Double)retVal.get(0);
 	}
 
 }
