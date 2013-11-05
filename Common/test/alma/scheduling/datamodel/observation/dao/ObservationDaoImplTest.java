@@ -29,6 +29,7 @@ public class ObservationDaoImplTest extends TestCase {
 	public void testGetNumberOfExecutionsForSb() throws Exception {
 		final String sbuid = "uid://A000/X0/X0";
 		final String sbuid2 = "uid://A000/X1/X0";
+		assertEquals(0, obsDao.getNumberOfExecutionsForSb(sbuid));
 		int n = 50;
 		for (int i = 0; i < n; i++) {
 			ExecBlock eb = new ExecBlock();
@@ -51,6 +52,7 @@ public class ObservationDaoImplTest extends TestCase {
 		double obsTime = 2D;
 		final String sbuid = "uid://A001/X0/X0";
 		final String sbuid2 = "uid://A001/X1/X0";
+		assertEquals(0.0, obsDao.getAccumulatedObservingTimeForSb(sbuid2));
 		int n = 50;
 		for (int i = 0; i < n; i++) {
 			ExecBlock eb = new ExecBlock();
