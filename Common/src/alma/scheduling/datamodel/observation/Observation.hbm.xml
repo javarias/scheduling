@@ -22,7 +22,7 @@
 			<generator class="assigned" />
 		</id>
 		<property name="schedBlockUid" type="string">
-			<column name="SCHEDBLOCK_UID" />
+			<column name="SCHEDBLOCK_UID" not-null="false"/>
 		</property>
 		<property name="timeOnSource" type="double">
 			<column name="TIME_ON_SOURCE" />

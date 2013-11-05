@@ -53,6 +53,12 @@ public interface ObservationDao {
 	
 	public List<ExecBlock> getAllExecBlocksForSB(String SbUid);
 	
+	public int getNumberOfExecutionsForSb(String SbUid);
 	
+	/**
+	 * @param SbUid the SB UID
+	 * @return The accumulated observing time (on source) fo the given SB in seconds.
+	 */
+	public double getAccumulatedObservingTimeForSb(String SbUid);
 	
 }
