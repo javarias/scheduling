@@ -172,12 +172,6 @@
 	<classpathentry kind="lib" path="lib/rhino-1.7R3.jar"/>
 	<classpathentry kind="lib" path="lib/s2-framework-2.4.43.jar"/>
 	<classpathentry kind="lib" path="lib/saaj-api-1.3.jar"/>
-	<classpathentry kind="lib" path="lib/SchedulingCommon-working@ruffles.jar"/>
-	<classpathentry kind="lib" path="lib/SchedulingDSA-working@ruffles.jar"/>
-	<classpathentry kind="lib" path="lib/SchedulingMasterExceptions-working@ruffles.jar"/>
-	<classpathentry kind="lib" path="lib/SchedulingPMS-working@ruffles.jar"/>
-	<classpathentry kind="lib" path="lib/SchedulingPMSCli-working@ruffles.jar"/>
-	<classpathentry kind="lib" path="lib/SchedulingTypes-working@ruffles.jar"/>
 	<classpathentry kind="lib" path="lib/serializer-2.7.1.jar"/>
 	<classpathentry kind="lib" path="lib/servlet-api-2.5.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.5.11.jar"/>

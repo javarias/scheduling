@@ -27,13 +27,21 @@ package alma.scheduling.dataload;
 
 
 /**
- * Bulk data loader from a file.
+ * Bulk data loader from a data source.
  *
  */
 public interface DataLoader {
 
+	/**
+	 * Loads the data from one source into the DB.
+	 * @throws Exception
+	 */
     public void load() throws Exception;
  
+    /**
+     * Clear all the data in the table
+     */
     public void clear();
+    
     
 }

@@ -82,10 +82,13 @@
 				<prop key="hibernate.jdbc.fetch_size">8</prop>
 
 				<!-- Use the C3P0 connection pool provider -->
-				<prop key="hibernate.c3p0.min_size">3</prop>
-				<prop key="hibernate.c3p0.max_size">10</prop>
+				<prop key="hibernate.c3p0.min_size">5</prop>
+				<prop key="hibernate.c3p0.max_size">20</prop>
 				<prop key="hibernate.c3p0.timeout">60</prop>
 				<prop key="hibernate.c3p0.max_statements">50</prop>
+				<!-- To debug for connection left open to the DB -->
+				<prop key="hibernate.c3p0.unreturnedConnectionTimeout">60</prop>
+				<prop key="hibernate.c3p0.debugUnreturnedConnectionStackTraces">true</prop>
 			</props>
 		</property>
 	</bean>
@@ -126,10 +129,13 @@
 		class="alma.scheduling.datamodel.obsproject.dao.FieldSourceDaoImpl">
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
+	<bean name="observationDao"
+	    class="alma.scheduling.datamodel.observation.dao.ObservationDaoImpl">
+	    <property name="sessionFactory" ref="sessionFactory" />
+	</bean>
     <bean name="opacityInterpolator" 
     	class="alma.scheduling.weather.OpacityInterpolatorImpl"
     	scope="singleton"/>
-    
 <!-- XML DAO Beans -->
 	<bean id="configDao"
 		class="alma.scheduling.datamodel.config.dao.ConfigurationDaoImpl" />
@@ -179,8 +185,25 @@
 		<property name="dao" ref="obsProjectDao" />
 	</bean>
 	
-	<bean id="fullDataLoader" class="alma.scheduling.dataload.CompositeDataLoader"
-	scope="singleton">
+	<bean id="dataCleaner" class="alma.scheduling.dataload.CompositeDataLoader"
+		scope="singleton">
+		<property name="loaders">
+			<list>
+				<bean class="alma.scheduling.dataload.ObsProjectMutableDataLoader" scope="singleton">
+					<property name="obsProjectDao" ref="obsProjectDao"/>
+				</bean>
+				<bean class="alma.scheduling.dataload.ExecutiveMutableDataLoader" scope="singleton">
+					<property name="execDao" ref="execDao"/>
+				</bean>
+				<bean class="alma.scheduling.dataload.ObservationTablesCleaner" scope="singleton">
+					<property name="sessionFactory" ref="sessionFactory"/>
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="immutableDataLoader" class="alma.scheduling.dataload.CompositeDataLoader" 
+		scope="singleton" >
 		<property name="loaders">
 			<list>
 				<ref bean="obsProjectDataLoader"/>

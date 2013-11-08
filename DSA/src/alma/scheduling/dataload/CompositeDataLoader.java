@@ -59,10 +59,9 @@ public class CompositeDataLoader implements DataLoader {
     }
     
     @Override
-    @Transactional
     public void clear() {
-        for (Iterator<DataLoader> iter = loaders.iterator(); iter.hasNext(); ) {
-            iter.next().clear();
-        }
+    	for (DataLoader l: loaders) {
+    		l.clear();
+    	}
     }
 }

@@ -75,4 +75,9 @@ public interface ObsProjectDao extends GenericDao {
     
     public List<String> getObsProjectsUidsbySciGrade (List<ScienceGrade> grades);
     
+    /**
+     * Updates the state of the projects and its SchedBlocks to READY
+     */
+    public void setObsProjectStatusAsReady();
+    
 }

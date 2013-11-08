@@ -95,7 +95,7 @@ public class Console {
         	InputActions inputActions = InputActions.getInstance(workDir);
         	inputActions.setVerboseLvl(verboseLvl);
         	try {
-				inputActions.fullLoad(InputActions.FULL_DATA_LOADER_BEAN);
+				inputActions.fullLoad(InputActions.IMMUTABLE_DATA_LOADER_BEAN);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -105,7 +105,7 @@ public class Console {
         	PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
         	InputActions inputActions = InputActions.getInstance(workDir);
         	inputActions.setVerboseLvl(verboseLvl);
-        	inputActions.load(InputActions.FULL_DATA_LOADER_BEAN);
+        	inputActions.load(InputActions.DATA_CLEANER_BEAN);
         }
         else if (args[0].compareTo("unload") == 0){
         	PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
@@ -117,7 +117,7 @@ public class Console {
         	PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
         	InputActions inputActions = InputActions.getInstance(workDir);
         	inputActions.setVerboseLvl(verboseLvl);
-        	inputActions.clean(InputActions.FULL_DATA_LOADER_BEAN);
+        	inputActions.clean(InputActions.DATA_CLEANER_BEAN);
         }
         else if (args[0].compareTo("run") == 0){
         	if (args.length < 2) {

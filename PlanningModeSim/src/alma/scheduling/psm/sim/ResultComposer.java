@@ -25,34 +25,27 @@
 package alma.scheduling.psm.sim;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.transaction.annotation.Transactional;
 
-import alma.scheduling.datamodel.config.dao.ConfigurationDao;
-import alma.scheduling.datamodel.executive.Executive;
-import alma.scheduling.datamodel.executive.PI;
-import alma.scheduling.datamodel.executive.PIMembership;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
-import alma.scheduling.datamodel.executive.dao.ExecutiveDaoImpl;
+import alma.scheduling.datamodel.observation.ExecBlock;
+import alma.scheduling.datamodel.observation.dao.ObservationDao;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
-import alma.scheduling.datamodel.observatory.dao.ObservatoryDao;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.ObservingParameters;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
-import alma.scheduling.datamodel.obsproject.SchedBlockControl;
 import alma.scheduling.datamodel.obsproject.SchedBlockState;
 import alma.scheduling.datamodel.obsproject.ScienceGrade;
 import alma.scheduling.datamodel.obsproject.ScienceParameters;
@@ -64,6 +57,7 @@ import alma.scheduling.datamodel.output.ExecutionStatus;
 import alma.scheduling.datamodel.output.ObservationProject;
 import alma.scheduling.datamodel.output.Results;
 import alma.scheduling.datamodel.output.SchedBlockResult;
+import alma.scheduling.utils.DSAContextFactory;
 
 /** 
  * Gathers notifications from the Simulator, and generates an output that <br>
@@ -80,18 +74,13 @@ public class ResultComposer {
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(ResultComposer.class);
 	private Results results;
 	private ApplicationContext context = null;
-	// Long = SB.id, Date = SBexec Start date, Long = Array ID
-	private HashMap<Long,LinkedHashMap<Date,Long>> startDates;
-	// Long = SB.id, Date = SBexec End date, {Double = sb.achievedSentivity, Double = sb.executionTime}
-	private HashMap<Long,LinkedHashMap<Date,ArrayList<Double>>> endDates;
-	
+	private Map<String, ArrayConfiguration> arraysUsed;
 	
 	public ResultComposer(){
 		results = new Results();
 		results.setArray( new HashSet<Array>() );
 		results.setObservationProject( new HashSet<ObservationProject>() );
-		startDates = new HashMap<Long,LinkedHashMap<Date,Long>>();
-		endDates = new HashMap<Long,LinkedHashMap<Date,ArrayList<Double>>>();
+		arraysUsed = new HashMap<String, ArrayConfiguration>();
 	}
 	
 	public void notifyExecutiveData(ApplicationContext ctx, Date obsSeasonStart, Date obsSeasonEnd, Date simStart, Date simStop){
@@ -129,34 +118,40 @@ public class ResultComposer {
 	 * TODO: Add param that indicates in which array was started its execution
 	 * @param sb SchedulingBlock (class from datamodel) that needs to be informed of its execution.
 	 */
-    @Transactional(readOnly=true)
-	public void notifySchedBlockStart(SchedBlock sb, long arrayId){
-    	
-		//Saving schedblock id and its end date
-		LinkedHashMap<Date, Long> entry = startDates.get( sb.getId() );
-		if( entry == null ){
-			entry = new LinkedHashMap<Date, Long>();
-			startDates.put(sb.getId(), entry );
-		}		
-		entry.put( TimeHandler.now(), arrayId);		
-	}
+//    @Transactional(readOnly=true)
+//	public void notifySchedBlockStart(SchedBlock sb, long arrayId, Date currSimTime){
+//    	
+//		//Saving schedblock id and its end date
+//		LinkedHashMap<Date, Long> entry = startDates.get( sb.getId() );
+//		if( entry == null ){
+//			entry = new LinkedHashMap<Date, Long>();
+//			startDates.put(sb.getId(), entry );
+//		}		
+//		entry.put(currSimTime, arrayId);		
+//	}
     
-    @Transactional(readOnly=true)
-	public void notifySchedBlockStop(SchedBlock sb, double executionTime){
-
-		//Saving schedblock id and their end dates
-		LinkedHashMap<Date, ArrayList<Double>> entry = endDates.get( sb.getId() );
-		if( entry == null ){
-			entry = new LinkedHashMap<Date, ArrayList<Double>>();
-			endDates.put(sb.getId(), entry );
-		}
-		ArrayList<Double> tmpAl = new ArrayList<Double>();
-		System.out.println("SB EXEC END #: " + sb.getId() + " Sen: " +sb.getSchedBlockControl().getAchievedSensitivity() + " ExecTime: " + executionTime);
-		tmpAl.add(sb.getSchedBlockControl().getAchievedSensitivity() );
-		tmpAl.add(executionTime );
-		entry.put( TimeHandler.now(), tmpAl );
-		System.out.println("SB Id: " + sb.getId() + " took " + executionTime + " seconds to execute.");
+	public void notifySchedBlockStop(SchedBlock sb, ExecBlock eb, ArrayConfiguration ac) {
+		arraysUsed.put(eb.getExecBlockUid(), ac);
+		System.out.println("SB EXEC END #: " + sb.getUid() + " Sen: " + eb.getSensitivityAchieved() + " ExecTime: " + 
+				(eb.getEndTime().getTime() - eb.getStartTime().getTime())/1000.0 + "seconds");
+		System.out.println("SB Id: " + sb.getUid() + " took " + eb.getTimeOnSource() + " seconds to execute.");
 	}
+	
+//	public void notifySchedBlockStop(SchedBlock sb, double executionTime, Date currSimTime){
+//
+//		//Saving schedblock id and their end dates
+//		LinkedHashMap<Date, ArrayList<Double>> entry = endDates.get( sb.getId() );
+//		if( entry == null ){
+//			entry = new LinkedHashMap<Date, ArrayList<Double>>();
+//			endDates.put(sb.getId(), entry );
+//		}
+//		ArrayList<Double> tmpAl = new ArrayList<Double>();
+//		System.out.println("SB EXEC END #: " + sb.getId() + " Sen: " +sb.getSchedBlockControl().getAchievedSensitivity() + " ExecTime: " + executionTime);
+//		tmpAl.add(sb.getSchedBlockControl().getAchievedSensitivity() );
+//		tmpAl.add(executionTime );
+//		entry.put(currSimTime, tmpAl );
+//		System.out.println("SB Id: " + sb.getId() + " took " + executionTime + " seconds to execute.");
+//	}
 	
     @Transactional(readOnly=true)
 	private long numberOfSchedBlocks( ObsUnit ouRef ){
@@ -208,6 +203,7 @@ public class ResultComposer {
 		ObsProjectDao obsProjectDao = (ObsProjectDao) context.getBean("obsProjectDao");
 		SchedBlockDao schedBlockDao = (SchedBlockDao) context.getBean("sbDao");
 		ExecutiveDAO execDao = (ExecutiveDAO) context.getBean("execDao");
+		ObservationDao obsDao = context.getBean(DSAContextFactory.SCHEDULING_OBSERVATION_DAO, ObservationDao.class);
 		
 		// Bring one by one observation project and create the output object for them
 		for( ObsProject op : obsProjectDao.getObsProjectsOrderBySciRank() ){
@@ -226,7 +222,7 @@ public class ResultComposer {
 
 			HashSet<SchedBlockResult> sbrSet = new HashSet<SchedBlockResult>();
 			obsProjectDao.hydrateSchedBlocks(op);			
-			prepareSbrSet( op.getObsUnit(), sbrSet ); 
+			prepareSbrSet( op.getObsUnit(), sbrSet, obsDao ); 
 			outputOp.setSchedBlock( sbrSet );
 			
 			outputOp.setAffiliation(new HashSet<Affiliation>());
@@ -285,32 +281,22 @@ public class ResultComposer {
 	}
     
     @Transactional
-    void prepareSbrSet( ObsUnit ptrOu, HashSet<SchedBlockResult> sbrSet ){
+    void prepareSbrSet( ObsUnit ptrOu, HashSet<SchedBlockResult> sbrSet, ObservationDao obsDao ){
     	if( ptrOu instanceof SchedBlock ){
-    		long sbId = ((SchedBlock)ptrOu).getId();
-    		Date firstDate = null;
-    		Long firstArrayId = null;
+    		SchedBlock sb = (SchedBlock) ptrOu;
+    		long sbId = sb.getId();
     		
-    		// We have to create as many SchedBlockResults as executions of the single SB
-    		LinkedHashMap<Date, Long> lhmStart = startDates.get( sbId );
-    		LinkedHashMap<Date, ArrayList<Double>> lhmEnd = endDates.get( sbId );
-    		if( lhmStart == null || lhmEnd == null )
-    			return; 		
-    		
-			System.out.println("Execution Lists: " + lhmStart.size() + " " + lhmEnd.size());
+			for (ExecBlock eb: obsDao.getAllExecBlocksForSB(sb.getUid())) {
 			
-			Iterator<Date> endDatesIt = lhmEnd.keySet().iterator();
-			Date endDate = endDatesIt.next();
-			
-			for( Date d : lhmStart.keySet() ){
+//			for( Date d : lhmStart.keySet() ){
     			SchedBlockResult sbr = new SchedBlockResult();
     			
     			// From Start notification
-    			sbr.setStartDate( d );
+    			sbr.setStartDate(eb.getStartTime());
         		//TODO: Create arrays
     			Array arrayRef = null;
     			for( Array tmpArr : results.getArray() ){
-    				if( tmpArr.getOriginalId() == lhmStart.get(d) ){
+    				if( tmpArr.getOriginalId() == arraysUsed.get(eb.getExecBlockUid()).getId()){
     					arrayRef = tmpArr;
     					break;
     				}
@@ -341,19 +327,17 @@ public class ResultComposer {
         		sbrSet.add( sbr );
         		
         		// From Stop notification.
-        		sbr.setEndDate( endDate );
-    			sbr.setAchievedSensitivity( lhmEnd.get(endDate).get(0) );
-			System.out.println("Sensitivity Goal in Results: " + lhmEnd.get(endDate).get(0) );
-    			sbr.setExecutionTime( lhmEnd.get(endDate).get(1) );
+        		sbr.setEndDate(eb.getEndTime());
+    			sbr.setAchievedSensitivity(eb.getSensitivityAchieved());
+    			System.out.println("Sensitivity Goal in Results: " + eb.getSensitivityAchieved());
+    			sbr.setExecutionTime(eb.getTimeOnSource() / 3600.0); //in hours
     			if( ((SchedBlock)ptrOu).getSchedBlockControl().getState() == SchedBlockState.FULLY_OBSERVED ){
     				sbr.setStatus( ExecutionStatus.COMPLETE);
     			}
-        		if( endDatesIt.hasNext() )
-        			endDate = endDatesIt.next(); 
 			}
     	}else if( ptrOu instanceof ObsUnitSet ){
     		for( ObsUnit forOu : ((ObsUnitSet)ptrOu).getObsUnits() ){
-    			prepareSbrSet( forOu, sbrSet );
+    			prepareSbrSet( forOu, sbrSet, obsDao );
     		}
     	}    	
     }

@@ -27,8 +27,10 @@ package alma.scheduling.algorithm;
 
 import java.util.Date;
 
+import alma.scheduling.datamodel.observation.ExecBlock;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.psm.sim.ResultComposer;
 
 public interface SchedBlockExecutor {
 
@@ -41,7 +43,7 @@ public interface SchedBlockExecutor {
      * @param ut Point in time when the SchedBlock is executed
      * @return Point in time after the SchedBlock has been executed.
      */
-    Date execute(SchedBlock sb, ArrayConfiguration arrCnf, Date ut);
+    public Date execute(SchedBlock sb, ArrayConfiguration arrCnf, Date ut);
     
     /**
      * 
@@ -49,5 +51,5 @@ public interface SchedBlockExecutor {
      * @param ut Point in time when the SchedBlock is executed
      * @return Point in time after the SchedBlock has been executed.
      */
-    void finishSbExecution(SchedBlock sb, ArrayConfiguration arrCnf, Date ut);
+    public ExecBlock finishSbExecution(SchedBlock sb, ArrayConfiguration arrCnf, Date ut);
 }

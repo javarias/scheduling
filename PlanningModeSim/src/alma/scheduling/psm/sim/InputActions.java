@@ -41,12 +41,13 @@ import alma.scheduling.psm.util.PsmContext;
 public class InputActions extends PsmContext {
 	
 	public static final String WEATHER_PARAMS_LOADER_BEAN = "weatherSimDataLoader";
-	public static final String FULL_DATA_LOADER_BEAN = "fullDataLoader";
 	public static final String ALMA_ARCHIVE_FULL_DATA_LOADER = "AlmaArchiveFullDataLoader";
 	public static final String OBSPROJECT_DATA_LOADER_BEAN = "obsProjectDataLoader";
 	public static final String ALMA_ARCHIVE_OBSPROJECT_DATA_LOADER_BEAN = "AlmaArchiveObsProjectDataLoader";
 	public static final String ARCHIVE_PROJECT_DAO_BEAN = "archProjectDao";
 	public static final String CONFIGURATION_DAO_BEAN = "configDao";
+	public static final String IMMUTABLE_DATA_LOADER_BEAN = "immutableDataLoader";
+	public static final String DATA_CLEANER_BEAN = "dataCleaner";
 	
 	private static Logger logger = LoggerFactory.getLogger(InputActions.class);
 	
@@ -75,15 +76,12 @@ public class InputActions extends PsmContext {
         ApplicationContext ctx = getApplicationContext();
         DataLoader weatherLoader = 
         		(DataLoader) ctx.getBean(WEATHER_PARAMS_LOADER_BEAN);
-        DataLoader fullDataLoader = (DataLoader) ctx.getBean(dataLoader);
+        DataLoader loader = (DataLoader) ctx.getBean(IMMUTABLE_DATA_LOADER_BEAN);
         Date start = new Date();
         weatherLoader.load();
+        loader.load();
         Date end = new Date();
-        logger.info("Weather data load took " + (end.getTime() - start.getTime()) + " ms");
-        start = new Date();
-        fullDataLoader.load();
-        end = new Date();
-        logger.info("FullDataLoader load took " + (end.getTime() - start.getTime()) + " ms");
+        logger.info("data load took " + (end.getTime() - start.getTime()) + " ms");
         
         ConfigurationDao configDao = (ConfigurationDao) ctx.getBean(CONFIGURATION_DAO_BEAN);
         configDao.getConfiguration();
@@ -112,6 +110,7 @@ public class InputActions extends PsmContext {
     }
 
     public void clean(String dataLoader) {
+    	logger.info("Using " + dataLoader + " to clean the DB");
     	ApplicationContext ctx = getApplicationContext();
     	DataLoader loader = (DataLoader) ctx.getBean(dataLoader);
     	loader.clear();

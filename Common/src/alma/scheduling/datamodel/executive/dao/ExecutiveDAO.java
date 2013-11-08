@@ -52,4 +52,9 @@ public interface ExecutiveDAO extends GenericDao {
     
     public void deleteAll();
     
+    /**
+     * Deletes all elements in ExecutiveTimeSpent table
+     */
+    public void cleanExecutiveTimeSpent();
+    
 }
