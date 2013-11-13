@@ -28,10 +28,13 @@
 		<property name="driverClass" value="${db.driverClass}" />
 		<property name="jdbcUrl" value="${db.url}" />
 		<property name="initialPoolSize" value="5" />
-		<property name="maxPoolSize" value="20" />
-		<property name="minPoolSize" value="1" />
+		<property name="maxPoolSize" value="100" />
+		<property name="minPoolSize" value="5" />
 		<property name="acquireIncrement" value="1" />
 		<property name="acquireRetryAttempts" value="5" />
+		<property name="maxIdleTime" value="60" />
+		<property name="unreturnedConnectionTimeout" value="100" />
+		<property name="debugUnreturnedConnectionStackTraces" value="true"/>
 	</bean>
 
 	<!-- Hibernate SessionFactory -->
@@ -80,15 +83,6 @@
 				<prop key="hibernate.default_batch_fetch_size">16</prop>
 				<prop key="hibernate.jdbc.batch_size">25</prop>
 				<prop key="hibernate.jdbc.fetch_size">8</prop>
-
-				<!-- Use the C3P0 connection pool provider -->
-				<prop key="hibernate.c3p0.min_size">5</prop>
-				<prop key="hibernate.c3p0.max_size">20</prop>
-				<prop key="hibernate.c3p0.timeout">60</prop>
-				<prop key="hibernate.c3p0.max_statements">50</prop>
-				<!-- To debug for connection left open to the DB -->
-				<prop key="hibernate.c3p0.unreturnedConnectionTimeout">60</prop>
-				<prop key="hibernate.c3p0.debugUnreturnedConnectionStackTraces">true</prop>
 			</props>
 		</property>
 	</bean>
