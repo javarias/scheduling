@@ -142,7 +142,7 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
             double ppwv;
             long deltaT = (long) (projTimeIncr * 3600.0 * 1000.0); // delta T in
             // milliseconds
-            if (!weatherDao.hasPWV() && (date.getTime() < System.currentTimeMillis() + (29 * 60 * 1000))) {
+            if (!weatherDao.hasPWV() || (date.getTime() < System.currentTimeMillis() + (29 * 60 * 1000))) {
 	            TemperatureHistRecord tr = weatherDao.getTemperatureForTime(date);
 	            ErrorHandling.getInstance().debug("temperature record: time = " + tr.getTime()
 	                    + "; value = " + tr.getValue());
@@ -154,7 +154,7 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
 	            TemperatureHistRecord ptr = weatherDao
 	                    .getTemperatureForTime(projDate);
 	            HumidityHistRecord phr = weatherDao.getHumidityForTime(projDate);
-	            if (weatherDao.hasPWV())
+	            if (weatherDao.hasPWV() && (date.getTime() >= System.currentTimeMillis() + (29 * 60 * 1000)))
 	            	ppwv = weatherDao.getPwvForTime(new Date(date.getTime() + deltaT)); //forecast
 	            else
 	            	ppwv = estimatePWV(phr.getValue(), ptr.getValue()); // estimated
