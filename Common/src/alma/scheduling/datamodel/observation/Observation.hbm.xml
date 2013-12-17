@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+ 	<typedef class="alma.scheduling.datamodel.StringEnumUserType" name="ArrayTypeEnum">
+        <param name="enumClassName">alma.scheduling.datamodel.obsproject.ArrayType</param>
+    </typedef>
+	
+	<class name="alma.scheduling.datamodel.observation.CreatedArray" table="CREATED_ARRAY">
+		<composite-id>
+			<key-property name="name" column="NAME" type="string"/>
+			<key-property name="creationDate" column="CREATION_DATE" type="timestamp"/>
+			<generator class="assigned"/>
+		</composite-id>
+		<property name="arrayType" type="ArrayTypeEnum"/>
+	</class>
+
+	<class name="alma.scheduling.datamodel.observation.ExecBlock"
+		table="EXECBLOCK">
+		<id name="execBlockUid" type="java.lang.String">
+			<column name="EXECBLOCK_UID" />
+			<generator class="assigned" />
+		</id>
+		<property name="schedBlockUid" type="string">
+			<column name="SCHEDBLOCK_UID" not-null="false"/>
+		</property>
+		<property name="timeOnSource" type="double">
+			<column name="TIME_ON_SOURCE" />
+		</property>
+		<property name="timeOnCalibration" type="double">
+			<column name="TIME_ON_CALIBRATION" />
+		</property>
+		<property name="startTime" column="START_TIME" type="timestamp"/>
+		<property name="endTime" column="END_TIME" type="timestamp"/>
+		<property name="sensitivityAchieved" type="double">
+			<column name="SENSITIVITY_ACHIEVED" />
+		</property>
+	</class>
+
+	<class name="alma.scheduling.datamodel.observation.Session"
+		table="SESSION">
+		<composite-id>
+			<key-property name="entityUid" column="ENTITY_UID" type="string"/>
+			<key-property name="partUid" column="PART_UID" type="string"/>
+			<generator class="assigned"/>
+		</composite-id>
+		<list name="execBlocks" inverse="false" table="EXECBLOCK" lazy="false">
+			<key>
+				<column name="SESSION_ENTITY_UID"/>
+				<column name="SESSION_PART_UID"/>
+			</key>
+			<list-index column="EB_ORDER" />
+			<one-to-many class="alma.scheduling.datamodel.observation.ExecBlock" />
+		</list>
+		<many-to-one name="array"
+			class="alma.scheduling.datamodel.observation.CreatedArray" fetch="join">
+			<column name="ARRAY_NAME" />
+			<column name="ARRAY_CREATION_DATE"/>
+		</many-to-one>
+	</class>
+</hibernate-mapping>
