@@ -666,7 +666,14 @@ public class ArchivePoller implements Observer{
 			//WORKAROUND: Check JIRA:CSV-2149
 			//Avoid projects that doesn't show at Scheduler; go back 2 minutes before the last update
 			lastUpdate = new Date(lastUpdate.getTime() - 2 * 60 * 1000);
-			incrementalPollArchive(lastUpdate);
+			try {
+				incrementalPollArchive(lastUpdate);
+			} finally {
+				synchronized (this) {
+					pollerBusy = false;
+				}
+				return;
+			}
 		}
 		
 		configDao.deleteAll();

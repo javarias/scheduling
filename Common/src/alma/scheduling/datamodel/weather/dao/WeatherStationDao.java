@@ -49,6 +49,7 @@ import alma.scheduling.datamodel.weather.OpacityHistRecord;
 import alma.scheduling.datamodel.weather.PathFluctHistRecord;
 import alma.scheduling.datamodel.weather.TemperatureHistRecord;
 import alma.scheduling.datamodel.weather.WindSpeedHistRecord;
+import alma.scheduling.utils.ErrorHandling;
 
 /**
  * The weather Station DAO will return just the weather values for the current time
@@ -228,6 +229,7 @@ public class WeatherStationDao extends GenericDaoImpl implements WeatherHistoryD
 	private TreeMap<Date, Double> refreshPWVforecast(long year) throws IOException {
 		final TreeMap<Date, Double> retVal = new TreeMap<Date, Double>();
 		final String urlStr = new String("http://www.eso.org/gen-fac/pubs/astclim/forecast/gfs/APEX/forecast/text/"+ year +"/gfs_pwv_for.txt");
+		ErrorHandling.getInstance().info("Retriveing weather forecast from " + urlStr);
 		URL url = null;
 		InputStream is = null;
 		URLConnection connection = null;
