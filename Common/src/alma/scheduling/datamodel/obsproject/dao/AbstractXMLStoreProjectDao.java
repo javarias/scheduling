@@ -171,6 +171,14 @@ public abstract class AbstractXMLStoreProjectDao
 		archive = new HibernateArchiveInterface(this.xmlStore, this.stateArchive, entityDeserializer, entitySerializer);
 	}
 	
+	protected AbstractXMLStoreProjectDao(ArchiveInterface archive, XMLStoreImportNotifier notifier) {
+		this.notifier =  notifier;
+		this.logger = Logger.getAnonymousLogger();
+		this.entityDeserializer = EntityDeserializer.getEntityDeserializer(this.logger);
+		this.entitySerializer = EntitySerializer.getEntitySerializer(this.logger);
+		this.archive = archive;
+	}
+	
 	protected AbstractXMLStoreProjectDao(ContainerServices containerServices) throws AcsJContainerServicesEx, UserException {
 		notifier = new XMLStoreImportNotifier();
 		this.componentFactory = new ACSComponentFactory(containerServices);

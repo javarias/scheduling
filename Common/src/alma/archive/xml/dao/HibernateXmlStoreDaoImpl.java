@@ -1,24 +1,36 @@
 package alma.archive.xml.dao;
 
+import java.io.StringReader;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 import java.util.logging.Logger;
 
+import javax.xml.transform.TransformerException;
+
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.SQLQuery;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Restrictions;
+import org.omg.CORBA.UserException;
 
+import alma.SchedulingMasterExceptions.wrappers.AcsJSchedulingInternalExceptionEx;
+import alma.acs.entityutil.EntityException;
 import alma.archive.database.helpers.ArchiveConfiguration;
 import alma.archive.database.helpers.DBConfiguration;
 import alma.archive.exceptions.general.DatabaseException;
 import alma.archive.xml.ObsProjectEntity;
 import alma.archive.xml.ObsProposalEntity;
 import alma.archive.xml.SchedBlockEntity;
+import alma.archive.xml.XmlEntity;
 
 /**
  * Implements some methods to read from xml store using hibernate and oracle DB according ALMA's setup.
@@ -29,7 +41,6 @@ import alma.archive.xml.SchedBlockEntity;
 public class HibernateXmlStoreDaoImpl implements XmlStoreReaderDao {
 	
 	private SessionFactory sf = null;
-	private Session session = null;
 	
 	private static final String APDM_XSD_NAMESPACES = "xmlns:ent=\"Alma/CommonEntity\" "
 			+ "xmlns:val=\"Alma/ValueTypes\" " 
@@ -45,21 +56,31 @@ public class HibernateXmlStoreDaoImpl implements XmlStoreReaderDao {
 	public HibernateXmlStoreDaoImpl() throws DatabaseException {
 		if (sf == null)
 			initializeDBSessionFactory();
-		openSession();
 	}
 
+	public ObsProposalEntity getObsproposal(String id) {
+		Vector<String> uid = new Vector<String>();
+		uid.add(id);
+		List<ObsProposalEntity> retList = getObsProposals(uid);
+		if (retList.size() > 0)
+			return retList.get(0);
+		return null;
+	}
+	
 	/* (non-Javadoc)
 	 * @see alma.archive.xml.dao.XmlStoreDao#getObsProposals(java.lang.String)
 	 */
 	@Override
 	public List<ObsProposalEntity> getObsProposals(String XPathQuery) {
-		Transaction t = session.beginTransaction();
-		SQLQuery q = session.createSQLQuery("SELECT * from xml_obsproposal_entities where " +
+		openSession();
+		Transaction t = sf.getCurrentSession().beginTransaction();
+		SQLQuery q = sf.getCurrentSession().createSQLQuery("SELECT * from xml_obsproposal_entities where " +
 		"existsnode(XML,'"+ XPathQuery + "', '"+ APDM_XSD_NAMESPACES +"') = 1");
 		q.addEntity(ObsProposalEntity.class);
 		@SuppressWarnings("unchecked")
 		List<ObsProposalEntity> retVal = q.list();
 		t.commit();
+		closeSession();
 		return retVal;
 	}
 	
@@ -68,13 +89,15 @@ public class HibernateXmlStoreDaoImpl implements XmlStoreReaderDao {
 	 */
 	@Override
 	public List<ObsProjectEntity> getObsProjects(String XPathQuery) {
-		Transaction t = session.beginTransaction();
-		SQLQuery q = session.createSQLQuery("SELECT * from xml_obsproject_entities where " +
+		openSession();
+		Transaction t = sf.getCurrentSession().beginTransaction();
+		SQLQuery q = sf.getCurrentSession().createSQLQuery("SELECT * from xml_obsproject_entities where " +
 		"existsnode(XML,'"+ XPathQuery + "', '"+ APDM_XSD_NAMESPACES +"') = 1");
 		q.addEntity(ObsProposalEntity.class);
 		@SuppressWarnings("unchecked")
 		List<ObsProjectEntity> retVal = q.list();
 		t.commit();
+		closeSession();
 		return retVal;
 	}
 	
@@ -83,13 +106,15 @@ public class HibernateXmlStoreDaoImpl implements XmlStoreReaderDao {
 	 */
 	@Override
 	public List<SchedBlockEntity> getSchedBlocks(String XPathQuery) {
-		Transaction t = session.beginTransaction();
-		SQLQuery q = session.createSQLQuery("SELECT * from xml_schedblock_entities where " +
+		openSession();
+		Transaction t = sf.getCurrentSession().beginTransaction();
+		SQLQuery q = sf.getCurrentSession().createSQLQuery("SELECT * from xml_schedblock_entities where " +
 		"existsnode(XML,'"+ XPathQuery + "', '"+ APDM_XSD_NAMESPACES +"') = 1");
 		q.addEntity(ObsProposalEntity.class);
 		@SuppressWarnings("unchecked")
 		List<SchedBlockEntity> retVal = q.list();
 		t.commit();
+		closeSession();
 		return retVal;
 	}
 	
@@ -101,7 +126,8 @@ public class HibernateXmlStoreDaoImpl implements XmlStoreReaderDao {
 	 * @return ScrollResult with the results of the query
 	 */
 	public Iterable<ObsProposalEntity> getObsProposalsIterator(String XPathQuery) {
-		SQLQuery q = session.createSQLQuery("SELECT * from xml_obsproposal_entities where " +
+		openSession();
+		SQLQuery q = sf.getCurrentSession().createSQLQuery("SELECT * from xml_obsproposal_entities where " +
 		"existsnode(XML,'"+ XPathQuery + "', '"+ APDM_XSD_NAMESPACES +"') = 1");
 		q.addEntity(ObsProposalEntity.class);
 		return new QueryIterable<ObsProposalEntity>(q);
@@ -116,7 +142,8 @@ public class HibernateXmlStoreDaoImpl implements XmlStoreReaderDao {
 	 * @return ScrollResult with the results of the query
 	 */
 	public Iterable<ObsProjectEntity> getObsProjectsIterator(String XPathQuery) {
-		SQLQuery q = session.createSQLQuery("SELECT * from xml_obsproject_entities where " +
+		openSession();
+		SQLQuery q = sf.getCurrentSession().createSQLQuery("SELECT * from xml_obsproject_entities where " +
 		"existsnode(XML,'"+ XPathQuery + "', '"+ APDM_XSD_NAMESPACES +"') = 1");
 		q.addEntity(ObsProjectEntity.class);
 		return new QueryIterable<ObsProjectEntity>(q);
@@ -130,7 +157,8 @@ public class HibernateXmlStoreDaoImpl implements XmlStoreReaderDao {
 	 * @return ScrollResult with the results of the query
 	 */
 	public Iterable<SchedBlockEntity> getSchedBlocksIterator(String XPathQuery) {
-		SQLQuery q = session.createSQLQuery("SELECT * from xml_schedblock_entities where " +
+		openSession();
+		SQLQuery q = sf.getCurrentSession().createSQLQuery("SELECT * from xml_schedblock_entities where " +
 	    "existsnode(XML,'"+ XPathQuery + "', '"+ APDM_XSD_NAMESPACES +"') = 1");
 		q.addEntity(SchedBlockEntity.class);
 		return new QueryIterable<SchedBlockEntity>(q);
@@ -141,7 +169,8 @@ public class HibernateXmlStoreDaoImpl implements XmlStoreReaderDao {
 	 */
 	@Override
 	public List<ObsProposalEntity> getObsProposals(Collection<String> uids) {
-		Criteria c = session.createCriteria(ObsProposalEntity.class);
+		openSession();
+		Criteria c = sf.getCurrentSession().createCriteria(ObsProposalEntity.class);
 		if (!(uids == null || uids.size() == 0)) {
 			c.add(Restrictions.in("uid", uids));
 		}
@@ -155,12 +184,13 @@ public class HibernateXmlStoreDaoImpl implements XmlStoreReaderDao {
 	 */
 	@Override
 	public List<ObsProjectEntity> getObsProjects(Collection<String> uids) {
+		openSession();
 		Transaction t = null;
-		Criteria c = session.createCriteria(ObsProjectEntity.class);
+		Criteria c = sf.getCurrentSession().createCriteria(ObsProjectEntity.class);
 		if (!(uids == null || uids.size() == 0)) {
 			c.add(Restrictions.in("uid", uids));
 		}
-		t = session.beginTransaction();
+		t = sf.getCurrentSession().beginTransaction();
 		@SuppressWarnings("unchecked")
 		List<ObsProjectEntity> retVal =  c.list();
 		t.commit();
@@ -172,12 +202,13 @@ public class HibernateXmlStoreDaoImpl implements XmlStoreReaderDao {
 	 */
 	@Override
 	public List<SchedBlockEntity> getSchedBlocks(Collection<String> uids) {
+		openSession();
 		Transaction t = null;
-		Criteria c = session.createCriteria(SchedBlockEntity.class);
+		Criteria c = sf.getCurrentSession().createCriteria(SchedBlockEntity.class);
 		if (!(uids == null || uids.size() == 0)) {
 			c.add(Restrictions.in("uid", uids));
 		}
-		t = session.beginTransaction();
+		t = sf.getCurrentSession().beginTransaction();
 		@SuppressWarnings("unchecked")
 		List<SchedBlockEntity> retVal =  c.list();
 		t.commit();
@@ -191,7 +222,8 @@ public class HibernateXmlStoreDaoImpl implements XmlStoreReaderDao {
 	 * @return 
 	 */
 	public Iterable<ObsProposalEntity> getObsProposalsIterator(Collection<String> uids) {
-		Criteria c = session.createCriteria(ObsProposalEntity.class);
+		openSession();
+		Criteria c = sf.getCurrentSession().createCriteria(ObsProposalEntity.class);
 		if (!(uids == null || uids.size() == 0)) {
 			c.add(Restrictions.in("uid", uids));
 		}
@@ -205,7 +237,8 @@ public class HibernateXmlStoreDaoImpl implements XmlStoreReaderDao {
 	 * @return 
 	 */
 	public Iterable<ObsProjectEntity> getObsProjectsIterator(Collection<String> uids) {
-		Criteria c = session.createCriteria(ObsProjectEntity.class);
+		openSession();
+		Criteria c = sf.getCurrentSession().createCriteria(ObsProjectEntity.class);
 		if (!(uids == null || uids.size() == 0)) {
 			c.add(Restrictions.in("uid", uids));
 		}
@@ -219,7 +252,8 @@ public class HibernateXmlStoreDaoImpl implements XmlStoreReaderDao {
 	 * @return 
 	 */
 	public Iterable<SchedBlockEntity> getSchedBlocksIterator(Collection<String> uids) {
-		Criteria c = session.createCriteria(SchedBlockEntity.class);
+		openSession();
+		Criteria c = sf.getCurrentSession().createCriteria(SchedBlockEntity.class);
 		if (!(uids == null || uids.size() == 0)) {
 			c.add(Restrictions.in("uid", uids));
 		}
@@ -249,34 +283,22 @@ public class HibernateXmlStoreDaoImpl implements XmlStoreReaderDao {
 		}
 		System.out.println(archive_db_connection + " " + archive_oracle_user
 				+ " " + archive_oracle_passwd);
-		Configuration hibConf = new Configuration();
+		Configuration hibConf = new Configuration().configure("alma/archive/hibernate.config.xml");
 		hibConf.setProperty("hibernate.connection.url", archive_db_connection);
 		hibConf.setProperty("hibernate.connection.username", archive_oracle_user);
 		hibConf.setProperty("hibernate.connection.password", archive_oracle_passwd);
-		hibConf.setProperty("hibernate.connection.driver_class", "oracle.jdbc.driver.OracleDriver");
-		hibConf.setProperty("hibernate.cache.use_query_cache", "true");
-		hibConf.setProperty("hibernate.cache.use_second_level_cache", "true");
-		hibConf.setProperty("hibernate.cache.provider_class", "org.hibernate.cache.EhCacheProvider");
-		hibConf.setProperty("hibernate.dialect", "org.hibernate.dialect.Oracle10gDialect");
-		hibConf.setProperty("hibernate.show_sql", "false");
 		
-		hibConf.addResource("alma/archive/xmlstore.hbm.xml");
-
 		sf = hibConf.buildSessionFactory();
 	}
 	
 	private void openSession() {
-		try {
-			if (sf.getCurrentSession().isOpen())
-				session = sf.openSession();
-		}	catch (HibernateException e) {
-			session = sf.openSession();
-		}
+		if (sf.getCurrentSession() != null && sf.getCurrentSession().isOpen())
+			sf.openSession();
 	}
 	
 	public void closeSession() {
-		session.close();
-		session = null;
+		if (sf.getCurrentSession() != null && sf.getCurrentSession().isOpen())
+			sf.close();
 	}
 
 	@Override
@@ -284,5 +306,32 @@ public class HibernateXmlStoreDaoImpl implements XmlStoreReaderDao {
 		closeSession();
 	}
 	
-	
+	@SuppressWarnings("unchecked")
+	public <CT> CT genericRetrieval(String id,
+			Class<? extends XmlEntity> hClass, Class<CT> cClass)
+			throws EntityException, UserException {
+		CT retVal = null;
+		Transaction  tx = null;
+		try {
+			openSession();
+			tx = sf.getCurrentSession().beginTransaction();
+			XmlEntity hRet = (XmlEntity) sf.getCurrentSession().get(hClass, id);
+			retVal = (CT) Unmarshaller.unmarshal(cClass, new StringReader(hRet.domToString()));
+		} catch (HibernateException e) {
+			AcsJSchedulingInternalExceptionEx ex = new AcsJSchedulingInternalExceptionEx(
+					e);
+			throw ex.toSchedulingInternalExceptionEx();
+		} catch (MarshalException e) {
+			throw new EntityException(e);
+		} catch (ValidationException e) {
+			throw new EntityException(e);
+		} catch (TransformerException e) {
+			throw new EntityException(e);
+		} finally {
+			if (tx != null)
+				tx.commit();
+			closeSession();
+		}
+		return retVal;
+	}
 }
