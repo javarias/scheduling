@@ -193,7 +193,7 @@ public class ALMAArchiveExporter {
 	
 	
 	private void saveEntityOnFile(File dir, XmlEntity e) throws IOException, TransformerException {
-		String filename = e.getUid().replace("/", "_").replace(":", "_");
+		String filename = e.getUid().replace("/", "_").replace(":", "_") + ".xml";
 		File destFile = new File(dir, filename);
 		if (!destFile.exists())
 			destFile.createNewFile();
