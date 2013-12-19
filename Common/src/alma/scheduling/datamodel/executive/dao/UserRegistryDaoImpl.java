@@ -39,7 +39,10 @@ public class UserRegistryDaoImpl implements UserRegistryDao{
 			PIMembership pim[] = new PIMembership[1];
 			pim[0] = new PIMembership();
 			pim[0].setMembershipPercentage(100.0F);
-			pim[0].setExecutiveRef(acc.getExecutive().toUpperCase());
+			String exec = acc.getExecutive().toUpperCase().replace("/", "_");
+			if (exec.equalsIgnoreCase("EA_NA"))
+				exec = "NA_EA";
+			pim[0].setExecutiveRef(exec);
 			pi.setPIMembership(pim);
 			retVal.add(pi);
 		}

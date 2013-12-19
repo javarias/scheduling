@@ -41,6 +41,8 @@ import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.executive.ExecutivePercentage;
 import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
+import alma.scheduling.datamodel.executive.dao.UserRegistryDao;
+import alma.scheduling.datamodel.executive.dao.UserRegistryDaoImpl;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
@@ -52,6 +54,7 @@ import alma.scheduling.datamodel.obsproject.dao.ProjectImportEvent;
 import alma.scheduling.datamodel.obsproject.dao.ProjectImportEvent.ImportStatus;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 import alma.scheduling.datamodel.weather.dao.AtmParametersDao;
+import alma.scheduling.input.executive.generated.PI;
 import alma.scheduling.utils.CommonContextFactory;
 import alma.scheduling.utils.DSAContextFactory;
 import alma.scheduling.utils.ErrorHandling;
@@ -355,6 +358,11 @@ public class ArchivePoller implements Observer{
     	}
     	season.setExecutivePercentage(eps);
     	execDao.saveObservingSeasonsAndExecutives(seasons, execs);
+    	
+    	//PIs
+//    	UserRegistryDao urDao = new UserRegistryDaoImpl();
+//    	List<PI> pis = urDao.getAllPI();
+//    	execDao.saveOrUpdate(pis);
     }
     
     private void linkData(ObsProject proj){

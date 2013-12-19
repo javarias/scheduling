@@ -29,6 +29,11 @@ public class ExecBlock {
 	 */
 	private ExecStatus status;
 	
+	/**
+	 * Executive code
+	 */
+	private String executive;
+	
 	public String getExecBlockUid() {
 		return execBlockUid;
 	}
@@ -99,6 +104,13 @@ public class ExecBlock {
 	public void setStatus(ExecStatus status) {
 		this.status = status;
 	}
+	public String getExecutive() {
+		return executive;
+	}
+	public void setExecutive(String executive) {
+		this.executive = executive;
+	}
+	
 	@Override
 	public int hashCode() {
 		return execBlockUid.hashCode();

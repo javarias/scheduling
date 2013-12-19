@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--  $Id: userRegistryRelationalContext.xml,v 1.8 2012/12/17 17:27:47 rkurowsk Exp $  -->
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:util="http://www.springframework.org/schema/util"
@@ -22,30 +23,37 @@
 		<constructor-arg ref="logger" />
 	</bean>
 
-	<!-- SpringDbConfigPostProcessor is a BeanFactoryPostProcessor that will 
-		apply DbConfig settings to the sessionFactory -->
-    <bean class="alma.obops.utils.config.SpringDbConfigPostProcessor"/>
-    
-	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
-		<property name="mappingResources">
+	<!-- SpringDbConfigPostProcessor
+	   msc 2013-10: obops has changed with R10.4 / ACS12.1
+	   this bean no longer exists. see [StateSystem.jar]/config/stateSystemContext.xml
+	-->
+
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<property name="configLocations">
 			<list>
-				<value>alma/scheduling/datamodel/executive/obopsUserReg.hbm.xml</value>             
+				<value>classpath:/alma/obops/dam/userreg/domain/userreg.hibernate.cfg.xml</value>
 			</list>
 		</property>
         <property name="hibernateProperties">
             <props>
 				<!-- These props will not be affected by SpringDbConfig -->
                 <prop key="hibernate.show_sql">false</prop>
-                <prop key="hibernate.format_sql">true</prop>
+                <prop key="hibernate.format_sql">false</prop>
                 <prop key="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</prop>
                 
                 <!--  connection pool properties -->
                 <prop key="hibernate.connection.provider_class" >org.hibernate.connection.C3P0ConnectionProvider</prop>
 				<prop key="hibernate.c3p0.min_size" >1</prop>
-				<prop key="hibernate.c3p0.max_size" >20</prop>
+				<prop key="hibernate.c3p0.max_size" >${obsprep.investigatordbws.connpool.maxsize}</prop>
 				<prop key="hibernate.c3p0.timeout" >300</prop>
 				<prop key="hibernate.c3p0.max_statements" >0</prop>
 				<prop key="hibernate.c3p0.idle_test_period" >3000</prop>
+
+				<prop key="hibernate.dialect">#{dbConfig.dialect}</prop>
+				<prop key="hibernate.connection.driver_class">#{dbConfig.driver}</prop>
+				<prop key="hibernate.connection.user">#{dbConfig.username}</prop>
+				<prop key="hibernate.connection.password">#{dbConfig.password}</prop>
+				<prop key="hibernate.connection.url">#{dbConfig.connectionUrl}</prop>
                 
         	    <prop key="hibernate.jdbc.batch_size">0</prop>
         	    <prop key="hibernate.connection.autocommit">false</prop>
@@ -76,26 +84,13 @@
     
     <bean id="hibernateUtils"       class="alma.obops.dam.utils.HibernateUtilsImpl" />
     
-    <!--  Do these serve a purpose?
-    
-    <bean id="accountsComposer"     class="alma.obops.userreg.composers.AccountsComposer" />
-    
-    <bean id="institutionsComposer" class="alma.obops.userreg.composers.InstitutionsComposer" />
-    
-     -->
-     
-    <bean id="ldapServerURL"        class="alma.obops.dam.utils.StringBean" />
-    
   	<!--  ====== DAOs ====== -->
   	
     <bean id="institutionDao" 
           class="alma.obops.dam.userreg.dao.InstitutionDaoHibernateImpl" />
           
-    <bean id="ph1mDao" 
-          class="alma.obops.dam.ph1m.dao.Ph1mDaoHibernateImpl" />
-          
     <bean id="portalAccountDao" 
-          class="alma.obops.dam.userreg.dao.PortalAccountDaoRelationalImpl" />
+          class="alma.obops.dam.userreg.dao.PortalAccountDaoHibernateImpl" />
           
     <bean id="roleDao" 
           class="alma.obops.dam.userreg.dao.RoleDaoHibernateImpl" />
@@ -121,31 +116,13 @@
           class="alma.obops.userreg.reports.PortalAccountsBeanCollector" />
     
     <!--  ====== Service beans  ====== -->
-
-	<!-- 
-    <bean id="institutionService" 
-          class="alma.obops.dam.userreg.service.InstitutionServiceImpl" >
-    </bean>
-
-    <bean id="portalAccountService" 
-          class="alma.obops.dam.userreg.service.PortalAccountServiceRelationalImpl" >
-    </bean>
-    -->
     
     <bean id="institutionService" 
           class="alma.obops.dam.userreg.service.InstitutionServiceImpl" >
-		<property name="portalAccountDao">
-			<bean class="alma.obops.dam.userreg.dao.PortalAccountDaoRelationalImpl">
-			</bean>
-		</property>
     </bean>
  	
     <bean id="portalAccountService" 
-          class="alma.obops.dam.userreg.service.PortalAccountServiceRelationalImpl" >
-		<property name="portalAccountDao">
-			<bean class="alma.obops.dam.userreg.dao.PortalAccountDaoRelationalImpl">
-			</bean>
-		</property>          
+          class="alma.obops.dam.userreg.service.PortalAccountServiceImpl" >
     </bean> 
 
     <bean id="roleService" 
@@ -173,6 +150,10 @@
     </bean>
      
     <bean id="proposalInstitutionService" 
-          class="alma.obops.dam.ph1m.service.ProposalInstitutionServiceImpl" >
+          class="alma.obops.dam.apdm.service.ProposalInstitutionServiceImpl" >
+    </bean>
+    
+    <bean id="userRegistryService" 
+          class="alma.obops.dam.userreg.UserRegistryServiceImpl" >
     </bean>
 </beans>
