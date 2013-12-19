@@ -21,11 +21,9 @@ package alma.scheduling.array.executor;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Formatter;
-import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
@@ -37,9 +35,7 @@ import java.util.logging.Logger;
 import alma.ACSErrTypeCommon.wrappers.AcsJIllegalArgumentEx;
 import alma.Control.ExecBlockEndedEvent;
 import alma.Control.ExecBlockStartedEvent;
-import alma.SchedulingMasterExceptions.SchedulingInternalExceptionEx;
 import alma.SchedulingMasterExceptions.wrappers.AcsJSchedulingInternalExceptionEx;
-import alma.acs.time.TimeHelper;
 import alma.acs.util.UTCUtility;
 import alma.asdmIDLTypes.IDLEntityRef;
 import alma.entity.xmlbinding.ousstatus.OUSStatus;
@@ -73,9 +69,7 @@ import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
 import alma.scheduling.datamodel.observation.ExecBlock;
 import alma.scheduling.datamodel.observation.ExecStatus;
 import alma.scheduling.datamodel.obsproject.ObsProject;
-import alma.scheduling.datamodel.obsproject.ObservingParameters;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
-import alma.scheduling.datamodel.obsproject.ScienceParameters;
 import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
 import alma.scheduling.datamodel.weather.HumidityHistRecord;
 import alma.scheduling.datamodel.weather.TemperatureHistRecord;
@@ -1172,6 +1166,11 @@ public class ExecutionContext {
 			eb.setStatus(ExecStatus.SUCCESS);
 		else 
 			eb.setStatus(ExecStatus.FAILURE);
+		try {
+			getModel().getObservationDao().save(eb);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 		
 	}
 
@@ -1216,9 +1215,6 @@ public class ExecutionContext {
 		ObsProject prj = getModel().getObsProjectDao().findByEntityId(
 				schedBlock.getProjectUid());
 		prj.setTotalExecutionTime(time + prj.getTotalExecutionTime());
-
-		if (!schedBlock.getManual() && !schedBlock.getCsv())
-			saveExecBlock();
 		
 		// Avoid saves to the SWDB, due synch issues
 		// model.getObsProjectDao().saveOrUpdate(prj);
@@ -1253,17 +1249,6 @@ public class ExecutionContext {
 			}
 		}
 		doStateArchiveTransition(sbId, fromStatus, toStatus);
-	}
-
-	private void saveExecBlock() {
-		ExecBlock eb = new ExecBlock();
-		eb.setExecBlockUid(getExecBlockRef().entityId);
-		eb.setSchedBlockUid(getSbUid());
-		eb.setStatus(ExecStatus.SUCCESS);
-		
-		ExecutiveTimeSpent r = new ExecutiveTimeSpent();
-		
-		
 	}
 
 	public void accountFailure(SBStatus sbStatus, long secs)
