@@ -21,7 +21,6 @@
 package alma.scheduling.utils;
 
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.AbstractApplicationContext;
 
 /**
  * Handle Spring context singleton for the Scheduling Common Data Access Objects and
@@ -47,6 +46,7 @@ public class CommonContextFactory {
 	public static final String SCHEDULING_OPACITY_INTERPOLATOR_BEAN = "opacityInterpolator";
 	public static final String SCHEDULING_XML_OBSERVATORY_DAO = "xmlObservatoryDao";
 	public static final String SCHEDULING_OBSERVATORY_DAO = "observatoryDao";
+	public static final String SCHEDULING_OBSERVATION_DAO_BEAN = "observationDao";
 	
 	/**
 	 * Create the instance of the context just for the Common subset of Scheduling

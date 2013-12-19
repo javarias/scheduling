@@ -55,7 +55,6 @@ public final class HibernateArchiveInterface extends AbstractArchiveInterface
 		implements ArchiveInterface {
 
 	private static SessionFactory sf = null;
-	private static StatelessSession session = null;
 
 	public HibernateArchiveInterface(OperationalOperations archive,
 			StateArchive stateSystem,
@@ -66,8 +65,8 @@ public final class HibernateArchiveInterface extends AbstractArchiveInterface
 		System.out.println("************************************************************************************");
 		System.out.println("Using hibernate to access to xmlstore, some people just want to watch the world burn");
 		System.out.println("************************************************************************************");
-		if (session == null)
-			initializeDBSession();
+		if (sf == null)
+			initializeDB();
 	}
 
 	@Override
@@ -107,12 +106,15 @@ public final class HibernateArchiveInterface extends AbstractArchiveInterface
 			Class<? extends XmlEntity> hClass, Class<CT> cClass)
 			throws EntityException, UserException {
 		CT retVal = null;
+		StatelessSession session = null;
 		Transaction  tx = null;
 		try {
+			session = sf.openStatelessSession();
 			tx = session.beginTransaction();
 			XmlEntity hRet = (XmlEntity) session.get(hClass, id);
 			retVal = (CT) Unmarshaller.unmarshal(cClass, new StringReader(hRet.domToString()));
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			AcsJSchedulingInternalExceptionEx ex = new AcsJSchedulingInternalExceptionEx(
 					e);
 			throw ex.toSchedulingInternalExceptionEx();
@@ -124,12 +126,14 @@ public final class HibernateArchiveInterface extends AbstractArchiveInterface
 			throw new EntityException(e);
 		} finally {
 			if (tx != null)
-				tx.commit();
+				tx.rollback();
+			if(session != null)
+				session.close();
 		}
 		return retVal;
 	}
 
-	private void initializeDBSession() {
+	private void initializeDB() {
 		DBConfiguration archiveConf = null;
 		try {
 			archiveConf = ArchiveConfiguration.instance(Logger
@@ -159,6 +163,5 @@ public final class HibernateArchiveInterface extends AbstractArchiveInterface
 //		hibConf.setProperty("hbm2ddl.auto", "validate");
 //		hibConf.addResource("alma/archive/xmlstore.hbm.xml");
 		sf = hibConf.buildSessionFactory();
-		session = sf.openStatelessSession();
 	}
 }
