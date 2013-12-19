@@ -26,8 +26,8 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.StatelessSession;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.omg.CORBA.UserException;
@@ -106,10 +106,10 @@ public final class HibernateArchiveInterface extends AbstractArchiveInterface
 			Class<? extends XmlEntity> hClass, Class<CT> cClass)
 			throws EntityException, UserException {
 		CT retVal = null;
-		StatelessSession session = null;
+		Session session = null;
 		Transaction  tx = null;
 		try {
-			session = sf.openStatelessSession();
+			session = sf.openSession();
 			tx = session.beginTransaction();
 			XmlEntity hRet = (XmlEntity) session.get(hClass, id);
 			retVal = (CT) Unmarshaller.unmarshal(cClass, new StringReader(hRet.domToString()));
@@ -127,7 +127,7 @@ public final class HibernateArchiveInterface extends AbstractArchiveInterface
 		} finally {
 			if (tx != null)
 				tx.rollback();
-			if(session != null)
+			if(session != null && session.isOpen())
 				session.close();
 		}
 		return retVal;
