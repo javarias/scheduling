@@ -7,7 +7,7 @@ import org.springframework.context.ApplicationContext;
 import alma.scheduling.datamodel.observation.ExecBlock;
 import alma.scheduling.utils.CommonContextFactory;
 import junit.framework.TestCase;
-import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_OBSERVATION_DAO;
+import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_OBSERVATION_DAO_BEAN;
 
 public class ObservationDaoImplTest extends TestCase {
 
@@ -18,7 +18,7 @@ public class ObservationDaoImplTest extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		ctx = CommonContextFactory.getContext();
-		obsDao = ctx.getBean(SCHEDULING_OBSERVATION_DAO, ObservationDao.class); 
+		obsDao = ctx.getBean(SCHEDULING_OBSERVATION_DAO_BEAN, ObservationDao.class); 
 	}
 
 	@Override

@@ -104,8 +104,7 @@ public class ExecBlock {
 	public void setStatus(ExecStatus status) {
 		this.status = status;
 	}
-<<<<<<< HEAD
-=======
+
 	public String getExecutive() {
 		return executive;
 	}
@@ -113,7 +112,6 @@ public class ExecBlock {
 		this.executive = executive;
 	}
 	
->>>>>>> trunk-work
 	@Override
 	public int hashCode() {
 		return execBlockUid.hashCode();
