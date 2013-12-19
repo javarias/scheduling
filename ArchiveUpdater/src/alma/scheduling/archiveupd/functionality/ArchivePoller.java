@@ -43,6 +43,8 @@ import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.executive.dao.UserRegistryDao;
 import alma.scheduling.datamodel.executive.dao.UserRegistryDaoImpl;
+import alma.scheduling.datamodel.observation.ExecBlock;
+import alma.scheduling.datamodel.observation.dao.ObservationDao;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
@@ -76,6 +78,7 @@ public class ArchivePoller implements Observer{
 	private ExecutiveDAO execDao;
 	private ObsProjectDao obsProjectDao;
 	private AtmParametersDao atmDao;
+	private ObservationDao obsDao;
 	
 	private Logger logger;
 	private ErrorHandling handler;
@@ -112,6 +115,7 @@ public class ArchivePoller implements Observer{
 		this.obsProjectDao = ma.getObsProjectDao();
 		this.execDao = ma.getExecutiveDao();
 		this.atmDao = ma.getAtmDao();
+		this.obsDao = ma.getObservationDao();
 		this.pollerBusy = false;
 		configDao = (ConfigurationDao) DSAContextFactory
 				.getContextFromPropertyFile()
@@ -280,6 +284,15 @@ public class ArchivePoller implements Observer{
 					"Error getting projects from ALMA project store - %s",
 					e.getMessage()), e);
 			return;
+		}
+		if (inDao.getConvertedExecBlocks() != null) {
+			for(ExecBlock eb: inDao.getConvertedExecBlocks()) {
+				try {
+					obsDao.save(eb);
+				} catch(Exception e) {
+					continue;
+				}
+			}
 		}
 		for(ObsProject prj: allProjects)
 			linkData(prj);
