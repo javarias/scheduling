@@ -689,7 +689,7 @@ public class ArchivePoller implements Observer{
 			lastUpdate = new Date(lastUpdate.getTime() - 2 * 60 * 1000);
 			try {
 				incrementalPollArchive(lastUpdate);
-			} finally {
+			} catch(Exception  e) {
 				synchronized (this) {
 					pollerBusy = false;
 				}
