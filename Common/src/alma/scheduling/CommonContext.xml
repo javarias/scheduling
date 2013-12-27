@@ -123,10 +123,18 @@
 		class="alma.scheduling.datamodel.obsproject.dao.FieldSourceDaoImpl">
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
+<<<<<<< HEAD
 	<bean name="observationDao"
 	    class="alma.scheduling.datamodel.observation.dao.ObservationDaoImpl">
 	    <property name="sessionFactory" ref="sessionFactory" />
 	</bean>
+=======
+	    <bean name="observationDao"
+    	class="alma.scheduling.datamodel.observation.dao.ObservationDaoImpl"
+    	scope="singleton">
+    	<property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+>>>>>>> trunk-work
     <bean name="opacityInterpolator" 
     	class="alma.scheduling.weather.OpacityInterpolatorImpl"
     	scope="singleton"/>

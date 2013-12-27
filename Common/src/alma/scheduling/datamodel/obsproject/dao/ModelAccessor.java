@@ -24,6 +24,7 @@ import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_OBSPROJECT_D
 import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_SCHEDBLOCK_DAO_BEAN;
 import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_WEATHER_DAO_BEAN;
 import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_OPACITY_INTERPOLATOR_BEAN;
+import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_OBSERVATION_DAO_BEAN;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ import alma.lifecycle.config.StateSystemContextFactory;
 import alma.lifecycle.persistence.StateArchive;
 import alma.lifecycle.stateengine.StateEngine;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
+import alma.scheduling.datamodel.observation.dao.ObservationDao;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
@@ -73,6 +75,7 @@ public class ModelAccessor extends Observable {
 	protected ExecutiveDAO execDao;
 	protected AtmParametersDao atmDao;
 	protected WeatherHistoryDAO weatherDao;
+	protected ObservationDao obsDao;
 	protected OpacityInterpolator opacityInterpolator;
 		
 	public ModelAccessor() throws Exception {
@@ -107,6 +110,7 @@ public class ModelAccessor extends Observable {
         atmDao = (AtmParametersDao) ctx.getBean(SCHEDULING_ATM_DAO_BEAN);
         weatherDao = (WeatherHistoryDAO) ctx.getBean(SCHEDULING_WEATHER_DAO_BEAN);
         opacityInterpolator = (OpacityInterpolator) ctx.getBean(SCHEDULING_OPACITY_INTERPOLATOR_BEAN);
+        obsDao = (ObservationDao)ctx.getBean(SCHEDULING_OBSERVATION_DAO_BEAN);
 	}
 	
 	public StateArchive getStateArchive() {
@@ -135,6 +139,10 @@ public class ModelAccessor extends Observable {
 	
 	public WeatherHistoryDAO getWeatherDao() {
 		return weatherDao;
+	}
+	
+	public ObservationDao getObservationDao() {
+		return obsDao;
 	}
 	
 	public OpacityInterpolator getOpacityInterpolator() {

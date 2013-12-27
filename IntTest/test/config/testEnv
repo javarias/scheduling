@@ -23,7 +23,7 @@ RUNLOCATION=tst
 export SCHEDULING_TEST_OPTIONS="-Dscheduling.`whoami` -Dscheduling.autoPopupPlugin -Dscheduling.convertPhase2ToReady "
 #export SCHEDULING_TEST_OPTIONS="-Dscheduling.autoPopupPlugin"
 
-JAVA_OPTIONS="-Darchive.configFile=$TESTDIR/archiveConfig.properties $JAVA_OPTIONS"
+JAVA_OPTIONS="-Darchive.configFile=$TESTDIR/archiveConfig.properties -Duispec4j.test.library=junit $JAVA_OPTIONS"
 JAVA_OPTIONS="-DACS.managerhost=localhost $JAVA_OPTIONS"
 JAVA_OPTIONS="-Xmx1024m $JAVA_OPTIONS"
 JAVA_OPTIONS="-Dalma.run.location=$RUNLOCATION $JAVA_OPTIONS"

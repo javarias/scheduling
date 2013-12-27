@@ -59,6 +59,7 @@ import alma.scheduling.acsFacades.ComponentFactory.ComponentDiagnosticTypes;
 import alma.scheduling.datamodel.DAOException;
 import alma.scheduling.datamodel.bookkeeping.Bookkeeper;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
+import alma.scheduling.datamodel.observation.ExecBlock;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.utils.ErrorHandling;
 import alma.scheduling.utils.SchedulingProperties;
@@ -98,6 +99,8 @@ public abstract class AbstractXMLStoreProjectDao
     protected EntitySerializer   entitySerializer;
     
     protected Logger logger;
+    
+    protected Set<ExecBlock> convertedExecBlocks;
     
     // ACS Diagnostics
     private final static ComponentDiagnosticTypes[] xmlStoreDiags = {

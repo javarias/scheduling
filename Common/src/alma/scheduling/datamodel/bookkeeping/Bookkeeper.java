@@ -65,7 +65,7 @@ import alma.scheduling.utils.ErrorHandling;
  *  
  * @author dclarke
  */
-public final class Bookkeeper {
+public class Bookkeeper {
 
 	// Made final simply because I am not sure I could cope with some
 	// lexicographically minded person extending this class and having

@@ -46,7 +46,7 @@ public class CommonContextFactory {
 	public static final String SCHEDULING_OPACITY_INTERPOLATOR_BEAN = "opacityInterpolator";
 	public static final String SCHEDULING_XML_OBSERVATORY_DAO = "xmlObservatoryDao";
 	public static final String SCHEDULING_OBSERVATORY_DAO = "observatoryDao";
-	public static final String SCHEDULING_OBSERVATION_DAO = "observationDao";
+	public static final String SCHEDULING_OBSERVATION_DAO_BEAN = "observationDao";
 	
 	/**
 	 * Create the instance of the context just for the Common subset of Scheduling

@@ -62,8 +62,9 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
         //Check if the time to get the PWV is current or future
         //check if dao supports get value of PWV first
         //In practical terms the current time is now plus half an hour in the future
-        //This will work only for online system, for simulation the weather DAo doesn't support the PWV value
-        if (weatherDao.hasPWV() && (date.getTime() < System.currentTimeMillis() + (29 * 60 * 1000))) {
+        //This will work only for online system, for simulation the weather DAO doesn't support the PWV value
+        System.out.println(!weatherDao.hasPWV() + ", " + (date.getTime() < System.currentTimeMillis() + (29 * 60 * 1000)));
+        if (!weatherDao.hasPWV() || (date.getTime() < System.currentTimeMillis() + (29 * 60 * 1000))) {
         	TemperatureHistRecord tr = weatherDao.getTemperatureForTime(date);
         	ErrorHandling.getInstance().info("temperature record: time = " + tr.getTime() + "; value = "
         			+ tr.getValue());
@@ -138,7 +139,10 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
             //In practical terms the current time is now plus half an hour in the future
             //This will work only for online system, for simulation the weather DAo doesn't support the PWV value
             double pwv;
-            if (!weatherDao.hasPWV() && (date.getTime() < System.currentTimeMillis() + (29 * 60 * 1000))) {
+            double ppwv;
+            long deltaT = (long) (projTimeIncr * 3600.0 * 1000.0); // delta T in
+            // milliseconds
+            if (!weatherDao.hasPWV() || (date.getTime() < System.currentTimeMillis() + (29 * 60 * 1000))) {
 	            TemperatureHistRecord tr = weatherDao.getTemperatureForTime(date);
 	            ErrorHandling.getInstance().debug("temperature record: time = " + tr.getTime()
 	                    + "; value = " + tr.getValue());
@@ -146,17 +150,20 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
 	            ErrorHandling.getInstance().debug("humidity record: time = " + hr.getTime()
 	                    + "; value = " + hr.getValue());
 	            pwv = estimatePWV(hr.getValue(), tr.getValue()); // mm
+	            Date projDate = new Date(date.getTime() + deltaT);
+	            TemperatureHistRecord ptr = weatherDao
+	                    .getTemperatureForTime(projDate);
+	            HumidityHistRecord phr = weatherDao.getHumidityForTime(projDate);
+	            if (weatherDao.hasPWV() && (date.getTime() >= System.currentTimeMillis() + (29 * 60 * 1000)))
+	            	ppwv = weatherDao.getPwvForTime(new Date(date.getTime() + deltaT)); //forecast
+	            else
+	            	ppwv = estimatePWV(phr.getValue(), ptr.getValue()); // estimated
             } else {
             	pwv = weatherDao.getPwvForTime(date);
+            	ppwv = weatherDao.getPwvForTime(new Date(date.getTime() + deltaT)); //forecast
             }
 
-            long deltaT = (long) (projTimeIncr * 3600.0 * 1000.0); // delta T in
-            // milliseconds
-            Date projDate = new Date(date.getTime() + deltaT);
-            TemperatureHistRecord ptr = weatherDao
-                    .getTemperatureForTime(projDate);
-            HumidityHistRecord phr = weatherDao.getHumidityForTime(projDate);
-            double ppwv = estimatePWV(phr.getValue(), ptr.getValue()); // projected
+            
             // PWV, in mm
             PWV tmp = new PWV();
             tmp.setPwv(pwv);

@@ -21,11 +21,9 @@ package alma.scheduling.array.executor;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Formatter;
-import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
@@ -37,7 +35,6 @@ import java.util.logging.Logger;
 import alma.ACSErrTypeCommon.wrappers.AcsJIllegalArgumentEx;
 import alma.Control.ExecBlockEndedEvent;
 import alma.Control.ExecBlockStartedEvent;
-import alma.SchedulingMasterExceptions.SchedulingInternalExceptionEx;
 import alma.SchedulingMasterExceptions.wrappers.AcsJSchedulingInternalExceptionEx;
 import alma.acs.util.UTCUtility;
 import alma.asdmIDLTypes.IDLEntityRef;
@@ -68,10 +65,11 @@ import alma.scheduling.array.executor.services.EventPublisher;
 import alma.scheduling.array.executor.services.Pipeline;
 import alma.scheduling.array.sbQueue.SchedBlockItem;
 import alma.scheduling.array.sessions.SessionManager;
+import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
+import alma.scheduling.datamodel.observation.ExecBlock;
+import alma.scheduling.datamodel.observation.ExecStatus;
 import alma.scheduling.datamodel.obsproject.ObsProject;
-import alma.scheduling.datamodel.obsproject.ObservingParameters;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
-import alma.scheduling.datamodel.obsproject.ScienceParameters;
 import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
 import alma.scheduling.datamodel.weather.HumidityHistRecord;
 import alma.scheduling.datamodel.weather.TemperatureHistRecord;
@@ -794,7 +792,7 @@ public class ExecutionContext {
 			double sensJy = calculateSensitivity();
 
 			// Create ExecStatus for the current Execution
-			addExecStatus(sbStatus, state, sensJy);
+			addExecStatus(sbStatus, state, sensJy, csv);
 
 			// Add the current sensitivity achieved to the total
 			// Check DSA document, SB Status subsection
@@ -818,7 +816,7 @@ public class ExecutionContext {
 			ex.printStackTrace();
 			// TODO: Report in some way that the Sensitivity was not properly
 			// calculated
-			addExecStatus(sbStatus, state, 10D);
+			addExecStatus(sbStatus, state, 10D, csv);
 		}
 		if (sbStatus.getHasExecutionCount()) {
 			sbStatus.setSuccessfulExecutions(sbStatus.getSuccessfulExecutions() + 1);
@@ -958,12 +956,12 @@ public class ExecutionContext {
 	 * 
 	 * @throws SchedulingException
 	 */
-	private void updateForFailure(SBStatus sbStatus, String endTime, int secs) {
+	private void updateForFailure(SBStatus sbStatus, String endTime, int secs, boolean csv) {
 		// Calculate sensitivity for this execution
 		try {
 			double sensJy = calculateSensitivity();
 
-			addExecStatus(sbStatus, StatusTStateType.BROKEN, sensJy);
+			addExecStatus(sbStatus, StatusTStateType.BROKEN, sensJy, csv);
 		} catch (Exception ex) {
 			AcsJSchedulingInternalExceptionEx e = new AcsJSchedulingInternalExceptionEx(
 					ex);
@@ -974,7 +972,7 @@ public class ExecutionContext {
 			ex.printStackTrace();
 			// TODO: Report in some way that the Sensitivity was not properly
 			// calculated
-			addExecStatus(sbStatus, StatusTStateType.BROKEN, 10D);
+			addExecStatus(sbStatus, StatusTStateType.BROKEN, 10D, csv);
 		}
 		if (sbStatus.getHasExecutionCount()) {
 			sbStatus.setFailedExecutions(sbStatus.getFailedExecutions() + 1);
@@ -1127,12 +1125,16 @@ public class ExecutionContext {
 	}
 
 	private void addExecStatus(SBStatus sbStatus, StatusTStateType state,
-			double sensJy) {
+			double sensJy, boolean isCsv) {
+		Date startDate =  new Date(UTCUtility.utcOmgToJava(startedEvent.startTime));
+		Date endDate = new Date(UTCUtility.utcJavaToOmg(endedEvent.endTime));
+		
+		//State Archive related stuff
 		ExecStatusT es = new ExecStatusT();
 		StatusT execStatus = new StatusT();
 		ExecBlockRefT ref = new ExecBlockRefT();
-		final String startTime = dateFormat.format(new Date(startTimestamp));
-		final String endTime = dateFormat.format(new Date(stopTimestamp));
+		final String startTime = dateFormat.format(startDate);
+		final String endTime = dateFormat.format(endDate);
 
 		if (getExecBlockRef() != null)
 			ref.setExecBlockId(getExecBlockRef().entityId);
@@ -1147,6 +1149,29 @@ public class ExecutionContext {
 		execStatus.setState(state);
 		es.setStatus(execStatus);
 		sbStatus.addExecStatus(es);
+		
+		if (isCsv)
+			return;
+		
+		//Only interested in real projects
+		//SWDB related stuff
+		ExecBlock eb = new ExecBlock();
+		eb.setStartTime(startDate);
+		eb.setEndTime(endDate);
+		eb.setExecBlockUid(getExecBlockRef().entityId);
+		eb.setSchedBlockUid(getSbUid());
+		eb.setSensitivityAchieved(sensJy);
+		eb.setExecutive(getSchedBlock().getExecutive().getName());
+		if (state.getType() == StatusTStateType.FULLYOBSERVED_TYPE)
+			eb.setStatus(ExecStatus.SUCCESS);
+		else 
+			eb.setStatus(ExecStatus.FAILURE);
+		try {
+			getModel().getObservationDao().save(eb);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		
 	}
 
 	private String format(ExecStatusT es, String prefix) {
@@ -1190,7 +1215,7 @@ public class ExecutionContext {
 		ObsProject prj = getModel().getObsProjectDao().findByEntityId(
 				schedBlock.getProjectUid());
 		prj.setTotalExecutionTime(time + prj.getTotalExecutionTime());
-
+		
 		// Avoid saves to the SWDB, due synch issues
 		// model.getObsProjectDao().saveOrUpdate(prj);
 		// model.getSchedBlockDao().saveOrUpdate(schedBlock);
@@ -1242,7 +1267,7 @@ public class ExecutionContext {
 		// ousS.setNumberSBsFailed(ousS.getNumberSBsFailed() + 1);
 		// getModel().getStateArchive().update(ousS);
 
-		updateForFailure(sbStatus, dateFormat.format(new Date()), (int) secs);
+		updateForFailure(sbStatus, dateFormat.format(new Date()), (int) secs, schedBlock.getCsv() || schedBlock.isOnCSVLifecycle(sbStatus));
 		StatusTStateType fromStatus = null;
 		StatusTStateType toStatus = null;
 

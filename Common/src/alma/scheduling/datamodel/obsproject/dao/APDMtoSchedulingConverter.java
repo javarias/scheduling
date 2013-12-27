@@ -23,11 +23,15 @@
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Formatter;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 import java.util.logging.Logger;
@@ -63,6 +67,8 @@ import alma.scheduling.datamodel.helpers.ConversionException;
 import alma.scheduling.datamodel.helpers.FrequencyConverter;
 import alma.scheduling.datamodel.helpers.SensitivityConverter;
 import alma.scheduling.datamodel.helpers.TimeConverter;
+import alma.scheduling.datamodel.observation.ExecBlock;
+import alma.scheduling.datamodel.observation.ExecStatus;
 import alma.scheduling.datamodel.obsproject.ArrayType;
 import alma.scheduling.datamodel.obsproject.FieldSource;
 import alma.scheduling.datamodel.obsproject.GenericObservingParameters;
@@ -100,6 +106,7 @@ public class APDMtoSchedulingConverter {
 	 */
 	private static final double defaultSBMaximumHours = 0.5;
 	private static final double defaultSBEstimatedExecutionHours = 0.5;
+	private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 	/* End Constants
 	 * ============================================================= */
 
@@ -122,6 +129,8 @@ public class APDMtoSchedulingConverter {
 	private Phase            phase;
 	private Logger           logger;
 	private Bookkeeper bookie;
+	
+	private Set<ExecBlock> ebs; 
 	
 	private final AbstractXMLStoreProjectDao.XMLStoreImportNotifier notifier;
 	/* End Fields
@@ -284,6 +293,10 @@ public class APDMtoSchedulingConverter {
 	 */
 	public List<ObsProject> convertAPDMProjectsToDataModel(Collection<String> ids) {
 		return convertAPDMProjectsToDataModel(ids.toArray(new String[0]));
+	}
+	
+	public Set<ExecBlock> getAllExecBlocks() {
+		return ebs;
 	}
 	/* End External interface
 	 * ============================================================= */
@@ -737,11 +750,10 @@ public class APDMtoSchedulingConverter {
 		// Create the result
 		SchedBlock schedBlock = new SchedBlock();
 		
+		String sbId = "<<didn't get far enough to set>>";
+		String statusId  = "<<didn't get far enough to set>>";
 		{
 			// Everything in this block is about logging.
-			String sbId = "<<didn't get far enough to set>>";
-			String statusId  = "<<didn't get far enough to set>>";
-
 			alma.entity.xmlbinding.schedblock.SchedBlockEntityT
 					sbEnt = apdmSB.getSchedBlockEntity();
 			if (sbEnt != null) {
@@ -784,6 +796,18 @@ public class APDMtoSchedulingConverter {
 		schedBlock.setCsv(obsProject.getCsv());
 		schedBlock.setManual(obsProject.getManual());
 		schedBlock.setName(apdmSB.getName());
+		
+		//Create ExecBlocks for the SbStatus
+		if (!schedBlock.getCsv()) {
+			if (ebs == null)
+				ebs = new HashSet<ExecBlock>();
+			try {
+				if (archive.getSBStatus(statusId) != null)
+				ebs.addAll(createExecBlocksFromSbStatus(archive.getSBStatus(statusId)));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		
 		// Create objects which hang off the top level SchedBlock, and
 		// hang them off it.
@@ -1504,6 +1528,31 @@ public class APDMtoSchedulingConverter {
 	/* End Conversion of projects
 	 * ============================================================= */
 
+	private Set<ExecBlock> createExecBlocksFromSbStatus(SBStatus sbStatus) {
+		ExecStatusT[] execStatuses = sbStatus.getExecStatus();
+		Set<ExecBlock> retVal = new HashSet<ExecBlock>(execStatuses.length, 1.0F);
+		for(ExecStatusT es: execStatuses) {
+			Date startDate = null, endDate = null;
+			try {
+				startDate = dateFormat.parse(es.getStatus().getStartTime());
+				endDate = dateFormat.parse(es.getStatus().getEndTime());
+			} catch (Exception e) {
+				continue;
+			}
+			ExecBlock eb = new ExecBlock();
+			eb.setExecBlockUid(es.getExecBlockRef().getExecBlockId());
+			eb.setSchedBlockUid(sbStatus.getSchedBlockRef().getEntityId());
+			eb.setStartTime(startDate);
+			eb.setEndTime(endDate);
+			eb.setSensitivityAchieved(es.getSensitivityAchievedJy());
+			if (es.getStatus().getState().getType() == StatusTStateType.FULLYOBSERVED_TYPE)
+				eb.setStatus(ExecStatus.SUCCESS);
+			else 
+				eb.setStatus(ExecStatus.FAILURE);
+			retVal.add(eb);
+		}
+		return retVal;
+	}
 
 	
 	/*

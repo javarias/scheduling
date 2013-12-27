@@ -69,6 +69,9 @@ import alma.scheduling.array.executor.services.ControlArray;
 import alma.scheduling.array.executor.services.Services;
 import alma.scheduling.array.sbQueue.SchedBlockItem;
 import alma.scheduling.array.sessions.SessionManager;
+import alma.scheduling.datamodel.executive.Executive;
+import alma.scheduling.datamodel.observation.ExecBlock;
+import alma.scheduling.datamodel.observation.dao.ObservationDao;
 import alma.scheduling.datamodel.obsproject.FieldSource;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
@@ -98,6 +101,7 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 	private StateEngine stateEngine = mock(StateEngine.class);
 	private ControlArray array = mock(ControlArray.class);
 	private ObsProjectDao prjDao = mock(ObsProjectDao.class);
+	private ObservationDao obsDao = mock(ObservationDao.class);
 	private SchedBlock sb = new SchedBlock();
 	private ObsProject prj = new ObsProject();
 	private ExecutorCallbackNotifier execNotifier;
@@ -138,6 +142,9 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 		sbStatusRef.setEntityId("uid://A000/X000/X03");
 		sbStatusRef.setEntityTypeName("SCHEDBLOCK");
 		sb.setStatusEntity(sbStatusRef);
+		Executive executive = new Executive();
+		executive.setName("ZANZIBAR");
+		sb.setExecutive(executive);
 		prj.setTotalExecutionTime(0.0);
 		
 		ousStatus = new OUSStatus();
@@ -163,10 +170,12 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 			allowing(model).getStateEngine(); will(returnValue(stateEngine));
 			allowing(model).getWeatherDao(); will(returnValue(weatherDao));
 			allowing(model).getOpacityInterpolator(); will(returnValue(opacityInterpolator));
+			allowing(model).getObservationDao(); will(returnValue(obsDao));
 			allowing(weatherDao).getTemperatureForTime(with(any(Date.class))); will(returnValue(new TemperatureHistRecord(0D, 1D, 0D, 0D)));
 			allowing(weatherDao).getHumidityForTime(with(any(Date.class))); will(returnValue(new HumidityHistRecord(0D, 1D, 0D, 0D)));
 			allowing(opacityInterpolator).estimatePWV(with(any(Double.class)), with(any(Double.class))); will(returnValue(0.5));
 			allowing(opacityInterpolator).interpolateOpacityAndTemperature(with(any(Double.class)), with(any(Double.class))); will(returnValue(opacityResult));
+			atMost(1).of(obsDao).save(with(any(ExecBlock.class)));
 		}});
 		
 		execNotifier = new ExecutorCallbackNotifier();

@@ -41,6 +41,10 @@ import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.executive.ExecutivePercentage;
 import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
+import alma.scheduling.datamodel.executive.dao.UserRegistryDao;
+import alma.scheduling.datamodel.executive.dao.UserRegistryDaoImpl;
+import alma.scheduling.datamodel.observation.ExecBlock;
+import alma.scheduling.datamodel.observation.dao.ObservationDao;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
@@ -52,6 +56,7 @@ import alma.scheduling.datamodel.obsproject.dao.ProjectImportEvent;
 import alma.scheduling.datamodel.obsproject.dao.ProjectImportEvent.ImportStatus;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 import alma.scheduling.datamodel.weather.dao.AtmParametersDao;
+import alma.scheduling.input.executive.generated.PI;
 import alma.scheduling.utils.CommonContextFactory;
 import alma.scheduling.utils.DSAContextFactory;
 import alma.scheduling.utils.ErrorHandling;
@@ -73,6 +78,7 @@ public class ArchivePoller implements Observer{
 	private ExecutiveDAO execDao;
 	private ObsProjectDao obsProjectDao;
 	private AtmParametersDao atmDao;
+	private ObservationDao obsDao;
 	
 	private Logger logger;
 	private ErrorHandling handler;
@@ -109,6 +115,7 @@ public class ArchivePoller implements Observer{
 		this.obsProjectDao = ma.getObsProjectDao();
 		this.execDao = ma.getExecutiveDao();
 		this.atmDao = ma.getAtmDao();
+		this.obsDao = ma.getObservationDao();
 		this.pollerBusy = false;
 		configDao = (ConfigurationDao) DSAContextFactory
 				.getContextFromPropertyFile()
@@ -278,6 +285,15 @@ public class ArchivePoller implements Observer{
 					e.getMessage()), e);
 			return;
 		}
+		if (inDao.getConvertedExecBlocks() != null) {
+			for(ExecBlock eb: inDao.getConvertedExecBlocks()) {
+				try {
+					obsDao.save(eb);
+				} catch(Exception e) {
+					continue;
+				}
+			}
+		}
 		for(ObsProject prj: allProjects)
 			linkData(prj);
 		if (allProjects.size() > 0) {
@@ -355,6 +371,11 @@ public class ArchivePoller implements Observer{
     	}
     	season.setExecutivePercentage(eps);
     	execDao.saveObservingSeasonsAndExecutives(seasons, execs);
+    	
+    	//PIs
+//    	UserRegistryDao urDao = new UserRegistryDaoImpl();
+//    	List<PI> pis = urDao.getAllPI();
+//    	execDao.saveOrUpdate(pis);
     }
     
     private void linkData(ObsProject proj){
@@ -666,7 +687,14 @@ public class ArchivePoller implements Observer{
 			//WORKAROUND: Check JIRA:CSV-2149
 			//Avoid projects that doesn't show at Scheduler; go back 2 minutes before the last update
 			lastUpdate = new Date(lastUpdate.getTime() - 2 * 60 * 1000);
-			incrementalPollArchive(lastUpdate);
+			try {
+				incrementalPollArchive(lastUpdate);
+			} catch(Exception  e) {
+				synchronized (this) {
+					pollerBusy = false;
+				}
+				return;
+			}
 		}
 		
 		configDao.deleteAll();

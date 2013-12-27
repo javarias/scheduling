@@ -35,10 +35,11 @@
 		<property name="sensitivityAchieved" type="double">
 			<column name="SENSITIVITY_ACHIEVED" />
 		</property>
+		<property name="executive" type="string" column="EXECUTIVE"/>
 	</class>
 
 	<class name="alma.scheduling.datamodel.observation.Session"
-		table="SESSION">
+		table="SESSIONS">
 		<composite-id>
 			<key-property name="entityUid" column="ENTITY_UID" type="string"/>
 			<key-property name="partUid" column="PART_UID" type="string"/>

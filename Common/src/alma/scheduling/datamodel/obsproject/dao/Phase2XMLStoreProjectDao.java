@@ -49,6 +49,7 @@ import alma.lifecycle.stateengine.StateEngine;
 import alma.lifecycle.stateengine.constants.Role;
 import alma.lifecycle.stateengine.constants.Subsystem;
 import alma.scheduling.datamodel.DAOException;
+import alma.scheduling.datamodel.observation.ExecBlock;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.dao.ProjectImportEvent.ImportStatus;
 import alma.scheduling.utils.ErrorHandling;
@@ -108,7 +109,13 @@ public class Phase2XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 			new APDMtoSchedulingConverter(archive,
                                           APDMtoSchedulingConverter.Phase.PHASE2,
                                           logger, notifier, bookie);
-		return converter.convertAPDMProjectsToDataModel();
+		List<ObsProject> retVal = converter.convertAPDMProjectsToDataModel();
+		convertedExecBlocks = converter.getAllExecBlocks();
+		return retVal;
+	}
+	
+	public Set<ExecBlock> getConvertedExecBlocks() {
+		return convertedExecBlocks;
 	}
 
 	/**
@@ -148,6 +155,7 @@ public class Phase2XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 					logger.info(String.format(
 							"Got APDM SBStatus %s",						
 							status.getSBStatusEntity().getEntityId()));
+					archive.cache(status);
 				} catch (Exception e) {
 		        	logger.warning("can not deserialise SBStatus from State System (skipping)");
 		            e.printStackTrace(System.out);
