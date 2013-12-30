@@ -203,7 +203,7 @@ public class ResultComposer {
 		ObsProjectDao obsProjectDao = (ObsProjectDao) context.getBean("obsProjectDao");
 		SchedBlockDao schedBlockDao = (SchedBlockDao) context.getBean("sbDao");
 		ExecutiveDAO execDao = (ExecutiveDAO) context.getBean("execDao");
-		ObservationDao obsDao = context.getBean(DSAContextFactory.SCHEDULING_OBSERVATION_DAO, ObservationDao.class);
+		ObservationDao obsDao = context.getBean(DSAContextFactory.SCHEDULING_OBSERVATION_DAO_BEAN, ObservationDao.class);
 		
 		// Bring one by one observation project and create the output object for them
 		for( ObsProject op : obsProjectDao.getObsProjectsOrderBySciRank() ){

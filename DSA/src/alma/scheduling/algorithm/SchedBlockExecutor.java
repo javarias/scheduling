@@ -30,7 +30,6 @@ import java.util.Date;
 import alma.scheduling.datamodel.observation.ExecBlock;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
-import alma.scheduling.psm.sim.ResultComposer;
 
 public interface SchedBlockExecutor {
 
