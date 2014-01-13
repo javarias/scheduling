@@ -1,138 +1,49 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 
-<project basedir="." default="build" name="Common">
-	<property environment="env"/>
-	<property name="Common.location" value="../Common"/>
-	<property name="Master.location" value="../Master"/>
-	<property name="junit.output.dir" value="../junit"/>
-	<property name="DSA.location" value="../DSA"/>
-	<property name="debuglevel" value="source,lines,vars"/>
-	<property name="target" value="1.6"/>
-	<property name="source" value="1.6"/>
-	<property name="instrumented.dir" value="instrumented"/>
-	<property name="cobertura.dir" value="${env.COBERTURA_HOME}" />
-
-	<path id="cobertura.classpath">
-		<fileset dir="${cobertura.dir}">
-			<include name="cobertura.jar" />
-			<include name="lib/**/*.jar" />
-		</fileset>
+<project default="compile" name="scheduling-common">
+	<property file="build.properties"/>
+	<path id="castor.class.path">
+		<fileset dir="lib" includes="castor-*.jar"/>
+		<fileset dir="lib" includes="commons-*.jar"/>
+		<fileset dir="lib" includes="stax-*.jar"/>
 	</path>
-
-	<target name="init">
-		<mkdir dir="bin"/>
-		<copy includeemptydirs="false" todir="bin">
-			<fileset dir="src">
-				<exclude name="**/*.java"/>
-			</fileset>
-		</copy>
-		<copy includeemptydirs="false" todir="bin">
-			<fileset dir="test">
-				<exclude name="**/*.java"/>
-			</fileset>
-		</copy>
-	</target>
 	
-	<target name="clean">
-		<delete dir="bin"/>
-	</target>
 	
-	<target depends="clean" name="cleanall">
-	</target>
+	<target name="compile" depends="resolve, codegen" description="--> compile the project">
+        <mkdir dir="${classes.dir}" />
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="lib.path.id" debug="true" includeAntRuntime="false"/>
+    </target>
 	
-	<target depends="build-project" name="build"/>
-
-	<target depends="init" name="build-project">
-		<echo message="${ant.project.name}: ${ant.file}"/>
-		<javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
-			<src path="src"/>
-		</javac>
-		<javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
-			<src path="test"/>
-		</javac>
-	</target>
-
-	<target name="instrument" depends="build">
-		<delete file="cobertura.ser"/>
-		<delete dir="${instrumented.dir}"/>
-		<cobertura-instrument todir="${instrumented.dir}">
-			<fileset dir="bin">
-				<include name="**/*.class" />
-				<exclude name="**/*Test*.class" />
-				<exclude name="**/*Tests*.class" />
-				<exclude name="**/generated/**/*.class" />
-				<exclude name="alma/scheduling/testgen/*.class" />
-				<exclude name="alma/scheduling/testutils/*.class" />
-				<exclude name="alma/archive/**/*.class" />
-				<exclude name="org/hibernate/**/*.class" />
-			</fileset>
-		</cobertura-instrument>
-	</target>
-
-	<target name="test">
-		<mkdir dir="${junit.output.dir}" />
-		<junit fork="yes" printsummary="withOutAndErr">
-			<sysproperty key="net.sourceforge.cobertura.datafile"
-        		file="cobertura.ser" />
-			<formatter type="xml" />
-			<test name="alma.scheduling.datamodel.bookkeeping.BookkeepingTest" todir="${junit.output.dir}" />
-			<classpath>
-				<pathelement path="${instrumented.dir}"/>
-				<pathelement path="bin"/>
-				<path refid="cobertura.classpath"/>
-				<pathelement path="${classpath}"/>
-			</classpath>
-		</junit>
-		<junit fork="yes" printsummary="withOutAndErr">
-			<sysproperty key="net.sourceforge.cobertura.datafile"
-        		file="cobertura.ser" />
-			<formatter type="xml" />
-			<test name="alma.scheduling.datamodel.observatory.dao.ArrayConfigurationLiteReaderTest" todir="${junit.output.dir}" />
-			<classpath>
-				<pathelement path="${instrumented.dir}"/>
-				<pathelement path="bin"/>
-				<path refid="cobertura.classpath"/>
-				<pathelement path="${classpath}"/>
-			</classpath>
-		</junit>
-		<junit fork="yes" printsummary="withOutAndErr">
-			<sysproperty key="net.sourceforge.cobertura.datafile"
-        		file="cobertura.ser" />
-			<formatter type="xml" />
-			<test name="alma.scheduling.datamodel.observation.MappingTest" todir="${junit.output.dir}" />
-			<classpath>
-				<pathelement path="${instrumented.dir}"/>
-				<pathelement path="bin"/>
-				<path refid="cobertura.classpath"/>
-				<pathelement path="${classpath}"/>
-			</classpath>
-		</junit>
-			<junit fork="yes" printsummary="withOutAndErr">
-			<sysproperty key="net.sourceforge.cobertura.datafile"
-        		file="cobertura.ser" />
-			<formatter type="xml" />
-			<jvmarg value="-Dalma.scheduling.properties=Common/src/scheduling.properties" />
-			<test name="alma.scheduling.datamodel.observation.dao.ObservationDaoImplTest" todir="${junit.output.dir}" />
-			<classpath>
-				<pathelement path="${instrumented.dir}"/>
-				<pathelement path="bin"/>
-				<path refid="cobertura.classpath"/>
-				<pathelement path="${classpath}"/>
-			</classpath>
-		</junit>
-		<delete file="coverage.xml" />
-		<cobertura-report format="xml" destdir="." >
-			<fileset dir="src">
-				<include name="src/**/*.java" />
-			</fileset>
-		</cobertura-report>
-	</target>
-	<target name="junitreport">
-		<junitreport todir="${junit.output.dir}">
-			<fileset dir="${junit.output.dir}">
-				<include name="TEST-*.xml"/>
-			</fileset>
-			<report format="frames" todir="${junit.output.dir}"/>
-		</junitreport>
+		<import file="${common.dir}/common.xml"/>
+	
+	<target name="codegen" depends="resolve" description="--> generate source code from XML XSD files">
+		<taskdef name="castor-srcgen"
+             classname="org.castor.anttask.CastorCodeGenTask"
+             classpathref="castor.class.path"/>
+        <castor-srcgen file="config/executive.xsd"
+                   todir="src"
+                   package="alma.scheduling.input.executive.generated"
+                   types="j2"
+                   warnings="false" />
+       	<castor-srcgen file="config/output.xsd"
+                   todir="src"
+                   package="alma.scheduling.output.generated"
+                   types="j2"
+                   warnings="false" />
+       	<castor-srcgen file="config/obsunit.xsd"
+                   todir="src"
+                   package="alma.scheduling.input.obsproject.generated"
+                   types="j2"
+                   warnings="false" />
+       	<castor-srcgen file="config/config.xsd"
+                   todir="src"
+                   package="alma.scheduling.input.config.generated"
+                   types="j2"
+                   warnings="false" />
+        <castor-srcgen file="config/observatory.xsd"
+                   todir="src"
+                   package="alma.scheduling.input.observatory.generated"
+                   types="j2"
+                   warnings="false" />
 	</target>
 </project>

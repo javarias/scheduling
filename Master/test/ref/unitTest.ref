@@ -1,4 +1,0 @@
-1 -  -- alma.acs.testsupport.tat.TATJUnitRunner alma.scheduling.master.compimpl.MasterSchedulerUnitTests
-1 - ----------T--:--:--.--- INFO [acsStartJava] Starting Java application: alma.acs.testsupport.tat.TATJUnitRunner alma.scheduling.master.compimpl.MasterSchedulerUnitTests
-1 - TEST_RUNNER_REPORT success/total: 6/6
-1 - JUnit test run succeeded

@@ -2,20 +2,16 @@
 <classpath>
 	<classpathentry kind="src" path="Common/src"/>
 	<classpathentry kind="src" path="DSA/src"/>
-	<classpathentry kind="src" path="Array/src"/>
-	<classpathentry kind="src" path="Master/src"/>
-	<classpathentry kind="src" path="ArchiveUpdater/src"/>
 	<classpathentry kind="src" path="PlanningModeSim/src"/>
-	<classpathentry kind="src" path="ArchiveUpdater/test"/>
 	<classpathentry kind="src" path="PlanningModeSim/test"/>
-	<classpathentry kind="src" path="Array/test"/>
 	<classpathentry kind="src" path="Common/test"/>
 	<classpathentry kind="src" path="DSA/test"/>
-	<classpathentry kind="src" path="Master/test"/>
 	<classpathentry kind="src" path="IntTest/test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="acs.INTLIST_CONTAINER/INTLIST/jar,zip"/>
-	<classpathentry kind="con" path="acs.ACSROOT_CONTAINER/ACS-current/jar,zip"/>
-	<classpathentry kind="lib" path="ArchiveUpdater/lib/SchedulingArchiveUpdater.jar"/>
+	<classpathentry kind="lib" path="Common/lib/castor-xml.jar" sourcepath="/export/home/ruffles/javarias/.m2/repository/org/codehaus/castor/castor-xml/1.3.2/castor-xml-1.3.2-sources.jar"/>
+	<classpathentry kind="lib" path="Common/lib/castor-core.jar"/>
+	<classpathentry kind="lib" path="Common/lib/log4j.jar"/>
+	<classpathentry kind="lib" path="Common/lib/slf4j-api.jar"/>
+	<classpathentry kind="lib" path="Common/lib/slf4j-log4j12.jar"/>
 	<classpathentry kind="output" path="Scheduling/object/schedulingComp"/>
 </classpath>

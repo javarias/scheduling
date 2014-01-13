@@ -196,17 +196,17 @@ public class XmlObservatoryDaoImpl implements XmlObservatoryDao {
                 			ac.setAntennaDiameter(7.0);
                 		else
                 			ac.setAntennaDiameter(12.0);
-                		switch (xmlAC.getArrayType().getType()) {
-                		case ArrayTypeT.ACA_TYPE:
+                		switch (xmlAC.getArrayType()) {
+                		case ACA:
                 			ac.setArrayType(ArrayType.ACA);
                 			break;
-                		case ArrayTypeT.SEVEN_M_TYPE:
+                		case SEVEN_M:
                 			ac.setArrayType(ArrayType.SEVEN_M);
                 			break;
-                		case ArrayTypeT.TP_ARRAY_TYPE:
+                		case TP_ARRAY:
                 			ac.setArrayType(ArrayType.TP_ARRAY);
                 			break;
-                		case ArrayTypeT.TWELVE_M_TYPE:
+                		case TWELVE_M:
                 			ac.setArrayType(ArrayType.TWELVE_M);
                 			break;
                 		}
