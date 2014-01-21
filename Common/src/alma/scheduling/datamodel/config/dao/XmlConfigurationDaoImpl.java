@@ -71,7 +71,7 @@ public class XmlConfigurationDaoImpl implements ConfigurationDao {
                 return config;
             FileReader reader = new FileReader(confFileName);
             alma.scheduling.input.config.generated.Configuration xmlConfig =
-                alma.scheduling.input.config.generated.Configuration.unmarshalConfiguration(reader);
+                alma.scheduling.input.config.generated.Configuration.unmarshal(reader);
             config = new Configuration();
             config.setWorkDirectory(System.getenv(APRC_WORK_DIR));
             config.setProjectDirectory(xmlConfig.getProjectDirectory());
@@ -86,9 +86,9 @@ public class XmlConfigurationDaoImpl implements ConfigurationDao {
             config.setArrayCenterLongitude(xmlConfig.getArrayCenterLongitude());
             config.setMaxWindSpeed(xmlConfig.getMaxWindSpeed());
             ScienceGradeConfig sc = new ScienceGradeConfig();
-            sc.setnGradeAPrj(xmlConfig.getGradeA());
-            sc.setnGradeBPrj(xmlConfig.getGradeB());
-            sc.setnGradeCPrj(xmlConfig.getGradeC()); 
+            sc.setnGradeAPrj((int) xmlConfig.getGradeA());
+            sc.setnGradeBPrj((int) xmlConfig.getGradeB());
+            sc.setnGradeCPrj((int) xmlConfig.getGradeC()); 
             config.setScienceGradeConfig(sc);
             return config;
         } catch (FileNotFoundException e) {

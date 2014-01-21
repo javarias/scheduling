@@ -125,7 +125,7 @@ public class XmlObservatoryDaoImpl implements XmlObservatoryDao {
             try {
                 // process the TelescopeEquipment section
                 ObservatoryCharacteristics xmlRoot =
-                    ObservatoryCharacteristics.unmarshalObservatoryCharacteristics(new FileReader(file));
+                    ObservatoryCharacteristics.unmarshal(new FileReader(file));
                 AntennaT[] xmlAnts = xmlRoot.getTelescopeEquipment().getAntenna();
                 for (AntennaT xmlAnt : xmlAnts) {
                     Antenna ant = createAntenna(xmlAnt);
@@ -180,7 +180,7 @@ public class XmlObservatoryDaoImpl implements XmlObservatoryDao {
 	                }
                 }
                 else if (xmlRoot.getObservatoryCharacteristicsChoice().getArrayLite() != null) {
-                	ArrayConfigurationLiteT[] xmlACs = xmlRoot.getObservatoryCharacteristicsChoice().getArrayLite().getArrayConfiguration();
+                	ArrayConfigurationLiteT[] xmlACs = xmlRoot.getObservatoryCharacteristicsChoice().getArrayLite().getArrayConfigurationLite();
                 	for (ArrayConfigurationLiteT xmlAC: xmlACs) {
                 		ArrayConfiguration ac = new ArrayConfiguration();
                 		ac.setStartTime(xmlAC.getStartTime());
@@ -354,20 +354,20 @@ public class XmlObservatoryDaoImpl implements XmlObservatoryDao {
 		String baseFilename = "ArrayConfig";
 		ObservatoryCharacteristics xmlRoot = new ObservatoryCharacteristics();
 		ObservatoryCharacteristicsChoice choice = new ObservatoryCharacteristicsChoice();
-		ArrayConfigurationLiteSetT xmlConfigSet = new ArrayConfigurationLiteSetT();
+		alma.scheduling.input.observatory.generated.ArrayLite xmlConfigSet = new alma.scheduling.input.observatory.generated.ArrayLite();
 		choice.setArrayLite(xmlConfigSet);
 		xmlRoot.setObservatoryCharacteristicsChoice(choice);
-		TelescopeEquipmentT equip = new TelescopeEquipmentT();
-		equip.setAntenna(new AntennaT[0]);
-		equip.setPad(new PadT[0]);
-		equip.setEquipment(new EquipmentT[0]);
-		EquipmentOperationT eqop = new EquipmentOperationT();
-		eqop.setOperation(new AssemblyContainerOperationT[0]);
+		alma.scheduling.input.observatory.generated.TelescopeEquipment equip = new alma.scheduling.input.observatory.generated.TelescopeEquipment();
+		equip.setAntenna(new alma.scheduling.input.observatory.generated.Antenna[0]);
+		equip.setPad(new alma.scheduling.input.observatory.generated.Pad[0]);
+		equip.setEquipment(new alma.scheduling.input.observatory.generated.Equipment[0]);
+		alma.scheduling.input.observatory.generated.EquipmentOperation eqop = new alma.scheduling.input.observatory.generated.EquipmentOperation();
+		eqop.setOperation(new alma.scheduling.input.observatory.generated.Operation[0]);
 		xmlRoot.setTelescopeEquipment(equip);
 		xmlRoot.setEquipmentOperation(eqop);
 		for (ArrayConfiguration arrConf: configs) {
 			if (arrConf.getAntennaInstallations().size() == 0) {
-				ArrayConfigurationLiteT xmlConfig = new ArrayConfigurationLiteT();
+				alma.scheduling.input.observatory.generated.ArrayConfigurationLite xmlConfig = new alma.scheduling.input.observatory.generated.ArrayConfigurationLite();
 				xmlConfig.setArrayName(arrConf.getArrayName());
 				xmlConfig.setConfigurationName(arrConf.getConfigurationName());
 				cal.setTime(arrConf.getEndTime());
@@ -392,7 +392,7 @@ public class XmlObservatoryDaoImpl implements XmlObservatoryDao {
 				case TWELVE_M:
 					xmlConfig.setArrayType(ArrayTypeT.TWELVE_M);
 				}
-				xmlConfigSet.addArrayConfiguration(xmlConfig);
+				xmlConfigSet.addArrayConfigurationLite(xmlConfig);
 			}
 		}
 		

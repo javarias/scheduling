@@ -27,8 +27,6 @@ package alma.scheduling.datamodel.obsproject;
 import java.util.HashSet;
 import java.util.Set;
 
-import alma.entity.xmlbinding.sbstatus.SBStatus;
-import alma.entity.xmlbinding.sbstatus.SBStatusEntityT;
 import alma.scheduling.datamodel.executive.Executive;
 
 public class SchedBlock extends ObsUnit {
@@ -67,8 +65,6 @@ public class SchedBlock extends ObsUnit {
     private ScienceGrade letterGrade;
     
     private Float scienceScore;
-    
-    private SBStatusEntityT statusEntity;
     
     private Boolean runQuicklook;
     
@@ -200,14 +196,6 @@ public class SchedBlock extends ObsUnit {
         this.scienceScore = scienceScore;
     }
 
-    public SBStatusEntityT getStatusEntity() {
-        return statusEntity;
-    }
-
-    public void setStatusEntity(SBStatusEntityT statusEntity) {
-        this.statusEntity = statusEntity;
-    }
-
     public Boolean getRunQuicklook() {
         return runQuicklook;
     }
@@ -230,156 +218,6 @@ public class SchedBlock extends ObsUnit {
 
 	public void setManual(boolean manual) {
 		this.manual = manual;
-	}
-
-	/**
-	 * @param apdmSB 
-	 * @param status
-	 */
-	private void initialiseExecutionCount(SBStatus status) {
-		if (getSchedBlockControl().getIndefiniteRepeat()) {
-			status.setHasExecutionCount(false);
-			status.setExecutionsRemaining(0);
-		} else {
-			status.setHasExecutionCount(true);
-			status.setExecutionsRemaining(getSchedBlockControl().getExecutionCount());
-		}
-	}
-
-	/**
-	 * @param status
-	 */
-	private void initialiseExecutionTime(alma.entity.xmlbinding.schedblock.SchedBlock apdmSB,
-										 SBStatus                                     status) {
-		double s = getObsUnitControl().getMaximumTime() * 3600; // convert from hours to seconds
-
-		if (s <= 0.001 ) {
-			status.setHasTimeLimit(false);
-			status.setSecondsRemaining(0);
-		} else {
-			status.setHasTimeLimit(true);
-			status.setSecondsRemaining((int)s);
-		}
-	}
-
-	/**
-	 * @param status
-	 */
-	private void initialiseSensitivity(alma.entity.xmlbinding.schedblock.SchedBlock apdmSB,
-									   SBStatus                                     status) {
-		
-		Target target = getSchedulingConstraints().getRepresentativeTarget();
-		ScienceParameters science = null;
-		
-		for (ObservingParameters op : target.getObservingParameters()) {
-			if (op instanceof ScienceParameters) {
-				science = (ScienceParameters) op;
-			}
-		}
-
-		
-		double j = (science == null)? -1: science.getSensitivityGoal();
-		
-		if (j <= 0.001 ) {
-			status.setHasSensitivityGoal(false);
-			status.setSensitivityGoalJy(-1);
-		} else {
-			status.setHasSensitivityGoal(true);
-			status.setSensitivityGoalJy(j);
-		}
-	}
-	
-	
-	public void initialiseBookkeeping(alma.entity.xmlbinding.schedblock.SchedBlock apdmSB,
-			                          SBStatus                                     status) {
-		initialiseExecutionCount(status);
-		initialiseExecutionTime(apdmSB, status);
-		initialiseSensitivity(apdmSB, status);
-//		status.setBookkeepingInitialized(true);
-	}
-
-	public boolean bookkeepingIsInitialised(SBStatus status) {
-		return status.getBookkeepingInitialized();
-	}
-
-	public boolean needsMoreExecutions(SBStatus status) {
-		if (status.getHasExecutionCount() &&
-				status.getExecutionsRemaining() <= 0) {
-			// No more executions allowed
-			return false;
-		}
-		if (status.getHasTimeLimit() &&
-				status.getSecondsRemaining() <= 0) {
-			// No more time allowed
-			return false;
-		}
-		if (status.getHasSensitivityGoal() &&
-				status.getSensitivityAchievedJy() <= status.getSensitivityGoalJy()) {
-			// Sensitivity reached
-			return false;
-		}
-
-		return true;
-	}
-
-
-	public String bookkeepingString(SBStatus status) {
-		final StringBuilder b = new StringBuilder();
-		
-		b.append("SchedBlock: ");
-		b.append(getUid());
-		b.append(" - ");
-		b.append(status.getStatus().getState().toString());
-		b.append("\n");
-		
-		b.append("\tgetIndefiniteRepeat(): ");
-		b.append(schedBlockControl.getIndefiniteRepeat());
-		b.append('\n');
-		
-		b.append('\t');
-		if (status.getHasExecutionCount()) {
-			b.append("getHasExecutionCount(): true, getExecutionsRemaining(): ");
-			b.append(" (S: ");
-			b.append(status.getSuccessfulExecutions());
-			b.append(", F: ");
-			b.append(status.getFailedExecutions());
-			b.append(")");
-			b.append(status.getExecutionsRemaining());
-		} else {
-			b.append("getHasExecutionCount(): false");
-		}
-		b.append('\n');
-		
-		b.append('\t');
-		if (status.getHasTimeLimit()) {
-			b.append("getHasTimeLimit(): true, getSecondsRemaining(): ");
-			b.append(status.getExecutionsRemaining());
-			b.append(" (S: ");
-			b.append(status.getSuccessfulSeconds());
-			b.append(", F: ");
-			b.append(status.getFailedSeconds());
-			b.append(")");
-		} else {
-			b.append("getHasTimeLimit(): false");
-		}
-		b.append('\n');
-		
-		b.append('\t');
-		if (status.getHasSensitivityGoal()) {
-			b.append("getHasSensitivityGoal(): true, getSensitivityAchievedJy(): ");
-			b.append(status.getSensitivityAchievedJy());
-			b.append(", getSensitivityGoalJy(): ");
-			b.append(status.getSensitivityGoalJy());
-		} else {
-			b.append("getHasSensitivityGoal(): false");
-		}
-		b.append('\n');
-
-		final boolean result = needsMoreExecutions(status);
-		b.append("needsMoreExecutions = ");
-		b.append(result);
-		
-		return b.toString();
 	}
 	
 	public SkyCoordinates getRepresentativeCoordinates() {
@@ -420,15 +258,6 @@ public class SchedBlock extends ObsUnit {
 
 	public void setRevision(String revision) {
 		this.revision = revision;
-	}
-
-	public boolean isOnCSVLifecycle(SBStatus sbStatus) {
-		try {
-			final String state = sbStatus.getStatus().getState().toString();
-			return state.startsWith("CSV");
-		} catch (Exception e) {
-			return false;
-		}
 	}
 
 	@Override

@@ -179,7 +179,7 @@
     </xs:complexType>
     <xs:complexType name="ArrayConfigurationLiteSetT">
     	<xs:sequence>
-    		<xs:element name="ArrayConfiguration" type="ArrayConfigurationLiteT" minOccurs="1" maxOccurs="unbounded"/>
+    		<xs:element name="ArrayConfigurationLite" type="ArrayConfigurationLiteT" minOccurs="1" maxOccurs="unbounded"/>
     	</xs:sequence>
     </xs:complexType>
     <xs:complexType name="AntennaInstallationT">

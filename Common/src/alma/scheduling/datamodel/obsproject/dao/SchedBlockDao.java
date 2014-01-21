@@ -22,16 +22,13 @@ package alma.scheduling.datamodel.obsproject.dao;
 
 import java.util.List;
 
-import org.hibernate.criterion.Criterion;
-
-import alma.scheduling.datamodel.GenericDao;
 import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 
-public interface SchedBlockDao extends GenericDao {
+public interface SchedBlockDao {
     List<SchedBlock> findAll();
     int countAll();
     List<SchedBlock> findSchedBlocksWithVisibleRepresentativeTarget(double lst);
@@ -45,15 +42,7 @@ public interface SchedBlockDao extends GenericDao {
     public List<SchedBlock> findSchedBlockWithStatusReady();
     public List<SchedBlock> findSchedBlockBetweenFrequencies(double lowFreq, double highFreq);
     
-    /**
-     * @param crit The Hibernate Criteria used to do the search
-     * 
-     * @return The Sched Blocks found according to the criteria
-     */
-    public List<SchedBlock> findSchedBlocks(Criterion crit);
-    
-    public List<SchedBlock> findSchedBlocks(Criterion crit, List<SchedBlock> sbs);
-    
+   
     public SchedBlock findByEntityId(String entityId);
     
     public List<SchedBlock> findSchedBlocksForProject(ObsProject project);

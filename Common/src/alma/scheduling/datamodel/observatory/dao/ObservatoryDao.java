@@ -27,9 +27,8 @@ package alma.scheduling.datamodel.observatory.dao;
 import java.util.List;
 
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
-import alma.scheduling.datamodel.GenericDao;
 
-public interface ObservatoryDao extends GenericDao {
+public interface ObservatoryDao {
 
     public List<ArrayConfiguration> findArrayConfigurations();
     

@@ -27,10 +27,9 @@ package alma.scheduling.datamodel.weather.dao;
 import java.util.List;
 import java.util.Set;
 
-import alma.scheduling.datamodel.GenericDao;
 import alma.scheduling.datamodel.weather.AtmParameters;
 
-public interface AtmParametersDao extends GenericDao{
+public interface AtmParametersDao {
 
     public void loadAtmParameter(Object domainObject);
 

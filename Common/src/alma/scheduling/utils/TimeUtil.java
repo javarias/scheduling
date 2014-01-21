@@ -33,8 +33,6 @@ import java.util.TimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import alma.common.gui.components.astrotime.AstroTime;
-
 public class TimeUtil {
 
     private static Logger logger = LoggerFactory.getLogger(TimeUtil.class);

@@ -20,16 +20,16 @@
  *******************************************************************************/
 package alma.scheduling.datamodel.weather.dao;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.SortedMap;
 
-import org.hibernate.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import alma.scheduling.datamodel.GenericDaoImpl;
 import alma.scheduling.datamodel.config.Configuration;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.weather.HumidityHistRecord;
@@ -39,13 +39,20 @@ import alma.scheduling.datamodel.weather.TemperatureHistRecord;
 import alma.scheduling.datamodel.weather.WeatherHistRecord;
 import alma.scheduling.datamodel.weather.WindSpeedHistRecord;
 
-public abstract class WeatherHistoryDAOImpl extends GenericDaoImpl implements WeatherHistoryDAO {
+public abstract class WeatherHistoryDAOImpl implements WeatherHistoryDAO {
 
     private static Logger logger = LoggerFactory.getLogger(WeatherHistoryDAOImpl.class);
 
     // --- Spring managed properties ---
     
     protected ConfigurationDao configurationDao;
+    
+    protected SortedMap<Double, TemperatureHistRecord> tempHistRecords;
+    protected SortedMap<Double, HumidityHistRecord> humidityHistRecords;
+    protected SortedMap<Double, OpacityHistRecord> opacityHistRecords;
+    protected SortedMap<Double, WindSpeedHistRecord> windSpdHistRecords;
+    protected SortedMap<Double, PathFluctHistRecord> pathFluctHistRecords;
+    
     public void setConfigurationDao(ConfigurationDao configurationDao) {
         this.configurationDao = configurationDao;
     }
@@ -71,28 +78,37 @@ public abstract class WeatherHistoryDAOImpl extends GenericDaoImpl implements We
     
     @Override
     public void loadTemperatureHistory(List<TemperatureHistRecord> records) {
-        saveOrUpdate(records);
+        for(TemperatureHistRecord r : records) {
+        	tempHistRecords.put(r.getTime(), r);
+        }
     }
 
     @Override
     public void loadHumidityHistory(List<HumidityHistRecord> records) {
-        saveOrUpdate(records);
+    	for(HumidityHistRecord r: records) {
+    		humidityHistRecords.put(r.getTime(), r);
+    	}
     }
 
     @Override
     public void loadOpacityHistory(List<OpacityHistRecord> records) {
-        saveOrUpdate(records);
+    	for(OpacityHistRecord r: records) {
+    		opacityHistRecords.put(r.getTime(), r);
+    	}
     }
 
     @Override
     public void loadWindSpeedHistory(List<WindSpeedHistRecord> records) {
-        saveOrUpdate(records);
+    	for(WindSpeedHistRecord r: records) {
+    		windSpdHistRecords.put(r.getTime(), r);
+    	}
     }
     
 	@Override
 	public void loadPathFluctHistory(List<PathFluctHistRecord> records) {
-		saveOrUpdate(records);
-		
+		for(PathFluctHistRecord r: records) {
+			pathFluctHistRecords.put(r.getTime(), r);
+		}
 	}
 
     @Override
@@ -102,63 +118,20 @@ public abstract class WeatherHistoryDAOImpl extends GenericDaoImpl implements We
     }
 
     /**
-     * @deprecated As of release ALMA-9.1. Replaced by {@link MemoryWeatherHistoryDAOImpl#getTemperatureForTime(Date)}
-     * 
-     */
-    @Override
-    @Deprecated 
-    public TemperatureHistRecord getTemperatureForTime(Date ut) {
-    	Calendar cal = Calendar.getInstance();
-		cal.setTime(ut);
-		//This calculate the number of days of the current year
-		cal.set(cal.get(Calendar.YEAR), 0, 0, 0, 0, 0);
-		Date b_y = cal.getTime(); //first instant of the current year
-		long diff = ut.getTime() - b_y.getTime();
-		double days = diff /1000.0 /60.0 /60.0 /24.0;
-        double dt = (long)(Math.round(days * 1000000.0))/1000000.0; // time (days) since the begin of the current year
-        //approximated at 6 decimal places
-        cal.setTime(ut);
-        logger.debug("dt = " + dt);
-        Query query;
-        query = getSession().getNamedQuery("TemperatureHistRecord.getMaxTime");
-        Double maxTime = (Double) query.uniqueResult();
-        logger.info("max time in temperature historical records: " + maxTime);
-        dt = dt % maxTime;
-        query = getSession().getNamedQuery("TemperatureHistRecord.getIntervalLowerBound");
-        query.setParameter(0, dt);
-        query.setMaxResults(1);
-        List<TemperatureHistRecord> temps = (List<TemperatureHistRecord>) query.list();
-        logger.info("retrieved # of temperature records: " + temps.size());
-        
-        Double temperature = temps.get(0).getValue();        
-        if (temperature < -500) {
-            logger.info("lower bound not a valid value, looking at the next 5 values");
-            query = getSession().getNamedQuery("TemperatureHistRecord.getIntervalUpperBound");
-            query.setParameter(0, temps.get(0).getTime());
-            query.setMaxResults(5);
-            temps = (List<TemperatureHistRecord>) query.list();
-            for (Iterator<TemperatureHistRecord> iter = temps.iterator(); iter.hasNext();) {
-                TemperatureHistRecord t = iter.next();
-                if (t.getValue() > -500) {
-                    return t;
-                }
-            }
-        }
-        
-        logger.info("first record: " + temps.get(0).getTime() + ", " + temps.get(0).getValue());
-        return temps.get(0);
-         //return new TemperatureHistRecord(0.0, 0.20, 0.1, 0.1);
-    }
-
-    /**
      * 
      * @param t the class to do the query it must be a subclass of {@link WeatherHistRecord}
-     * @return All the {@link WeatherHistRecords} og type t found in Database ordered by time ascending
+     * @return All the {@link WeatherHistRecords} of type t found in Database ordered by time ascending
      */
     @SuppressWarnings("unchecked")
     public <T extends WeatherHistRecord> List<T> findAllOrdered(Class<T> t) {
-        Query q = this.getSession().createQuery("from " + t.getName() +" wp order by wp.time asc");
-        return q.list();
+    	if (t.getCanonicalName().equals(TemperatureHistRecord.class.getCanonicalName())) {
+    		return (List<T>) new ArrayList<TemperatureHistRecord>(tempHistRecords.values());
+    	} else if (t.getCanonicalName().equals(HumidityHistRecord.class.getCanonicalName())) {
+    		return (List<T>) new ArrayList<HumidityHistRecord>(humidityHistRecords.values());
+    	} else if (t.getCanonicalName().equals(OpacityHistRecord.class.getCanonicalName())) {
+    		return (List<T>) new ArrayList<OpacityHistRecord>(opacityHistRecords.values());
+    	} else 
+    		return null;
     }
     
     

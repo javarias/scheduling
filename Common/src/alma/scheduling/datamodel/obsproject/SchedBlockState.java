@@ -24,32 +24,10 @@
  */
 package alma.scheduling.datamodel.obsproject;
 
-import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
-import alma.scheduling.datamodel.helpers.ConversionException;
-
 public enum SchedBlockState {
     READY,
     RUNNING,
     FULLY_OBSERVED,
     CANCELED;
     
-    public static SchedBlockState getFrom(StatusTStateType apdmStatus)
-    	throws ConversionException {
-    	switch (apdmStatus.getType()) {
-    	case StatusTStateType.READY_TYPE:
-    	case StatusTStateType.PHASE1SUBMITTED_TYPE:
-    	case StatusTStateType.PHASE2SUBMITTED_TYPE:
-    	case StatusTStateType.CSVREADY_TYPE:
-    		return SchedBlockState.READY;
-    	case StatusTStateType.RUNNING_TYPE:
-    	case StatusTStateType.CSVRUNNING_TYPE:
-    		return SchedBlockState.RUNNING;
-    	case StatusTStateType.FULLYOBSERVED_TYPE:
-    		return SchedBlockState.FULLY_OBSERVED;
-    	default:
-    		throw new ConversionException(String.format(
-    				"Unexpected APDM state (%s) - don't know how to interpret this for Scheduling",
-    				apdmStatus.toString()));
-    	}
-    }
 }

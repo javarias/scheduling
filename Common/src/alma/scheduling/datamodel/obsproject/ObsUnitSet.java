@@ -27,15 +27,12 @@ package alma.scheduling.datamodel.obsproject;
 import java.util.HashSet;
 import java.util.Set;
 
-import alma.entity.xmlbinding.ousstatus.OUSStatusEntityT;
-
 public class ObsUnitSet extends ObsUnit {
 
 	private String entityPartId;
 	
     private Set<ObsUnit> obsUnits = new HashSet<ObsUnit>();
     
-    private OUSStatusEntityT statusEntity;
     
     public Set<ObsUnit> getObsUnits() {
         return obsUnits;
@@ -48,14 +45,6 @@ public class ObsUnitSet extends ObsUnit {
     public void addObsUnit(ObsUnit obsUnit) {
         obsUnit.setParent(this);
         obsUnits.add(obsUnit);
-    }
-
-    public OUSStatusEntityT getStatusEntity() {
-        return statusEntity;
-    }
-
-    public void setStatusEntity(OUSStatusEntityT statusEntity) {
-        this.statusEntity = statusEntity;
     }
 
 	public String getEntityPartId() {

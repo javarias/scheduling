@@ -20,32 +20,26 @@
  *******************************************************************************/
 package alma.scheduling.datamodel.weather.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import alma.scheduling.datamodel.GenericDaoImpl;
 import alma.scheduling.datamodel.weather.AtmParameters;
 
-public class AtmParametersDaoImpl extends GenericDaoImpl implements AtmParametersDao {
+public class AtmParametersDaoImpl implements AtmParametersDao {
 
+	private Logger logger = LoggerFactory.getLogger(AtmParametersDaoImpl.class);
+	
     /* freq , pwv*/
-    private AtmParameters[][] atmParamsCache = null; 
+    private AtmParameters[][] atmParamsCache = null;
+	private Set<AtmParameters> atmParams;
+    
     
     public AtmParametersDaoImpl() {
 
-    }
-    
-    @Override
-    public void loadAtmParameter(Object domainObject) {
-        getHibernateTemplate().save(domainObject);
-    }
-
-    @Override
-    @Transactional
-    public void loadAtmParameters(Set<AtmParameters> params) {
-        saveOrUpdate(params);
     }
     
     @Override
@@ -72,11 +66,6 @@ public class AtmParametersDaoImpl extends GenericDaoImpl implements AtmParameter
         retVal[0] = atmParamsCache[getFreqPosition(freq)][getPwvPosition(pwv)];
         retVal[1] = atmParamsCache[getFreqPosition(freq) + 1][(getPwvPosition(pwv) == 6 ? getPwvPosition(pwv) : getPwvPosition(pwv) + 1)];
         return retVal;
-    }
-
-    @Override
-    public List<AtmParameters> getAllAtmParameters() {
-        return this.findAll(AtmParameters.class);
     }
     
     /* returns the lower bound, always*/
@@ -108,7 +97,6 @@ public class AtmParametersDaoImpl extends GenericDaoImpl implements AtmParameter
         return 0;
     }
     
-    @Transactional
     private void fillCache(){
         logger.debug("Filling ATM Parameters Cache");
         List<AtmParameters> atmParams = getAllAtmParameters();
@@ -118,7 +106,7 @@ public class AtmParametersDaoImpl extends GenericDaoImpl implements AtmParameter
                            [getPwvPosition(atm.getPWV())] != null){
                 logger.debug(atm.getFreq() + "->" + getFreqPosition(atm.getFreq()) + " " +
                         atm.getPWV() + "->" + getPwvPosition(atm.getPWV()));
-                logger.debug(atm.getFreq() * 10 - 200);
+                logger.debug("" + (atm.getFreq() * 10 - 200));
             }
             atmParamsCache[getFreqPosition(atm.getFreq())]
                            [getPwvPosition(atm.getPWV())] = atm;         
@@ -126,13 +114,27 @@ public class AtmParametersDaoImpl extends GenericDaoImpl implements AtmParameter
     }
 
 	@Override
+	public void loadAtmParameter(Object domainObject) {
+		throw new RuntimeException("NOOP");
+	}
+
+	@Override
+	public void loadAtmParameters(Set<AtmParameters> params) {
+		atmParams = params;
+	}
+
+	@Override
+	public List<AtmParameters> getAllAtmParameters() {
+		return new ArrayList<AtmParameters>(atmParams);
+	}
+
+	@Override
 	public long getRowsCount() {
-		return (Long) getSession().createQuery("select count(*) from AtmParameters atm").uniqueResult();
+		return atmParams.size();
 	}
 
 	@Override
 	public void deleteAll() {
-		getSession().createQuery("delete from " + AtmParameters.class.getCanonicalName()).executeUpdate();
-		
+		throw new RuntimeException("NOOP");
 	}
 }

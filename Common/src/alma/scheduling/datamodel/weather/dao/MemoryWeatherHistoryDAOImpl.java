@@ -23,9 +23,7 @@ package alma.scheduling.datamodel.weather.dao;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
-import org.hibernate.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,12 +69,6 @@ public class MemoryWeatherHistoryDAOImpl extends WeatherHistoryDAOImpl
      */
     @SuppressWarnings("unchecked")
 	private <T extends WeatherHistRecord> T getWeatherRecordForTime(Date ut, T[] cache) {
-        if(maxTime == null){
-            Query query;
-            query = getSession().getNamedQuery("TemperatureHistRecord.getMaxTime");
-            maxTime = (Double) query.uniqueResult();
-            logger.debug("max time in temperature historical records: " + maxTime);
-        }
         //Get time in hours relative to the beginning of current year given by the date
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(ut.getTime());

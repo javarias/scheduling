@@ -24,8 +24,6 @@
  */
 package alma.scheduling.datamodel.obsproject;
 
-import alma.entity.xmlbinding.projectstatus.ProjectStatusEntityT;
-
 public class ObsProject {
 
     /** Surrogate identifier */
@@ -101,11 +99,6 @@ public class ObsProject {
      */
     private Double totalExecutionTime;
     
-    /**
-     * Status entity. Use this field to retrieve the corresponding status from
-     * the StateArchive DAO.
-     */
-    private ProjectStatusEntityT statusEntity;
     
     /**
      * Is this a commissioning project or not?
@@ -216,14 +209,6 @@ public class ObsProject {
 
     public void setUid(String uid) {
         this.uid = uid;
-    }
-
-    public ProjectStatusEntityT getStatusEntity() {
-        return statusEntity;
-    }
-
-    public void setStatusEntity(ProjectStatusEntityT statusEntity) {
-        this.statusEntity = statusEntity;
     }
     
     public String getAffiliation() {

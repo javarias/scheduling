@@ -26,12 +26,11 @@ package alma.scheduling.datamodel.obsproject.dao;
 
 import java.util.List;
 
-import alma.scheduling.datamodel.GenericDao;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.ScienceGrade;
 
-public interface ObsProjectDao extends GenericDao {
+public interface ObsProjectDao {
     
     int countAll();
 

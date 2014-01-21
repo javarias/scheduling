@@ -42,7 +42,6 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.obsproject.ArrayType;
@@ -138,7 +137,7 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
             String prjFile = iter.next();
             try {
                 alma.scheduling.input.obsproject.generated.ObsProject xmlPrj =
-                    alma.scheduling.input.obsproject.generated.ObsProject.unmarshalObsProject(new FileReader(prjFile));
+                    alma.scheduling.input.obsproject.generated.ObsProject.unmarshal(new FileReader(prjFile));
                 logger.info("Processing ObsProject: " + xmlPrj.getCode() + " (" + xmlPrj.getArchiveUID() + ")");
                 ObsProject prj = new ObsProject();
                 prj.setUid(xmlPrj.getArchiveUID());
@@ -298,7 +297,6 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
         return null;
     }
     
-    @Transactional(readOnly=true)
     public void saveObsProject(ObsProject prj) {
     	logger.info("Exporting ObsProject: " + prj.getCode() + " (" + prj.getUid() + ")");
         String prjDir = configurationDao.getConfiguration().getProjectDirectory();
@@ -314,7 +312,7 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
         if (prj.getLetterGrade() != null)
         	xmlPrj.setGrade(GradeT.valueOf(prj.getLetterGrade().toString()));
         ObsUnit obsUnit = prj.getObsUnit();
-        xmlPrj.setObsUnitSet((alma.scheduling.input.obsproject.generated.ObsUnitSetT) getXmlObsUnit(obsUnit));
+        xmlPrj.setObsUnitSet((alma.scheduling.input.obsproject.generated.ObsUnitSet) getXmlObsUnit(obsUnit));
         
         String fileName = String.format("%s/ObsProject_%s.xml", absPrjDir, prj.getCode()); 
         File newFile = new File(fileName);
@@ -339,7 +337,6 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
         }
     }
     
-    @Transactional(readOnly=true)
     private alma.scheduling.input.obsproject.generated.ObsUnitT getXmlObsUnit(ObsUnit obsUnit) {
         
         if (obsUnit instanceof ObsUnitSet) {
@@ -350,9 +347,9 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                 alma.scheduling.input.obsproject.generated.ObsUnitT subXmlObsUnit =
                     getXmlObsUnit(subObsUnit);
                 if (subXmlObsUnit instanceof alma.scheduling.input.obsproject.generated.SchedBlockT) {
-                    xmlObsUnitSet.addSchedBlock((alma.scheduling.input.obsproject.generated.SchedBlockT) subXmlObsUnit);
+                    xmlObsUnitSet.addSchedBlock((alma.scheduling.input.obsproject.generated.SchedBlock) subXmlObsUnit);
                 } else if (subXmlObsUnit instanceof alma.scheduling.input.obsproject.generated.ObsUnitSetT) {
-                    xmlObsUnitSet.addObsUnitSet((alma.scheduling.input.obsproject.generated.ObsUnitSetT) subXmlObsUnit);
+                    xmlObsUnitSet.addObsUnitSet((alma.scheduling.input.obsproject.generated.ObsUnitSet) subXmlObsUnit);
                 }
             }
             return xmlObsUnitSet;
@@ -362,14 +359,14 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
             SchedBlock sb = (SchedBlock) obsUnit;
             // WeatherConstraints
             if( sb.getWeatherConstraints() != null ){
-            	WeatherConstraintsT wc = new WeatherConstraintsT();
+            	alma.scheduling.input.obsproject.generated.WeatherConstraints wc = new alma.scheduling.input.obsproject.generated.WeatherConstraints();
 	            wc.setMaxOpacity(sb.getWeatherConstraints().getMaxOpacity());
 	            wc.setMaxSeeing(sb.getWeatherConstraints().getMaxSeeing());
 	            wc.setMaxWindVelocity(sb.getWeatherConstraints().getMaxWindVelocity());
 	            wc.setMinPhaseStability(sb.getWeatherConstraints().getMinPhaseStability());
 	            xmlSchedBlock.setWeatherConstraints(wc);
             } else {
-            	WeatherConstraintsT wc = new WeatherConstraintsT();
+            	alma.scheduling.input.obsproject.generated.WeatherConstraints wc = new alma.scheduling.input.obsproject.generated.WeatherConstraints();
 	            wc.setMaxOpacity(0.0);
 	            wc.setMaxSeeing(0.0);
 	            wc.setMaxWindVelocity(0.0);
@@ -380,13 +377,13 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
             Set<ObservingParameters> obsParams = sb.getObservingParameters();
             Map<XmlDomainXRef, ObsParametersT> xmlObsParams =
                 new HashMap<XmlDomainXRef, ObsParametersT>();
-            ObsParametersT theOne = null;
+            alma.scheduling.input.obsproject.generated.ObsParameters theOne = null;
             for (ObservingParameters op : obsParams) {
                 if (op instanceof ScienceParameters) {
                     ScienceParameters scp = (ScienceParameters) op;
-                    ObsParametersT xmlOP = new ObsParametersT();
+                    alma.scheduling.input.obsproject.generated.ObsParameters xmlOP = new alma.scheduling.input.obsproject.generated.ObsParameters();
                     xmlOP.setId(getXmlRefId(ObsParametersT.class, scp.getId()));
-                    ScienceParametersT xmlSciParams = new ScienceParametersT();
+                    alma.scheduling.input.obsproject.generated.ScienceParameters xmlSciParams = new alma.scheduling.input.obsproject.generated.ScienceParameters();
                     xmlSciParams.setDuration(0.0);
                     xmlSciParams.setRepresentativeBandwidth(scp.getRepresentativeBandwidth());
                     xmlSciParams.setRepresentativeFrequency(scp.getRepresentativeFrequency());
@@ -422,10 +419,10 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                 if (!xmlSources.containsKey(new XmlDomainXRef(FieldSourceT.class, src.getId())))
                     xmlSources.put(new XmlDomainXRef(FieldSourceT.class, src.getId()), xmlSrc);
             }
-            xmlSchedBlock.setTarget(xmlTargets.values().toArray(new TargetT[0]));
-            xmlSchedBlock.setFieldSource(xmlSources.values().toArray(new FieldSourceT[0]));
+            xmlSchedBlock.setTarget(xmlTargets.values().toArray(new alma.scheduling.input.obsproject.generated.Target[0]));
+            xmlSchedBlock.setFieldSource(xmlSources.values().toArray(new alma.scheduling.input.obsproject.generated.FieldSource[0]));
             // SchedulingConstraints
-            SchedulingConstraintsT sc = new SchedulingConstraintsT();
+            alma.scheduling.input.obsproject.generated.SchedulingConstraints sc = new alma.scheduling.input.obsproject.generated.SchedulingConstraints();
             sc.setMaxAngularResolution(sb.getSchedulingConstraints().getMaxAngularResolution());
             sc.setRepresentativeFrequency(sb.getSchedulingConstraints().getRepresentativeFrequency());
             
@@ -435,14 +432,14 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                                                           .getId()));
             xmlSchedBlock.setSchedulingConstraints(sc);
             // Preconditions
-            PreconditionsT pc = new PreconditionsT();
+            alma.scheduling.input.obsproject.generated.Preconditions pc = new alma.scheduling.input.obsproject.generated.Preconditions();
             pc.setMinAllowedHA(sb.getPreConditions().getMinAllowedHourAngle());
             pc.setMaxAllowedHA(sb.getPreConditions().getMaxAllowedHourAngle());
             xmlSchedBlock.setPreconditions(pc);
             // SchedBlockControl
             ObsUnitControl ouCtrl = sb.getObsUnitControl();
             SchedBlockControl sbCtrl = sb.getSchedBlockControl();
-            SchedBlockControlT xmlSbCtrl = new SchedBlockControlT();
+            alma.scheduling.input.obsproject.generated.SchedBlockControl xmlSbCtrl = new alma.scheduling.input.obsproject.generated.SchedBlockControl();
             if (ouCtrl.getArrayRequested() != null)
             	xmlSbCtrl.setArrayRequested(ArrayTypeT.valueOf(ouCtrl.getArrayRequested().toString()));
             else 

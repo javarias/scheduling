@@ -29,7 +29,6 @@ import java.util.Date;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.datamodel.config.Configuration;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
@@ -63,7 +62,6 @@ public class XmlOutputDaoImpl implements OutputDao {
     }
 
     @Override
-    @Transactional(readOnly=true)
     public void saveResults(Results results) {
         // TODO Auto-generated method stub
         alma.scheduling.output.generated.Results r = 

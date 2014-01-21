@@ -13,5 +13,10 @@
 	<classpathentry kind="lib" path="Common/lib/log4j.jar"/>
 	<classpathentry kind="lib" path="Common/lib/slf4j-api.jar"/>
 	<classpathentry kind="lib" path="Common/lib/slf4j-log4j12.jar"/>
+	<classpathentry kind="lib" path="Common/lib/spring-core.jar"/>
+	<classpathentry kind="lib" path="Common/lib/spring-beans.jar"/>
+	<classpathentry kind="lib" path="Common/lib/spring-aop.jar"/>
+	<classpathentry kind="lib" path="Common/lib/spring-context.jar"/>
+	<classpathentry kind="lib" path="Common/lib/spring-expression.jar"/>
 	<classpathentry kind="output" path="Scheduling/object/schedulingComp"/>
 </classpath>
