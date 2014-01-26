@@ -24,6 +24,7 @@
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
+import java.util.Collection;
 import java.util.List;
 
 import alma.scheduling.datamodel.obsproject.ObsProject;
@@ -41,6 +42,8 @@ public interface ObsProjectDao {
     List<ObsProject> getObsProjectsOrderBySciRank();
     
     void saveOrUpdate(ObsProject prj);
+    
+    public void saveOrUpdate(Collection<ObsProject> prj);
     
     ObsProject getObsProject(ObsUnit ou);
 
@@ -78,5 +81,7 @@ public interface ObsProjectDao {
      * Updates the state of the projects and its SchedBlocks to READY
      */
     public void setObsProjectStatusAsReady();
+    
+    public <T> Collection<T> findAll(Class<T> clazz);
     
 }

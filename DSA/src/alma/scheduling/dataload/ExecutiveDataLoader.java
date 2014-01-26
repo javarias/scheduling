@@ -24,9 +24,6 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.datamodel.executive.PI;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
@@ -56,7 +53,6 @@ public class ExecutiveDataLoader implements DataLoader {
     }
 
     @Override
-    @Transactional(readOnly=false, propagation=Propagation.MANDATORY)
     public void load() {
         logger.info("Populating the DB with Exec data");
         dbDao.saveObservingSeasonsAndExecutives(xmlDao.getAllObservingSeason(), xmlDao.getAllExecutive());

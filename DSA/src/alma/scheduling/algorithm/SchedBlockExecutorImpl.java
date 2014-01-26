@@ -37,7 +37,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import alma.scheduling.algorithm.astro.InterferometrySensitivityCalculator;
-import alma.scheduling.datamodel.GenericDao;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.executive.ExecutivePercentage;
 import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
@@ -219,7 +218,7 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
         ets.setTimeSpent(executionTime / 3600000.0F);
         ExecutivePercentage ep = execDao.getExecutivePercentage(schedBlock.getExecutive(), execDao.getCurrentSeason());
         ep.setRemainingObsTime(ep.getRemainingObsTime() - schedBlock.getSchedBlockControl().getSbMaximumTime().floatValue());
-        ((GenericDao) execDao).saveOrUpdate(ets); // TODO fix interfaces instead
+        execDao.saveOrUpdate(ets); // TODO fix interfaces instead
 //        ((GenericDao) execDao).saveOrUpdate(ep); // TODO fix interfaces instead
         
         

@@ -28,7 +28,6 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.dataload.DataLoader;
 import alma.scheduling.datamodel.obsproject.ObsProject;
@@ -56,7 +55,6 @@ public class XmlObsProjectDataLoaderImpl implements DataLoader {
     }
 
     @Override
-    @Transactional (readOnly=false)
     public void load() {
     	List<ObsProject> projects = null;
     	projects = xmlDao.getAllObsProjects();

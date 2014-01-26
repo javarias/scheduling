@@ -24,9 +24,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Restrictions;
-
 import alma.scheduling.algorithm.sbselection.AbstractBaseSelector;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
@@ -48,13 +45,13 @@ public class BandSelector extends AbstractBaseSelector {
 		return null;
 	}
 
-	@Override
-	public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
-		Integer [] b = new Integer[allowedBands.size()];
-		allowedBands.toArray(b);
-		Criterion c = Restrictions.in("schedulingConstraints.representativeBand", b);
-		return c;
-	}
+//	@Override
+//	public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
+//		Integer [] b = new Integer[allowedBands.size()];
+//		allowedBands.toArray(b);
+//		Criterion c = Restrictions.in("schedulingConstraints.representativeBand", b);
+//		return c;
+//	}
 	
 	public void setAllowedBands(Set<Integer> bands) {
 		this.allowedBands = bands;

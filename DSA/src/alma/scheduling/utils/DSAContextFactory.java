@@ -47,14 +47,12 @@ import javax.xml.transform.stream.StreamResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.WebApplicationContext;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import alma.scheduling.algorithm.PoliciesContainer;
-import alma.scheduling.algorithm.PoliciesContainersDirectory;
 import alma.scheduling.algorithm.SchedulingPolicyValidator;
 /**
  * 
@@ -121,7 +119,6 @@ public class DSAContextFactory extends CommonContextFactory {
 		for (String name: policies.keySet()) {
 			container.getPolicies().add(name);
 		}
-		PoliciesContainersDirectory.getInstance().put(container.getUuid(), container);
 		return context;
 	}
 	
@@ -207,7 +204,6 @@ public class DSAContextFactory extends CommonContextFactory {
 		for (String name: policies.keySet()) {
 			container.getPolicies().add(name);
 		}
-		PoliciesContainersDirectory.getInstance().put(container.getUuid(), container);
 		return context;
 	}
 	
@@ -245,9 +241,9 @@ public class DSAContextFactory extends CommonContextFactory {
 		return result.getWriter().toString();
 	}
 	
-	public static void setWebApplicationContext(WebApplicationContext ctx) {
-		if(context != null)
-			logger.warn("Overriding already set context. This could be disastrous if the context was already set!");
-		context = ctx;
-	}
+//	public static void setWebApplicationContext(WebApplicationContext ctx) {
+//		if(context != null)
+//			logger.warn("Overriding already set context. This could be disastrous if the context was already set!");
+//		context = ctx;
+//	}
 }

@@ -24,6 +24,7 @@
  */
 package alma.scheduling.datamodel.observatory.dao;
 
+import java.util.Collection;
 import java.util.List;
 
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
@@ -33,4 +34,12 @@ public interface ObservatoryDao {
     public List<ArrayConfiguration> findArrayConfigurations();
     
     public void deleteAllArrayConfigurations();
+    
+    public <T> void saveOrUpdate(Collection<T> objs);
+    
+    public <T> void deletaAll(Collection<T> objs);
+    
+    public <T> Collection<T> findAll(Class<T> clazz);
+
+	public void deleteAll(Object findAll);
 }

@@ -27,8 +27,6 @@ package alma.scheduling.algorithm.sbselection;
 import java.util.Collection;
 import java.util.Date;
 
-import org.hibernate.criterion.Criterion;
-
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 
@@ -51,28 +49,6 @@ public interface SchedBlockSelector {
      * @throws NoSbSelectedException if no selection is possible
      */
     public Collection<SchedBlock> select(Date ut, ArrayConfiguration arrConf) throws NoSbSelectedException;
-    
-   
-    /**
-     * If the query is done over <i>SchedBlocks</i>, who implement this method must use the alias
-     * <b>sb</b> for schedblocks. For Example: </br>
-     * Do a query for SchecBlock.manual: <i><b>sb.manual</b></i> </br>
-     * </br>
-     * Aliases also must be used for:</br>
-     * <i>schedulingConstraints.representativeTarget</i>: <b>rt</b> </br>
-     * <i>schedulingConstraints.representativeTarget.source</i>:<b>s</b> </br>
-     * <i>executive.executivePercentage</i>: <b>ep</b> </br>
-     * </br>
-     * for example: </br>
-     * "schedulingConstraints.representativeTarget.source.coordinates.RA" you
-     * must replace it by "s.coordinates.RA"
-     * </br>
-     * All this alias are defined as part of the criteria created by the {@link MasterSelector#select()}
-     * 
-     * @return the criterion for the SchedBlocks ('sb') to be used in conjunction
-     * with the others selectors 
-     */
-     public Criterion getCriterion(Date ut, ArrayConfiguration arrConf);
      
      /**
       * Determine if the SchedBlock passed as parameter can be selected by the class

@@ -24,10 +24,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.hibernate.criterion.Conjunction;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Restrictions;
-
 import alma.scheduling.algorithm.sbselection.AbstractBaseSelector;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
@@ -66,21 +62,21 @@ public class MoonAvoidanceSelector extends AbstractBaseSelector {
         return sbs;
     }
 
-    @Override
-    public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
-        MoonAstroData moonData = CoordinatesUtil.getMoonAstroData(ut);
-        double highRa, lowRa, highDec, lowDec;
-        highRa = moonData.getRA() + moonData.getAngularDiameter() / 2;
-        lowRa = moonData.getRA() - moonData.getAngularDiameter() / 2;
-        highDec = moonData.getDec() + moonData.getAngularDiameter() / 2;
-        lowDec = moonData.getDec() - moonData.getAngularDiameter() / 2;
-        Conjunction conj = Restrictions.conjunction();
-        conj.add(Restrictions.ge("s.coordinates.RA", new Double(lowRa)));
-        conj.add(Restrictions.le("s.coordinates.RA", new Double(highRa)));
-        conj.add(Restrictions.ge("s.coordinates.Dec", new Double(lowDec)));
-        conj.add(Restrictions.le("s.coordinates.Dec", new Double(highDec)));
-        Criterion crit = Restrictions.not(conj);
-        return crit;
-    }
+//    @Override
+//    public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
+//        MoonAstroData moonData = CoordinatesUtil.getMoonAstroData(ut);
+//        double highRa, lowRa, highDec, lowDec;
+//        highRa = moonData.getRA() + moonData.getAngularDiameter() / 2;
+//        lowRa = moonData.getRA() - moonData.getAngularDiameter() / 2;
+//        highDec = moonData.getDec() + moonData.getAngularDiameter() / 2;
+//        lowDec = moonData.getDec() - moonData.getAngularDiameter() / 2;
+//        Conjunction conj = Restrictions.conjunction();
+//        conj.add(Restrictions.ge("s.coordinates.RA", new Double(lowRa)));
+//        conj.add(Restrictions.le("s.coordinates.RA", new Double(highRa)));
+//        conj.add(Restrictions.ge("s.coordinates.Dec", new Double(lowDec)));
+//        conj.add(Restrictions.le("s.coordinates.Dec", new Double(highDec)));
+//        Criterion crit = Restrictions.not(conj);
+//        return crit;
+//    }
 
 }

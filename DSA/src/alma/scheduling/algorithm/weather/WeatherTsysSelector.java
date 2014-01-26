@@ -28,8 +28,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,19 +69,19 @@ public class WeatherTsysSelector extends AbstractBaseSelector {
         return selSBs;
     }
 
-    @Override
-    public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
-        /*
-         * from SchedBlock sb where ((sb.weatherDependentVariables.projectedTsys
-         * - sb.weatherDependentVariables.tsys) /
-         * sb.weatherDependentVariables.tsys) < ?
-         */
-        Criterion crit = Restrictions
-                .sqlRestriction("( this_.WEATHER_VARS_PROJ_TSYS - "
-                        + "this_.WEATHER_VARS_TSYS ) /  this_.WEATHER_VARS_TSYS < "
-                        + tsysVariation);
-        return crit;
-    }
+//    @Override
+//    public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
+//        /*
+//         * from SchedBlock sb where ((sb.weatherDependentVariables.projectedTsys
+//         * - sb.weatherDependentVariables.tsys) /
+//         * sb.weatherDependentVariables.tsys) < ?
+//         */
+//        Criterion crit = Restrictions
+//                .sqlRestriction("( this_.WEATHER_VARS_PROJ_TSYS - "
+//                        + "this_.WEATHER_VARS_TSYS ) /  this_.WEATHER_VARS_TSYS < "
+//                        + tsysVariation);
+//        return crit;
+//    }
 
     @Override
     public boolean canBeSelected(SchedBlock sb, Date date) {

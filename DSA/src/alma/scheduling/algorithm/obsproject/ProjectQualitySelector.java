@@ -26,9 +26,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Restrictions;
-
 import alma.scheduling.algorithm.sbselection.AbstractBaseSelector;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
@@ -45,24 +42,24 @@ public class ProjectQualitySelector extends AbstractBaseSelector {
         super(selectorName);
     }
 
-    @Override
-    public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
-    	ArrayList<ScienceGrade> enumAllowedGrades = new ArrayList<ScienceGrade>();
-    	if (allowedGrades != null || allowedGrades.size() > 0) {
-    		for(String grade: allowedGrades) {
-    			try {
-    				enumAllowedGrades.add(ScienceGrade.valueOf(grade));
-    			} catch (RuntimeException ex) {
-    				System.out.println("Unknown grade detected: " + grade);
-    			}
-    		}
-    		List<String> uids = prjDao.getObsProjectsUidsbySciGrade(enumAllowedGrades);
-    		if (uids.size() == 0)
-    			return null;
-    		return Restrictions.in("projectUid", uids);
-    	}
-        return null;
-    }
+//    @Override
+//    public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
+//    	ArrayList<ScienceGrade> enumAllowedGrades = new ArrayList<ScienceGrade>();
+//    	if (allowedGrades != null || allowedGrades.size() > 0) {
+//    		for(String grade: allowedGrades) {
+//    			try {
+//    				enumAllowedGrades.add(ScienceGrade.valueOf(grade));
+//    			} catch (RuntimeException ex) {
+//    				System.out.println("Unknown grade detected: " + grade);
+//    			}
+//    		}
+//    		List<String> uids = prjDao.getObsProjectsUidsbySciGrade(enumAllowedGrades);
+//    		if (uids.size() == 0)
+//    			return null;
+//    		return Restrictions.in("projectUid", uids);
+//    	}
+//        return null;
+//    }
 
     @Override
     public Collection<SchedBlock> select(Date ut, ArrayConfiguration arrConf)

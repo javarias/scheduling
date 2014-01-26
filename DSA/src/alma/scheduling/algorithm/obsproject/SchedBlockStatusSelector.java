@@ -23,9 +23,6 @@ package alma.scheduling.algorithm.obsproject;
 import java.util.Collection;
 import java.util.Date;
 
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Restrictions;
-
 import alma.scheduling.algorithm.sbselection.AbstractBaseSelector;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
@@ -55,10 +52,10 @@ public class SchedBlockStatusSelector extends AbstractBaseSelector {
         return sbDao.findSchedBlockWithStatusReady();
     }
     
-    @Override
-    public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
-        Criterion crit = Restrictions.eq("schedBlockControl.state", SchedBlockState.READY);
-        return crit;
-    }
+//    @Override
+//    public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
+//        Criterion crit = Restrictions.eq("schedBlockControl.state", SchedBlockState.READY);
+//        return crit;
+//    }
 
 }

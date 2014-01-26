@@ -3,13 +3,20 @@
         organisation="org.almaobservatory.scheduling"
         module="Common"
         status="integration"/>
+    <configurations>
+      <conf name="core"/>
+      <conf name="standalone" extends="core"/>
+    </configurations>
+    <publications>
+      <artifact name="scheduling-common" type="jar" conf="core"/>
+    </publications>
     <dependencies>
-        <dependency org="org.codehaus.castor" name="castor-xml" rev="1.3.2" conf="default"/>
-        <dependency org="org.codehaus.castor" name="castor-codegen" rev="1.3.2" conf="default"/>
-        <dependency org="org.codehaus.castor" name="castor-anttasks" rev="1.3.2" conf="default"/>
-        <dependency org="org.codehaus.castor" name="castor-xml-schema" rev="1.3.2" conf="default"/>
-        <dependency org="org.slf4j" name="slf4j-api" rev="1.7.5" conf="default"/>
-        <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.5" conf="default"/>
-        <dependency org="org.springframework" name="spring-context" rev="3.2.6.RELEASE" conf="default"/>
+        <dependency org="org.codehaus.castor" name="castor-xml" rev="1.3.2" conf="core->default"/>
+        <dependency org="org.codehaus.castor" name="castor-codegen" rev="1.3.2" conf="core->default"/>
+        <dependency org="org.codehaus.castor" name="castor-anttasks" rev="1.3.2" conf="core->default"/>
+        <dependency org="org.codehaus.castor" name="castor-xml-schema" rev="1.3.2" conf="core->default"/>
+        <dependency org="org.slf4j" name="slf4j-api" rev="1.7.5" conf="core->default"/>
+        <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.5" conf="core->default"/>
+        <dependency org="org.springframework" name="spring-context" rev="3.2.6.RELEASE" conf="core->default"/>
     </dependencies>
 </ivy-module>

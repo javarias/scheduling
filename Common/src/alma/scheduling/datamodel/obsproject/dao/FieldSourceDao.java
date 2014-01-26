@@ -22,41 +22,17 @@
  * MA 02111-1307  USA
  *
  */
-package alma.scheduling.dataload;
+package alma.scheduling.datamodel.obsproject.dao;
 
-import java.util.Iterator;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class CompositeDataLoader implements DataLoader {
+import alma.scheduling.datamodel.obsproject.FieldSource;
+
+public interface FieldSourceDao{
 	
-	private static Logger logger = LoggerFactory.getLogger(CompositeDataLoader.class);
-
-    private List<DataLoader> loaders;
-        
-    public void setLoaders(List<DataLoader> loaders) {
-        this.loaders = loaders;
-    }
-
-    @Override
-    public void load() throws Exception {
-        for (Iterator<DataLoader> iter = loaders.iterator(); iter.hasNext(); ) {
-        	DataLoader it = iter.next();
-        	logger.info("Loading data from " + it.getClass().getName());
-            try{            	
-            	it.load();
-            }catch( Exception e ){
-            	logger.error("Bean: " + it.getClass());
-            	throw e;
-            }
-        }
-    }
-    
-    @Override
-    public void clear() {
-    	for (DataLoader l: loaders) {
-    		l.clear();
-    	}
-    }
+	public List<FieldSource> getSourcesWithoutRiseAndSetTimes();
+	
+	public int getNumberOfSourcesWithoutUpdate();
+	
+	public int saveOrUpdate(FieldSource fs);
 }

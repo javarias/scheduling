@@ -27,8 +27,6 @@ package alma.scheduling.dataload.observatory;
 
 import java.util.List;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import alma.scheduling.dataload.DataLoader;
 import alma.scheduling.datamodel.observatory.AntennaInstallation;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
@@ -36,7 +34,6 @@ import alma.scheduling.datamodel.observatory.TelescopeEquipment;
 import alma.scheduling.datamodel.observatory.dao.ObservatoryDao;
 import alma.scheduling.datamodel.observatory.dao.XmlObservatoryDao;
 
-@Transactional
 public class ObservatoryDataLoader implements DataLoader {
     
     XmlObservatoryDao xmlDao;

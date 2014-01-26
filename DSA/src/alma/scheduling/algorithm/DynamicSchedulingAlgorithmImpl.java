@@ -34,10 +34,8 @@ import java.util.TimeZone;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.algorithm.modelupd.ModelUpdater;
-import alma.scheduling.algorithm.results.Result;
 import alma.scheduling.algorithm.sbranking.AbstractBaseRanker;
 import alma.scheduling.algorithm.sbranking.SBRank;
 import alma.scheduling.algorithm.sbranking.SchedBlockRanker;
@@ -113,7 +111,6 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
 
     @Override
     //TODO: The selectSB function should be removed or improved
-    @Transactional
     public void selectCandidateSB(Date ut) throws NoSbSelectedException {
         sbs.clear();
         Date t1 = new Date();
@@ -160,14 +157,12 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
 	/* (non-Javadoc)
      * @see alma.scheduling.algorithm.DynamicSchedulingAlgorithm#updateModel()
      */
-	@Transactional
 	public void updateModel(Date ut, Collection<SchedBlock> filteredSBs){
 	    for(ModelUpdater updater: updaters)
 	        if (updater.needsToUpdate(ut)) 
 	            updater.update(ut, filteredSBs);
 	}
 	
-	@Transactional
     public void updateModel(Date ut){
         for(ModelUpdater updater: updaters)
             if (updater.needsToUpdate(ut)) 

@@ -30,9 +30,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.hibernate.criterion.Conjunction;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,27 +88,27 @@ public class ExecutiveSelector extends AbstractBaseSelector {
     }
 
 
-    @Override
-    public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
-        /*        query = getSession()
-                .createQuery(
-                        "select sb from SchedBlock sb, PI pi join pi.PIMembership pim, "
-                                + "Executive e join e.executivePercentage ep "
-                                + "where sb.piName = pi.email and "
-                                + "pim.executive = ? and "
-                                + "ep.executive = ? and "
-                                + "ep.season = ? and "
-                                + "ep.totalObsTimeForSeason - sb.obsUnitControl.estimatedExecutionTime >= "
-                                + timeSpent.toString());
-        query.setParameter(0, exec);
-        query.setParameter(1, exec);
-        query.setParameter(2, os);*/
-        //List<Executive> execs = execDao.getAllExecutive();
-        ObservingSeason os = execDao.getCurrentSeason();
-        Conjunction conj = Restrictions.conjunction(); 
-        conj.add(Restrictions.eq("ep.season", os));
-        conj.add(Restrictions.leProperty("obsUnitControl.estimatedExecutionTime", "ep.remainingObsTime"));
-        return conj;
-    }
+//    @Override
+//    public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
+//        /*        query = getSession()
+//                .createQuery(
+//                        "select sb from SchedBlock sb, PI pi join pi.PIMembership pim, "
+//                                + "Executive e join e.executivePercentage ep "
+//                                + "where sb.piName = pi.email and "
+//                                + "pim.executive = ? and "
+//                                + "ep.executive = ? and "
+//                                + "ep.season = ? and "
+//                                + "ep.totalObsTimeForSeason - sb.obsUnitControl.estimatedExecutionTime >= "
+//                                + timeSpent.toString());
+//        query.setParameter(0, exec);
+//        query.setParameter(1, exec);
+//        query.setParameter(2, os);*/
+//        //List<Executive> execs = execDao.getAllExecutive();
+//        ObservingSeason os = execDao.getCurrentSeason();
+//        Conjunction conj = Restrictions.conjunction(); 
+//        conj.add(Restrictions.eq("ep.season", os));
+//        conj.add(Restrictions.leProperty("obsUnitControl.estimatedExecutionTime", "ep.remainingObsTime"));
+//        return conj;
+//    }
 
 }

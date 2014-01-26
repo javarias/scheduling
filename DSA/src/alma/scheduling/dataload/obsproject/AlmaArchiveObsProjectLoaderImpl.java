@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.dataload.DataLoader;
 import alma.scheduling.datamodel.DAOException;
@@ -36,7 +35,6 @@ public class AlmaArchiveObsProjectLoaderImpl implements DataLoader {
 	}
 
 	@Override
-	@Transactional(readOnly=false)
 	public void load() throws Exception {
 		List<ObsProject> projects = null;
 		try {
@@ -63,7 +61,6 @@ public class AlmaArchiveObsProjectLoaderImpl implements DataLoader {
 	}
 
 	@Override
-	@Transactional(readOnly=false)
 	public void clear() {
 		logger.info("Deleting projects from local DB...");
 		dao.deleteAll();

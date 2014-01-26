@@ -34,8 +34,6 @@ import java.io.Reader;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import alma.scheduling.dataload.AtmTableReader.AtmData;
 import alma.scheduling.datamodel.config.Configuration;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
@@ -102,7 +100,6 @@ public class AtmDataLoader implements DataLoader {
     }
 
     @Override
-    @Transactional(readOnly=false)
     public void load() {
         try {
             AtmData ad;

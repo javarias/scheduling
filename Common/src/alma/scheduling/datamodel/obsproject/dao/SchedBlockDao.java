@@ -20,6 +20,7 @@
  *******************************************************************************/
 package alma.scheduling.datamodel.obsproject.dao;
 
+import java.util.Collection;
 import java.util.List;
 
 import alma.scheduling.datamodel.executive.Executive;
@@ -50,4 +51,8 @@ public interface SchedBlockDao {
     public void hydrateObsUnitSet(ObsUnitSet ous);
     
     public void deleteAll();
+    
+    public void saveOrUpdate(SchedBlock sb);
+    
+    public void saveOrUpdate(Collection<SchedBlock> sb);
 }

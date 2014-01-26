@@ -29,8 +29,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import alma.scheduling.algorithm.AlgorithmPart;
 import alma.scheduling.algorithm.astro.SystemTemperatureCalculator;
 import alma.scheduling.algorithm.modelupd.ModelUpdater;
@@ -132,7 +130,6 @@ public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
     }
 
     @Override
-    @Transactional
     public synchronized void update(Date date) {
         Collection<SchedBlock> sbs;
         try {

@@ -20,8 +20,6 @@ package alma.scheduling.algorithm.obsproject;
 import java.util.Collection;
 import java.util.Date;
 
-import org.hibernate.criterion.Criterion;
-
 import alma.scheduling.algorithm.sbselection.AbstractBaseSelector;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
@@ -38,11 +36,6 @@ public class AltitudeSelector extends AbstractBaseSelector {
 	@Override
 	public Collection<SchedBlock> select(Date ut, ArrayConfiguration arrConf)
 			throws NoSbSelectedException {
-		throw new java.lang.RuntimeException("Not Implemented");
-	}
-
-	@Override
-	public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
 		throw new java.lang.RuntimeException("Not Implemented");
 	}
 

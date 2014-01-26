@@ -28,7 +28,6 @@ package alma.scheduling.algorithm.weather;
 import java.util.Collection;
 import java.util.Date;
 
-import org.hibernate.criterion.Criterion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,10 +58,10 @@ public class WeatherFullSelector extends AbstractBaseSelector {
         return sbs;
     }
 
-    @Override
-    public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+//    @Override
+//    public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
+//        // TODO Auto-generated method stub
+//        return null;
+//    }
 
 }

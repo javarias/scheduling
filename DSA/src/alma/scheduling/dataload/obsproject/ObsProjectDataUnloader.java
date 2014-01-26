@@ -25,18 +25,16 @@
  */
 package alma.scheduling.dataload.obsproject;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.dataload.DataUnloader;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
 import alma.scheduling.datamodel.obsproject.dao.XmlObsProjectDao;
 
-@Transactional
 public class ObsProjectDataUnloader implements DataUnloader {
     
     private static Logger logger = LoggerFactory.getLogger(ObsProjectDataUnloader.class);
@@ -53,7 +51,7 @@ public class ObsProjectDataUnloader implements DataUnloader {
 
     @Override
     public void unload() {
-        List<ObsProject> projects = dao.findAll(ObsProject.class);
+        Collection<ObsProject> projects = dao.findAll(ObsProject.class);
         for (ObsProject prj : projects) {
             logger.debug("hydrating ObsProject");
             dao.hydrateSchedBlocks(prj);

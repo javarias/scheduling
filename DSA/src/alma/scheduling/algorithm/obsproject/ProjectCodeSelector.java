@@ -4,9 +4,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Restrictions;
-
 import alma.scheduling.algorithm.sbselection.AbstractBaseSelector;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
@@ -29,13 +26,13 @@ public class ProjectCodeSelector extends AbstractBaseSelector {
 		//return null;
 	}
 
-	@Override
-	public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
-		List<String> uids = prjDao.getObsProjectsUidsByCode(code);
-		if (uids.size() == 0)
-			return null;
-		return Restrictions.in("projectUid", uids);
-	}
+//	@Override
+//	public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
+//		List<String> uids = prjDao.getObsProjectsUidsByCode(code);
+//		if (uids.size() == 0)
+//			return null;
+//		return Restrictions.in("projectUid", uids);
+//	}
 
 	public ObsProjectDao getPrjDao() {
 		return prjDao;

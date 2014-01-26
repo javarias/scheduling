@@ -23,8 +23,6 @@ package alma.scheduling.algorithm.weather;
 import java.util.Collection;
 import java.util.Date;
 
-import org.hibernate.criterion.Criterion;
-
 import alma.scheduling.algorithm.sbselection.AbstractBaseSelector;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
@@ -43,11 +41,11 @@ public class OpacitySelector extends AbstractBaseSelector {
 		return null;
 	}
 
-	@Override
-	public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 	@Override
 	public boolean canBeSelected(SchedBlock sb, Date date) {
