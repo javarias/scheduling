@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 
-<project default="compile" name="scheduling-common">
+<project default="publish-local" name="scheduling-common">
 	<property file="build.properties"/>
 	<path id="castor.class.path">
 		<fileset dir="lib" includes="castor-*.jar"/>

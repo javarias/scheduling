@@ -27,9 +27,6 @@ import org.apache.commons.cli.ParseException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 
-import alma.scheduling.Array;
-import alma.scheduling.ArrayHelper;
-import alma.scheduling.SchedBlockQueueItem;
 import alma.scheduling.algorithm.DynamicSchedulingAlgorithm;
 import alma.scheduling.algorithm.sbranking.SBRank;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
@@ -38,7 +35,6 @@ import alma.scheduling.datamodel.observatory.dao.ArrayConfigurationLiteReader;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
-import alma.scheduling.psm.util.SimpleClient;
 import alma.scheduling.utils.DSAContextFactory;
 
 public class DailyPlanningSim {
@@ -158,7 +154,7 @@ public class DailyPlanningSim {
 				done = true;
 				System.out.println("Queueing SchedBlocks...");
 				try {
-					queueResultsIntoArray(arrayName);
+					//queueResultsIntoArray(arrayName);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -205,24 +201,24 @@ public class DailyPlanningSim {
 		}
 	}
 	
-	private void queueResultsIntoArray(String arrayName) throws Exception {
-		String fixedArrayName = arrayName.toLowerCase();
-		fixedArrayName = fixedArrayName.substring(0, 1).toUpperCase() + fixedArrayName.substring(1, fixedArrayName.length());
-		String componentName = "SCHEDULING/" + fixedArrayName;
-		
-		SimpleClient acsClient = SimpleClient.getInstance();
-		org.omg.CORBA.Object o = acsClient.getContainerServices().getComponentNonSticky(componentName);
-		Array arrayComponent = ArrayHelper.narrow(o);
-		for (Date d: observationList.keySet()) {
-			if (observationList.get(d) == null) {
-				continue;
-			}
-			System.out.print("Putting in the queue SchedBlock: " + observationList.get(d).getUid() + "... ");
-			SchedBlockQueueItem item = new SchedBlockQueueItem(System.currentTimeMillis(), observationList.get(d).getUid());
-			arrayComponent.push(item);
-			System.out.println("DONE");
-		}
-	}
+//	private void queueResultsIntoArray(String arrayName) throws Exception {
+//		String fixedArrayName = arrayName.toLowerCase();
+//		fixedArrayName = fixedArrayName.substring(0, 1).toUpperCase() + fixedArrayName.substring(1, fixedArrayName.length());
+//		String componentName = "SCHEDULING/" + fixedArrayName;
+//		
+//		SimpleClient acsClient = SimpleClient.getInstance();
+//		org.omg.CORBA.Object o = acsClient.getContainerServices().getComponentNonSticky(componentName);
+//		Array arrayComponent = ArrayHelper.narrow(o);
+//		for (Date d: observationList.keySet()) {
+//			if (observationList.get(d) == null) {
+//				continue;
+//			}
+//			System.out.print("Putting in the queue SchedBlock: " + observationList.get(d).getUid() + "... ");
+//			SchedBlockQueueItem item = new SchedBlockQueueItem(System.currentTimeMillis(), observationList.get(d).getUid());
+//			arrayComponent.push(item);
+//			System.out.println("DONE");
+//		}
+//	}
 	
 	private String getAnswerForQuestion (String question, boolean automaticYesAnswer) {
 		System.out.print(question + " ");

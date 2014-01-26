@@ -35,7 +35,6 @@ import java.util.Set;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.observation.ExecBlock;
@@ -153,7 +152,6 @@ public class ResultComposer {
 //		System.out.println("SB Id: " + sb.getId() + " took " + executionTime + " seconds to execute.");
 //	}
 	
-    @Transactional(readOnly=true)
 	private long numberOfSchedBlocks( ObsUnit ouRef ){
     	if( ouRef instanceof ObsUnitSet ){
  		
@@ -172,7 +170,6 @@ public class ResultComposer {
 		return 0;
 	}
     
-    @Transactional(readOnly=true)
 	private long numberOfCompletedSchedBlocks( ObsUnit ouRef ){
     	if( ouRef instanceof ObsUnitSet ){
     		
@@ -195,7 +192,6 @@ public class ResultComposer {
 	/**
 	 * Gathers data at the end of simulation to complete the output data.
 	 */
-    @Transactional
 	public void completeResults(){
 		System.out.println("Completing results");
 		results.setStopRealDate( new Date() );
@@ -280,11 +276,10 @@ public class ResultComposer {
 				
 	}
     
-    @Transactional
     void prepareSbrSet( ObsUnit ptrOu, HashSet<SchedBlockResult> sbrSet, ObservationDao obsDao ){
     	if( ptrOu instanceof SchedBlock ){
     		SchedBlock sb = (SchedBlock) ptrOu;
-    		long sbId = sb.getId();
+    		String sbId = sb.getUid();
     		
 			for (ExecBlock eb: obsDao.getAllExecBlocksForSB(sb.getUid())) {
 			

@@ -40,7 +40,6 @@ import org.exolab.castor.xml.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.SchedulingPolicyFile;
 import alma.scheduling.algorithm.DynamicSchedulingAlgorithm;
@@ -137,9 +136,6 @@ public class Simulator extends PsmContext {
 		}
     }
     
-
-    
-    @Transactional
     public void run(String DSAPolicyName) throws IllegalArgumentException{
     	ApplicationContext ctx = getApplicationContext();
         // Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UT"));

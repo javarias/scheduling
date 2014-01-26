@@ -257,7 +257,7 @@ public class ReportGenerator extends PsmContext {
 			SBPerLST.put(i + " - " + (i+1), new ArrayList<SchedBlockReportBean>());
 		for (ObservationProject p : result.getObservationProject()) {
 			for (SchedBlockResult sbr : p.getSchedBlock()) {
-				SchedBlock sb = sbDao.findById(SchedBlock.class, sbr.getOriginalId());
+				SchedBlock sb = sbDao.findById(sbr.getOriginalId());
 				if (sb == null){
 					logger.warn("Trying to retrieve SchedBlock " + sbr.getOriginalId() + "returned an empty reference");
 					continue;

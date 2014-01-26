@@ -35,7 +35,7 @@ public class PsmContext extends Observable {
 		Configuration config = new Configuration();
         File configFile = new File(workDir + "/aprc-config.xml");
         try {
-            config = Configuration.unmarshalConfiguration(new FileReader(configFile));
+            config = Configuration.unmarshal(new FileReader(configFile));
         } catch (MarshalException e) {
             e.printStackTrace();
         } catch (ValidationException e) {
@@ -52,7 +52,7 @@ public class PsmContext extends Observable {
 		Configuration config = new Configuration();
         File configFile = new File(workDir + "/aprc-config.xml");
         try {
-            config = Configuration.unmarshalConfiguration(new FileReader(configFile));
+            config = Configuration.unmarshal(new FileReader(configFile));
         } catch (MarshalException e) {
             e.printStackTrace();
         } catch (ValidationException e) {

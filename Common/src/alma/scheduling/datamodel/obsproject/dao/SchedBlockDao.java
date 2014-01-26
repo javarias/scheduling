@@ -55,4 +55,6 @@ public interface SchedBlockDao {
     public void saveOrUpdate(SchedBlock sb);
     
     public void saveOrUpdate(Collection<SchedBlock> sb);
+    
+    public SchedBlock findById(String uid);
 }
