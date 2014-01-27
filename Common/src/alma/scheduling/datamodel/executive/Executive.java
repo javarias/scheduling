@@ -32,9 +32,6 @@ import java.util.Set;
  * An Executive is an entity that has the right to observe in the ALMA telescope.
  */
 public class Executive {
-
-    /** Executive (surrogate) identifier. Assigned by the database. */
-    private Long id;
     
     /**
      * Default percentage of the total telescope observation time for a season the
@@ -61,14 +58,6 @@ public class Executive {
 	
     // --- Getters and Setters ---
     
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-    
     public Float getDefaultPercentage() {
         return defaultPercentage;
     }
@@ -93,4 +82,34 @@ public class Executive {
             Set<ExecutivePercentage> mExecutivePercentage) {
         executivePercentage = mExecutivePercentage;
     }
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Executive)) {
+			return false;
+		}
+		Executive other = (Executive) obj;
+		if (name == null) {
+			if (other.name != null) {
+				return false;
+			}
+		} else if (!name.equals(other.name)) {
+			return false;
+		}
+		return true;
+	}
 }

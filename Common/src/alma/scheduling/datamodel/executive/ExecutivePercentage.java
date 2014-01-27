@@ -24,8 +24,6 @@
  */
 package alma.scheduling.datamodel.executive;
 
-import java.io.Serializable;
-
 /**
  * This class represents a many-to-many relationship between ObservingSeason
  * and Executive. During an ObservingSeason, several Executives will have the
@@ -36,41 +34,6 @@ import java.io.Serializable;
  * Reciprocally, one Executive can participate in several ObservingSeasons.
  */
 public class ExecutivePercentage {
-
-    public static class Id implements Serializable {
-        
-        private static final long serialVersionUID = 7509403722076407203L;
-        private Long executiveId;
-        private Long seasonId;
-        
-        public Id() {}
-        
-        public Id(Long executiveId, Long seasonId) {
-            this.executiveId = executiveId;
-            this.seasonId = seasonId;
-        }
-        
-        @Override
-        public boolean equals(Object o) {
-            if (o == this)
-                return true;
-            if (!(o instanceof Id))
-                return false;
-            Id that = (Id) o;
-            return (this.executiveId == null ? that.executiveId == null : this.executiveId.equals(that.executiveId)) &&
-                   (this.seasonId == null ? that.seasonId == null : this.seasonId.equals(that.seasonId));
-        }
-
-        @Override
-        public int hashCode() {
-            int result = 17;
-            result = 31 * result + ((executiveId == null) ? 0 : executiveId.hashCode());
-            result = 31 * result + ((seasonId == null) ? 0 : seasonId.hashCode());
-            return result;
-        }
-    }
-
-    private Id id = new Id();
     
     /** The Executive end of the many-to-many association */
     private Executive executive;
@@ -127,24 +90,13 @@ public class ExecutivePercentage {
 	        this.remainingObsTime = totalObsTimeForSeason;
 	    }
 	    
-	    this.id.executiveId = executive.getId();
-	    this.id.seasonId = season.getId();
-	    
 	    executive.getExecutivePercentage().add(this);
 	    season.getExecutivePercentage().add(this);
 	}
 	
     // --- Getters and Setters ---
 	
-	public Id getId() {
-	    return id;
-	}
-	
-	public void setId(Id id) {
-	    this.id = id;
-	}
-	
-    public Float getPercentage() {
+	public Float getPercentage() {
         return percentage;
     }
 
@@ -183,5 +135,44 @@ public class ExecutivePercentage {
     public void setRemainingObsTime(Double ramainingObsTime) {
         this.remainingObsTime = ramainingObsTime;
     }
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((executive == null) ? 0 : executive.hashCode());
+		result = prime * result + ((season == null) ? 0 : season.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof ExecutivePercentage)) {
+			return false;
+		}
+		ExecutivePercentage other = (ExecutivePercentage) obj;
+		if (executive == null) {
+			if (other.executive != null) {
+				return false;
+			}
+		} else if (!executive.equals(other.executive)) {
+			return false;
+		}
+		if (season == null) {
+			if (other.season != null) {
+				return false;
+			}
+		} else if (!season.equals(other.season)) {
+			return false;
+		}
+		return true;
+	}
     
 }

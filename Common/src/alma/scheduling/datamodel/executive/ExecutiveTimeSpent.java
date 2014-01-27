@@ -38,11 +38,10 @@ public class ExecutiveTimeSpent {
     /** Amount of time charged to the Executive (hours) */
 	private float timeSpent;
 	
-	// TODO May be something more indicative, not so internal?
 	/** Identifier of the SchedBlock that was executed */
-	private Long sbId;
+	private String sbUid;
 	
-	/** Executive that is charged */
+	/** Executive to whom time is charged */
 	private Executive executive;
 	
 	/** Observing season during which the SchedBlock was executed */
@@ -66,12 +65,12 @@ public class ExecutiveTimeSpent {
         this.timeSpent = timeSpent;
     }
     
-    public Long getSbId() {
-        return sbId;
+    public String getSbUid() {
+        return sbUid;
     }
 
-    public void setSbId(Long sbId) {
-        this.sbId = sbId;
+    public void setSbUid(String sbUid) {
+        this.sbUid = sbUid;
     }
 
     public Executive getExecutive() {
@@ -98,4 +97,52 @@ public class ExecutiveTimeSpent {
         this.executionTime = executionTime;
     }
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((executionTime == null) ? 0 : executionTime.hashCode());
+		result = prime * result
+				+ ((observingSeason == null) ? 0 : observingSeason.hashCode());
+		result = prime * result + ((sbUid == null) ? 0 : sbUid.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof ExecutiveTimeSpent)) {
+			return false;
+		}
+		ExecutiveTimeSpent other = (ExecutiveTimeSpent) obj;
+		if (executionTime == null) {
+			if (other.executionTime != null) {
+				return false;
+			}
+		} else if (!executionTime.equals(other.executionTime)) {
+			return false;
+		}
+		if (observingSeason == null) {
+			if (other.observingSeason != null) {
+				return false;
+			}
+		} else if (!observingSeason.equals(other.observingSeason)) {
+			return false;
+		}
+		if (sbUid == null) {
+			if (other.sbUid != null) {
+				return false;
+			}
+		} else if (!sbUid.equals(other.sbUid)) {
+			return false;
+		}
+		return true;
+	}
+    
 }

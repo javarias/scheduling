@@ -41,7 +41,6 @@ public class PI {
 	/** The PI Executive memberships */
 	private Set<PIMembership> pIMembership;
 
-	private Long id;
 	/**
 	 * Zero-arg constructor.
 	 */
@@ -49,15 +48,7 @@ public class PI {
 
     // --- Getters and Setters ---
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-	
-	public String getEmail() {
+    public String getEmail() {
         return email;
     }
 
@@ -80,4 +71,35 @@ public class PI {
     public void setPIMembership(Set<PIMembership> mPIMembership) {
         pIMembership = mPIMembership;
     }
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((email == null) ? 0 : email.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof PI)) {
+			return false;
+		}
+		PI other = (PI) obj;
+		if (email == null) {
+			if (other.email != null) {
+				return false;
+			}
+		} else if (!email.equals(other.email)) {
+			return false;
+		}
+		return true;
+	}
+
 }
