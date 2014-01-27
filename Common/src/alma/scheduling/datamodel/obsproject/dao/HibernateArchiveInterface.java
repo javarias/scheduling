@@ -17,19 +17,6 @@
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
-import java.io.StringReader;
-import java.util.logging.Logger;
-
-import javax.xml.transform.TransformerException;
-
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
 import org.omg.CORBA.UserException;
 
 import alma.acs.entityutil.EntityDeserializer;
@@ -101,67 +88,4 @@ public final class HibernateArchiveInterface extends AbstractArchiveInterface
 		return sb;
 	}
 	
-	@SuppressWarnings("unchecked")
-	private <CT> CT genericRetrieval(String id,
-			Class<? extends XmlEntity> hClass, Class<CT> cClass)
-			throws EntityException, UserException {
-		CT retVal = null;
-		Session session = null;
-		Transaction  tx = null;
-		try {
-			session = sf.openSession();
-			tx = session.beginTransaction();
-			XmlEntity hRet = (XmlEntity) session.get(hClass, id);
-			retVal = (CT) Unmarshaller.unmarshal(cClass, new StringReader(hRet.domToString()));
-		} catch (HibernateException e) {
-			e.printStackTrace();
-			AcsJSchedulingInternalExceptionEx ex = new AcsJSchedulingInternalExceptionEx(
-					e);
-			throw ex.toSchedulingInternalExceptionEx();
-		} catch (MarshalException e) {
-			throw new EntityException(e);
-		} catch (ValidationException e) {
-			throw new EntityException(e);
-		} catch (TransformerException e) {
-			throw new EntityException(e);
-		} finally {
-			if (tx != null)
-				tx.rollback();
-			if(session != null && session.isOpen())
-				session.close();
-		}
-		return retVal;
-	}
-
-	private void initializeDB() {
-		DBConfiguration archiveConf = null;
-		try {
-			archiveConf = ArchiveConfiguration.instance(Logger
-					.getAnonymousLogger());
-		} catch (DatabaseException e) {
-			e.printStackTrace();
-		}
-		if (!archiveConf.get("archive.db.mode").equals("operational"))
-			throw new RuntimeException(
-					"Archive config is using eXist for the xmlstore. Use instead an operation configuration");
-		String archive_db_connection = archiveConf.get("archive.db.connection");
-		String archive_oracle_user = archiveConf.get("archive.oracle.user");
-		String archive_oracle_passwd = archiveConf.get("archive.oracle.passwd");
-		System.out.println(archive_db_connection + " " + archive_oracle_user
-				+ " " + archive_oracle_passwd);
-		Configuration hibConf = new Configuration().configure("alma/archive/hibernate.config.xml");
-		hibConf.setProperty("hibernate.connection.url", archive_db_connection);
-		hibConf.setProperty("hibernate.connection.username", archive_oracle_user);
-		hibConf.setProperty("hibernate.connection.password", archive_oracle_passwd);
-//		hibConf.setProperty("connection.driver_class",
-//				"oracle.jdbc.driver.OracleDriver");
-//		hibConf.setProperty("cache.provider_class",
-//				"org.hibernate.cache.NoCacheProvider");
-//		hibConf.setProperty("dialect",
-//				"org.hibernate.dialect.ExtendedOracle10gDialect");
-//		hibConf.setProperty("show_sql", "false");
-//		hibConf.setProperty("hbm2ddl.auto", "validate");
-//		hibConf.addResource("alma/archive/xmlstore.hbm.xml");
-		sf = hibConf.buildSessionFactory();
-	}
 }
