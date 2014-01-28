@@ -31,11 +31,11 @@ import alma.scheduling.datamodel.executive.PI;
 
 public interface ExecutiveDAO {
 
-    public List<Executive> getAllExecutive();
+    public Collection<Executive> getAllExecutive();
     
-    public List<ObservingSeason> getAllObservingSeason();
+    public Collection<ObservingSeason> getAllObservingSeason();
     
-    public List<PI> getAllPi();
+    public Collection<PI> getAllPi();
     
     public ObservingSeason getCurrentSeason();
     
