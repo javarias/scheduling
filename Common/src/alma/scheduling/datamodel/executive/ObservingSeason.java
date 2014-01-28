@@ -111,6 +111,15 @@ public class ObservingSeason implements Comparable<ObservingSeason>{
 		this.observingInterval = observingInterval;
 	}
     
+	public double getTotalObservingHours() {
+		if (observingInterval == null) {
+			return (endDate.getTime() - startDate.getTime()) / 3600000.0;
+		}
+		double ndays =  (endDate.getTime() - startDate.getTime()) / (24 * 3600000.0);
+		long mspday = 24 * 3600 * 1000 - observingInterval.getDuration();
+		return (ndays * mspday) / 3600000.0;
+	}
+	
     @Override
     public int compareTo(ObservingSeason o) {
         return this.startDate.compareTo(o.startDate);
