@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.annotation.Transactional;
 
+import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.observation.ExecBlock;
 import alma.scheduling.datamodel.observation.dao.ObservationDao;
@@ -83,13 +84,13 @@ public class ResultComposer {
 		arraysUsed = new HashMap<String, ArrayConfiguration>();
 	}
 	
-	public void notifyExecutiveData(ApplicationContext ctx, Date obsSeasonStart, Date obsSeasonEnd, Date simStart, Date simStop){
+	public void notifyExecutiveData(ApplicationContext ctx, ObservingSeason obsSeason, Date simStart, Date simStop){
 		this.context = ctx;
-		results.setObsSeasonStart(obsSeasonStart);
-		results.setObsSeasonEnd(obsSeasonEnd);
-		results.setStartSimDate(obsSeasonStart);
-		results.setStopSimDate(obsSeasonEnd);
-		results.setAvailableTime( (results.getObsSeasonEnd().getTime() - results.getObsSeasonStart().getTime())/3600/1000);
+		results.setObsSeasonStart(obsSeason.getStartDate());
+		results.setObsSeasonEnd(obsSeason.getEndDate());
+		results.setStartSimDate(obsSeason.getStartDate());
+		results.setStopSimDate(obsSeason.getEndDate());
+		results.setAvailableTime(obsSeason.getTotalObservingHours());
 		results.setStartRealDate(new Date());
 	}
 	

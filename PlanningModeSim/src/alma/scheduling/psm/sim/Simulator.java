@@ -171,8 +171,7 @@ public class Simulator extends PsmContext {
         ResultComposer rc = new ResultComposer();
         rc.notifyExecutiveData(
         		ctx,
-        		execDao.getCurrentSeason().getStartDate(), 
-        		execDao.getCurrentSeason().getEndDate(), 
+        		execDao.getCurrentSeason(),
         		// TODO: Fix Configuration datamodel to include start and stop dates.
         		execDao.getCurrentSeason().getStartDate(), 
         		execDao.getCurrentSeason().getEndDate() );
