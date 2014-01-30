@@ -38,6 +38,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,7 @@ import net.sf.jasperreports.view.JasperViewer;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
+import alma.entity.xmlbinding.obsproposal.types.InvestigatorTAssociatedExecType;
 import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.obsproject.FieldSourceObservability;
@@ -96,7 +98,17 @@ public class ReportGenerator extends PsmContext {
 		{787  ,950}
 		};
 	
-	private static final String Executives[] = {"EU", "NA", "EA", "CHILE", "NONALMA"};
+	private static final String Executives[];
+	static {
+    	ArrayList<String> executiveNames = new ArrayList<String>();
+		@SuppressWarnings("rawtypes")
+		Enumeration e = InvestigatorTAssociatedExecType.enumerate();
+		while(e.hasMoreElements()) {
+			InvestigatorTAssociatedExecType apdmExec = (InvestigatorTAssociatedExecType) e.nextElement();
+			executiveNames.add(apdmExec.toString());
+		}
+		Executives = executiveNames.toArray(new String[0]);
+	}
 	
 	private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	static {dateFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));}
@@ -217,7 +229,8 @@ public class ReportGenerator extends PsmContext {
 		props.put("seasonEnd", dateFormatter.format(result.getObsSeasonEnd()));
 		props.put("title", "Frequency Bands Usage");
 		props.put("subtitle", "Requested time per frequency bands");
-		JRDataSource dataSource = getBandsBeforeSimData();
+		
+		JRDataSource dataSource = getLstRangesBeforeSim();
 		InputStream reportStream = getClass().getClassLoader().getResourceAsStream("alma/scheduling/psm/reports/lstRangesBeforeSim.jasper");
 		logger.info("Creating RA ranges before simulation report");
 		try {
@@ -397,12 +410,13 @@ public class ReportGenerator extends PsmContext {
 		// Parameters
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+		Results result = outDao.getResult(id);
 
 		TreeMap<String, Object> props = new TreeMap<String, Object>();
-		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
-		props.put("scientificTime", Double.toString( outDao.getResults().get(0).getScientificTime() ) );
-		props.put("seasonStart", dateFormatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
-		props.put("seasonEnd", dateFormatter.format( outDao.getResults().get(0).getObsSeasonEnd() ) );
+		props.put("totalAvailableTime", Double.toString( result.getAvailableTime() ) );
+		props.put("scientificTime", Double.toString( result.getScientificTime() ) );
+		props.put("seasonStart", dateFormatter.format( result.getObsSeasonStart() ) );
+		props.put("seasonEnd", dateFormatter.format( result.getObsSeasonEnd() ) );
 		props.put("title", "Executive Percentage Balance");
 		props.put("subtitle", "Observed time dedicated per executive");
 		synchronized (this) {
