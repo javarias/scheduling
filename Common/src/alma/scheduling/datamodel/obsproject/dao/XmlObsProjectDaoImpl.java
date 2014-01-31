@@ -50,6 +50,7 @@ import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.ObsUnitControl;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
+import alma.scheduling.datamodel.obsproject.ObservationStatus;
 import alma.scheduling.datamodel.obsproject.ObservingParameters;
 import alma.scheduling.datamodel.obsproject.Preconditions;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
@@ -150,7 +151,7 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                 	prj.setLetterGrade(ScienceGrade.valueOf(xmlPrj.getGrade().toString()));
                 else
                 	prj.setLetterGrade(ScienceGrade.D);
-                prj.setStatus("ready");
+                prj.setStatus(ObservationStatus.READY);
                 alma.scheduling.input.obsproject.generated.ObsUnitSetT xmlObsUnitSet =
                     xmlPrj.getObsUnitSet();
                 ObsUnitSet obsUnitSet = createObsUnitSet(xmlObsUnitSet, xmlPrj.getPrincipalInvestigator());

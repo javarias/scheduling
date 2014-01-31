@@ -115,7 +115,7 @@ public class XmlOutputDaoImpl implements OutputDao {
                 sb[j].setEndDate(tmpSb.getEndDate());
                 sb[j].setExecutionTime(tmpSb.getExecutionTime());
                 sb[j].setId(tmpSb.getId()); 
-                sb[j].setOriginalId(tmpSb.getOriginalId().hashCode()); //TODO: Fix this atrocity, it should accept the uid
+                sb[j].setOriginalId(tmpSb.getOriginalId());
                 sb[j].setMode(tmpSb.getMode());
                 sb[j].setRepresentativeFrequency(tmpSb.getRepresentativeFrequency());
                 sb[j].setGoalSensitivity(tmpSb.getGoalSensitivity());

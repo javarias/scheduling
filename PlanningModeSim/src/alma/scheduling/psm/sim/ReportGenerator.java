@@ -37,6 +37,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Stack;
@@ -126,7 +127,7 @@ public class ReportGenerator extends PsmContext {
 		ExecutiveDAO execDao = (ExecutiveDAO) ctx.getBean("execDao");
 		TreeMap<String, ArrayList<SchedBlockReportBean>> SBPerLstRange = new TreeMap<String, ArrayList<SchedBlockReportBean>>();
 		ArrayList<SchedBlockReportBean> data = new ArrayList<SchedBlockReportBean>();
-		List<SchedBlock> sbs = sbDao.findAll();
+		Collection<SchedBlock> sbs = sbDao.findAll();
 
 		for (int i = 0; i < 24; i++) 
 			SBPerLstRange.put( determineLst( 0.1 + i ), new ArrayList<SchedBlockReportBean>() );
@@ -523,7 +524,7 @@ public class ReportGenerator extends PsmContext {
 		
 		// Retrieve SBs
 		logger.info("Retrieving Data...");
-		List<SchedBlock> sbs = sbDao.findAll();
+		Collection<SchedBlock> sbs = sbDao.findAll();
 		
 		for(SchedBlock sb: sbs){
 			sbDao.hydrateSchedBlockObsParams( sb );
@@ -744,7 +745,7 @@ public class ReportGenerator extends PsmContext {
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		SchedBlockDao sbDao = (SchedBlockDao) ctx.getBean("sbDao");
 
-		List<SchedBlock> sbs = sbDao.findAll();
+		Collection<SchedBlock> sbs = sbDao.findAll();
 		ArrayList<SchedBlock> lstRanges[] = new ArrayList[24];
 		for(int i = 0; i < lstRanges.length; i++)
 			lstRanges[i] = new ArrayList<SchedBlock>();

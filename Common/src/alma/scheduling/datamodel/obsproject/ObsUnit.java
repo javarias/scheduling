@@ -54,6 +54,8 @@ public abstract class ObsUnit {
      */
     private String note;
     
+    private ObservationStatus status;
+    
     public Long getId() {
         return id;
     }
@@ -109,5 +111,13 @@ public abstract class ObsUnit {
 	public void setNote(String note) {
 		this.note = StringUtil.trimmed(note);
 	}
-    
+
+	public ObservationStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(ObservationStatus status) {
+		this.status = status;
+	}
+	
 }

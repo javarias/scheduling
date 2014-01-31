@@ -30,10 +30,10 @@ import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 
 public interface SchedBlockDao {
-    List<SchedBlock> findAll();
+    Collection<SchedBlock> findAll();
     int countAll();
-    List<SchedBlock> findSchedBlocksWithVisibleRepresentativeTarget(double lst);
-    List<SchedBlock> findSchedBlocksByEstimatedExecutionTime(double time);
+    Collection<SchedBlock> findSchedBlocksWithVisibleRepresentativeTarget(double lst);
+    Collection<SchedBlock> findSchedBlocksByEstimatedExecutionTime(double time);
     void hydrateSchedBlockObsParams(SchedBlock schedBlock);
     public List<SchedBlock> findSchedBlocksWithoutTooMuchTsysVariation(double variation);
     public List<SchedBlock> findSchedBlocksWithEnoughTimeInExecutive(Executive exec, ObservingSeason os) throws NullPointerException;

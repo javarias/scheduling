@@ -52,7 +52,7 @@ public class ExecutiveReporter implements Reporter {
         ExecutiveTimeSpent ets = new ExecutiveTimeSpent();
         ets.setExecutive(execDao.getExecutive(schedBlock.getPiName()));
         ets.setObservingSeason(execDao.getCurrentSeason());
-        ets.setSbId(schedBlock.getId());
+        ets.setSbUid(schedBlock.getUid());
         ets.setTimeSpent(schedBlock.getObsUnitControl().getEstimatedExecutionTime().floatValue());
         execDao.saveOrUpdate(ets);
     }

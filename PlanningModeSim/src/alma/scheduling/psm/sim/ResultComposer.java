@@ -205,13 +205,13 @@ public class ResultComposer {
 		for( ObsProject op : obsProjectDao.getObsProjectsOrderBySciRank() ){
 			
 			//If the project was Cancelled, or Grade is D we do not consider it for results. 
-			if( op.getStatus().compareTo("CANCELLED") == 0 || op.getLetterGrade() == ScienceGrade.D )
-				continue;
+//			if( op.getStatus().compareTo("CANCELLED") == 0 || op.getLetterGrade() == ScienceGrade.D )
+//				continue;
 			
-			System.out.println("\\-Completing observation project #" + op.getId());
+			System.out.println("\\-Completing observation project #" + op.getUid());
 			ObservationProject outputOp = new ObservationProject();
 			// Filling what can be filled before calculations
-			outputOp.setOriginalId( op.getId() );
+			outputOp.setOriginalId( op.getUid() );
 			outputOp.setScienceRank( op.getScienceRank());
 			outputOp.setScienceScore( op.getScienceScore() );
 			outputOp.setGrade( op.getLetterGrade().toString() );

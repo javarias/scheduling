@@ -20,6 +20,7 @@
  *******************************************************************************/
 package alma.scheduling.dataload;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
@@ -109,7 +110,7 @@ public class DataLinker implements DataLoader {
         obsPrjDao.saveOrUpdate(prjs);
         
         
-        List<SchedBlock>sbs = sbDao.findAll();
+        Collection<SchedBlock>sbs = sbDao.findAll();
         for (SchedBlock sb : sbs) {
 //            if (sb.getPiName() == null) {
 //              System.out.println("sb.getPiName() = " + sb.getPiName());
@@ -121,8 +122,8 @@ public class DataLinker implements DataLoader {
             sb.setScienceScore(p.getScienceScore());
             sb.setLetterGrade(p.getLetterGrade());
             sb.setScienceRank(p.getScienceRank());
-            if(p.getStatus().compareTo("CANCELLED") == 0)
-                sb.getSchedBlockControl().setState(SchedBlockState.CANCELED);
+//            if(p.getStatus().compareTo("CANCELLED") == 0)
+//                sb.getSchedBlockControl().setState(SchedBlockState.CANCELED);
         }
         sbDao.saveOrUpdate(sbs);
         

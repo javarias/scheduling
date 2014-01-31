@@ -36,7 +36,7 @@ public class ObservationProject {
 
 	private double executionTime;
 	private long id;
-	private long originalId;
+	private String originalId;
 	private long scienceRank;
 	private float scienceScore;
 	private String grade;
@@ -44,11 +44,11 @@ public class ObservationProject {
 	public Set<Affiliation> affiliation;
 	public Set<SchedBlockResult> schedBlock;
 	
-	public long getOriginalId() {
+	public String getOriginalId() {
 		return originalId;
 	}
 
-	public void setOriginalId(long originalId) {
+	public void setOriginalId(String originalId) {
 		this.originalId = originalId;
 	}
 	

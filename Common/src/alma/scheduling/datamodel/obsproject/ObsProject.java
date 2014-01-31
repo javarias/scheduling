@@ -25,9 +25,6 @@
 package alma.scheduling.datamodel.obsproject;
 
 public class ObsProject {
-
-    /** Surrogate identifier */
-    private Long Id;
     
     /** ALMA Archive unique identifier*/
     private String uid;
@@ -69,7 +66,7 @@ public class ObsProject {
      * APRCs to different projects could collide. In order to construct
      * a totally ordered list of ObsProjects, these collisions needs to be
      * resolved, which is done by means of the scienceRank, assigned by a
-     * central commitee.
+     * central committee.
      */
     private Float scienceScore;
     
@@ -83,9 +80,6 @@ public class ObsProject {
      * Letter Grade
      */
     private ScienceGrade letterGrade;
-    
-    /** The ObsProject status */
-    private String status;
     
     /**
      * The Observation Unit, which could be a SchedBlock, or a set of SchedBlocks, 
@@ -111,17 +105,11 @@ public class ObsProject {
     private boolean manual;
     // --- constructors ---
     
+    private ObservationStatus status;
+    
     public ObsProject() { }
 
     // --- setters/getters ---
-    
-    public Long getId() {
-        return Id;
-    }
-
-    public void setId(Long id) {
-        Id = id;
-    }
 
     public String getCode() {
 		return code;
@@ -155,11 +143,11 @@ public class ObsProject {
         this.principalInvestigator = principalInvestigator;
     }
 
-    public String getStatus() {
+    public ObservationStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(ObservationStatus status) {
         this.status = status;
     }
 
@@ -235,26 +223,37 @@ public class ObsProject {
 		this.manual = manual;
 	}
 
-	@Override
-    public boolean equals(Object obj) {
-		if (!(obj instanceof ObsProject))
-			return false;
-		ObsProject p = (ObsProject) obj;
-		if (this.getUid() == null)
-			return super.equals(obj);
-		if (this.getUid().compareTo(p.getUid()) == 0 )
-			return true;
-		return false;
-    }
-
     @Override
-    public int hashCode() {
-    	if (this.getUid() != null)
-    		return this.getUid().hashCode();
-    	return super.hashCode();
-    }
-    
-    /*
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((uid == null) ? 0 : uid.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof ObsProject)) {
+			return false;
+		}
+		ObsProject other = (ObsProject) obj;
+		if (uid == null) {
+			if (other.uid != null) {
+				return false;
+			}
+		} else if (!uid.equals(other.uid)) {
+			return false;
+		}
+		return true;
+	}
+
+	/*
      * ================================================================
      * Extensions
      * ================================================================

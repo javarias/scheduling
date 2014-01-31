@@ -57,9 +57,9 @@ public class ObsUnitSet extends ObsUnit {
 
 	@Override
 	public int hashCode() {
-		if (this.getUid() == null || this.getEntityPartId() == null)
+		if (this.getProjectUid() == null || this.getEntityPartId() == null)
 			return super.hashCode();
-		String concatId = this.getUid() + this.getEntityPartId();
+		String concatId = this.getProjectUid() + this.getEntityPartId();
 		return concatId.hashCode();
 	}
 

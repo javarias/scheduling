@@ -262,21 +262,32 @@ public class SchedBlock extends ObsUnit {
 
 	@Override
 	public int hashCode() {
-		if (this.getUid() != null)
-			return this.getUid().hashCode();
-		return super.hashCode();
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((getUid() == null) ? 0 : getUid().hashCode());
+		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof SchedBlock))
-			return false;
-		SchedBlock sb = (SchedBlock) obj;
-		if (this.getUid() == null) 
-			return super.equals(obj);
-		if (this.getUid().compareTo(sb.getUid()) == 0)
+		if (this == obj) {
 			return true;
-		return false;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof ObsProject)) {
+			return false;
+		}
+		ObsProject other = (ObsProject) obj;
+		if (getUid() == null) {
+			if (other.getUid() != null) {
+				return false;
+			}
+		} else if (!getUid().equals(other.getUid())) {
+			return false;
+		}
+		return true;
 	}
 
 }

@@ -75,7 +75,7 @@ public class ExecutiveSelector extends AbstractBaseSelector {
         // ut and arrConf are ignored
         logger.trace("entering");
         List<SchedBlock> acceptedSbs = new ArrayList<SchedBlock>();
-        List<Executive> execs = execDao.getAllExecutive();
+        Collection<Executive> execs = execDao.getAllExecutive();
         for (Executive e : execs) {
             List<SchedBlock> sbs = sbDao
                     .findSchedBlocksWithEnoughTimeInExecutive(e, execDao
