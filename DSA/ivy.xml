@@ -1,0 +1,16 @@
+<ivy-module version="1.0">
+    <info 
+        organisation="org.almaobservatory.scheduling"
+        module="DSA"
+        status="integration"/>
+	<configurations>
+      <conf name="core"/>
+      <conf name="standalone" extends="core"/>
+    </configurations>
+    <publications>
+      <artifact name="scheduling-dsa" type="jar" conf="core" />
+    </publications>
+    <dependencies>
+		<dependency name="Common" rev="latest.integration" conf="core"/> 
+    </dependencies>
+</ivy-module>

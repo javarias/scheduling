@@ -1,0 +1,18 @@
+<ivy-module version="1.0">
+    <info 
+        organisation="org.almaobservatory.scheduling"
+        module="Simulator"
+        status="integration"/>
+    <configurations>
+      <conf name="core"/>
+      <conf name="standalone" extends="core"/>
+    </configurations>
+    <publications>
+      <artifact name="scheduling-simulator" type="jar" conf="core"/>
+    </publications>
+    <dependencies>
+		<dependency name="DSA" rev="latest.integration" conf="core"/> 
+		<dependency org="commons-cli" name="commons-cli" rev="1.2" conf="core->default"/>
+		<dependency org="net.sf.jasperreports" name="jasperreports" rev="5.2.0" conf="core->default"/>
+    </dependencies>
+</ivy-module>

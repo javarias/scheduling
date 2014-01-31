@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<project default="compile" name="scheduling-simulator">
+	<property file="build.properties"/>
+	<import file="${common.dir}/common.xml"/>
+</project>
