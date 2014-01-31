@@ -2,6 +2,10 @@
 
 <project default="publish-local" name="scheduling-common">
 	<property file="build.properties"/>
+	<path id="build.files.extra">
+		<fileset dir="src" includes="**/*.xml"/>
+	</path>
+
 	<path id="castor.class.path">
 		<fileset dir="lib" includes="castor-*.jar"/>
 		<fileset dir="lib" includes="commons-*.jar"/>
@@ -12,9 +16,12 @@
 	<target name="compile" depends="resolve, codegen" description="--> compile the project">
         <mkdir dir="${classes.dir}" />
         <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="lib.path.id" debug="true" includeAntRuntime="false"/>
+		<copy todir="${classes.dir}">
+			<path refid="build.files.extra"/>
+		</copy>
     </target>
 	
-		<import file="${common.dir}/common.xml"/>
+	<import file="${common.dir}/common.xml"/>
 	
 	<target name="codegen" depends="resolve" description="--> generate source code from XML XSD files">
 		<taskdef name="castor-srcgen"

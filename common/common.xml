@@ -101,6 +101,9 @@
     <target name="compile" depends="resolve" description="--> compile the project">
         <mkdir dir="${classes.dir}" />
         <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="lib.path.id" debug="true" includeAntRuntime="false"/>
+		<copy todir="${classes.dir}">
+			<path refid="build.files.extra"/>
+		</copy>
     </target>
     
     <!-- ================================= 

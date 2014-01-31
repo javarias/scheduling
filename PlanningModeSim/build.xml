@@ -2,5 +2,9 @@
 
 <project default="compile" name="scheduling-simulator">
 	<property file="build.properties"/>
+	<path id="build.files.extra">
+		<fileset dir="src" includes="**/*.jasper"/>
+		<fileset dir="src" includes="**/*.jrxml"/>
+	</path>
 	<import file="${common.dir}/common.xml"/>
 </project>
