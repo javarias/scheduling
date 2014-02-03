@@ -5,3 +5,4 @@ Common/src/alma/scheduling/input/*/generated/*
 Common/src/alma/scheduling/output/generated
 Common/src/alma/scheduling/output/generated/*
 /Scheduling
+/bin

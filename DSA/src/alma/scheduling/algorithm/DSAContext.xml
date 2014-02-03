@@ -155,15 +155,6 @@
 		</constructor-arg>
 	</bean>
 
-	<bean id="weatherUpdater" class="alma.scheduling.algorithm.weather.MemoryWeatherUpdater">
-		<property name="dao" ref="atmDao" />
-		<property name="selector" ref="weatherSelector" />
-		<property name="weatherDao" ref="weatherStationDao" />
-		<property name="configDao" ref="configDao" />
-		<property name="schedBlockDao" ref="sbDao" />
-		<property name="projTimeIncr" value="0.5" />
-	</bean>
-
 	<bean id="sourceUpdater"
 		class="alma.scheduling.algorithm.obsproject.FieldSourceObservabilityUpdater">
 		<property name="configDao" ref="configDao" />
@@ -238,7 +229,6 @@
 	<bean id="weatherSimDao"
 		class="alma.scheduling.datamodel.weather.dao.MemoryWeatherHistoryDAOImpl"
 		scope="singleton">
-		<property name="sessionFactory" ref="sessionFactory" />
 		<property name="configurationDao" ref="configDao" />
 	</bean>
 	<!-- weather data simulation loader, it includes the atmospheric tables -->
@@ -289,48 +279,4 @@
         <property name="obsDao" ref="observationDao"/>
     </bean>
 	
-	<!-- DSA results beans -->
-	<bean id="dsaResultsSessionFactory"
-		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
-		<property name="dataSource" ref="dataSource" />
-		<property name="mappingResources">
-			<list>
-				<value>alma/scheduling/algorithm/sbranking/SBRank.hbm.xml</value>
-				<value>alma/scheduling/algorithm/results/Result.hbm.xml</value>
-			</list>
-		</property>
-		<property name="hibernateProperties">
-			<props>
-				<!--<prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop> -->
-				<!--<prop key="hibernate.dialect">org.hibernate.dialect.OracleDialect</prop> -->
-				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
-				<prop key="hibernate.show_sql">false</prop>
-				<prop key="hibernate.format_sql">true</prop>
-				<prop key="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory
-				</prop>
-				<prop key="hibernate.connection.autocommit">false</prop>
-				<prop key="hibernate.hbm2ddl.auto">update</prop>
-				<prop key="hibernate.cache.use_query_cache">true</prop>
-				<prop key="hibernate.cache.use_second_level_cache">true</prop>
-				<prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop>
-				<prop key="hibernate.transaction.flush_before_completion">true</prop>
-				<prop key="hibernate.transaction.auto_close_session">false</prop>
-				<prop key="hibernate.max_fetch_depth">5</prop>
-				<prop key="hibernate.default_batch_fetch_size">16</prop>
-				<prop key="hibernate.jdbc.batch_size">25</prop>
-				<prop key="hibernate.jdbc.fetch_size">8</prop>
-			</props>
-		</property>
-	</bean>
-
-	<!-- The transaction manager -->
-	<bean id="dsaResultsTransactionManager"
-		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
-		<property name="sessionFactory" ref="dsaResultsSessionFactory" />
-	</bean>
-	<!-- DAO Beans -->
-	<bean id="DSAResultDAO" scope="singleton"
-		class="alma.scheduling.algorithm.results.dao.ResultsDaoImpl">
-		<property name="sessionFactory" ref="dsaResultsSessionFactory" />
-	</bean>
 </beans>

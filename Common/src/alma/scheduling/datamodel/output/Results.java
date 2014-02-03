@@ -35,7 +35,6 @@ import java.util.Set;
  */
 public class Results {
 
-    private Long id;
 	private double availableTime;
 	private double maintenanceTime;
 	private double operationTime;
@@ -149,12 +148,36 @@ public class Results {
 		this.stopRealDate = stopRealDate;
 	}
 
-    public Long getId() {
-        return id;
-    }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((startRealDate == null) ? 0 : startRealDate.hashCode());
+		return result;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Results)) {
+			return false;
+		}
+		Results other = (Results) obj;
+		if (startRealDate == null) {
+			if (other.startRealDate != null) {
+				return false;
+			}
+		} else if (!startRealDate.equals(other.startRealDate)) {
+			return false;
+		}
+		return true;
+	}
+	
 
 }

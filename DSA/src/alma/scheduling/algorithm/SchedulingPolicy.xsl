@@ -167,12 +167,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
                 </property>
                 <property name="partialUpdates">
                     <set>
-                        <xsl:if test="/Policies/@sim='false' or count(/Policies/@sim)=0">
-                            <ref bean="weatherUpdater"/>
-                        </xsl:if>
-                        <xsl:if test="/Policies/@sim='true'">
                             <ref bean="weatherSimUpdater"/>
-                        </xsl:if>
                     </set>
                 </property>
                 <property name="fullUpdates">

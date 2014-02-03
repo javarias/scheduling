@@ -24,13 +24,14 @@
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
+import java.util.Collection;
 import java.util.List;
 
 import alma.scheduling.datamodel.obsproject.FieldSource;
 
 public interface FieldSourceDao{
 	
-	public List<FieldSource> getSourcesWithoutRiseAndSetTimes();
+	public Collection<FieldSource> getSourcesWithoutRiseAndSetTimes();
 	
 	public int getNumberOfSourcesWithoutUpdate();
 	

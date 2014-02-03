@@ -6,11 +6,15 @@
 	<configurations>
       <conf name="core"/>
       <conf name="standalone" extends="core"/>
+	  <conf name="test" extends="standalone" description="Libraries only needed for testing"/>
     </configurations>
     <publications>
       <artifact name="scheduling-dsa" type="jar" conf="core" />
     </publications>
     <dependencies>
-		<dependency name="Common" rev="latest.integration" conf="core"/> 
+		<dependency name="Common" rev="latest.integration" conf="core"/>
+		<dependency org="junit" name="junit" rev="4.11" conf="test->default"/>
+		<dependency org="org.jmock" name="jmock" rev="2.6.0" conf="test->default"/>
+		<dependency org="org.jmock" name="jmock-legacy" rev="2.6.0" conf="test->default"/>
     </dependencies>
 </ivy-module>

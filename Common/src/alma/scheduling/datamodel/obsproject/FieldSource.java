@@ -29,6 +29,8 @@ public class FieldSource {
 
     private Long id;
     
+    private String sbUid;
+    
     private String name;
     
     private SkyCoordinates coordinates;
@@ -106,5 +108,51 @@ public class FieldSource {
     public void setObservability(FieldSourceObservability observability) {
         this.observability = observability;
     }
-    
+
+	public String getSbUid() {
+		return sbUid;
+	}
+
+	public void setSbUid(String sbUid) {
+		this.sbUid = sbUid;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((sbUid == null) ? 0 : sbUid.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof FieldSource)) {
+			return false;
+		}
+		FieldSource other = (FieldSource) obj;
+		if (id == null) {
+			if (other.id != null) {
+				return false;
+			}
+		} else if (!id.equals(other.id)) {
+			return false;
+		}
+		if (sbUid == null) {
+			if (other.sbUid != null) {
+				return false;
+			}
+		} else if (!sbUid.equals(other.sbUid)) {
+			return false;
+		}
+		return true;
+	}
+	
 }

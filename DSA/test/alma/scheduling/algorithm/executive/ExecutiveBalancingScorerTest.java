@@ -7,12 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import alma.entity.xmlbinding.obsproposal.types.InvestigatorTAssociatedExecType;
 import alma.scheduling.algorithm.sbranking.SBRank;
 import alma.scheduling.datamodel.executive.Executive;
+import alma.scheduling.datamodel.executive.InvestigatorTAssociatedExecType;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
-
 import junit.framework.TestCase;
 
 /**

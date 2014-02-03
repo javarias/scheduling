@@ -15,6 +15,7 @@ import alma.scheduling.datamodel.obsproject.Target;
 public class SchedBlockDaoImpl implements SchedBlockDao {
 
 	private HashMap<String, SchedBlock> schedulingBlocks;
+	private FieldSourceDao fsDao;
 	
 	public SchedBlockDaoImpl() {
 		schedulingBlocks = new HashMap<>();
@@ -146,6 +147,9 @@ public class SchedBlockDaoImpl implements SchedBlockDao {
 	public void saveOrUpdate(Collection<SchedBlock> sb) {
 		for(SchedBlock s: sb) {
 			schedulingBlocks.put(s.getUid(), s);
+			for (Target t: s.getTargets())
+				if (t.getSource() != null)
+					fsDao.saveOrUpdate(t.getSource());
 		}
 
 	}
@@ -155,4 +159,8 @@ public class SchedBlockDaoImpl implements SchedBlockDao {
 		return schedulingBlocks.get(uid);
 	}
 
+	public void setFsDao(FieldSourceDao fsDao) {
+		this.fsDao = fsDao;
+	}
+	
 }

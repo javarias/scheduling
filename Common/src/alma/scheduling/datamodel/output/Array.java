@@ -37,12 +37,12 @@ public class Array {
 	private double availableTime;
 	private Date creationDate;
 	private Date deletionDate;
-	private long id;
 	private long originalId;
 	private double maintenanceTime;
 	private double scientificTime;
 	private double resolution;
 	private double uvCoverage;
+	private String name;
 
 	public Array(){
 
@@ -72,14 +72,6 @@ public class Array {
         this.deletionDate = deletionDate;
     }
     
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
     public double getMaintenanceTime() {
         return maintenanceTime;
     }
@@ -119,4 +111,52 @@ public class Array {
 	public void setOriginalId(long originalId) {
 		this.originalId = originalId;
 	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((creationDate == null) ? 0 : creationDate.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Array)) {
+			return false;
+		}
+		Array other = (Array) obj;
+		if (creationDate == null) {
+			if (other.creationDate != null) {
+				return false;
+			}
+		} else if (!creationDate.equals(other.creationDate)) {
+			return false;
+		}
+		if (name == null) {
+			if (other.name != null) {
+				return false;
+			}
+		} else if (!name.equals(other.name)) {
+			return false;
+		}
+		return true;
+	}
+	
 }

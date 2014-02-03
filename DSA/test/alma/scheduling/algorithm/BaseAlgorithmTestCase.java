@@ -3,7 +3,6 @@ package alma.scheduling.algorithm;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -13,10 +12,10 @@ import javax.xml.transform.TransformerException;
 
 import org.xml.sax.SAXException;
 
-import alma.entity.xmlbinding.obsproposal.types.InvestigatorTAssociatedExecType;
 import alma.scheduling.SchedulingPolicyFile;
 import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.executive.ExecutivePercentage;
+import alma.scheduling.datamodel.executive.InvestigatorTAssociatedExecType;
 import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.obsproject.FieldSource;
@@ -69,11 +68,8 @@ public abstract class BaseAlgorithmTestCase extends TestCase {
     	//Names retrieved from ObsProposal.xsd
     	//String [] executiveNames = {"NONALMA","OTHER", "CL", "CHILE", "EA", "EU", "NA"};
     	ArrayList<String> executiveNames = new ArrayList<String>();
-		@SuppressWarnings("rawtypes")
-		Enumeration e = InvestigatorTAssociatedExecType.enumerate();
-		while(e.hasMoreElements()) {
-			InvestigatorTAssociatedExecType apdmExec = (InvestigatorTAssociatedExecType) e.nextElement();
-			executiveNames.add(apdmExec.toString());
+		for(InvestigatorTAssociatedExecType e: InvestigatorTAssociatedExecType.values() ) {
+			executiveNames.add(e.toString());
 		}
     	List<Executive> execs = new ArrayList<Executive>();
     	List<ObservingSeason> seasons = new ArrayList<ObservingSeason>();
