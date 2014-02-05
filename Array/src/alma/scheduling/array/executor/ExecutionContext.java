@@ -1127,7 +1127,7 @@ public class ExecutionContext {
 	private void addExecStatus(SBStatus sbStatus, StatusTStateType state,
 			double sensJy, boolean isCsv) {
 		Date startDate =  new Date(UTCUtility.utcOmgToJava(startedEvent.startTime));
-		Date endDate = new Date(UTCUtility.utcJavaToOmg(endedEvent.endTime));
+		Date endDate = new Date(UTCUtility.utcOmgToJava(endedEvent.endTime));
 		
 		//State Archive related stuff
 		ExecStatusT es = new ExecStatusT();
