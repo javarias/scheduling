@@ -62,6 +62,30 @@ public class SunAvoidanceSelector extends AbstractBaseSelector {
         return sbs;
     }
 
+	@Override
+	public boolean canBeSelected(SchedBlock sb, Date date,
+			ArrayConfiguration arrConf) {
+		return canBeSelected(sb, date);
+	}
+
+	@Override
+	public boolean canBeSelected(SchedBlock sb, Date date) {
+		SunAstroData sunData = CoordinatesUtil.getSunAstroData(date);
+		double highRa, lowRa, highDec, lowDec;
+		highRa = sunData.getRA() + sunData.getAngularDiameter() / 2;
+		lowRa = sunData.getRA() - sunData.getAngularDiameter() / 2;
+		highDec = sunData.getDec() + sunData.getAngularDiameter() / 2;
+		lowDec = sunData.getDec() - sunData.getAngularDiameter() / 2;
+		if (sb.getRepresentativeCoordinates().getRA() > highRa &&
+				sb.getRepresentativeCoordinates().getRA() < lowRa &&
+				sb.getRepresentativeCoordinates().getDec() > highDec &&
+				sb.getRepresentativeCoordinates().getDec() < lowDec)
+			return true;
+		return false;
+	}
+	
+	
+
 //    @Override
 //    public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
 //        SunAstroData sunData = CoordinatesUtil.getSunAstroData(ut);

@@ -35,7 +35,7 @@ public class TestWeatherSelectors extends BaseAlgorithmTestCase {
 		WeatherTsysSelector weatherSelector = new WeatherTsysSelector("weatherSelector");
 		assertEquals(true, weatherSelector.canBeSelected(tmp, new Date()));
 		
-		alg.setArray(new ArrayConfiguration());
+		alg.setArray(initializeBasicArrayConfiguration());
 		alg.selectCandidateSB();
 		alg.rankSchedBlocks();
 		SchedBlock sb = alg.getSelectedSchedBlock();
@@ -82,7 +82,7 @@ public class TestWeatherSelectors extends BaseAlgorithmTestCase {
 		tmp.setWeatherDependentVariables(w);
 		assertEquals(true, opacitySelector.canBeSelected(tmp, new Date()));
 		
-		alg.setArray(new ArrayConfiguration());
+		alg.setArray(initializeBasicArrayConfiguration());
 		alg.selectCandidateSB();
 		alg.rankSchedBlocks();
 		SchedBlock sb = alg.getSelectedSchedBlock();

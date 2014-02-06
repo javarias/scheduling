@@ -33,6 +33,14 @@ public class ArrayTypeSelector extends AbstractBaseSelector {
 		return this.getClass().toString();
 	}
 
+	@Override
+	public boolean canBeSelected(SchedBlock sb, Date date,
+			ArrayConfiguration arrConf) {
+		if (sb.getObsUnitControl().getArrayRequested().compareTo(arrConf.getArrayType()) == 0)
+			return true;
+		return false;
+	}
+
 	
 	
 }

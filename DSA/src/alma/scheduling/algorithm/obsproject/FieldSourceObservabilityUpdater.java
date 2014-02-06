@@ -105,7 +105,7 @@ public class FieldSourceObservabilityUpdater implements ModelUpdater, AlgorithmP
         double latitude = configDao.getConfiguration().getArrayCenterLatitude();
         double longitude = configDao.getConfiguration().getArrayCenterLongitude();
         
-        List<FieldSource> sources = sourceDao.getSourcesWithoutRiseAndSetTimes();
+        Collection<FieldSource> sources = sourceDao.getSourcesWithoutRiseAndSetTimes();
         for (Iterator<FieldSource> iter = sources.iterator(); iter.hasNext();) {
             FieldSource src = iter.next();
             logger.debug("src name: " + src.getName());

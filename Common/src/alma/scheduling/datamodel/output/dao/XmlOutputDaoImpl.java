@@ -126,7 +126,7 @@ public class XmlOutputDaoImpl implements OutputDao {
                 sb[j].setType(tmpSb.getType());  
                 alma.scheduling.output.generated.ArrayRef aRef = 
                     new alma.scheduling.output.generated.ArrayRef();
-                aRef.setArrayRef(Long.toString(tmpSb.getArrayRef().getId()));
+//                aRef.setArrayRef(Long.toString(tmpSb.getArrayRef().getId())); //TODO:Fix references
                 sb[j].setArrayRef(aRef);
             }
             op[i].setSchedBlock(sb);
@@ -145,7 +145,7 @@ public class XmlOutputDaoImpl implements OutputDao {
             a[i].setCreationDate(tmpA.getCreationDate());
             a[i].setDeletionDate(tmpA.getDeletionDate());
             // Id needs to be a string, as it is used for XPath reference check in XML schema.
-            a[i].setOriginalId( tmpA.getId() );
+ //           a[i].setOriginalId( tmpA.getId() ); //TODO: Fix references
             a[i].setMaintenanceTime(tmpA.getMaintenanceTime());
             a[i].setScientificTime(tmpA.getScientificTime());
             a[i].setResolution( tmpA.getResolution());

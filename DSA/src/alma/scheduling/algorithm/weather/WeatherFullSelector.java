@@ -58,10 +58,10 @@ public class WeatherFullSelector extends AbstractBaseSelector {
         return sbs;
     }
 
-//    @Override
-//    public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
-//        // TODO Auto-generated method stub
-//        return null;
-//    }
+	@Override
+	public boolean canBeSelected(SchedBlock sb, Date date,
+			ArrayConfiguration arrConf) {
+		return canBeSelected(sb, date);
+	}
 
 }

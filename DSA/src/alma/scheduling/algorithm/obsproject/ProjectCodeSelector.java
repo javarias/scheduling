@@ -2,7 +2,6 @@ package alma.scheduling.algorithm.obsproject;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import alma.scheduling.algorithm.sbselection.AbstractBaseSelector;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
@@ -49,5 +48,20 @@ public class ProjectCodeSelector extends AbstractBaseSelector {
 	public void setCode(String code) {
 		this.code = code;
 	}
+
+	@Override
+	public boolean canBeSelected(SchedBlock sb, Date date,
+			ArrayConfiguration arrConf) {
+		return canBeSelected(sb, date);
+	}
+
+	@Override
+	public boolean canBeSelected(SchedBlock sb, Date date) {
+		if (sb.getProject().getCode().matches(code))
+			return true;
+		return false;
+	}
+	
+	
 
 }

@@ -67,6 +67,15 @@ public class ArrayConfigurationSelector extends AbstractBaseSelector{
         return getClass().toString();
     }
 
+	@Override
+	public boolean canBeSelected(SchedBlock sb, Date date,
+			ArrayConfiguration arrConf) {
+		double remaningTime = (arrConf.getEndTime().getTime() - date.getTime()) / (1000.0 * 60.0 * 60.0);
+		if (sb.getObsUnitControl().getEstimatedExecutionTime() <= remaningTime)
+			return true;
+		return false;
+	}
+
 //    @Override
 //    public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
 //        double remaningTime = (arrConf.getEndTime().getTime() - ut.getTime()) / (1000.0 * 60.0 * 60.0);

@@ -69,4 +69,20 @@ public class BandSelector extends AbstractBaseSelector {
 		this.schedBlockDao = schedBlockDao;
 	}
 
+	@Override
+	public boolean canBeSelected(SchedBlock sb, Date date,
+			ArrayConfiguration arrConf) {
+		return canBeSelected(sb, date);
+	}
+
+	@Override
+	public boolean canBeSelected(SchedBlock sb, Date date) {
+		for (int b: allowedBands) {
+			if (sb.getSchedulingConstraints().getRepresentativeBand() == b)
+				return true;
+		}
+		return false;
+	}
+	
+
 }

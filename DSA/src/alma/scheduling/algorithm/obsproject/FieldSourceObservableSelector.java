@@ -31,6 +31,7 @@ import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.obsproject.Target;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 import alma.scheduling.utils.TimeUtil;
 
@@ -69,6 +70,35 @@ public class FieldSourceObservableSelector extends AbstractBaseSelector {
         printVerboseInfo(sbs, arrConf.getId(), ut);
         return sbs;
     }
+
+	@Override
+	public boolean canBeSelected(SchedBlock sb, Date date,
+			ArrayConfiguration arrConf) {
+		return canBeSelected(sb, date);
+	}
+
+	@Override
+	public boolean canBeSelected(SchedBlock sb, Date date) {
+		double longitude = configDao.getConfiguration().getArrayCenterLongitude();
+        double lst = TimeUtil.getLocalSiderealTime(date, longitude);
+		Target repTarget = sb.getSchedulingConstraints().getRepresentativeTarget();
+		if (repTarget.getSource().getObservability().getAlwaysVisible()) 
+			return true;
+		else if (repTarget.getSource().getObservability().getRisingTime() <
+				repTarget.getSource().getObservability().getSettingTime() ) {
+			if (repTarget.getSource().getObservability().getRisingTime() < lst &&
+					repTarget.getSource().getObservability().getSettingTime() > lst)
+				return true;
+		} else if (repTarget.getSource().getObservability().getRisingTime() >
+				repTarget.getSource().getObservability().getSettingTime() ) {
+			if (repTarget.getSource().getObservability().getRisingTime() < lst ||
+					repTarget.getSource().getObservability().getSettingTime() > lst)
+				return true;
+		}
+		return false;
+	}
+	
+	
 
 //    @Override
 //    public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {

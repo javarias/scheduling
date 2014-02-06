@@ -73,6 +73,24 @@ public class HourAngleSelector extends AbstractBaseSelector {
 		return res;
 	}
 
+	@Override
+	public boolean canBeSelected(SchedBlock sb, Date date,
+			ArrayConfiguration arrConf) {
+		return canBeSelected(sb, date);
+	}
+
+	@Override
+	public boolean canBeSelected(SchedBlock sb, Date date) {
+		double raLowLimit = CoordinatesUtil.getRA(date, 20.0, Constants.CHAJNANTOR_LONGITUDE) * 15.0;
+		double raHighLimit = CoordinatesUtil.getRA(date, 4.0, Constants.CHAJNANTOR_LONGITUDE) * 15.0;
+		if ((sb.getRepresentativeCoordinates().getRA() <= 360.0 &&
+						sb.getRepresentativeCoordinates().getRA() >= raLowLimit) ||
+			(sb.getRepresentativeCoordinates().getRA() >= 0.0 &&
+					sb.getRepresentativeCoordinates().getRA() <= raHighLimit))
+			return true;
+		return false;
+	}
+
 //    @Override
 //    public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
 //        double raLowLimit = CoordinatesUtil.getRA(ut, 20.0,

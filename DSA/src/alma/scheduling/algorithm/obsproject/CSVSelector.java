@@ -55,4 +55,19 @@ public class CSVSelector extends AbstractBaseSelector {
 		this.csv = csv;
 	}
 
+	@Override
+	public boolean canBeSelected(SchedBlock sb, Date date,
+			ArrayConfiguration arrConf) {
+		return canBeSelected(sb, date);
+	}
+
+	@Override
+	public boolean canBeSelected(SchedBlock sb, Date date) {
+		if(sb.getCsv() == csv)
+			return true;
+		return false;
+	}
+	
+	
+
 }

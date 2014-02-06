@@ -51,6 +51,20 @@ public class SchedBlockStatusSelector extends AbstractBaseSelector {
             throws NoSbSelectedException {
         return sbDao.findSchedBlockWithStatusReady();
     }
+
+	@Override
+	public boolean canBeSelected(SchedBlock sb, Date date,
+			ArrayConfiguration arrConf) {
+		return canBeSelected(sb, date);
+	}
+
+	@Override
+	public boolean canBeSelected(SchedBlock sb, Date date) {
+		if (sb.getSchedBlockControl().getState().compareTo(SchedBlockState.READY) == 0)
+			return true;
+		return false;
+	}
+	
     
 //    @Override
 //    public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {

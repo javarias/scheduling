@@ -203,7 +203,6 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
             } catch (NullPointerException e) {
                 logger.warn("DSA cannot continue if selector " + s.toString()
                         + " cannot get at least one SB");
-                e.printStackTrace();
                 throw new NoSbSelectedException(e);
             }
             i++;

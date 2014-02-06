@@ -128,6 +128,10 @@ public class ExecutivePercentage {
         this.season = season;
     }
 
+    /**
+     * @see #remainingObsTime
+     * @return
+     */
     public Double getRemainingObsTime() {
         return remainingObsTime;
     }

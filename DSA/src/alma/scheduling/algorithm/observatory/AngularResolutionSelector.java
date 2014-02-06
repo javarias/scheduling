@@ -24,6 +24,22 @@ public class AngularResolutionSelector extends AbstractBaseSelector {
 		return null;
 	}
 
+	@Override
+	public boolean canBeSelected(SchedBlock sb, Date date,
+			ArrayConfiguration arrConf) {
+		double maxBL = arrConf.getMaxBaseline();
+		double l = Constants.LIGHT_SPEED / sb.getRepresentativeFrequency();
+		if (sb.getSchedulingConstraints().getMinAngularResolution() <= l / maxBL * convertToArcSec &&
+				sb.getSchedulingConstraints().getMaxAngularResolution() >= l / maxBL * convertToArcSec)
+			return true;
+		return false;
+	}
+
+	@Override
+	public boolean canBeSelected(SchedBlock sb, Date date) {
+		return super.canBeSelected(sb, date);
+	}
+
 //	@Override
 //	public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
 //		Conjunction retVal = Restrictions.conjunction();

@@ -62,6 +62,31 @@ public class MoonAvoidanceSelector extends AbstractBaseSelector {
         return sbs;
     }
 
+	@Override
+	public boolean canBeSelected(SchedBlock sb, Date date,
+			ArrayConfiguration arrConf) {
+		return canBeSelected(sb, date);
+	}
+
+	@Override
+	public boolean canBeSelected(SchedBlock sb, Date date) {
+		MoonAstroData moonData = CoordinatesUtil.getMoonAstroData(date);
+		double highRa, lowRa, highDec, lowDec;
+		highRa = moonData.getRA() + moonData.getAngularDiameter() / 2;
+		lowRa = moonData.getRA() - moonData.getAngularDiameter() / 2;
+		highDec = moonData.getDec() + moonData.getAngularDiameter() / 2;
+		lowDec = moonData.getDec() - moonData.getAngularDiameter() / 2;
+		
+		if (sb.getRepresentativeCoordinates().getRA() > highRa &&
+				sb.getRepresentativeCoordinates().getRA() < lowRa &&
+				sb.getRepresentativeCoordinates().getDec() > highDec &&
+				sb.getRepresentativeCoordinates().getDec() < lowDec)
+			return true;
+		return false;
+	}
+	
+	
+
 //    @Override
 //    public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
 //        MoonAstroData moonData = CoordinatesUtil.getMoonAstroData(ut);

@@ -66,6 +66,12 @@ public class OpacitySelector extends AbstractBaseSelector {
         }
         return false;
 	}
+
+	@Override
+	public boolean canBeSelected(SchedBlock sb, Date date,
+			ArrayConfiguration arrConf) {
+		return canBeSelected(sb, date);
+	}
 	
 
 }

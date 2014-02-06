@@ -18,8 +18,11 @@ import alma.scheduling.datamodel.executive.ExecutivePercentage;
 import alma.scheduling.datamodel.executive.InvestigatorTAssociatedExecType;
 import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
+import alma.scheduling.datamodel.observatory.ArrayConfiguration;
+import alma.scheduling.datamodel.obsproject.ArrayType;
 import alma.scheduling.datamodel.obsproject.FieldSource;
 import alma.scheduling.datamodel.obsproject.FieldSourceObservability;
+import alma.scheduling.datamodel.obsproject.ObsUnitControl;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.SchedBlockControl;
 import alma.scheduling.datamodel.obsproject.SchedBlockState;
@@ -61,6 +64,9 @@ public abstract class BaseAlgorithmTestCase extends TestCase {
 		c.setRepresentativeTarget(t);
 		sb.setSchedulingConstraints(c);
 		
+		ObsUnitControl obc = new ObsUnitControl();
+		obc.setArrayRequested(ArrayType.SEVEN_M);
+		sb.setObsUnitControl(obc);
 		return sb;
 	}
 	
@@ -97,6 +103,12 @@ public abstract class BaseAlgorithmTestCase extends TestCase {
     	season.setExecutivePercentage(eps);
     	execDao.saveObservingSeasonsAndExecutives(seasons, execs);
     	return execs.get(0);
+	}
+	
+	protected ArrayConfiguration initializeBasicArrayConfiguration() {
+		ArrayConfiguration arrConf = new ArrayConfiguration();
+		arrConf.setArrayType(ArrayType.SEVEN_M);
+		return arrConf;
 	}
 	
 	protected DynamicSchedulingAlgorithm convertAndRetrieveAlgorithmBean(final String DSAPolicyFileContent) 

@@ -40,6 +40,19 @@ public class InteractiveSchedBlockSelector extends AbstractBaseSelector {
 		return null;
 	}
 
+	@Override
+	public boolean canBeSelected(SchedBlock sb, Date date,
+			ArrayConfiguration arrConf) {
+		return canBeSelected(sb, date);
+	}
+
+	@Override
+	public boolean canBeSelected(SchedBlock sb, Date date) {
+		if (!sb.getManual())
+			return true;
+		return false;
+	}
+	
 //	@Override
 //	public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
 //		return Restrictions.not(Restrictions.eq("manual", true));

@@ -3,13 +3,16 @@ package alma.scheduling.datamodel.config.dao;
 import java.util.Date;
 
 import alma.scheduling.datamodel.config.Configuration;
+import alma.scheduling.utils.Constants;
 
 public class ConfigurationDaoImpl implements ConfigurationDao {
 
 	@Override
 	public Configuration getConfiguration() {
-		// TODO Auto-generated method stub
-		return null;
+		Configuration config = new Configuration();
+		config.setArrayCenterLongitude(Constants.CHAJNANTOR_LONGITUDE);
+		config.setArrayCenterLatitude(Constants.CHAJNANTOR_LATITUDE);
+		return config;
 	}
 
 	@Override

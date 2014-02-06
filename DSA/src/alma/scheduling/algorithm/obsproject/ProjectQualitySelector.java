@@ -83,5 +83,21 @@ public class ProjectQualitySelector extends AbstractBaseSelector {
 		this.prjDao = prjDao;
 	}
 
+	@Override
+	public boolean canBeSelected(SchedBlock sb, Date date,
+			ArrayConfiguration arrConf) {
+		return canBeSelected(sb, date);
+	}
+
+	@Override
+	public boolean canBeSelected(SchedBlock sb, Date date) {
+		for(String grade: allowedGrades) {
+			if (sb.getProject().getLetterGrade().compareTo(ScienceGrade.valueOf(grade)) == 0)
+				return true;
+		}
+		return false;
+	}
+
+	
     
 }

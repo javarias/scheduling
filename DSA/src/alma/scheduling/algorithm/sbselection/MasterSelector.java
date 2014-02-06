@@ -20,6 +20,7 @@
  *******************************************************************************/
 package alma.scheduling.algorithm.sbselection;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -48,6 +49,22 @@ public class MasterSelector implements SchedBlockSelector {
     public void setSelectors(Collection<SchedBlockSelector> selectors) {
         this.selectors = selectors;
     }
+    
+    private List<SchedBlock> findSchedBlocks(Date ut, ArrayConfiguration arrConf) {
+    	ArrayList<SchedBlock> ret = new ArrayList<>();
+    	for (SchedBlock sb: sbDao.findAll()) {
+    		boolean isSelec = true;
+    		for (SchedBlockSelector sel: selectors) {
+    			if (!sel.canBeSelected(sb, ut, arrConf)) {
+    				isSelec = false;
+    				break;
+    			}
+    		}
+    		if (isSelec)
+    			ret.add(sb);
+    	}
+    	return ret;
+    }
 
 //    @Override
 //    public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
@@ -67,8 +84,7 @@ public class MasterSelector implements SchedBlockSelector {
     public Collection<SchedBlock> select(Date ut, ArrayConfiguration arrConf)
             throws NoSbSelectedException {
         Date t1= new Date();
-        List<SchedBlock> sbs = null;
-//        List<SchedBlock> sbs = sbDao.findSchedBlocks(getCriterion(ut, arrConf));
+        List<SchedBlock> sbs = findSchedBlocks(ut, arrConf);
         Date t2 = new Date();
         System.out.println("Size of criteria query: " + sbs.size() );
         System.out.println("Time used: " + (t2.getTime() - t1.getTime()) + " ms");
@@ -79,5 +95,11 @@ public class MasterSelector implements SchedBlockSelector {
     public boolean canBeSelected(SchedBlock sb, Date date) {
     	throw new java.lang.RuntimeException("Not Implemented");
     }
+
+	@Override
+	public boolean canBeSelected(SchedBlock sb, Date date,
+			ArrayConfiguration arrConf) {
+		return canBeSelected(sb, date);
+	}
 
 }

@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 import alma.scheduling.algorithm.sbselection.AbstractBaseSelector;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.datamodel.executive.Executive;
-import alma.scheduling.datamodel.executive.ObservingSeason;
+import alma.scheduling.datamodel.executive.ExecutivePercentage;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
@@ -87,7 +87,21 @@ public class ExecutiveSelector extends AbstractBaseSelector {
         return acceptedSbs;
     }
 
+	@Override
+	public boolean canBeSelected(SchedBlock sb, Date date,
+			ArrayConfiguration arrConf) {
+		return canBeSelected(sb, date);
+	}
 
+	@Override
+	public boolean canBeSelected(SchedBlock sb, Date date) {
+		ExecutivePercentage ep = execDao.getExecutivePercentage(sb.getExecutive(), execDao.getCurrentSeason());
+		double maxExecTime = sb.getSchedBlockControl().getSbMaximumTime();
+		if (maxExecTime > ep.getRemainingObsTime())
+			return false;
+		return true;
+	}
+	
 //    @Override
 //    public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
 //        /*        query = getSession()
