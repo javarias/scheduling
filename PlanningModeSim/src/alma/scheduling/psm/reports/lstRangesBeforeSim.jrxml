@@ -10,16 +10,16 @@
 	<style name="Heading 1" fontSize="16" isBold="true"/>
 	<style name="Default"/>
 	<parameter name="totalAvailableTime" class="java.lang.String"/>
-	<parameter name="scientificTime" class="java.lang.String"/>
-	<parameter name="title" class="java.lang.String"/>
-	<parameter name="subtitle" class="java.lang.String"/>
-	<parameter name="seasonStart" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="seasonEnd" class="java.lang.String"/>
+	<parameter name="seasonStart" class="java.util.Date" isForPrompting="false"/>
+	<parameter name="seasonEnd" class="java.util.Date" isForPrompting="false"/>
 	<queryString language="SQL">
-		<![CDATA[select A.EXECUTIVE as executive, cast(floor(SB.RA/15.0) as decimal(9)) as lstRange, sum(SB.EXECUTION_TIME) as executionTime
-	from OUTPUT_RESULTS as R inner join OUTPUT_OBSERVATION_PROJECT as P on R.ID = P.RESULT_ID 
-	inner join OUTPUT_SCHED_BLOCK_RESULT as SB on P.ID = SB.OBSERVATION_PROJECT_ID 
-	inner join OUTPUT_AFFILIATION as A on P.ID = A.OBSERVATION_PROJECT_ID GROUP BY lstRange, executive order by lstRange;]]>
+		<![CDATA[select E.NAME as executive, cast(floor(S.RA/15.0) as decimal(9)) as lstRange, sum(SB.SCHEDBLOCK_CTRL_MAX_TIME) as executionTime
+	from Schedblock as SB inner join PI on SB.PINAME = PI.EMAIL 
+	inner join PI_MEMBERSHIP PIM on PI.ID = PIM.PI_ID 
+	inner join EXECUTIVE as E on PIM.EXECUTIVE_NAME = E.ID
+	inner join TARGET as T on SB.REPR_TARGET = T.ID
+	inner join SOURCE as S on T.SOURCE = S.ID
+	group by executive, lstRange order by lstRange asc, executive asc;]]>
 	</queryString>
 	<field name="executive" class="java.lang.String"/>
 	<field name="lstRange" class="java.lang.Integer"/>
@@ -120,7 +120,7 @@
 		<variableExpression><![CDATA[($F{lstRange} == 23 ) ? $F{executionTime} : 0]]></variableExpression>
 		<initialValueExpression><![CDATA[new java.lang.Double(0)]]></initialValueExpression>
 	</variable>
-	<variable name="totalLstRangeTime" class="java.lang.Double" resetType="Group" resetGroup="lstRangeGroup" calculation="Sum">
+	<variable name="totalRequestedTime" class="java.lang.Double" calculation="Sum">
 		<variableExpression><![CDATA[$F{executionTime}]]></variableExpression>
 		<initialValueExpression><![CDATA[new java.lang.Double(0)]]></initialValueExpression>
 	</variable>
@@ -132,15 +132,8 @@
 					<textElement verticalAlignment="Middle" markup="none">
 						<font size="12" isBold="true"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$P{subtitle}]]></textFieldExpression>
+					<textFieldExpression><![CDATA["Requested time per RA range"]]></textFieldExpression>
 				</textField>
-				<staticText>
-					<reportElement style="Default" x="323" y="26" width="52" height="20" uuid="e205b72a-f293-4f37-a73a-4cc1faf140ac"/>
-					<textElement>
-						<font size="8" isBold="true"/>
-					</textElement>
-					<text><![CDATA[Time [hours]]]></text>
-				</staticText>
 				<staticText>
 					<reportElement style="Default" x="286" y="26" width="26" height="20" uuid="e9eaa2f0-05c0-46e4-8eac-469e22b57271"/>
 					<textElement>
@@ -149,11 +142,11 @@
 					<text><![CDATA[RA]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="Default" x="44" y="26" width="52" height="20" uuid="bade8033-4407-4751-bfb0-03e231e5b033"/>
+					<reportElement style="Default" x="44" y="26" width="66" height="20" uuid="bade8033-4407-4751-bfb0-03e231e5b033"/>
 					<textElement>
 						<font size="8" isBold="true"/>
 					</textElement>
-					<text><![CDATA[Time [hours]]]></text>
+					<text><![CDATA[Requested Time [hours]]]></text>
 				</staticText>
 				<staticText>
 					<reportElement style="Default" x="4" y="26" width="26" height="20" uuid="ed6574fb-fdf7-4c53-84dd-de3f1eda79ce"/>
@@ -166,32 +159,25 @@
 					<reportElement x="0" y="52" width="539" height="1" uuid="6ab92d02-6213-45ed-8979-4e3bb2701121"/>
 				</line>
 				<staticText>
-					<reportElement style="Default" x="192" y="26" width="59" height="20" uuid="ec239144-ea08-4d47-a622-0c290002d873"/>
+					<reportElement style="Default" x="322" y="26" width="66" height="20" uuid="987ceee5-c816-4dd3-9192-b43f875c3e5a"/>
 					<textElement>
 						<font size="8" isBold="true"/>
 					</textElement>
-					<text><![CDATA[Percentage (Season)]]></text>
+					<text><![CDATA[Requested Time [hours]]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="Default" x="468" y="26" width="59" height="20" uuid="b3b06d4c-5f6d-4d70-bf37-64d2fa36d46a"/>
+					<reportElement style="Default" x="115" y="26" width="84" height="20" uuid="9cbdc767-3510-40f6-b24d-31123301d7e2"/>
 					<textElement>
 						<font size="8" isBold="true"/>
 					</textElement>
-					<text><![CDATA[Percentage (Season)]]></text>
+					<text><![CDATA[Percentage (total requested time)]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="Default" x="115" y="26" width="59" height="20" uuid="630e1074-d662-4093-9899-42c4fe111fda"/>
+					<reportElement style="Default" x="388" y="26" width="84" height="20" uuid="0d1c313e-e5f5-4ce2-b3da-f17ae42c25c7"/>
 					<textElement>
 						<font size="8" isBold="true"/>
 					</textElement>
-					<text><![CDATA[Percentage (Observed)]]></text>
-				</staticText>
-				<staticText>
-					<reportElement style="Default" x="392" y="26" width="59" height="20" uuid="ed1d4ad5-866a-4a90-b1fe-ef614b1bf4e9"/>
-					<textElement>
-						<font size="8" isBold="true"/>
-					</textElement>
-					<text><![CDATA[Percentage (Observed)]]></text>
+					<text><![CDATA[Percentage (total requested time)]]></text>
 				</staticText>
 			</band>
 		</groupHeader>
@@ -578,393 +564,177 @@
 					</textElement>
 					<textFieldExpression><![CDATA[$V{time23}]]></textFieldExpression>
 				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="true">
-					<reportElement style="Default" mode="Transparent" x="192" y="3" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="2ad2db6f-4f47-4e34-9231-099718076ea0"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField pattern="#,###.##%">
+					<reportElement style="Default" x="115" y="3" width="52" height="12" uuid="38a66e74-d488-4455-b755-19fd7cbe2ae4"/>
+					<textElement>
+						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[($V{time0}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{time0} / $V{totalRequestedTime}]]></textFieldExpression>
 				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="192" y="16" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="b4ff4a7d-fc16-47c6-a440-5dd01c602bce"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField pattern="#,###.##%">
+					<reportElement style="Default" x="115" y="16" width="52" height="12" uuid="38a66e74-d488-4455-b755-19fd7cbe2ae4"/>
+					<textElement>
+						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[($V{time1}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{time1} / $V{totalRequestedTime}]]></textFieldExpression>
 				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="192" y="29" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="f9eafef3-f8f8-4bf5-8b17-6cea65b68af6"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField pattern="#,###.##%">
+					<reportElement style="Default" x="115" y="29" width="52" height="12" uuid="38a66e74-d488-4455-b755-19fd7cbe2ae4"/>
+					<textElement>
+						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[($V{time2}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{time2} / $V{totalRequestedTime}]]></textFieldExpression>
 				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="192" y="42" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="554227f1-c3a2-4522-9b76-d6a4dbbdaf40"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField pattern="#,###.##%">
+					<reportElement style="Default" x="115" y="42" width="52" height="12" uuid="38a66e74-d488-4455-b755-19fd7cbe2ae4"/>
+					<textElement>
+						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[($V{time3}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{time3} / $V{totalRequestedTime}]]></textFieldExpression>
 				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="192" y="55" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="340effe4-7150-473f-841e-b4fd9dcbcfcb"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField pattern="#,###.##%">
+					<reportElement style="Default" x="115" y="55" width="52" height="12" uuid="38a66e74-d488-4455-b755-19fd7cbe2ae4"/>
+					<textElement>
+						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[($V{time4}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{time4} / $V{totalRequestedTime}]]></textFieldExpression>
 				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="192" y="68" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="0f19cc94-ba5f-4804-af51-e4e5a25b421d"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField pattern="#,###.##%">
+					<reportElement style="Default" x="115" y="68" width="52" height="12" uuid="38a66e74-d488-4455-b755-19fd7cbe2ae4"/>
+					<textElement>
+						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[($V{time5}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{time5} / $V{totalRequestedTime}]]></textFieldExpression>
 				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="192" y="81" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="b898f42a-c4e4-4ba9-8ab6-b57181f30d10"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField pattern="#,###.##%">
+					<reportElement style="Default" x="115" y="81" width="52" height="12" uuid="38a66e74-d488-4455-b755-19fd7cbe2ae4"/>
+					<textElement>
+						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[($V{time6}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{time6} / $V{totalRequestedTime}]]></textFieldExpression>
 				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="192" y="94" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="0bd3f30e-23ce-487a-9ac7-7a706ff99536"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField pattern="#,###.##%">
+					<reportElement style="Default" x="115" y="94" width="52" height="12" uuid="38a66e74-d488-4455-b755-19fd7cbe2ae4"/>
+					<textElement>
+						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[($V{time7}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{time7} / $V{totalRequestedTime}]]></textFieldExpression>
 				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="192" y="107" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="3d18a3e4-23a9-4e52-9e60-936e07d641cf"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField pattern="#,###.##%">
+					<reportElement style="Default" x="115" y="107" width="52" height="12" uuid="38a66e74-d488-4455-b755-19fd7cbe2ae4"/>
+					<textElement>
+						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[($V{time8}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{time8} / $V{totalRequestedTime}]]></textFieldExpression>
 				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="192" y="120" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="60efadd2-eefa-4132-ab24-8e6356fd843a"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField pattern="#,###.##%">
+					<reportElement style="Default" x="115" y="120" width="52" height="12" uuid="38a66e74-d488-4455-b755-19fd7cbe2ae4"/>
+					<textElement>
+						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[($V{time9}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{time9} / $V{totalRequestedTime}]]></textFieldExpression>
 				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="true">
-					<reportElement style="Default" mode="Transparent" x="192" y="133" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="8a364ec7-9b03-45f3-9a5e-dbedf8a1e158"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField pattern="#,###.##%">
+					<reportElement style="Default" x="115" y="133" width="52" height="12" uuid="38a66e74-d488-4455-b755-19fd7cbe2ae4"/>
+					<textElement>
+						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[($V{time10}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{time10} / $V{totalRequestedTime}]]></textFieldExpression>
 				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="192" y="146" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="211161db-5baa-4ce5-903f-ff7e5bd7a198"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField pattern="#,###.##%">
+					<reportElement style="Default" x="115" y="146" width="52" height="12" uuid="38a66e74-d488-4455-b755-19fd7cbe2ae4"/>
+					<textElement>
+						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[($V{time11}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{time11} / $V{totalRequestedTime}]]></textFieldExpression>
 				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="468" y="3" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="ddd71c90-2cd9-4843-838a-e71ff095af13"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField pattern="#,###.##%">
+					<reportElement style="Default" x="392" y="3" width="52" height="12" uuid="38a66e74-d488-4455-b755-19fd7cbe2ae4"/>
+					<textElement>
+						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[($V{time12}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{time12} / $V{totalRequestedTime}]]></textFieldExpression>
 				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="468" y="16" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="a3b8530b-3e13-4781-9070-e6cb2dfbe376"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField pattern="#,###.##%">
+					<reportElement style="Default" x="392" y="16" width="52" height="12" uuid="38a66e74-d488-4455-b755-19fd7cbe2ae4"/>
+					<textElement>
+						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[($V{time13}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{time13} / $V{totalRequestedTime}]]></textFieldExpression>
 				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="468" y="29" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="42b52e69-c5c3-43ab-a2a2-1d9f5ed89601"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField pattern="#,###.##%">
+					<reportElement style="Default" x="392" y="29" width="52" height="12" uuid="38a66e74-d488-4455-b755-19fd7cbe2ae4"/>
+					<textElement>
+						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[($V{time14}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{time14} / $V{totalRequestedTime}]]></textFieldExpression>
 				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="468" y="42" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="0d25f6c1-cff3-409f-8a15-82dc91df5b78"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField pattern="#,###.##%">
+					<reportElement style="Default" x="392" y="42" width="52" height="12" uuid="38a66e74-d488-4455-b755-19fd7cbe2ae4"/>
+					<textElement>
+						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[($V{time15}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{time15} / $V{totalRequestedTime}]]></textFieldExpression>
 				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="468" y="55" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="b32ba4a0-7a7e-40ab-b9ad-9d5029bb0bd7"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField pattern="#,###.##%">
+					<reportElement style="Default" x="392" y="55" width="52" height="12" uuid="38a66e74-d488-4455-b755-19fd7cbe2ae4"/>
+					<textElement>
+						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[($V{time16}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{time16} / $V{totalRequestedTime}]]></textFieldExpression>
 				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="468" y="68" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="45e3ae24-1011-4201-96ee-4ed425a51694"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField pattern="#,###.##%">
+					<reportElement style="Default" x="392" y="68" width="52" height="12" uuid="38a66e74-d488-4455-b755-19fd7cbe2ae4"/>
+					<textElement>
+						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[($V{time17}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{time17} / $V{totalRequestedTime}]]></textFieldExpression>
 				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="468" y="81" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="db682eb9-cfd1-41f2-968e-e3ac82cde8a3"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField pattern="#,###.##%">
+					<reportElement style="Default" x="392" y="81" width="52" height="12" uuid="38a66e74-d488-4455-b755-19fd7cbe2ae4"/>
+					<textElement>
+						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[($V{time18}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{time18} / $V{totalRequestedTime}]]></textFieldExpression>
 				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="468" y="94" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="16d3ee38-efb8-42f4-bc6a-21cd4bfbb33b"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField pattern="#,###.##%">
+					<reportElement style="Default" x="392" y="94" width="52" height="12" uuid="38a66e74-d488-4455-b755-19fd7cbe2ae4"/>
+					<textElement>
+						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[($V{time19}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{time19} / $V{totalRequestedTime}]]></textFieldExpression>
 				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="468" y="107" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="abe62a4a-516f-4bf7-9da1-eba106b0e914"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField pattern="#,###.##%">
+					<reportElement style="Default" x="392" y="107" width="52" height="12" uuid="38a66e74-d488-4455-b755-19fd7cbe2ae4"/>
+					<textElement>
+						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[($V{time20}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{time20} / $V{totalRequestedTime}]]></textFieldExpression>
 				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="468" y="120" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="2ac739a1-c07c-4b01-9a53-f7635c4a2025"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField pattern="#,###.##%">
+					<reportElement style="Default" x="392" y="120" width="52" height="12" uuid="38a66e74-d488-4455-b755-19fd7cbe2ae4"/>
+					<textElement>
+						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[($V{time21}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{time21} / $V{totalRequestedTime}]]></textFieldExpression>
 				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="468" y="133" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="a4b923e7-9556-4d9a-9c03-f415fb9b3baa"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField pattern="#,###.##%">
+					<reportElement style="Default" x="392" y="133" width="52" height="12" uuid="38a66e74-d488-4455-b755-19fd7cbe2ae4"/>
+					<textElement>
+						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[($V{time22}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{time22} / $V{totalRequestedTime}]]></textFieldExpression>
 				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="468" y="146" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="f8f4b2a4-2cc1-4596-a371-62012061acb3"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField pattern="#,###.##%">
+					<reportElement style="Default" x="392" y="146" width="52" height="12" uuid="38a66e74-d488-4455-b755-19fd7cbe2ae4"/>
+					<textElement>
+						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[($V{time23}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{time23} / $V{totalRequestedTime}]]></textFieldExpression>
 				</textField>
 				<line>
-					<reportElement style="Default" x="270" y="3" width="1" height="155" forecolor="#7A87CD" uuid="dec537c0-c084-456e-ab3f-d4b4e42aad7f"/>
+					<reportElement style="Default" x="269" y="10" width="1" height="155" forecolor="#7A87CD" uuid="dec537c0-c084-456e-ab3f-d4b4e42aad7f"/>
 				</line>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="115" y="55" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="b0da23e9-d14f-4b7c-b4cb-5c2af5c9424f"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[($V{time4}.doubleValue())/(Double.parseDouble($P{scientificTime}))]]></textFieldExpression>
-				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="115" y="94" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="355a5a44-0703-4feb-9a59-46967b7091ef"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[($V{time7}.doubleValue())/(Double.parseDouble($P{scientificTime}))]]></textFieldExpression>
-				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="115" y="81" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="a1c15d8f-0241-4f44-a95c-58ef37e44317"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[($V{time6}.doubleValue())/(Double.parseDouble($P{scientificTime}))]]></textFieldExpression>
-				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="115" y="120" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="d350a04a-a0d4-46fc-8afc-e8868d14a25c"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[($V{time9}.doubleValue())/(Double.parseDouble($P{scientificTime}))]]></textFieldExpression>
-				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="115" y="68" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="33b483a8-92b6-45b3-b2bc-c412065c6b31"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[($V{time5}.doubleValue())/(Double.parseDouble($P{scientificTime}))]]></textFieldExpression>
-				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="115" y="107" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="43df7878-05a3-48de-94d3-76865dd8a2e7"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[($V{time8}.doubleValue())/(Double.parseDouble($P{scientificTime}))]]></textFieldExpression>
-				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="true">
-					<reportElement style="Default" mode="Transparent" x="115" y="133" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="efd48e08-130a-4d99-a2a0-4bb16f4120d7"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[($V{time10}.doubleValue())/(Double.parseDouble($P{scientificTime}))]]></textFieldExpression>
-				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="115" y="29" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="0dd1c1cb-bab2-4333-9814-d6013be8ce29"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[($V{time2}.doubleValue())/(Double.parseDouble($P{scientificTime}))]]></textFieldExpression>
-				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="true">
-					<reportElement style="Default" mode="Transparent" x="115" y="3" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="9e1c6d3a-f7c1-4908-860f-cb968a857370"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[($V{time0}.doubleValue())/(Double.parseDouble($P{scientificTime}))]]></textFieldExpression>
-				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="115" y="16" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="3ae2f04e-5961-4e5b-a461-2d2ad18d499f"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[($V{time1}.doubleValue())/(Double.parseDouble($P{scientificTime}))]]></textFieldExpression>
-				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="115" y="146" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="d7c4bac1-7755-4b7b-aa9b-c2181ace0748"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[($V{time11}.doubleValue())/(Double.parseDouble($P{scientificTime}))]]></textFieldExpression>
-				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="115" y="42" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="ded92ef3-982a-48f9-a6fc-3fd7a2e1eb35"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[($V{time3}.doubleValue())/(Double.parseDouble($P{scientificTime}))]]></textFieldExpression>
-				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="392" y="55" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="2d0a4615-6369-4ca7-8cea-fa6dc7eddaab"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[($V{time16}.doubleValue())/(Double.parseDouble($P{scientificTime}))]]></textFieldExpression>
-				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="392" y="94" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="9a4fe721-4592-481a-9f06-daaebb5cc697"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[($V{time19}.doubleValue())/(Double.parseDouble($P{scientificTime}))]]></textFieldExpression>
-				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="392" y="81" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="92210b56-008a-47de-b5ce-09a4b20a7daa"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[($V{time18}.doubleValue())/(Double.parseDouble($P{scientificTime}))]]></textFieldExpression>
-				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="392" y="120" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="aff85563-42c9-434f-83ba-9b92ade13362"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[($V{time21}.doubleValue())/(Double.parseDouble($P{scientificTime}))]]></textFieldExpression>
-				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="392" y="68" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="61a09a13-fc0c-466b-bf1a-93e9518dc014"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[($V{time17}.doubleValue())/(Double.parseDouble($P{scientificTime}))]]></textFieldExpression>
-				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="392" y="107" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="894f9c14-ec31-4a3d-a58b-01027a6f8be2"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[($V{time20}.doubleValue())/(Double.parseDouble($P{scientificTime}))]]></textFieldExpression>
-				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="true">
-					<reportElement style="Default" mode="Transparent" x="392" y="133" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="892f1bb6-9d6a-4f90-98a9-987f098a07d8"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[($V{time22}.doubleValue())/(Double.parseDouble($P{scientificTime}))]]></textFieldExpression>
-				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="392" y="29" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="5fa422d1-993d-4f8b-a407-1807679859f5"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[($V{time14}.doubleValue())/(Double.parseDouble($P{scientificTime}))]]></textFieldExpression>
-				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="true">
-					<reportElement style="Default" mode="Transparent" x="392" y="3" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="f257aba6-f083-4ceb-a3da-336320fce006"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[($V{time12}.doubleValue())/(Double.parseDouble($P{scientificTime}))]]></textFieldExpression>
-				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="392" y="16" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="66baa92e-b008-4640-8e77-9e92f1711f16"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[($V{time13}.doubleValue())/(Double.parseDouble($P{scientificTime}))]]></textFieldExpression>
-				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="392" y="146" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="1818da01-0877-4c5a-8ec7-7815f49792ea"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[($V{time23}.doubleValue())/(Double.parseDouble($P{scientificTime}))]]></textFieldExpression>
-				</textField>
-				<textField pattern="##0.0%" isBlankWhenNull="false">
-					<reportElement style="Default" mode="Transparent" x="392" y="42" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="a3eb5479-8102-4a5c-9ca1-edb0a0c38d47"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
-						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[($V{time15}.doubleValue())/(Double.parseDouble($P{scientificTime}))]]></textFieldExpression>
-				</textField>
 			</band>
 		</groupFooter>
 	</group>
@@ -1003,7 +773,7 @@
 				<textElement verticalAlignment="Middle" markup="none">
 					<font size="11" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{title}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new String("Right Ascension Distribution")]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement x="0" y="55" width="539" height="1" forecolor="#1A0067" uuid="a7e92558-7361-4aff-9d8f-a1388fdcd87a"/>
@@ -1025,14 +795,14 @@
 				</textElement>
 				<text><![CDATA[Season ends:]]></text>
 			</staticText>
-			<textField pattern="">
+			<textField pattern="dd/MM/yyyy hh:mm:ss">
 				<reportElement mode="Opaque" x="396" y="18" width="143" height="14" forecolor="#010101" backcolor="#7A87CD" uuid="c5c2fc27-aa63-425c-806b-c1ce0606e05c"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{seasonStart}]]></textFieldExpression>
 			</textField>
-			<textField pattern="">
+			<textField pattern="dd/MM/yyyy hh:mm:ss">
 				<reportElement mode="Opaque" x="396" y="32" width="143" height="20" forecolor="#010101" backcolor="#7A87CD" uuid="ad564602-3c2a-47f5-9801-3385f50434a6"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
@@ -1087,7 +857,6 @@
 
 Column "RA" shows the range in question. This are express using Hour Angles.
 Column "Time" sums up time from each SB which representative target fall into the specific RA.
-Column "Percentage" indicates how much represents the time dedicated to the specified RA, compared to the "Hours in Season" value, which represents the total number of hours tha tthe observing season has.
 
 In the ordered axis of the bar chart, the RA ranges are given, meanwhile in the dependant axis, is igven its hours.]]></text>
 			</staticText>

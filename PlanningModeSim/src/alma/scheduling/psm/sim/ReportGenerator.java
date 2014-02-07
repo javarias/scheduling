@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -45,6 +46,8 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.TimeZone;
 import java.util.TreeMap;
+
+import javax.sql.DataSource;
 
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -69,7 +72,7 @@ import alma.scheduling.datamodel.obsproject.ScienceParameters;
 import alma.scheduling.datamodel.obsproject.SkyCoordinates;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 import alma.scheduling.datamodel.output.ObservationProject;
-import alma.scheduling.datamodel.output.Results;
+import alma.scheduling.datamodel.output.SimulationResults;
 import alma.scheduling.datamodel.output.SchedBlockResult;
 import alma.scheduling.datamodel.output.dao.OutputDao;
 import alma.scheduling.psm.reports.domain.ObsProjectReportBean;
@@ -164,14 +167,14 @@ public class ReportGenerator extends PsmContext {
 					sbrb.setExecutionTime( sb.getSchedBlockControl().getSbMaximumTime() );
 					sbrb.setExecutive( execDao.getExecutive( sb.getPiName()).getName() );
 
-					sbrb.setLstRange( determineLst( ra ) );
+//					sbrb.setLstRange( determineLst( ra ) );
 
 					if( SBPerLstRange.containsKey( sbrb.getLstRange() )){
 						SBPerLstRange.get( sbrb.getLstRange() ).add( sbrb );
 					}else{
 						ArrayList<SchedBlockReportBean> list = new ArrayList<SchedBlockReportBean>();
 						list.add( sbrb );
-						SBPerLstRange.put( sbrb.getLstRange(), list );
+//						SBPerLstRange.put( sbrb.getLstRange(), list );
 					}
 					break;
 				}
@@ -199,17 +202,20 @@ public class ReportGenerator extends PsmContext {
 		
 		TreeMap<String, Object> props = new TreeMap<String, Object>();
 		props.put("totalAvailableTime", Double.toString( currObsSeason.getTotalObservingHours()) );
-//		props.put("scientificTime", Double.toString( outDao.getResults().get(0).getScientificTime() ) );
-		props.put("seasonStart", dateFormatter.format( currObsSeason.getStartDate() ) );
-		props.put("seasonEnd", dateFormatter.format( currObsSeason.getStartDate()) );
-		props.put("title", "Right Ascension Distribution");
-		props.put("subtitle", "Requested time per RA range");
-
-		JRDataSource dataSource = getLstRangesBeforeSim();
+		props.put("seasonStart", currObsSeason.getStartDate());
+		props.put("seasonEnd", currObsSeason.getStartDate());
+		
+//		JRDataSource dataSource = getLstRangesBeforeSim();
+		DataSource dataSource = (DataSource) ctx.getBean("dataSource");
+		try {
+			props.put("REPORT_CONNECTION", dataSource.getConnection());
+		} catch (SQLException e1) {
+			throw new RuntimeException(e1);
+		}
 		InputStream reportStream = getClass().getClassLoader().getResourceAsStream("alma/scheduling/psm/reports/lstRangesBeforeSim.jasper");
 		logger.info("Creating RA ranges before simulation report");
 		try {
-			JasperPrint print = JasperFillManager.fillReport(reportStream, props, dataSource);
+			JasperPrint print = JasperFillManager.fillReport(reportStream, props);
 			print.setName("ra_time_requested_report");
 			return print;
 		} catch (JRException e) {
@@ -222,7 +228,7 @@ public class ReportGenerator extends PsmContext {
 		// Parameters
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
-		Results result = outDao.getResult(id);
+		SimulationResults result = outDao.getResult(id);
 		TreeMap<String, Object> props = new TreeMap<String, Object>();
 		props.put("totalAvailableTime", Double.toString(result.getAvailableTime()));
 		props.put("seasonStart", dateFormatter.format(result.getObsSeasonStart()));
@@ -263,44 +269,21 @@ public class ReportGenerator extends PsmContext {
 	 * @return A collection of beans containing the data of all ScheckBlocks.
 	 */
 
-	public JRDataSource getLstRangeAfterSimData(Results result){
+	public JRDataSource getLstRangeAfterSimData(SimulationResults result){
 		JRBeanCollectionDataSource dataSource = null;
-		ApplicationContext ctx = ReportGenerator.getApplicationContext();
-		SchedBlockDao sbDao = (SchedBlockDao) ctx.getBean("sbDao");
-		
 		ArrayList<SchedBlockReportBean> data = new ArrayList<SchedBlockReportBean>();
-		TreeMap<String, ArrayList<SchedBlockReportBean>> SBPerLST = new TreeMap<String, ArrayList<SchedBlockReportBean>>();
-		for(int i = 0; i < 24; i++)
-			SBPerLST.put(i + " - " + (i+1), new ArrayList<SchedBlockReportBean>());
 		for (ObservationProject p : result.getObservationProject()) {
 			for (SchedBlockResult sbr : p.getSchedBlock()) {
-				SchedBlock sb = sbDao.findById(SchedBlock.class, sbr.getOriginalId());
-				if (sb == null){
-					logger.warn("Trying to retrieve SchedBlock " + sbr.getOriginalId() + "returned an empty reference");
-					continue;
-				}
-				sbDao.hydrateSchedBlockObsParams(sb);
-				double ra = sb.getSchedulingConstraints().getRepresentativeTarget().getSource()
-						.getCoordinates().getRA() * 24 / 360;
-				for (int i = 0; i < 24; i++) {
-					if (ra >= i && ra <= (i + 1)) {
-						ArrayList<SchedBlockReportBean> list;
-						list = SBPerLST.get(i + " - " + (i + 1));
-						SchedBlockReportBean sbrb = new SchedBlockReportBean();
-						sbrb.setLstRange( determineLst( ra ) );
-						double execTime = (sbr.getEndDate().getTime() - sbr
-								.getStartDate().getTime()) / 1000.0 / 3600.0;
-						sbrb.setExecutionTime(execTime);
-						sbrb.setTotalExecutionTime(sbrb.getTotalExecutionTime() + execTime);
-						list.add(sbrb);
-						break;
-					}
-				}
+				SchedBlockReportBean sbrb = new SchedBlockReportBean();
+				sbrb.setLstRange((int)sbr.getRepresentativeSource().getRA().doubleValue());
+				double execTime = (sbr.getEndDate().getTime() - sbr
+						.getStartDate().getTime()) / 1000.0 / 3600.0;
+				sbrb.setExecutionTime(execTime);
+				sbrb.setTotalExecutionTime(sbrb.getTotalExecutionTime() + execTime);
+				sbrb.setExecutive(p.getAffiliation().iterator().next().getExecutive());
+				data.add(sbrb);
 			}
 		}
-
-		for(int i = 0; i < 24; i++)
-			data.addAll(SBPerLST.get(i + " - " + (i+1)));
 		dataSource = new JRBeanCollectionDataSource(data);
 		return dataSource;
 	}
@@ -313,19 +296,24 @@ public class ReportGenerator extends PsmContext {
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
 
-		Results result = outDao.getResult(id);
+		SimulationResults result = outDao.getResult(id);
 		TreeMap<String, Object> props = new TreeMap<String, Object>();
 		props.put("totalAvailableTime", Double.toString(result.getAvailableTime()));
 		props.put("scientificTime", Double.toString(result.getScientificTime()));
-		props.put("seasonStart", dateFormatter.format(result.getObsSeasonStart()));
-		props.put("seasonEnd", dateFormatter.format(result.getObsSeasonEnd()));
-		props.put("title", "Right Ascension Distribution");
-		props.put("subtitle", "Observed time per RA range");
-		JRDataSource dataSource = getLstRangeAfterSimData(outDao.getResult(id));
-		InputStream reportStream = getClass().getClassLoader().getResourceAsStream("alma/scheduling/psm/reports/lstRangesBeforeSim.jasper");
+		props.put("seasonStart", result.getObsSeasonStart());
+		props.put("seasonEnd", result.getObsSeasonEnd());
+		props.put("resultId", id);
+//		JRDataSource data = getLstRangeAfterSimData(outDao.getResult(id));
+		DataSource dataSource = (DataSource) ctx.getBean("dataSource");
+		try {
+			props.put("REPORT_CONNECTION", dataSource.getConnection());
+		} catch (SQLException e1) {
+			throw new RuntimeException(e1);
+		}
+		InputStream reportStream = getClass().getClassLoader().getResourceAsStream("alma/scheduling/psm/reports/lstRangesAfterSim.jasper");
 		logger.info("Creating RA ranges after simulation report");
 		try {
-			JasperPrint print = JasperFillManager.fillReport(reportStream, props, dataSource);
+			JasperPrint print = JasperFillManager.fillReport(reportStream, props);
 			print.setName("ra_time_used_report");
 			return print;
 		}catch (JRException e) {
@@ -359,7 +347,7 @@ public class ReportGenerator extends PsmContext {
 	 * which contains only a brief summary of observation projects executions.
 	 * @return JRDataSource, a collection of ObsProjectReportsBean, with summary of executions.
 	 */
-	private JRDataSource getExecutiveAfterSimData(Results result) {
+	private JRDataSource getExecutiveAfterSimData(SimulationResults result) {
 		JRBeanCollectionDataSource dataSource = null;
 		TreeMap<String, ArrayList<ObsProjectReportBean>> OPPerExecutive = new TreeMap<String, ArrayList<ObsProjectReportBean>>();
 		ArrayList<ObsProjectReportBean> data = new ArrayList<ObsProjectReportBean>();
@@ -410,7 +398,7 @@ public class ReportGenerator extends PsmContext {
 		// Parameters
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
-		Results result = outDao.getResult(id);
+		SimulationResults result = outDao.getResult(id);
 
 		TreeMap<String, Object> props = new TreeMap<String, Object>();
 		props.put("totalAvailableTime", Double.toString( result.getAvailableTime() ) );
@@ -614,7 +602,7 @@ public class ReportGenerator extends PsmContext {
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
 
-		Results result = outDao.getResult(id);
+		SimulationResults result = outDao.getResult(id);
 		TreeMap<String, Object> props = new TreeMap<String, Object>();
 		props.put("totalAvailableTime", Double.toString(result.getAvailableTime()));
 		props.put("seasonStart", dateFormatter.format(result.getObsSeasonStart()));
@@ -647,7 +635,7 @@ public class ReportGenerator extends PsmContext {
 		}
 	}
 	
-	private JRDataSource getBandsAfterSimData(Results result) {
+	private JRDataSource getBandsAfterSimData(SimulationResults result) {
 		JRBeanCollectionDataSource dataSource = null;
 		ArrayList<SchedBlockReportBean> data = new ArrayList<SchedBlockReportBean>();
 		// Create inmediately the entries for bands, so we keep order (if we rely on DB, the may not be ordered
@@ -703,7 +691,7 @@ public class ReportGenerator extends PsmContext {
 
 
 		TreeMap<String, Object> props = new TreeMap<String, Object>();
-		Results result = outDao.getResult(id);
+		SimulationResults result = outDao.getResult(id);
 		props.put("totalAvailableTime", Double.toString(result.getAvailableTime()));
 		props.put("seasonStart", dateFormatter.format(result.getObsSeasonStart()));
 		props.put("seasonEnd", dateFormatter.format(result.getObsSeasonEnd()));
@@ -794,7 +782,7 @@ public class ReportGenerator extends PsmContext {
 	public void finalreport(){
 		ApplicationContext ctx = getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
-		Results lastResult = outDao.getResults().get(outDao.getResults().size()-1 );
+		SimulationResults lastResult = outDao.getResults().get(outDao.getResults().size()-1 );
 
 		URL xslt = getClass().getClassLoader()
 		.getResource("alma/scheduling/psm/reports/general_report.xsl");
@@ -815,7 +803,7 @@ public class ReportGenerator extends PsmContext {
 	public void writeFinalReportToDisc() {
 		ApplicationContext ctx = getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
-		Results lastResult = outDao.getResults().get(outDao.getResults().size()-1 );
+		SimulationResults lastResult = outDao.getResults().get(outDao.getResults().size()-1 );
 		String htmlOut = this.getReportDirectory() + "/" +  "report_" +
 			lastResult.getStartRealDate().getTime() + ".html";
 		FileOutputStream fos = null;
@@ -851,7 +839,7 @@ public class ReportGenerator extends PsmContext {
 	public InputStream getFinalReport(long entityId) throws FileNotFoundException {
 		ApplicationContext ctx = getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
-		Results result = outDao.getResult(entityId);
+		SimulationResults result = outDao.getResult(entityId);
 		return getFinalReport(result);
 	}
 	
@@ -865,11 +853,11 @@ public class ReportGenerator extends PsmContext {
 	public InputStream getFinalReport() throws FileNotFoundException {
 		ApplicationContext ctx = getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
-		Results result = outDao.getLastResult();
+		SimulationResults result = outDao.getLastResult();
 		return getFinalReport(result);
 	}
 	
-	private InputStream getFinalReport(Results result) throws FileNotFoundException {
+	private InputStream getFinalReport(SimulationResults result) throws FileNotFoundException {
 		URL xslt = getClass().getClassLoader()
 			.getResource("alma/scheduling/psm/reports/general_report.xsl");
 		// TODO: Change names to a more characteristic name
@@ -936,7 +924,7 @@ public class ReportGenerator extends PsmContext {
 	private String getFilename(reportTypes type){
 		ApplicationContext ctx = getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
-		Results lastResult = outDao.getResults().get(outDao.getResults().size()-1 );
+		SimulationResults lastResult = outDao.getResults().get(outDao.getResults().size()-1 );
 		Date date = lastResult.getStartRealDate();
 
 		String s = dateFormatter.format(date);

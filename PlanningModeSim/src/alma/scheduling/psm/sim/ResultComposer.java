@@ -33,11 +33,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.mockito.internal.invocation.finder.AllInvocationsFinder;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.datamodel.executive.ObservingSeason;
+import alma.scheduling.datamodel.executive.PIMembership;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.observation.ExecBlock;
 import alma.scheduling.datamodel.observation.dao.ObservationDao;
@@ -56,7 +58,7 @@ import alma.scheduling.datamodel.output.Affiliation;
 import alma.scheduling.datamodel.output.Array;
 import alma.scheduling.datamodel.output.ExecutionStatus;
 import alma.scheduling.datamodel.output.ObservationProject;
-import alma.scheduling.datamodel.output.Results;
+import alma.scheduling.datamodel.output.SimulationResults;
 import alma.scheduling.datamodel.output.SchedBlockResult;
 import alma.scheduling.utils.DSAContextFactory;
 
@@ -73,12 +75,12 @@ import alma.scheduling.utils.DSAContextFactory;
 public class ResultComposer {
 
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(ResultComposer.class);
-	private Results results;
+	private SimulationResults results;
 	private ApplicationContext context = null;
 	private Map<String, ArrayConfiguration> arraysUsed;
 	
 	public ResultComposer(){
-		results = new Results();
+		results = new SimulationResults();
 		results.setArray( new HashSet<Array>() );
 		results.setObservationProject( new HashSet<ObservationProject>() );
 		arraysUsed = new HashMap<String, ArrayConfiguration>();
@@ -322,10 +324,11 @@ public class ResultComposer {
 		        sbr.setOriginalId( sbId );
 		        sbr.setMode( "N/A" );
 		        sbr.setRepresentativeFrequency( ((SchedBlock)ptrOu).getSchedulingConstraints().getRepresentativeFrequency() );
+		        sbr.setRepresentativeBand(sb.getRepresentativeBand());
 		        //TODO: Add frequency band
+		        sbr.setRepresentativeSource(sb.getRepresentativeCoordinates());
 		        sbr.setType( "SCIENTIFIC");
 		        sbr.setStatus( ExecutionStatus.INCOMPLETE);
-        		sbrSet.add( sbr );
         		
         		// From Stop notification.
         		sbr.setEndDate(eb.getEndTime());
@@ -335,6 +338,8 @@ public class ResultComposer {
     			if( ((SchedBlock)ptrOu).getSchedBlockControl().getState() == SchedBlockState.FULLY_OBSERVED ){
     				sbr.setStatus( ExecutionStatus.COMPLETE);
     			}
+    			
+        		sbrSet.add( sbr );
 			}
     	}else if( ptrOu instanceof ObsUnitSet ){
     		for( ObsUnit forOu : ((ObsUnitSet)ptrOu).getObsUnits() ){
@@ -346,7 +351,7 @@ public class ResultComposer {
 	/**
 	 * Saves results into the database.
 	 */
-	public Results getResults(){
+	public SimulationResults getResults(){
 		return this.results;		
 	}
 	
