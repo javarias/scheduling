@@ -231,17 +231,21 @@ public class ReportGenerator extends PsmContext {
 		SimulationResults result = outDao.getResult(id);
 		TreeMap<String, Object> props = new TreeMap<String, Object>();
 		props.put("totalAvailableTime", Double.toString(result.getAvailableTime()));
-		props.put("seasonStart", dateFormatter.format(result.getObsSeasonStart()));
-		props.put("seasonEnd", dateFormatter.format(result.getObsSeasonEnd()));
-		props.put("title", "Frequency Bands Usage");
-		props.put("subtitle", "Requested time per frequency bands");
+		props.put("seasonStart", result.getObsSeasonStart());
+		props.put("seasonEnd", result.getObsSeasonEnd());
 		
-		JRDataSource dataSource = getLstRangesBeforeSim();
+//		JRDataSource dataSource = getLstRangesBeforeSim();
+		DataSource dataSource = (DataSource) ctx.getBean("dataSource");
+		try {
+			props.put("REPORT_CONNECTION", dataSource.getConnection());
+		} catch (SQLException e1) {
+			throw new RuntimeException(e1);
+		}
 		InputStream reportStream = getClass().getClassLoader().getResourceAsStream("alma/scheduling/psm/reports/lstRangesBeforeSim.jasper");
 		logger.info("Creating RA ranges before simulation report");
 		try {
 			JasperPrint print = JasperFillManager.fillReport(reportStream,
-					props, dataSource);
+					props);
 			print.setName("ra_time_requested_report");
 			return print;
 		} catch (JRException e) {
