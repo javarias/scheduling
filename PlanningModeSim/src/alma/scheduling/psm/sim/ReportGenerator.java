@@ -403,15 +403,22 @@ public class ReportGenerator extends PsmContext {
 		TreeMap<String, Object> props = new TreeMap<String, Object>();
 		props.put("totalAvailableTime", Double.toString( result.getAvailableTime() ) );
 		props.put("scientificTime", Double.toString( result.getScientificTime() ) );
-		props.put("seasonStart", dateFormatter.format( result.getObsSeasonStart() ) );
-		props.put("seasonEnd", dateFormatter.format( result.getObsSeasonEnd() ) );
+		props.put("seasonStart", result.getObsSeasonStart());
+		props.put("seasonEnd", result.getObsSeasonEnd());
 		props.put("title", "Executive Percentage Balance");
 		props.put("subtitle", "Observed time dedicated per executive");
+		props.put("resultId", id);
+//		JRDataSource data = getLstRangeAfterSimData(outDao.getResult(id));
+		DataSource dataSource = (DataSource) ctx.getBean("dataSource");
+		try {
+			props.put("REPORT_CONNECTION", dataSource.getConnection());
+		} catch (SQLException e1) {
+			throw new RuntimeException(e1);
+		}
 		synchronized (this) {
-			JRDataSource dataSource = getExecutiveAfterSimData(id);
+//			JRDataSource dataSource = getExecutiveAfterSimData(id);
 			try {
-				print = JasperFillManager.fillReport(reportStream, props,
-						dataSource);
+				print = JasperFillManager.fillReport(reportStream, props);
 				print.setName("executive_time_used_report");
 				return print;
 			} catch (JRException e) {

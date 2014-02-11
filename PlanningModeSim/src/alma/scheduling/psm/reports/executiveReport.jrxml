@@ -8,8 +8,6 @@
 	<style name="Default"/>
 	<parameter name="totalAvailableTime" class="java.lang.String"/>
 	<parameter name="scientificTime" class="java.lang.String"/>
-	<parameter name="title" class="java.lang.String"/>
-	<parameter name="subtitle" class="java.lang.String"/>
 	<parameter name="seasonStart" class="java.util.Date" isForPrompting="false"/>
 	<parameter name="seasonEnd" class="java.util.Date" isForPrompting="false"/>
 	<parameter name="resultId" class="java.lang.Long"/>
@@ -347,7 +345,7 @@
 				<textElement verticalAlignment="Middle" markup="none">
 					<font size="11" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{title}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Executive Percentage Balance"]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement x="0" y="55" width="539" height="1" forecolor="#1A0067" uuid="a069175e-6b3e-4a99-8a86-f8611fdca698"/>
@@ -404,7 +402,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{subtitle}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Observed time dedicated per executive"]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
