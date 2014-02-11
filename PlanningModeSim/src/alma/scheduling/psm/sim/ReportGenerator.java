@@ -476,18 +476,21 @@ public class ReportGenerator extends PsmContext {
 		TreeMap<String, Object> props = new TreeMap<String, Object>();
 		
 		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
-		props.put("seasonStart", dateFormatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
-		props.put("seasonEnd", dateFormatter.format( outDao.getResults().get(0).getObsSeasonEnd() ) );
-		props.put("title", "Observation Projects Completion");
-		props.put("subtitle", "Number of observation projects per executive");
-
+		props.put("seasonStart", outDao.getResults().get(0).getObsSeasonStart());
+		props.put("seasonEnd", outDao.getResults().get(0).getObsSeasonEnd());
+		DataSource dataSource = (DataSource) ctx.getBean("dataSource");
+		try {
+			props.put("REPORT_CONNECTION", dataSource.getConnection());
+		} catch (SQLException e1) {
+			throw new RuntimeException(e1);
+		}
 		JasperPrint print = null;
 		InputStream reportStream = getClass().getClassLoader().getResourceAsStream(
 		"alma/scheduling/psm/reports/completionReport.jasper");
 		synchronized (this) {
-			JRDataSource dataSource = getExecutiveAfterSimData(id);
+//			JRDataSource dataSource = getExecutiveAfterSimData(id);
 			try {
-				print = JasperFillManager.fillReport(reportStream, props, dataSource);
+				print = JasperFillManager.fillReport(reportStream, props);
 				print.setName("completion_report");
 				return print;
 			} catch (JRException e) {
