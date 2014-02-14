@@ -32,13 +32,13 @@ import junit.framework.TestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.executive.ExecutivePercentage;
 import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
 import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.executive.PI;
+import alma.scheduling.utils.CommonContextFactory;
 
 /**
  * Test the Executive DAOs.
@@ -56,7 +56,7 @@ public class ExecutiveDaoTest extends TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        context = new ClassPathXmlApplicationContext("alma/scheduling/datamodel/executive/dao/context.xml");
+        context = CommonContextFactory.getContext();
     }
 
     protected void tearDown() throws Exception {
@@ -93,9 +93,9 @@ public class ExecutiveDaoTest extends TestCase {
         ExecutiveDAO dao = (ExecutiveDAO) context.getBean("execDao");        
         dao.saveObservingSeasonsAndExecutives(xmldao.getAllObservingSeason(), xmldao.getAllExecutive());        
         dao.saveOrUpdate(xmldao.getAllPi());
-        Executive e = dao.getExecutive("csmith@noao.edu");
+        Executive e = dao.getExecutive("javarias");
         assertNotNull(e);
-        PI pi = dao.getPIFromEmail("csmith@noao.edu");
+        PI pi = dao.getPIFromEmail("javarias");
         assertNotNull(pi);
         for (ExecutivePercentage ep : e.getExecutivePercentage()) {
             ObservingSeason o = ep.getSeason();

@@ -4,11 +4,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
 
-import org.hibernate.ScrollableResults;
-import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.classic.Session;
-
 import alma.scheduling.datamodel.CannotParseDataException;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 
@@ -65,52 +60,5 @@ public class ArrayConfigurationLiteReaderTest extends TestCase {
 			System.out.println(e.getMessage());
 		}
 		assertNull(configs);
-	}
-	
-	public void testSaveResultInDB() throws Exception {
-		Configuration config = new Configuration();
-		config.setProperty("hibernate.connection.url", "jdbc:hsqldb:mem:test");
-		config.setProperty("hibernate.connection.username","sa");
-		config.setProperty("hibernate.connection.password", "");
-		config.setProperty("hibernate.connection.driver_class", "org.hsqldb.jdbcDriver");
-		config.setProperty("hibernate.cache.provider_class", "org.hibernate.cache.NoCacheProvider");
-		config.setProperty("hibernate.dialect", "org.hibernate.dialect.ExtendedHSQLDialect");
-		config.setProperty("hibernate.hbm2ddl.auto", "update");
-		config.setProperty("hibernate.show_sql", "true");
-		config.addResource("alma/scheduling/datamodel/observatory/TelescopeEquipment.hbm.xml");
-		Session session = config.buildSessionFactory().openSession();
-		
-		StringReader strReader = new StringReader(fileContent);
-		reader = new ArrayConfigurationLiteReader(strReader);
-		List<ArrayConfiguration> configs = null;
-		configs = reader.getArrayConfiguration();
-		
-		Transaction tx = session.beginTransaction();
-		try {
-			tx.begin();
-			for (ArrayConfiguration c: configs) 
-				session.saveOrUpdate(c);
-		} finally {
-			tx.commit();
-		}
-		
-		tx = session.beginTransaction();
-		try {
-			ScrollableResults scroll = 
-					session.createQuery("from ArrayConfiguration").scroll();
-			assertTrue(scroll.first());
-			do {
-				ArrayConfiguration c = (ArrayConfiguration) scroll.get()[0];
-				ArrayConfiguration origC = configs.remove(0);
-				assertEquals(origC.getArrayName(), c.getArrayName());
-				assertEquals(origC.getConfigurationName(), c.getConfigurationName());
-				assertEquals(origC.getStartTime(), c.getStartTime());
-				assertEquals(origC.getEndTime(), c.getEndTime());
-			} while (scroll.next());
-			scroll.close();
-		} finally {
-			tx.commit();
-		}
-		session.close();
 	}
 }

@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +62,14 @@ public abstract class WeatherHistoryDAOImpl implements WeatherHistoryDAO {
     
     public void setSimulationStartTime(Date simulationStartTime) {
         this.simulationStartTime = simulationStartTime;
+    }
+    
+    public WeatherHistoryDAOImpl() {
+    	tempHistRecords = new TreeMap<>();
+    	humidityHistRecords = new TreeMap<>();
+    	opacityHistRecords = new TreeMap<>();
+    	windSpdHistRecords = new TreeMap<>();
+    	pathFluctHistRecords = new TreeMap<>();
     }
     
     public Date getSimulationStartTime() {
@@ -130,6 +139,8 @@ public abstract class WeatherHistoryDAOImpl implements WeatherHistoryDAO {
     		return (List<T>) new ArrayList<HumidityHistRecord>(humidityHistRecords.values());
     	} else if (t.getCanonicalName().equals(OpacityHistRecord.class.getCanonicalName())) {
     		return (List<T>) new ArrayList<OpacityHistRecord>(opacityHistRecords.values());
+    	} else if (t.getCanonicalName().equals(PathFluctHistRecord.class.getCanonicalName())) {
+    		return (List<T>) new ArrayList<PathFluctHistRecord>(pathFluctHistRecords.values());
     	} else 
     		return null;
     }

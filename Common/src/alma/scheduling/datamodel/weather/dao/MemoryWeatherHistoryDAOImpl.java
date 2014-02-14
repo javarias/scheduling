@@ -69,6 +69,9 @@ public class MemoryWeatherHistoryDAOImpl extends WeatherHistoryDAOImpl
      */
     @SuppressWarnings("unchecked")
 	private <T extends WeatherHistRecord> T getWeatherRecordForTime(Date ut, T[] cache) {
+    	if (maxTime == null) {
+    		maxTime = tempHistRecords.lastKey();
+    	}
         //Get time in hours relative to the beginning of current year given by the date
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(ut.getTime());

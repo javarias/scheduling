@@ -121,7 +121,7 @@ public class DailyPlanningSim {
 	
 	public void runSimulation(Date startTime, Date endTime, ArrayConfiguration arrayConfiguration, String policyToUse) {
 		if (context == null)
-			context = DSAContextFactory.getContextFromPropertyFile();
+			context = DSAContextFactory.getContextFromProperty();
 		System.out.println("Using DSA Policy: " + policyToUse);
 		DynamicSchedulingAlgorithm dsa = null;
 		try {

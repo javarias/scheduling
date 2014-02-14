@@ -50,6 +50,8 @@ public class ExecutiveDaoImpl implements ExecutiveDAO {
 	@Override
 	public List<ExecutiveTimeSpent> getExecutiveTimeSpent(Executive ex,
 			ObservingSeason os) {
+		if (!timeSpentExecIdx.containsKey(os))
+			return new ArrayList<>();
 		return timeSpentExecIdx.get(os).get(ex);
 	}
 

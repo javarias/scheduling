@@ -19,11 +19,6 @@
 
 package alma.scheduling.utils;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-
-import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -38,49 +33,6 @@ import org.springframework.core.io.FileSystemResource;
  *
  */
 public class SchedulingContextFactory {
-    
-    private static final String BASE_PROPERTIES_FILE = "scheduling.properties";
-    private static final String FILE_SUFFIX_ENVIRONMENT = "LOCATION";
-    private static final String PROPERTIES_FILE = calculateFile(
-    		BASE_PROPERTIES_FILE, FILE_SUFFIX_ENVIRONMENT);
-    private static String path = null;
-    
-    /**
-     * Work out a file to use. If the given environmental variable is
-     * defined, use it's value as a suffix on the end of the base. If
-     * it is not defined, then just use the base.
-     *  
-     * @param base - the root name of the filename for which we are
-     *               looking;
-     * @param env  - the name of the environmental variable in which to
-     *               look for any suffix to apply to base.
-     * @return
-     */
-    private static String calculateFile(String base, String env) {
-    	final String result;
-    	final String suffix = System.getenv(env);
-    	
-    	if (suffix == null) {
-    		result = base;
-    	} else {
-    		result = String.format("%s.%s", base, suffix);
-    	}
-    	return result;
-    }
-    
-    public static String getPropertyFilePath() {
-        if (path == null) {
-            try {
-                path = System.getProperty("alma.scheduling.properties");
-                if(path == null){
-                    path = System.getenv("ACSDATA") + "/config/" + PROPERTIES_FILE;
-                }
-            } catch (NullPointerException ex) {
-                path = System.getenv("ACSDATA") + "/config/" + PROPERTIES_FILE;
-            }
-        }
-        return path;
-    }
     
     /**
      * Create a new instance of a spring context using the resource defined in the parameter.
@@ -104,7 +56,6 @@ public class SchedulingContextFactory {
 	public static AbstractApplicationContext getContext(String contextFileURL) {
 		DefaultListableBeanFactory factory = new DefaultListableBeanFactory();
 		XmlBeanDefinitionReader beanReader = new XmlBeanDefinitionReader(factory);
-        getPropertyFilePath();
         if (contextFileURL.startsWith("file:")) {
         	beanReader.loadBeanDefinitions(new FileSystemResource(contextFileURL
                     .substring(5)));
@@ -114,21 +65,8 @@ public class SchedulingContextFactory {
         } else {
         	beanReader.loadBeanDefinitions(new FileSystemResource(contextFileURL));
         }
-        PropertyPlaceholderConfigurer cfg = new PropertyPlaceholderConfigurer();
-        cfg.setLocation(new FileSystemResource(path));
-        cfg.postProcessBeanFactory(factory);
         AbstractApplicationContext ctx = new GenericApplicationContext(factory);
         ctx.refresh();
-        
-		try {
-			BufferedReader in = new BufferedReader(new FileReader(path));
-			String str;
-			while ((str = in.readLine()) != null) {
-				System.out.println(str);
-			}
-			in.close();
-		} catch (IOException e) {
-		}
         
         return ctx;
     }
@@ -145,7 +83,6 @@ public class SchedulingContextFactory {
 	 * @since ALMA 8.1.1
 	 */
 	public static AbstractApplicationContext getContext(byte[] context) {
-		getPropertyFilePath();
 		
 		if (context == null) {
 			throw new IllegalArgumentException("Spring context byte array cannot be null");
@@ -154,9 +91,6 @@ public class SchedulingContextFactory {
 		DefaultListableBeanFactory factory = new DefaultListableBeanFactory();
 		XmlBeanDefinitionReader beanReader = new XmlBeanDefinitionReader(factory);
 		beanReader.loadBeanDefinitions(new ByteArrayResource(context));
-		PropertyPlaceholderConfigurer cfg = new PropertyPlaceholderConfigurer();
-        cfg.setLocation(new FileSystemResource(path));
-        cfg.postProcessBeanFactory(factory);
         AbstractApplicationContext ctx = new GenericApplicationContext(factory);
         ctx.refresh();
 		return ctx;

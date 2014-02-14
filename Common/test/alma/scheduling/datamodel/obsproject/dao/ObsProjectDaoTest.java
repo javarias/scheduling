@@ -34,7 +34,6 @@ import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
-import alma.scheduling.datamodel.obsproject.WeatherConstraints;
 
 public class ObsProjectDaoTest extends TestCase {
 

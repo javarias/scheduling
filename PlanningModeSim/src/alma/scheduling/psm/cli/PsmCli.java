@@ -52,10 +52,6 @@ public class PsmCli {
 		if( args.length == 0 ){
 			Console console = Console.getConsole();
 			console.help();
-		}else if (args[0].compareTo("remote") == 0) {
-			System.out.println("Entering Remote mode");
-			RMIServer server = new RMIServer();
-			server.start();
 		} else {
 			System.out.println("Entering Local mode");
 			Console console = Console.getConsole();

@@ -25,8 +25,6 @@
 package alma.scheduling.dataload;
 
 import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
 
 import junit.framework.TestCase;
 
@@ -44,7 +42,7 @@ public class DataLoaderTest extends TestCase {
     
     public DataLoaderTest(String name) throws Exception {
         super(name);    	
-        ApplicationContext ctx = DSAContextFactory.getContextFromPropertyFile();
+        ApplicationContext ctx = DSAContextFactory.getContext();
     	DataLoader loader = (DataLoader) ctx.getBean("weatherSimDataLoader");
       	loader.load();
     }
@@ -57,34 +55,8 @@ public class DataLoaderTest extends TestCase {
         super.tearDown();
     }
     
-//    public void testWeatherDataLoading() throws Exception {
-//        ApplicationContext ctx = DSAContextFactory.getContextFromPropertyFile();
-//        
-//        WeatherHistoryDAO wdao = (WeatherHistoryDAO) ctx.getBean("weatherSimDao");
-//        wdao.setSimulationStartTime(new Date());
-//        
-//        DataLoader loader = (DataLoader) ctx.getBean("weatherSimDataLoader");
-//        loader.load();
-//        
-//        DataLoader fullLoader = (DataLoader) ctx.getBean("fullDataLoader");
-//        fullLoader.load();
-//        
-//        // testing the weather updater. this should be moved to a different test
-//        
-//        WeatherUpdater updater = (WeatherUpdater) ctx.getBean("weatherUpdater");
-//        
-//        Date ut = new Date();
-//        for (int i = 0; i < 10; i++) {
-//            logger.info("--- update # " + i + " ---");
-//            ut.setTime(ut.getTime() + 4000000); // shift in 1.11 hours
-//            updater.update(ut);            
-//        }
-//        
-//        fullLoader.clear();
-//    }
-    
     public void testPathFluctDataLoading() throws Exception{
-    	ApplicationContext ctx = DSAContextFactory.getContextFromPropertyFile();
+    	ApplicationContext ctx = DSAContextFactory.getContext();
     	WeatherHistoryDAO wdao = (WeatherHistoryDAO) ctx.getBean("weatherSimDao");
     	Calendar cal = Calendar.getInstance();
     	cal.set(2000, 0, 1, 0, 0, 0);

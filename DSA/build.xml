@@ -4,9 +4,10 @@
 	<property file="build.properties"/>
 	
 	<path id="build.files.extra">
-		<fileset dir="src" includes="**/*.xml"/>
+		<fileset dir="src" includes="**/*.xml" />
 		<fileset dir="src" includes="**/*.xsd" />
 		<fileset dir="src" includes="**/*.xsl" />
+		<fileset dir="src" includes="**/*.trim"/>
 	</path>
 	
 	<import file="${common.dir}/common.xml"/>

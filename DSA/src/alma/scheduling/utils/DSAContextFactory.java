@@ -21,7 +21,6 @@
 package alma.scheduling.utils;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -31,7 +30,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -106,7 +104,6 @@ public class DSAContextFactory extends CommonContextFactory {
 			return getContext();
 		String contextString = SchedulingPolicyValidator.convertPolicyFile(policyFilePath);
 		context = SchedulingContextFactory.getContext(contextString.getBytes());
-		@SuppressWarnings("unchecked")
 		Map<String, alma.scheduling.algorithm.DynamicSchedulingAlgorithm> policies = 
 			context.getBeansOfType(alma.scheduling.algorithm.DynamicSchedulingAlgorithm.class);
 		PoliciesContainer container = null;
@@ -137,49 +134,18 @@ public class DSAContextFactory extends CommonContextFactory {
 	 * 
 	 * @since ALMA 9.1.5
 	 */
-	public static synchronized ApplicationContext getContextFromPropertyFile(String filePath){
+	public static synchronized ApplicationContext getContextFromProperty(){
 		if (context != null)
 			return context;
-		String path = filePath;
-		InputStream isProp;
-		try {
-			isProp = new FileInputStream(path);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return getContext();
-		} 
-		Properties properties = new Properties();
-		try {
-			properties.load(isProp);
-		} catch (IOException e) {
-			e.printStackTrace();
-			return getContext();
-		}
-		String policyFilePath = properties.getProperty(DSA_POLICY_FILE_PROP);
+		String policyFilePath = System.getProperty(DSA_POLICY_FILE_PROP);
 		return getContextFromPoliciesFile(policyFilePath);
 
 	}
 
-	/**
-	 * Convenience method to call {@link #getContextFromPropertyFile(String)} with parameter equals to
-	 * {@link SchedulingContextFactory#getPropertyFilePath()}
-	 * 
-	 * @return a spring Context initialized and ready to be used.
-	 * @since ALMA 8.1.1
-	 */
-	public static synchronized ApplicationContext getContextFromPropertyFile() {
-		return getContextFromPropertyFile(SchedulingContextFactory.getPropertyFilePath());
-	}
-	
 	public static synchronized ApplicationContext getSimulationContextFromPropertyFile() throws IOException, ParserConfigurationException, SAXException, TransformerFactoryConfigurationError, TransformerException{
 		if (context != null)
 			return context;
-		String path = SchedulingContextFactory.getPropertyFilePath();
-		InputStream isProp;
-		isProp = new FileInputStream(path);
-		Properties properties = new Properties();
-		properties.load(isProp);
-		String policyFilePath = properties.getProperty(DSA_POLICY_FILE_PROP);
+		String policyFilePath = System.getProperty(DSA_POLICY_FILE_PROP);
 		if(policyFilePath == null)
 			return getContext();
 		InputStream isPolicies = new FileInputStream(policyFilePath);
@@ -191,7 +157,6 @@ public class DSAContextFactory extends CommonContextFactory {
 		String simPoliciesStr = transformSchedulingPoliciesForSimulation(str.toString());
 		String contextString = SchedulingPolicyValidator.convertPolicyString(simPoliciesStr);
 		context = SchedulingContextFactory.getContext(contextString.getBytes());
-		@SuppressWarnings("unchecked")
 		Map<String, alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl> policies 
 			= context.getBeansOfType(alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl.class);
 		PoliciesContainer container = null;
@@ -210,7 +175,7 @@ public class DSAContextFactory extends CommonContextFactory {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static List<String> getPolicyNames() {
 		if (context == null) {
-			DSAContextFactory.getContextFromPropertyFile();
+			DSAContextFactory.getContextFromProperty();
 		}
 		if (availablePolicies == null) {
 			Map policies = context.getBeansOfType(alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl.class);
