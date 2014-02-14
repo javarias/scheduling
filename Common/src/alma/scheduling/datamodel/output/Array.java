@@ -43,6 +43,9 @@ public class Array {
 	private double scientificTime;
 	private double resolution;
 	private double uvCoverage;
+	private double minResolution;
+	private double maxResolution;
+	private String configurationName;
 
 	public Array(){
 
@@ -119,4 +122,29 @@ public class Array {
 	public void setOriginalId(long originalId) {
 		this.originalId = originalId;
 	}
+
+	public double getMinResolution() {
+		return minResolution;
+	}
+
+	public void setMinResolution(double minResolution) {
+		this.minResolution = minResolution;
+	}
+
+	public double getMaxResolution() {
+		return maxResolution;
+	}
+
+	public void setMaxResolution(double maxResolution) {
+		this.maxResolution = maxResolution;
+	}
+
+	public String getConfigurationName() {
+		return configurationName;
+	}
+
+	public void setConfigurationName(String configurationName) {
+		this.configurationName = configurationName;
+	}
+	
 }
