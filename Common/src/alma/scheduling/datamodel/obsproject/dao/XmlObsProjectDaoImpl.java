@@ -158,11 +158,8 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                 prj.setObsUnit(obsUnitSet);
                 obsUnitSet.setProject(prj);
                 retVal.add(prj);
-            } catch (MarshalException e) {
-                e.printStackTrace();
-            } catch (ValidationException e) {
-                e.printStackTrace();
-            } catch (FileNotFoundException e) {
+            } catch (MarshalException | ValidationException | FileNotFoundException e) {
+            	System.out.println("Offending file: " + prjFile);
                 e.printStackTrace();
             }
         }
@@ -341,22 +338,22 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
     private alma.scheduling.input.obsproject.generated.ObsUnitT getXmlObsUnit(ObsUnit obsUnit) {
         
         if (obsUnit instanceof ObsUnitSet) {
-            alma.scheduling.input.obsproject.generated.ObsUnitSetT xmlObsUnitSet =
-                new alma.scheduling.input.obsproject.generated.ObsUnitSetT();
+            alma.scheduling.input.obsproject.generated.ObsUnitSet xmlObsUnitSet =
+                new alma.scheduling.input.obsproject.generated.ObsUnitSet();
             Set<ObsUnit> subObsUnits = ((ObsUnitSet) obsUnit).getObsUnits();
             for (ObsUnit subObsUnit : subObsUnits) {
                 alma.scheduling.input.obsproject.generated.ObsUnitT subXmlObsUnit =
                     getXmlObsUnit(subObsUnit);
-                if (subXmlObsUnit instanceof alma.scheduling.input.obsproject.generated.SchedBlockT) {
+                if (subXmlObsUnit instanceof alma.scheduling.input.obsproject.generated.SchedBlock) {
                     xmlObsUnitSet.addSchedBlock((alma.scheduling.input.obsproject.generated.SchedBlock) subXmlObsUnit);
-                } else if (subXmlObsUnit instanceof alma.scheduling.input.obsproject.generated.ObsUnitSetT) {
+                } else if (subXmlObsUnit instanceof alma.scheduling.input.obsproject.generated.ObsUnitSet) {
                     xmlObsUnitSet.addObsUnitSet((alma.scheduling.input.obsproject.generated.ObsUnitSet) subXmlObsUnit);
                 }
             }
             return xmlObsUnitSet;
         } else if (obsUnit instanceof SchedBlock) {
-            alma.scheduling.input.obsproject.generated.SchedBlockT xmlSchedBlock =
-                new alma.scheduling.input.obsproject.generated.SchedBlockT();
+            alma.scheduling.input.obsproject.generated.SchedBlock xmlSchedBlock =
+                new alma.scheduling.input.obsproject.generated.SchedBlock();
             SchedBlock sb = (SchedBlock) obsUnit;
             // WeatherConstraints
             if( sb.getWeatherConstraints() != null ){
@@ -398,10 +395,10 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
             if (theOne != null) xmlSchedBlock.setObsParameters(theOne);  // TODO fix this
             // Targets
             Set<Target> targets = sb.getTargets();
-            Map<XmlDomainXRef, TargetT> xmlTargets = new HashMap<XmlDomainXRef, TargetT>();
-            Map<XmlDomainXRef, FieldSourceT> xmlSources = new HashMap<XmlDomainXRef, FieldSourceT>();
+            Map<XmlDomainXRef, alma.scheduling.input.obsproject.generated.Target> xmlTargets = new HashMap<>();
+            Map<XmlDomainXRef, alma.scheduling.input.obsproject.generated.FieldSource> xmlSources = new HashMap<>();
             for (Target t : targets) {
-                TargetT xmlTarget = new TargetT();
+                alma.scheduling.input.obsproject.generated.Target xmlTarget = new alma.scheduling.input.obsproject.generated.Target();
                 XmlDomainXRef xref = new XmlDomainXRef(TargetT.class, t.getId());
                 xmlTarget.setId(xref.xmlRefId);
                 xmlTarget.setInstrumentSpecIdRef("");
@@ -411,7 +408,7 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                 xmlTarget.setSourceIdRef(getXmlRefId(FieldSourceT.class, t.getSource().getId()));
                 xmlTargets.put(xref, xmlTarget);
                 FieldSource src = t.getSource();
-                FieldSourceT xmlSrc = new FieldSourceT();
+                alma.scheduling.input.obsproject.generated.FieldSource xmlSrc = new alma.scheduling.input.obsproject.generated.FieldSource();
                 xmlSrc.setId(getXmlRefId(FieldSourceT.class, src.getId()));
 				if( src.getName() != null )
 	                xmlSrc.setName(src.getName());

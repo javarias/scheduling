@@ -5,7 +5,7 @@
             <xs:sequence>
                 <xs:element name="ArchiveUID" type="xs:string"/>
                 <xs:element name="Code" type="xs:string"/>
-                <xs:element name="Name" type="xs:string"/>
+                <xs:element name="Name" type="xs:string" minOccurs="0"/>
                 <xs:element name="PrincipalInvestigator" type="xs:string"/>
                 <xs:element name="ScientificScore" type="xs:float"/>
                 <xs:element name="ScientificRank" type="xs:int"/>
@@ -62,8 +62,8 @@
         <xs:complexContent>
             <xs:extension base="ObsUnitT">
                 <xs:sequence>
-                    <xs:element name="ArchiveUID" type="xs:string"/>
-                    <xs:element name="Name" type="xs:string"/>
+                    <xs:element name="ArchiveUID" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Name" type="xs:string" minOccurs="0"/>
                     <xs:element name="WeatherConstraints" type="WeatherConstraintsT"/>
                     <xs:element name="SchedulingConstraints" type="SchedulingConstraintsT"/>
                     <xs:element name="Preconditions" type="PreconditionsT"/>
@@ -94,8 +94,8 @@
     <xs:complexType name="TargetT">
         <xs:attribute name="id" type="xs:NCName" use="required"/>
         <xs:attribute name="sourceIdRef" type="xs:NCName" use="required"/>
-        <xs:attribute name="instrumentSpecIdRef" type="xs:NCName" use="required"/>
-        <xs:attribute name="obsParametersIdRef" type="xs:NCName" use="required"/>
+        <xs:attribute name="instrumentSpecIdRef" type="xs:NCName" use="optional"/>
+        <xs:attribute name="obsParametersIdRef" type="xs:NCName" use="optional"/>
     </xs:complexType>
     <xs:complexType name="FieldSourceT">
         <xs:attribute name="id" type="xs:NCName" use="required"/>

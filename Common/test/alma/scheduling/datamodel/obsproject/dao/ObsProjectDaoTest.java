@@ -34,6 +34,7 @@ import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.utils.CommonContextFactory;
 
 public class ObsProjectDaoTest extends TestCase {
 
@@ -51,9 +52,8 @@ public class ObsProjectDaoTest extends TestCase {
         super.tearDown();
     }
  
-    public void notestXmlObsProjectDao() throws Exception {
-        ApplicationContext ctx =
-            new ClassPathXmlApplicationContext("alma/scheduling/datamodel/obsproject/dao/context.xml");
+    public void testXmlObsProjectDao() throws Exception {
+        ApplicationContext ctx = CommonContextFactory.getContext();
         XmlObsProjectDao xmlDao = (XmlObsProjectDao) ctx.getBean("xmlObsProjectDao");
         ObsProjectDao dao = (ObsProjectDao) ctx.getBean("obsProjectDao");
         List<ObsProject> projects = xmlDao.getAllObsProjects();
@@ -75,8 +75,7 @@ public class ObsProjectDaoTest extends TestCase {
     }
     
     public void testRoundTrip() throws Exception {
-        ApplicationContext ctx =
-            new ClassPathXmlApplicationContext("alma/scheduling/datamodel/obsproject/dao/context.xml");
+        ApplicationContext ctx = CommonContextFactory.getContext();
         XmlObsProjectDao xmlDao = (XmlObsProjectDao) ctx.getBean("xmlObsProjectDao");
         ObsProjectDao dao = (ObsProjectDao) ctx.getBean("obsProjectDao");
         List<ObsProject> projects = xmlDao.getAllObsProjects();

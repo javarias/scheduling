@@ -25,6 +25,7 @@
 package alma.scheduling.datamodel.config;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -164,7 +165,13 @@ public class Configuration {
         List<String> retval = new ArrayList<String>();
         String prjAbsPath = workDirectory + "/" + dir;
         File prjDir = new File(prjAbsPath);
-        File[] prjFiles = prjDir.listFiles();
+        File[] prjFiles = prjDir.listFiles(new FilenameFilter() {
+			
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.endsWith(".xml");
+			}
+		});
         for (File f : prjFiles) {
             Date d = new Date(f.lastModified());
             //Check for modifications in the files to be loaded in the DB
