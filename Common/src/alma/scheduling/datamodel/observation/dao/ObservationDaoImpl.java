@@ -24,7 +24,7 @@ public class ObservationDaoImpl implements ObservationDao {
 			list = ebs.get(eb.getSchedBlockUid());
 		} else {
 			list = new ArrayList<>();
-			ebs.put(eb.getExecBlockUid(), list);
+			ebs.put(eb.getSchedBlockUid(), list);
 		}
 		list.add(eb);
 	}
@@ -57,7 +57,7 @@ public class ObservationDaoImpl implements ObservationDao {
 	public List<ExecBlock> getAllExecBlocksForSB(String SbUid) {
 		if (!ebs.containsKey(SbUid))
 			return new ArrayList<>();
-		return ebs.get(ebs.get(SbUid));
+		return ebs.get(SbUid);
 	}
 
 	@Override

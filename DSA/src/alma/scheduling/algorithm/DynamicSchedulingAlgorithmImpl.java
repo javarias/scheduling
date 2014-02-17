@@ -60,11 +60,11 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
     /**
      * Stores the current SBs selected from selectors
      */
-    private HashMap<Long, SchedBlock> sbs;
+    private HashMap<String, SchedBlock> sbs;
     private List<SBRank> ranks;
     
     public DynamicSchedulingAlgorithmImpl(){
-        sbs =  new HashMap<Long, SchedBlock>();
+        sbs =  new HashMap<String, SchedBlock>();
     }
 
     public void setRanker(SchedBlockRanker ranker) {
@@ -114,7 +114,7 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
     public void selectCandidateSB(Date ut) throws NoSbSelectedException {
         sbs.clear();
         Date t1 = new Date();
-        HashMap<Long, SchedBlock> pre = selectSBs(ut, preUpdateSelectors);
+        HashMap<String, SchedBlock> pre = selectSBs(ut, preUpdateSelectors);
         Date t2 = new Date();        
         System.out.println("Pre Selectors takes: " + (t2.getTime() - t1.getTime()) + " ms");
 //        t1 = new Date();
@@ -137,9 +137,9 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
         Date t2 =  new Date();
         System.out.println("Update takes: " + (t2.getTime() - t1.getTime()) + " ms");
         t1= new Date();
-        HashMap<Long, SchedBlock> post = selectSBs(ut, postUpdateSelectors);
+        HashMap<String, SchedBlock> post = selectSBs(ut, postUpdateSelectors);
         t2 = new Date();
-        System.out.println("Post Selectors takes: " + (t2.getTime() - t1.getTime()) + " ms");
+        System.out.println("Post Selectors took: " + (t2.getTime() - t1.getTime()) + " ms");
         sbs = post;
 		if(sbs.size() == 0)
 			throw new NoSbSelectedException("Intersection of Selectors doesn't contain common SchedBlocks");    	
@@ -186,16 +186,16 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
         
     }
 	
-    private HashMap<Long, SchedBlock> selectSBs(Date ut, Collection<SchedBlockSelector> selectors) throws NoSbSelectedException{
-        HashMap<Long, SchedBlock> internal_sbs = new HashMap<Long, SchedBlock>();
-        ArrayList<HashMap<Long, SchedBlock>> selectedSbs = 
-            new ArrayList<HashMap<Long,SchedBlock>>();
+    private HashMap<String, SchedBlock> selectSBs(Date ut, Collection<SchedBlockSelector> selectors) throws NoSbSelectedException{
+        HashMap<String, SchedBlock> internal_sbs = new HashMap<>();
+        ArrayList<HashMap<String, SchedBlock>> selectedSbs = 
+            new ArrayList<>();
         int i = 0;
         for (SchedBlockSelector s : selectors) {
-            selectedSbs.add(new HashMap<Long, SchedBlock>());
+            selectedSbs.add(new HashMap<String, SchedBlock>());
             try {
                 for (SchedBlock sb : s.select(ut, array))
-                    selectedSbs.get(i).put(sb.getId(), sb);
+                    selectedSbs.get(i).put(sb.getUid(), sb);
             } catch (NoSbSelectedException e) {
                 logger.warn("DSA cannot continue if selector " + s.toString()
                         + " cannot get at least one SB");
@@ -207,7 +207,7 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
             }
             i++;
         }
-        HashMap<Long, SchedBlock> smallestSet = selectedSbs.get(0);
+        HashMap<String, SchedBlock> smallestSet = selectedSbs.get(0);
         for(i = 1; i<selectedSbs.size(); i++){
             if (smallestSet.size() > selectedSbs.get(i).size())
                 smallestSet = selectedSbs.get(i);
@@ -226,7 +226,7 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
             }
             // Add to the selected sb if that sb was selected by all the others selectors
             if(verified)
-                internal_sbs.put(sb.getId(), sb);
+                internal_sbs.put(sb.getUid(), sb);
         }
         if (internal_sbs.isEmpty()){
             logger.warn("DSA cannot continue if it doesn't have SBs to rank");

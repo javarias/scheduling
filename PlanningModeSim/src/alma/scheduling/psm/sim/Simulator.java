@@ -295,7 +295,7 @@ public class Simulator extends PsmContext {
                 Date t2 = new Date();
                 System.out.println("Selection takes: "+ (t2.getTime() - t1.getTime()));
                 dsa.updateCandidateSB(time);
-                logger.info("Ranking available scheduling blocks for Arrai Id: " + ev.getArray().getId());
+                logger.info("Ranking available scheduling blocks for Array Id: " + ev.getArray().getId());
                 dsa.rankSchedBlocks(time);
                 logger.info("Obtaining scheduling block for array: " + ev.getArray().getId());
                 SchedBlock sb = dsa.getSelectedSchedBlock();
