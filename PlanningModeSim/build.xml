@@ -5,6 +5,7 @@
 	<path id="build.files.extra">
 		<fileset dir="src" includes="**/*.jasper"/>
 		<fileset dir="src" includes="**/*.jrxml"/>
+		<fileset dir="src" includes="**/*.dat" />
 	</path>
 	<import file="${common.dir}/common.xml"/>
 </project>

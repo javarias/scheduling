@@ -231,7 +231,7 @@ public class DailyPlanningSim {
 		try {
 			answer = stdinReader.readLine();
 		} catch (IOException e) {
-			//This should not happen never
+			//This should not happen ever
 			e.printStackTrace();
 		}
 		return answer;
@@ -242,7 +242,7 @@ public class DailyPlanningSim {
 		try {
 			currentPath = new java.io.File( "." ).getCanonicalPath();
 		} catch (IOException e) {
-			//The current path cannot be read nothin to do
+			//The current path cannot be read, nothing to do
 			e.printStackTrace();
 		}
 		

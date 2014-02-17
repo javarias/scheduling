@@ -51,20 +51,22 @@ public class ObsProjectDaoImpl implements ObsProjectDao {
 	@Override
 	public void saveOrUpdate(ObsProject prj) {
 		obsProjects.put(prj.getUid(), prj);
+		findAndSaveSchedBlocks(prj.getObsUnit(), prj);
 	}
 
 	@Override
 	public void saveOrUpdate(Collection<ObsProject> prj) {
 		for (ObsProject p: prj) {
 			obsProjects.put(p.getUid(), p);
-			findAndSaveSchedBlocks(p.getObsUnit());
+			findAndSaveSchedBlocks(p.getObsUnit(), p);
 		}
 	}
 	
-	private void findAndSaveSchedBlocks(ObsUnit ou) {
+	private void findAndSaveSchedBlocks(ObsUnit ou, ObsProject p) {
+		ou.setProject(p);
 		if (ou instanceof ObsUnitSet)
 			for (ObsUnit ouc: ((ObsUnitSet) ou).getObsUnits())
-			findAndSaveSchedBlocks(ouc);
+			findAndSaveSchedBlocks(ouc, p);
 		else if (ou instanceof SchedBlock)
 			schedBlockDao.saveOrUpdate((SchedBlock) ou);
 	}

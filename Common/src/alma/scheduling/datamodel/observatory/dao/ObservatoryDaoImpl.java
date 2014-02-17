@@ -29,8 +29,14 @@ public class ObservatoryDaoImpl implements ObservatoryDao {
 	public <T> void saveOrUpdate(Collection<T> objs) {
 		if (objs.isEmpty())
 			return;
-		if (objs.iterator().next() instanceof ArrayConfiguration)
-			arrayConfigs.addAll((Collection<? extends ArrayConfiguration>) objs);
+		if (objs.iterator().next() instanceof ArrayConfiguration) {
+			Collection<? extends ArrayConfiguration> arrConfs 
+				= (Collection<? extends ArrayConfiguration>) objs;
+			for (ArrayConfiguration c: arrConfs) {
+				c.setId((long)arrayConfigs.size());
+				arrayConfigs.add(c);
+			}
+		}
 	}
 
 	@Override

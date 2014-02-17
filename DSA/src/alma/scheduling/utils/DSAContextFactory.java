@@ -51,6 +51,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import alma.scheduling.algorithm.PoliciesContainer;
+import alma.scheduling.algorithm.PoliciesContainersDirectory;
 import alma.scheduling.algorithm.SchedulingPolicyValidator;
 /**
  * 
@@ -116,6 +117,7 @@ public class DSAContextFactory extends CommonContextFactory {
 		for (String name: policies.keySet()) {
 			container.getPolicies().add(name);
 		}
+		PoliciesContainersDirectory.getInstance().put(container.getUuid(), container);
 		return context;
 	}
 	

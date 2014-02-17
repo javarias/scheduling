@@ -21,6 +21,7 @@
 package alma.scheduling.datamodel.weather.dao;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -39,7 +40,7 @@ public class AtmParametersDaoImpl implements AtmParametersDao {
     
     
     public AtmParametersDaoImpl() {
-
+    	atmParams = new HashSet<>();
     }
     
     @Override
@@ -120,7 +121,7 @@ public class AtmParametersDaoImpl implements AtmParametersDao {
 
 	@Override
 	public void loadAtmParameters(Set<AtmParameters> params) {
-		atmParams = params;
+		atmParams.addAll(params);
 	}
 
 	@Override

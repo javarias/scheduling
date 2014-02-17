@@ -25,83 +25,15 @@
  */
 package alma.scheduling.datamodel.config.dao;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.util.Date;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import alma.scheduling.datamodel.config.Configuration;
-import alma.scheduling.datamodel.config.ScienceGradeConfig;
-
-public class XmlConfigurationDaoImpl implements ConfigurationDao {
-
-    public static final String APRC_WORK_DIR = "APRC_WORK_DIR";
-    public static final String APRC_CONF_FILE = "aprc-config.xml";
-    public static String workDir = "";
+public class XmlConfigurationDaoImpl extends BaseConfigurationDaoImpl implements ConfigurationDao {
     
-    private Configuration config = null;
+    static Logger logger = LoggerFactory.getLogger(XmlConfigurationDaoImpl.class);
     
-    private static Logger logger = LoggerFactory.getLogger(XmlConfigurationDaoImpl.class);
-    
-	private static String getWorkDir(){
-		if( workDir != "" )
-			return workDir;
-		else 
-			return System.getenv(APRC_WORK_DIR);
-	}
-    
-    @Override
-    public Configuration getConfiguration() {
-        logger.trace("entering getConfiguration");
-        String confFileName = getWorkDir() + "/" + APRC_CONF_FILE;
-        File confFile = new File(confFileName);
-        
-        if (!confFile.exists()) {
-            logger.info("configuration file not found: " + confFileName);
-            return null;
-        }
-        
-        try {
-            if(config != null)
-                return config;
-            FileReader reader = new FileReader(confFileName);
-            alma.scheduling.input.config.generated.Configuration xmlConfig =
-                alma.scheduling.input.config.generated.Configuration.unmarshal(reader);
-            config = new Configuration();
-            config.setWorkDirectory(System.getenv(APRC_WORK_DIR));
-            config.setProjectDirectory(xmlConfig.getProjectDirectory());
-            config.setWeatherDirectory(xmlConfig.getWeatherDirectory());
-            config.setObservatoryDirectory(xmlConfig.getObservatoryDirectory());
-            config.setExecutiveDirectory(xmlConfig.getExecutiveDirectory());
-            config.setOutputDirectory(xmlConfig.getOutputDirectory());
-            config.setReportDirectory(xmlConfig.getReportDirectory());
-            config.setLastLoad(null); // for now
-            config.setContextFilePath(xmlConfig.getContextFilePath());
-            config.setArrayCenterLatitude(xmlConfig.getArrayCenterLatitude());
-            config.setArrayCenterLongitude(xmlConfig.getArrayCenterLongitude());
-            config.setMaxWindSpeed(xmlConfig.getMaxWindSpeed());
-            ScienceGradeConfig sc = new ScienceGradeConfig();
-            sc.setnGradeAPrj((int) xmlConfig.getGradeA());
-            sc.setnGradeBPrj((int) xmlConfig.getGradeB());
-            sc.setnGradeCPrj((int) xmlConfig.getGradeC()); 
-            config.setScienceGradeConfig(sc);
-            return config;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (MarshalException e) {
-            e.printStackTrace();
-        } catch (ValidationException e) {
-            e.printStackTrace();
-        }
-        
-        return null;
-    }
-
     /**
      * Not implemented 
      */

@@ -142,11 +142,9 @@
 	</bean>
 	<bean id="observatoryDao"
 		class="alma.scheduling.datamodel.observatory.dao.ObservatoryDaoImpl" >
-		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 	<bean id="execBlockDao" 
 		class="alma.scheduling.datamodel.observation.dao.ObservationDaoImpl">
-		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
 
 <!-- DataLoaders Beans -->
@@ -174,7 +172,6 @@
 					<property name="execDao" ref="execDao"/>
 				</bean>
 				<bean class="alma.scheduling.dataload.ObservationTablesCleaner" scope="singleton">
-					<property name="sessionFactory" ref="sessionFactory"/>
 				</bean>
 			</list>
 		</property>

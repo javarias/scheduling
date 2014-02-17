@@ -208,7 +208,7 @@ public class Simulator extends PsmContext {
         Collections.sort(timesToCheck);
         
         for (TimeEvent ev : timesToCheck) {
-            logger.debug(ev.toString());
+            logger.info(ev.toString());
         }
         
         /* Check the current time and discard the older events*/

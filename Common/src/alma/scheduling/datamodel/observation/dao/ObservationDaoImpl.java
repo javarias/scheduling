@@ -56,7 +56,7 @@ public class ObservationDaoImpl implements ObservationDao {
 	@Override
 	public List<ExecBlock> getAllExecBlocksForSB(String SbUid) {
 		if (!ebs.containsKey(SbUid))
-			return null;
+			return new ArrayList<>();
 		return ebs.get(ebs.get(SbUid));
 	}
 

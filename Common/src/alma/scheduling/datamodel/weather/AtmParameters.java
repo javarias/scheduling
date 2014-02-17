@@ -21,9 +21,6 @@
 package alma.scheduling.datamodel.weather;
 
 public class AtmParameters {
-
-    /** Surrogate identifier */
-    Long id;
     
     /** Precipitable water vapor content (mm) */
     Double PWV;
@@ -38,14 +35,6 @@ public class AtmParameters {
     Double atmBrightnessTemp;
         
     public AtmParameters() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public Double getPWV() {
@@ -79,4 +68,56 @@ public class AtmParameters {
     public void setAtmBrightnessTemp(Double atmBrightnessTemp) {
         this.atmBrightnessTemp = atmBrightnessTemp;
     }
+
+	@Override
+	public String toString() {
+		return "AtmParameters [PWV=" + PWV + ", freq=" + freq + ", opacity="
+				+ opacity + ", atmBrightnessTemp=" + atmBrightnessTemp + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((PWV == null) ? 0 : PWV.hashCode());
+		result = prime
+				* result
+				+ ((atmBrightnessTemp == null) ? 0 : atmBrightnessTemp
+						.hashCode());
+		result = prime * result + ((freq == null) ? 0 : freq.hashCode());
+		result = prime * result + ((opacity == null) ? 0 : opacity.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AtmParameters other = (AtmParameters) obj;
+		if (PWV == null) {
+			if (other.PWV != null)
+				return false;
+		} else if (!PWV.equals(other.PWV))
+			return false;
+		if (atmBrightnessTemp == null) {
+			if (other.atmBrightnessTemp != null)
+				return false;
+		} else if (!atmBrightnessTemp.equals(other.atmBrightnessTemp))
+			return false;
+		if (freq == null) {
+			if (other.freq != null)
+				return false;
+		} else if (!freq.equals(other.freq))
+			return false;
+		if (opacity == null) {
+			if (other.opacity != null)
+				return false;
+		} else if (!opacity.equals(other.opacity))
+			return false;
+		return true;
+	}
 }

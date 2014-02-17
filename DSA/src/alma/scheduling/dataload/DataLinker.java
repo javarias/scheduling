@@ -127,8 +127,8 @@ public class DataLinker implements DataLoader {
         }
         sbDao.saveOrUpdate(sbs);
         
-//        Configuration config = configDao.getConfiguration();
-//        config.getScienceGradeConfig().setTotalPrj(sbs.size());
+        Configuration config = configDao.getConfiguration();
+        config.getScienceGradeConfig().setTotalPrj(sbs.size());
 //        config.getScienceGradeConfig()
 //                .setnGradeDPrj(
 //                        config.getScienceGradeConfig().getTotalPrj()
@@ -136,6 +136,6 @@ public class DataLinker implements DataLoader {
 //                                   + config.getScienceGradeConfig().getnGradeBPrj() 
 //                                   + config.getScienceGradeConfig().getnGradeCPrj()));
 //        config.getScienceGradeConfig().testValues();
-//        configDao.updateConfig();
+        configDao.updateConfig();
     }
 }
