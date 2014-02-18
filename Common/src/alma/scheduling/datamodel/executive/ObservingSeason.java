@@ -28,6 +28,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import alma.scheduling.utils.TimeUtil;
+
 /**
  * The ObservingSeason is the unit of time that is used in the accountability of
  * observation time to the Executives (USA, Japan, Europe, etc.). It is usually
@@ -115,9 +117,7 @@ public class ObservingSeason implements Comparable<ObservingSeason>{
 		if (observingInterval == null) {
 			return (endDate.getTime() - startDate.getTime()) / 3600000.0;
 		}
-		double ndays =  (endDate.getTime() - startDate.getTime()) / (24 * 3600000.0);
-		long mspday = 24 * 3600 * 1000 - observingInterval.getDuration();
-		return (ndays * mspday) / 3600000.0;
+		return TimeUtil.getHoursInDateTimeInterval(startDate, endDate, observingInterval);
 	}
 	
     @Override

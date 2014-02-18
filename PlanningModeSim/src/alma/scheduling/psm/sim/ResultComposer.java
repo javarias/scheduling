@@ -40,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.executive.PIMembership;
+import alma.scheduling.datamodel.executive.TimeInterval;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.observation.ExecBlock;
 import alma.scheduling.datamodel.observation.dao.ObservationDao;
@@ -61,6 +62,7 @@ import alma.scheduling.datamodel.output.ObservationProject;
 import alma.scheduling.datamodel.output.SimulationResults;
 import alma.scheduling.datamodel.output.SchedBlockResult;
 import alma.scheduling.utils.DSAContextFactory;
+import alma.scheduling.utils.TimeUtil;
 
 /** 
  * Gathers notifications from the Simulator, and generates an output that <br>
@@ -96,11 +98,15 @@ public class ResultComposer {
 		results.setStartRealDate(new Date());
 	}
 	
-	public void notifyArrayCreation(ArrayConfiguration arrcfg){
+	public void notifyArrayCreation(ArrayConfiguration arrcfg, TimeInterval ti){
 		Array arr = new Array();
 		arr.setCreationDate( arrcfg.getStartTime() );
 		arr.setDeletionDate( arrcfg.getEndTime() );
-		arr.setAvailableTime( (arr.getDeletionDate().getTime() - arr.getCreationDate().getTime())/3600/1000);
+		if (ti == null)
+			arr.setAvailableTime( (arr.getDeletionDate().getTime() - arr.getCreationDate().getTime())/3600/1000);
+		else
+			arr.setAvailableTime(TimeUtil.getHoursInDateTimeInterval(
+					arr.getCreationDate(), arr.getDeletionDate(), ti));
 		arr.setOriginalId(arrcfg.getId());
 		if (arrcfg.getResolution() == null)
 			arr.setResolution(0.0);
