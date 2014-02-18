@@ -26,7 +26,12 @@ package alma.scheduling.algorithm;
 
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentNavigableMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +42,9 @@ import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.executive.ExecutivePercentage;
 import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
+import alma.scheduling.datamodel.observation.ExecBlock;
+import alma.scheduling.datamodel.observation.ExecStatus;
+import alma.scheduling.datamodel.observation.dao.ObservationDao;
 import alma.scheduling.datamodel.observatory.AntennaInstallation;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.ObservingParameters;
@@ -214,7 +222,6 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
         ExecutivePercentage ep = execDao.getExecutivePercentage(schedBlock.getExecutive(), execDao.getCurrentSeason());
         ep.setRemainingObsTime(ep.getRemainingObsTime() - schedBlock.getSchedBlockControl().getSbMaximumTime().floatValue());
         ((GenericDao) execDao).saveOrUpdate(ets); // TODO fix interfaces instead
-//        ((GenericDao) execDao).saveOrUpdate(ep); // TODO fix interfaces instead
         
         
         return nextExecutionTime;

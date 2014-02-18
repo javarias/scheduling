@@ -282,7 +282,7 @@ public class Simulator extends PsmContext {
             DynamicSchedulingAlgorithm dsa;
             System.out.println(TimeUtil.getUTString(time) + "Array "
                     + ev.getArray().getId() + " created");
-            rc.notifyArrayCreation(ev.getArray());
+            rc.notifyArrayCreation(ev.getArray(), ti);
             //TODO: Fix this
             dsa = getDSA(ctx, DSAPolicyName);
             dsa.setVerboseLevel(verboseLvl);
