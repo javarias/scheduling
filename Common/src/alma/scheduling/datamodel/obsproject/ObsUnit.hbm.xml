@@ -32,10 +32,9 @@
 		<id column="OBSUNITID" name="id">
 			<generator class="native" />
 		</id>
-		<property column="OBSUNIT_UID" generated="never" lazy="false"
-			name="uid" type="string" unique="true" />
+		<property column="OBSUNIT_UID" name="uid" type="string" unique="true"/>
 		<property column="NOTE" generated="never" lazy="false"
-			name="note" type="text" />
+			name="note" type="text"/>
 		<many-to-one class="ObsUnitSet" column="PARENTID" name="parent" />
 		<property column="OBSUNIT_PROJECT_UID" generated="never"
 			lazy="false" name="projectUid" type="string" />

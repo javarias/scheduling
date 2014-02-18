@@ -32,18 +32,15 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.omg.CORBA.UserException;
 
-import alma.SchedulingMasterExceptions.wrappers.AcsJSchedulingInternalExceptionEx;
 import alma.acs.entityutil.EntityDeserializer;
 import alma.acs.entityutil.EntityException;
 import alma.acs.entityutil.EntitySerializer;
-import alma.archive.database.helpers.ArchiveConfiguration;
-import alma.archive.database.helpers.DBConfiguration;
 import alma.archive.exceptions.general.DatabaseException;
 import alma.archive.xml.ObsProjectEntity;
 import alma.archive.xml.ObsProposalEntity;
 import alma.archive.xml.ObsReviewEntity;
 import alma.archive.xml.SchedBlockEntity;
-import alma.archive.xml.XmlEntity;
+import alma.archive.xml.dao.HibernateXmlStoreDaoImpl;
 import alma.entity.xmlbinding.obsproject.ObsProject;
 import alma.entity.xmlbinding.obsproposal.ObsProposal;
 import alma.entity.xmlbinding.obsreview.ObsReview;
@@ -54,25 +51,28 @@ import alma.xmlstore.OperationalOperations;
 public final class HibernateArchiveInterface extends AbstractArchiveInterface
 		implements ArchiveInterface {
 
-	private static SessionFactory sf = null;
-
+	public HibernateXmlStoreDaoImpl dao;
+	
 	public HibernateArchiveInterface(OperationalOperations archive,
 			StateArchive stateSystem,
 			EntityDeserializer entityDeserializer,
 			EntitySerializer entitySerializer) {
 		super(archive, stateSystem, entityDeserializer, entitySerializer);
-		//The session and the transaction are closed at the end of the thread execution. this is handled by Hibernate
+		try {
+			dao = new HibernateXmlStoreDaoImpl();
+		} catch (DatabaseException e) {
+			throw new RuntimeException(e);
+		}
 		System.out.println("************************************************************************************");
 		System.out.println("Using hibernate to access to xmlstore, some people just want to watch the world burn");
 		System.out.println("************************************************************************************");
-		if (sf == null)
-			initializeDB();
+		
 	}
 
 	@Override
 	public ObsProposal getObsProposal(String id) throws EntityException,
 			UserException {
-		ObsProposal prop = genericRetrieval(id, ObsProposalEntity.class, ObsProposal.class);
+		ObsProposal prop = dao.genericRetrieval(id, ObsProposalEntity.class, ObsProposal.class);
 		obsProposals.put(id, prop);
 		return prop;
 	}
@@ -80,7 +80,7 @@ public final class HibernateArchiveInterface extends AbstractArchiveInterface
 	@Override
 	public ObsReview getObsReview(String id) throws EntityException,
 			UserException {
-		ObsReview or = genericRetrieval(id, ObsReviewEntity.class, ObsReview.class);
+		ObsReview or = dao.genericRetrieval(id, ObsReviewEntity.class, ObsReview.class);
 		obsReviews.put(id, or);
 		return or;
 	}
@@ -88,7 +88,7 @@ public final class HibernateArchiveInterface extends AbstractArchiveInterface
 	@Override
 	public ObsProject getObsProject(String id) throws EntityException,
 			UserException {
-		ObsProject op = genericRetrieval(id, ObsProjectEntity.class, ObsProject.class);
+		ObsProject op = dao.genericRetrieval(id, ObsProjectEntity.class, ObsProject.class);
 		obsProjects.put(id, op);
 		return op;
 	}
@@ -96,7 +96,7 @@ public final class HibernateArchiveInterface extends AbstractArchiveInterface
 	@Override
 	public SchedBlock getSchedBlock(String id) throws EntityException,
 			UserException {
-		SchedBlock sb = genericRetrieval(id, SchedBlockEntity.class, SchedBlock.class);
+		SchedBlock sb = dao.genericRetrieval(id, SchedBlockEntity.class, SchedBlock.class);
 		schedBlocks.put(id, sb);
 		return sb;
 	}

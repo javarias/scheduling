@@ -44,6 +44,7 @@ import alma.archive.xml.dao.HibernateXmlStoreDaoImpl;
 import alma.entity.xmlbinding.obsproject.ObsUnitSetT;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.utils.SchedulingProperties;
+import alma.scheduling.utils.SchedulingProperties.InvalidPropertyValueException;
 import alma.scheduling.utils.SchedulingProperties.Phase1SBSourceValue;
 
 /**
@@ -61,14 +62,24 @@ public class Phase1XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
     };
     
     private Phase1SBSourceValue sbLocation;
-
+    private final HibernateXmlStoreDaoImpl xmlStoreDao;
+    
 	public Phase1XMLStoreProjectDao() throws Exception {
 		super();
 		
+		xmlStoreDao = new HibernateXmlStoreDaoImpl();
 		// The call to getPhase1SBSource() will throw an InvalidPropertyValueException
 		// if the user has specified an invalid value for the property. Thus, the rest
 		// of the code for importing Phase 1 projects from the XMLStore can assume that
 		// the flag is set correctly.
+		sbLocation = SchedulingProperties.getPhase1SBSource();
+		logger.info("Source for Phase 1 Projects' SchedBlocks will be " + sbLocation);
+	}
+	
+	Phase1XMLStoreProjectDao(ArchiveInterface archive, XMLStoreImportNotifier notifier, HibernateXmlStoreDaoImpl hibDao) throws InvalidPropertyValueException {
+		super(archive, notifier);
+		
+		xmlStoreDao = hibDao;
 		sbLocation = SchedulingProperties.getPhase1SBSource();
 		logger.info("Source for Phase 1 Projects' SchedBlocks will be " + sbLocation);
 	}
@@ -269,8 +280,6 @@ public class Phase1XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 		logger.info(String.format(
 				"Getting interesting proposals, query = %s, schema = %s",
 				query, schema));
-		try {
-			HibernateXmlStoreDaoImpl xmlStoreDao = new HibernateXmlStoreDaoImpl();
 			for (ObsProposalEntity prp : xmlStoreDao.getObsProposalsIterator(query)) {
 				try {
 				alma.entity.xmlbinding.obsproposal.ObsProposal proposal = 
@@ -291,13 +300,10 @@ public class Phase1XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 					ByteArrayOutputStream os = new ByteArrayOutputStream();
 					e.printStackTrace(new PrintWriter(os));
 					logger.severe("Cannot get APDM ObsProposals\n" + os.toString());
-				} 
+				} finally {
+					xmlStoreDao.closeSession();
+				}
 			}
-		} catch (DatabaseException e) {
-			ByteArrayOutputStream os = new ByteArrayOutputStream();
-			e.printStackTrace(new PrintWriter(os));
-			logger.severe("Cannot get APDM ObsProposals\n" + os.toString());
-		} 
 		return result;
 	}
 

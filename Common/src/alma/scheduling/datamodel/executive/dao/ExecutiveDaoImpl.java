@@ -30,10 +30,9 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.hibernate.Query;
+import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.datamodel.GenericDaoImpl;
@@ -213,4 +212,24 @@ public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO {
         ep = query.list();
         return ep.get(0);        
     }
+
+
+	@Override
+	public void cleanExecutiveTimeSpent() {
+		String strq = new String("delete from ExecutiveTimeSpent");
+		Transaction tx = getSession().beginTransaction();
+		try {
+			int r = getSession().createQuery(strq).executeUpdate();
+			logger.debug(strq + " Modified " +  r + "rows.");
+			tx.commit();
+		} catch (RuntimeException ex) {
+			tx.rollback();
+			logger.warn("Looks like table is already empty");
+			ex.printStackTrace();
+		}
+		finally {
+		}
+	}
+    
+    
 }

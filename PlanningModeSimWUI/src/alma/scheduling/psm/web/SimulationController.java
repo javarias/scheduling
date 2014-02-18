@@ -32,7 +32,7 @@ import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.psm.sim.InputActions;
 import alma.scheduling.psm.sim.ReportGenerator;
-import alma.scheduling.psm.sim.SimulationAbstractState;
+import alma.scheduling.psm.sim.status.SimulationAbstractState;
 import alma.scheduling.psm.sim.SimulationActionsEnum;
 import alma.scheduling.psm.sim.SimulationProgressEvent;
 import alma.scheduling.psm.sim.Simulator;

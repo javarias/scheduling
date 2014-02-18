@@ -104,21 +104,15 @@ public class SchedulingContextFactory {
 	public static AbstractApplicationContext getContext(String contextFileURL) {
 		DefaultListableBeanFactory factory = new DefaultListableBeanFactory();
 		XmlBeanDefinitionReader beanReader = new XmlBeanDefinitionReader(factory);
-//        XmlBeanFactory factory = null;
         getPropertyFilePath();
         if (contextFileURL.startsWith("file:")) {
         	beanReader.loadBeanDefinitions(new FileSystemResource(contextFileURL
                     .substring(5)));
-//            factory = new XmlBeanFactory(new FileSystemResource(contextFileURL
-//                    .substring(5)));
         } else if (contextFileURL.startsWith("classpath:")) {
         	beanReader.loadBeanDefinitions(new ClassPathResource(contextFileURL
                     .substring(10)));
-//            factory = new XmlBeanFactory(new ClassPathResource(contextFileURL
-//                    .substring(10)));
         } else {
         	beanReader.loadBeanDefinitions(new FileSystemResource(contextFileURL));
-//            factory = new XmlBeanFactory(new FileSystemResource(contextFileURL));
         }
         PropertyPlaceholderConfigurer cfg = new PropertyPlaceholderConfigurer();
         cfg.setLocation(new FileSystemResource(path));

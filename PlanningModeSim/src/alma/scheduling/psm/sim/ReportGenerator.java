@@ -77,7 +77,7 @@ import alma.scheduling.utils.CoordinatesUtil;
 
 public class ReportGenerator extends PsmContext {
 
-	private static org.slf4j.Logger logger = LoggerFactory.getLogger(ResultComposer.class);
+	private static org.slf4j.Logger logger = LoggerFactory.getLogger(ReportGenerator.class);
 
 	private static final double ReceiverBandsRange[][] = 
 	{

@@ -26,7 +26,12 @@ package alma.scheduling.algorithm;
 
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentNavigableMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +42,9 @@ import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.executive.ExecutivePercentage;
 import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
-import alma.scheduling.datamodel.observatory.AntennaInstallation;
+import alma.scheduling.datamodel.observation.ExecBlock;
+import alma.scheduling.datamodel.observation.ExecStatus;
+import alma.scheduling.datamodel.observation.dao.ObservationDao;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.ObservingParameters;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
@@ -54,53 +61,52 @@ import alma.scheduling.weather.OpacityInterpolator;
 public class SchedBlockExecutorImpl implements SchedBlockExecutor {
 
     private static Logger logger = LoggerFactory.getLogger(SchedBlockExecutorImpl.class);
-
+    private Map<String, Double> accumSensJyCache;
+    /**In milliseconds*/
+    private final long executionTime = 60 * 60 * 1000 + 20 * 60 * 1000; //1 hr 20 min.
+    private final ConcurrentNavigableMap<String, ExecBlock> activeExecBlocks;
     private ConfigurationDao configDao;
+    private ExecutiveDAO execDao;
+    private SchedBlockDao schedBlockDao;
+    private OpacityInterpolator opacityInterpolator;
+    private WeatherHistoryDAO weatherDao;
+    private ObservationDao obsDao;
+    
+    public SchedBlockExecutorImpl() {
+    	accumSensJyCache = new TreeMap<String, Double>();
+    	activeExecBlocks = new ConcurrentSkipListMap<String, ExecBlock>();
+	}
+
     public void setConfigDao(ConfigurationDao configDao) {
         this.configDao = configDao;
     }
     
-    private ExecutiveDAO execDao;
     public void setExecDao(ExecutiveDAO execDao) {
         this.execDao = execDao;
     }
     
-    private SchedBlockDao schedBlockDao;
     public void setSchedBlockDao(SchedBlockDao schedBlockDao) {
         this.schedBlockDao = schedBlockDao;
     }
     
-    private OpacityInterpolator opacityInterpolator;
     public void setOpacityInterpolator(OpacityInterpolator opacityInterpolator) {
         this.opacityInterpolator = opacityInterpolator;
     }
     
-    private WeatherHistoryDAO weatherDao;
     public void setWeatherDao(WeatherHistoryDAO weatherDao) {
         this.weatherDao = weatherDao;
     }
     
-    @Override
+    public void setObsDao(ObservationDao obsDao) {
+		this.obsDao = obsDao;
+	}
+    
+	@Override
     public Date execute(SchedBlock schedBlock, ArrayConfiguration arrCnf, Date ut) {
-        ExecutiveTimeSpent ets = new ExecutiveTimeSpent();
-        ets.setExecutive(execDao.getExecutive(schedBlock.getPiName()));
-        ets.setObservingSeason(execDao.getCurrentSeason());
-        ets.setSbId(schedBlock.getId());
-        ets.setTimeSpent(schedBlock.getSchedBlockControl().getSbMaximumTime().floatValue());
-        ExecutivePercentage ep = execDao.getExecutivePercentage(schedBlock.getExecutive(), execDao.getCurrentSeason());
-        ep.setRemainingObsTime(ep.getRemainingObsTime() - schedBlock.getSchedBlockControl().getSbMaximumTime().floatValue());
-        ((GenericDao) execDao).saveOrUpdate(ets); // TODO fix interfaces instead
-        ((GenericDao) execDao).saveOrUpdate(ep); // TODO fix interfaces instead
-        
-        double execTime = schedBlock.getSchedBlockControl().getSbMaximumTime();
-        double accumTime = 0.0;
-        if (schedBlock.getSchedBlockControl().getAccumulatedExecutionTime() != null) {
-            accumTime = schedBlock.getSchedBlockControl().getAccumulatedExecutionTime();            
-        }
-        accumTime += execTime;
-        schedBlock.getSchedBlockControl().setAccumulatedExecutionTime(accumTime);
-        
-        double expTimeHr = accumTime;
+		double accumTime = obsDao.getAccumulatedObservingTimeForSb(schedBlock.getUid()) / 3600.0;
+        int numRep = obsDao.getNumberOfExecutionsForSb(schedBlock.getUid());
+		
+		double expTimeHr = accumTime;
         double freqGHz = schedBlock.getSchedulingConstraints().getRepresentativeFrequency();
         schedBlockDao.hydrateSchedBlockObsParams(schedBlock);
         Set<ObservingParameters> ops = schedBlock.getObservingParameters();
@@ -171,21 +177,20 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
 		}
 		// END Warning code 
 		
-		
-        schedBlock.getSchedBlockControl().setNumberOfExecutions(
-                schedBlock.getSchedBlockControl().getNumberOfExecutions() + 1);
         double accumSens = 0;
-        if(schedBlock.getSchedBlockControl().getAchievedSensitivity() == null)
-            accumSens = Math.sqrt(sensJy/sensJy);
+        if(!accumSensJyCache.containsKey(schedBlock.getUid()))
+            accumSens = sensJy;
         else{
-        	double previousSum = schedBlock.getSchedBlockControl().getAchievedSensitivity() * 
-        							(schedBlock.getSchedBlockControl().getNumberOfExecutions() 
-        							- 1);
-        	previousSum = previousSum * previousSum; 
-        	accumSens = Math.sqrt( previousSum + (sensJy * sensJy) ) / 
+        	double previousSum = accumSensJyCache.get(schedBlock.getUid()) * (numRep - 1);
+        	previousSum = Math.pow(previousSum, 2); 
+        	accumSens = Math.sqrt( previousSum + Math.pow(sensJy, 2) ) / 
         				schedBlock.getSchedBlockControl().getNumberOfExecutions();
         }
-        schedBlock.getSchedBlockControl().setAchievedSensitivity(accumSens);
+        //Since hibernate 3 doesn't support nested subqueries criterias and projections
+        //A cache is necessary to save the accumulated sensitivity
+        accumSensJyCache.put(schedBlock.getUid(), accumSens);
+        
+        //TODO: Missing max number of repetitions in SB
         if ((accumSens * FUDGE_FACTOR <= sensGoalJy) || (accumTime >= schedBlock.getObsUnitControl().getMaximumTime())) {
             schedBlock.getSchedBlockControl().setState(SchedBlockState.FULLY_OBSERVED);
         }
@@ -194,20 +199,45 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
         }
         schedBlockDao.saveOrUpdate(schedBlock);
         
-        //Ignore the Sb max time use instead use a fixed time: 1hr and 20 min of execution.
-//        long executionTime = (long) (schedBlock.getSchedBlockControl().getSbMaximumTime().doubleValue()
-//            * 1000 * 3600);
-        long executionTime = 60 * 60 * 1000 + 20 * 60 * 1000; //1 hr 20 min.
         Date nextExecutionTime = new Date(ut.getTime() + executionTime);
+        
+        ExecBlock eb = new ExecBlock();
+        eb.setExecBlockUid(UUID.randomUUID().toString());
+        eb.setSchedBlockUid(schedBlock.getUid());
+        eb.setStatus(ExecStatus.SUCCESS);
+        eb.setStartTime(ut);
+        eb.setEndTime(nextExecutionTime);
+        eb.setSensitivityAchieved(sensJy);
+        //TODO: Assuming all the time we were on source 
+        eb.setTimeOnSource(executionTime / 1000.0);
+        activeExecBlocks.put(schedBlock.getUid(), eb);
+        
+        ExecutiveTimeSpent ets = new ExecutiveTimeSpent();
+        ets.setExecutive(execDao.getExecutive(schedBlock.getPiName()));
+        ets.setObservingSeason(execDao.getCurrentSeason());
+        ets.setSbId(schedBlock.getId());
+        ets.setTimeSpent(executionTime / 3600000.0F);
+        ExecutivePercentage ep = execDao.getExecutivePercentage(schedBlock.getExecutive(), execDao.getCurrentSeason());
+        ep.setRemainingObsTime(ep.getRemainingObsTime() - schedBlock.getSchedBlockControl().getSbMaximumTime().floatValue());
+        ((GenericDao) execDao).saveOrUpdate(ets); // TODO fix interfaces instead
+//        ((GenericDao) execDao).saveOrUpdate(ep); // TODO fix interfaces instead
+        
+        
         return nextExecutionTime;
     }
 
     @Override
-    public void finishSbExecution(SchedBlock sb, ArrayConfiguration arrCnf,
+    public ExecBlock finishSbExecution(SchedBlock sb, ArrayConfiguration arrCnf,
             Date ut) {
         if (sb.getSchedBlockControl().getState() == SchedBlockState.RUNNING){
             sb.getSchedBlockControl().setState(SchedBlockState.READY);
             schedBlockDao.saveOrUpdate(sb);
         }
+        
+        ExecBlock eb = activeExecBlocks.remove(sb.getUid());
+        eb.setEndTime(ut);
+        obsDao.save(eb);
+        
+        return eb;
     }
 }

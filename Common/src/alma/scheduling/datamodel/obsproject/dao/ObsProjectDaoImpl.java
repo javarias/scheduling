@@ -39,15 +39,16 @@ import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.ObservingParameters;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.obsproject.SchedBlockState;
 import alma.scheduling.datamodel.obsproject.ScienceGrade;
 import alma.scheduling.datamodel.obsproject.Target;
 
-@Transactional(readOnly = true)
 public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao{
 
     private static Logger logger = LoggerFactory.getLogger(ObsProjectDaoImpl.class);
     
     @Override
+    @Transactional(readOnly = true)
     public void hydrateSchedBlocks(ObsProject prj) {
         logger.trace("hydrating ObsProject");
         getHibernateTemplate().lock(prj, LockMode.NONE);
@@ -64,7 +65,7 @@ public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao{
         hydrateObsUnit(ou);
     }
 
-
+    @Transactional(readOnly = true)
     public ObsUnit getObsUnitForProject(ObsProject prj) {
         Long id = prj.getObsUnit().getId();
         ObsUnit ou = null;
@@ -120,6 +121,7 @@ public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao{
 
     @SuppressWarnings("unchecked")
     @Override
+    @Transactional(readOnly = true)
     public List<ObsProject> getObsProjectsOrderBySciRank() {
         Query query = getSession().createQuery("from ObsProject prj order by prj.scienceRank");
         return query.list();
@@ -181,6 +183,7 @@ public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao{
 
 
 	@Override
+	@Transactional(readOnly = true)
 	public int countAll() {
         Query query = null;
         query = getSession().createQuery("select count(x) from ObsProject x ");
@@ -189,6 +192,7 @@ public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao{
 
 
 	@Override
+	@Transactional(readOnly = false)
 	public void deleteAll() {
 		getSession().createQuery("delete from " + ObsProject.class.getCanonicalName()).executeUpdate();
 //		getSession().createQuery("delete from " + ObsUnit.class.getCanonicalName()).executeUpdate();
@@ -200,6 +204,7 @@ public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao{
 
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<String> getObsProjectsUidsByCode(String code) {
 		// TODO Auto-generated method stub
 		Query q = getSession().createQuery("select uid from ObsProject where (code like '%"+ code +"%') and (uid is not null)" );
@@ -212,6 +217,7 @@ public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao{
 
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<String> getObsProjectsUidsbySciGrade(List<ScienceGrade> grades) {
 		String restriction = "";
 		for(ScienceGrade g: grades) {
@@ -222,6 +228,31 @@ public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao{
 		@SuppressWarnings("unchecked")
 		List<String> uids = q.list();
 		return uids;
+	}
+
+	@Override
+	public void setObsProjectStatusAsReady() {
+//		String qStrOp = new String("update ObsProject op set op.status = :newState");
+		String qStrOp = new String("UPDATE OBSPROJECT SET STATUS = 'ready'");
+//		String qStrSb = new String("update SchedBlock sb set sb.schedBlockControl.state = :newState");
+		String qStrSb = new String("UPDATE SCHEDBLOCK SET SCHEDBLOCK_CTRL_STATE = '" + SchedBlockState.READY.toString() + "'");
+		Transaction tx = getSession().beginTransaction();
+		try {
+//			int r = getSession().createQuery(qStrOp).setString("newState", "ready").executeUpdate();
+			int r = getSession().createSQLQuery(qStrOp).executeUpdate();
+			logger.debug(qStrOp + " Modified " +  r + "rows.");
+//			r = getSession().createQuery(qStrSb).setString("newState", SchedBlockState.READY.toString()).executeUpdate();
+			r = getSession().createSQLQuery(qStrSb).executeUpdate();
+			logger.debug(qStrSb + " Modified " +  r + "rows.");
+			tx.commit();
+		} catch (RuntimeException ex) {
+			tx.rollback();
+			logger.error("Problem found :" + ex.getMessage());
+			throw ex;
+		}
+		finally {
+		}
+		
 	}
 
 }

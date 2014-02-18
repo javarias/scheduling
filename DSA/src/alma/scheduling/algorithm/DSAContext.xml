@@ -279,12 +279,14 @@
 		<property name="projTimeIncr" value="0.5" />
 	</bean>
 	<!-- SchedBlock Executor -->
-    <bean name="schedBlockExecutor" class="alma.scheduling.algorithm.SchedBlockExecutorImpl">
+    <bean name="schedBlockExecutor" class="alma.scheduling.algorithm.SchedBlockExecutorImpl"
+    	scope="prototype">
         <property name="execDao" ref="execDao"/>
         <property name="schedBlockDao" ref="sbDao" />
         <property name="weatherDao" ref="weatherSimDao"/>
         <property name="configDao" ref="configDao"/>
         <property name="opacityInterpolator" ref="opacityInterpolator"/>
+        <property name="obsDao" ref="observationDao"/>
     </bean>
 	
 	<!-- DSA results beans -->

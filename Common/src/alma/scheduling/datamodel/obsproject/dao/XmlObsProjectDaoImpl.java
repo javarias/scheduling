@@ -36,13 +36,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
-
 
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.obsproject.ArrayType;
@@ -185,7 +185,12 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
             xmlObsUnitSet.getSchedBlock();
         for (SchedBlockT xmlSchedBlock : xmlSchedBlocks) {
             SchedBlock schedBlock = new SchedBlock();
-            schedBlock.setUid(xmlSchedBlock.getArchiveUID());
+            if (xmlSchedBlock.getArchiveUID() == null)
+            	//TODO: Export the UID into XML
+            	schedBlock.setUid(UUID.randomUUID().toString());
+            else
+            	schedBlock.setUid(xmlSchedBlock.getArchiveUID());
+            logger.info("Processing SB " + schedBlock.getUid());
             schedBlock.setName(xmlSchedBlock.getName());
             schedBlock.setPiName(piName);
             schedBlock.setRunQuicklook(true);

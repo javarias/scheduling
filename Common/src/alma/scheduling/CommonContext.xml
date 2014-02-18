@@ -28,8 +28,8 @@
 		<property name="driverClass" value="${db.driverClass}" />
 		<property name="jdbcUrl" value="${db.url}" />
 		<property name="initialPoolSize" value="5" />
-		<property name="maxPoolSize" value="20" />
-		<property name="minPoolSize" value="1" />
+		<property name="maxPoolSize" value="100" />
+		<property name="minPoolSize" value="5" />
 		<property name="acquireIncrement" value="1" />
 		<property name="acquireRetryAttempts" value="5" />
 	</bean>
@@ -155,6 +155,10 @@
 		class="alma.scheduling.datamodel.observatory.dao.ObservatoryDaoImpl" >
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
+	<bean id="execBlockDao" 
+		class="alma.scheduling.datamodel.observation.dao.ObservationDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
 	<!-- Archive/XMLStore Data Loader -->
  	<bean id="archProjectDao"
 		class="alma.scheduling.datamodel.obsproject.dao.Phase1XMLStoreProjectDao"
@@ -181,8 +185,25 @@
 		<property name="dao" ref="obsProjectDao" />
 	</bean>
 	
-	<bean id="fullDataLoader" class="alma.scheduling.dataload.CompositeDataLoader"
-	scope="singleton">
+	<bean id="dataCleaner" class="alma.scheduling.dataload.CompositeDataLoader"
+		scope="singleton">
+		<property name="loaders">
+			<list>
+				<bean class="alma.scheduling.dataload.ObsProjectMutableDataLoader" scope="singleton">
+					<property name="obsProjectDao" ref="obsProjectDao"/>
+				</bean>
+				<bean class="alma.scheduling.dataload.ExecutiveMutableDataLoader" scope="singleton">
+					<property name="execDao" ref="execDao"/>
+				</bean>
+				<bean class="alma.scheduling.dataload.ObservationTablesCleaner" scope="singleton">
+					<property name="sessionFactory" ref="sessionFactory"/>
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="immutableDataLoader" class="alma.scheduling.dataload.CompositeDataLoader" 
+		scope="singleton" >
 		<property name="loaders">
 			<list>
 				<ref bean="obsProjectDataLoader"/>
