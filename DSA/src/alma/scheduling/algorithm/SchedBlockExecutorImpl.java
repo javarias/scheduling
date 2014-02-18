@@ -106,7 +106,7 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
 		double accumTime = obsDao.getAccumulatedObservingTimeForSb(schedBlock.getUid()) / 3600.0;
         int numRep = obsDao.getNumberOfExecutionsForSb(schedBlock.getUid());
 		
-		double expTimeHr = accumTime;
+		double expTimeHr = executionTime;
         double freqGHz = schedBlock.getSchedulingConstraints().getRepresentativeFrequency();
         schedBlockDao.hydrateSchedBlockObsParams(schedBlock);
         Set<ObservingParameters> ops = schedBlock.getObservingParameters();
@@ -150,6 +150,7 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
         double[] tmp = opacityInterpolator.interpolateOpacityAndTemperature(pwv, freqGHz);
         double opacity = tmp[0];
         double atmBrightnessTemp = tmp[1];
+        
         double sensJy =
             InterferometrySensitivityCalculator.pointSourceSensitivity(expTimeHr,
                     freqGHz, bwGHz, raDeg, declDeg, numAnt, antDiamMtr, latitudeDeg,
@@ -181,7 +182,7 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
         if(!accumSensJyCache.containsKey(schedBlock.getUid()))
             accumSens = sensJy;
         else{
-        	double previousSum = accumSensJyCache.get(schedBlock.getUid()) * (numRep - 1);
+        	double previousSum = accumSensJyCache.get(schedBlock.getUid()) * numRep;
         	previousSum = Math.pow(previousSum, 2); 
         	accumSens = Math.sqrt( previousSum + Math.pow(sensJy, 2) ) / 
         				schedBlock.getSchedBlockControl().getNumberOfExecutions();
