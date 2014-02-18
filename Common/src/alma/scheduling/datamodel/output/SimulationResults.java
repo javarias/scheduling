@@ -33,7 +33,7 @@ import java.util.Set;
  * @version 1.0
  * @created 02-Mar-2010 11:49:25 AM
  */
-public class Results {
+public class SimulationResults {
 
     private Long id;
 	private double availableTime;
@@ -49,7 +49,7 @@ public class Results {
 	public Set<Array> array;
 	public Set<ObservationProject> observationProject;
 
-	public Results(){
+	public SimulationResults(){
 
 	}
 

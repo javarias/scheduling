@@ -1,18 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Crowding Report" pageWidth="595" pageHeight="842" columnWidth="539" leftMargin="36" rightMargin="20" topMargin="30" bottomMargin="30">
+<!-- Created with Jaspersoft Studio version last-->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Crowding Report" pageWidth="595" pageHeight="842" columnWidth="539" leftMargin="36" rightMargin="20" topMargin="30" bottomMargin="30" uuid="2ff0defe-daef-4b51-807a-005956ef00ff">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="SWDB HSQLDB Test"/>
 	<style name="Heading 4" fontSize="12" isBold="true" isItalic="true"/>
 	<style name="Heading 2" fontSize="14" isBold="true" isItalic="true"/>
 	<style name="Heading 1" fontSize="16" isBold="true"/>
 	<style name="Default"/>
 	<parameter name="totalAvailableTime" class="java.lang.String"/>
 	<parameter name="scientificTime" class="java.lang.String"/>
-	<parameter name="title" class="java.lang.String"/>
-	<parameter name="subtitle" class="java.lang.String"/>
-	<parameter name="seasonStart" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="seasonEnd" class="java.lang.String"/>
+	<parameter name="seasonStart" class="java.util.Date" isForPrompting="false"/>
+	<parameter name="seasonEnd" class="java.util.Date" isForPrompting="false"/>
+	<parameter name="resultId" class="java.lang.Long"/>
+	<queryString language="SQL">
+		<![CDATA[select A.EXECUTIVE as executive, sum(SB.EXECUTION_TIME) as executionTime, P.GRADE as grade 
+	from OUTPUT_RESULTS as R inner join OUTPUT_OBSERVATION_PROJECT as P on R.ID = P.RESULT_ID 
+	inner join OUTPUT_SCHED_BLOCK_RESULT as SB on P.ID = SB.OBSERVATION_PROJECT_ID 
+	inner join OUTPUT_AFFILIATION as A on P.ID = A.OBSERVATION_PROJECT_ID 
+	where R.ID = $P!{resultId} GROUP BY executive, grade order by executive asc, grade asc;]]>
+	</queryString>
 	<field name="executive" class="java.lang.String"/>
 	<field name="executionTime" class="java.lang.Double"/>
-	<field name="totalExecutionTime" class="java.lang.Double"/>
 	<field name="grade" class="java.lang.String"/>
 	<variable name="totalTime" class="java.lang.Double" resetType="Group" resetGroup="reportGroup" calculation="Sum">
 		<variableExpression><![CDATA[$F{executionTime}]]></variableExpression>
@@ -39,7 +46,7 @@
 			<band height="211">
 				<pie3DChart>
 					<chart isShowLegend="true" evaluationTime="Report">
-						<reportElement x="0" y="0" width="245" height="190"/>
+						<reportElement x="0" y="0" width="245" height="190" uuid="8f007637-423f-44f5-bbce-8352f3839b9b"/>
 						<chartTitle>
 							<font size="9"/>
 						</chartTitle>
@@ -70,185 +77,185 @@
 		<groupFooter>
 			<band height="168">
 				<textField pattern="#,##0.0#;(#)">
-					<reportElement x="47" y="95" width="48" height="15"/>
+					<reportElement x="47" y="95" width="48" height="15" uuid="3e29b4c7-8722-4a8a-b1bc-9b539855bf9d"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{totalExecTime}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{totalExecTime}]]></textFieldExpression>
 				</textField>
 				<textField pattern="##0.0">
-					<reportElement x="166" y="95" width="26" height="15"/>
+					<reportElement x="166" y="95" width="26" height="15" uuid="11651b17-037b-40d5-90aa-93cada44a8cd"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{totalExecTime}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
+					<textFieldExpression><![CDATA[($V{totalExecTime}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="192" y="95" width="10" height="15"/>
+					<reportElement x="192" y="95" width="10" height="15" uuid="4a164dd3-c6cd-4b68-9bbd-14619d603692"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="0" y="77" width="43" height="15"/>
+					<reportElement x="0" y="77" width="43" height="15" uuid="f6d39338-f4a7-41b6-a387-1de3b91b464f"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[C]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="Default" x="0" y="47" width="43" height="15"/>
+					<reportElement style="Default" x="0" y="47" width="43" height="15" uuid="8bfed570-36c7-4383-8235-c7db0fa9b7d1"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[A]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="0" y="62" width="43" height="15"/>
+					<reportElement x="0" y="62" width="43" height="15" uuid="bcf8999b-4be5-4afe-8a33-2de2228c2cf4"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[B]]></text>
 				</staticText>
 				<textField pattern="#,##0.0#;(#)">
-					<reportElement x="47" y="77" width="48" height="15"/>
+					<reportElement x="47" y="77" width="48" height="15" uuid="d2ba8813-4e2c-4559-9778-7ffb7c6eb772"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{cTime}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{cTime}]]></textFieldExpression>
 				</textField>
 				<textField pattern="#,##0.0#;(#)">
-					<reportElement x="47" y="62" width="48" height="15"/>
+					<reportElement x="47" y="62" width="48" height="15" uuid="ad615422-b86d-44a3-b0f5-9c795e8176c4"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{bTime}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{bTime}]]></textFieldExpression>
 				</textField>
 				<textField pattern="#,##0.0#;(#)">
-					<reportElement x="47" y="47" width="48" height="15"/>
+					<reportElement x="47" y="47" width="48" height="15" uuid="96424264-09d4-427b-81ad-dd530fea99e4"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{aTime}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{aTime}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="0" y="95" width="43" height="15"/>
+					<reportElement x="0" y="95" width="43" height="15" uuid="6bd62418-d7da-4f6e-81e9-ed2abc3e009c"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[Total]]></text>
 				</staticText>
 				<line>
-					<reportElement x="0" y="44" width="250" height="1"/>
+					<reportElement x="0" y="44" width="250" height="1" uuid="25d7b1a9-8938-4a7b-880f-04b1b629494d"/>
 				</line>
 				<staticText>
-					<reportElement x="192" y="77" width="10" height="14"/>
+					<reportElement x="192" y="77" width="10" height="14" uuid="414f893b-c45f-437d-878e-0856835e8d28"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="192" y="62" width="10" height="14"/>
+					<reportElement x="192" y="62" width="10" height="14" uuid="2060555e-33e4-43f2-919b-0e3a89c48303"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="192" y="47" width="10" height="14"/>
+					<reportElement x="192" y="47" width="10" height="14" uuid="18653500-c37d-4069-a85f-a18d1295a08a"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<textField pattern="##0.0">
-					<reportElement x="166" y="77" width="26" height="15"/>
+					<reportElement x="166" y="77" width="26" height="15" uuid="e734de2e-63e8-44b5-aa3f-43bd26282b55"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{cTime}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
+					<textFieldExpression><![CDATA[($V{cTime}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
 				<textField pattern="##0.0">
-					<reportElement x="166" y="62" width="26" height="15"/>
+					<reportElement x="166" y="62" width="26" height="15" uuid="02693ac0-c58a-44ba-9076-d0b5f9508438"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{bTime}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
+					<textFieldExpression><![CDATA[($V{bTime}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
 				<textField pattern="##0.0">
-					<reportElement x="166" y="47" width="26" height="15"/>
+					<reportElement x="166" y="47" width="26" height="15" uuid="b41f87d1-bba0-4eaf-bcca-ffbe17459c15"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{aTime}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
+					<textFieldExpression><![CDATA[($V{aTime}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
 				<textField pattern="##0.0">
-					<reportElement x="101" y="47" width="26" height="14"/>
+					<reportElement x="101" y="47" width="26" height="14" uuid="1c192a06-cc47-495e-b478-b81e904f69cf"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{aTime}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+					<textFieldExpression><![CDATA[($V{aTime}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
 				</textField>
 				<textField pattern="##0.0">
-					<reportElement x="101" y="62" width="26" height="14"/>
+					<reportElement x="101" y="62" width="26" height="14" uuid="e3111629-ba1c-46d3-8f3c-b1c31020325d"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{bTime}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+					<textFieldExpression><![CDATA[($V{bTime}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
 				</textField>
 				<textField pattern="##0.0">
-					<reportElement x="101" y="77" width="26" height="15"/>
+					<reportElement x="101" y="77" width="26" height="15" uuid="a9501b93-be2e-4bad-9a00-f3f89489938c"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{cTime}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+					<textFieldExpression><![CDATA[($V{cTime}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
 				</textField>
 				<textField pattern="##0.0">
-					<reportElement x="101" y="95" width="26" height="15"/>
+					<reportElement x="101" y="95" width="26" height="15" uuid="66b95ffc-631e-4c0e-b30b-40e3e8c47217"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{totalExecTime}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+					<textFieldExpression><![CDATA[($V{totalExecTime}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="127" y="47" width="10" height="14"/>
+					<reportElement x="127" y="47" width="10" height="14" uuid="d3beed53-abe7-4943-b284-c8498ee6e217"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="127" y="95" width="10" height="15"/>
+					<reportElement x="127" y="95" width="10" height="15" uuid="33a2a5fa-3e46-4a33-a365-25568f8608dd"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="127" y="62" width="10" height="14"/>
+					<reportElement x="127" y="62" width="10" height="14" uuid="8838bcdf-8032-4f8f-98ec-6eb4389090d9"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="127" y="77" width="10" height="14"/>
+					<reportElement x="127" y="77" width="10" height="14" uuid="bdcd032b-69a0-4e7b-a88e-678e5f8f6364"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<line>
-					<reportElement x="0" y="93" width="250" height="1"/>
+					<reportElement x="0" y="93" width="250" height="1" uuid="da7a37db-1d41-4e6f-8ead-297ed1a205a7"/>
 				</line>
 				<line>
-					<reportElement x="0" y="111" width="250" height="1"/>
+					<reportElement x="0" y="111" width="250" height="1" uuid="ba871d39-a8f8-4fa2-9412-9172acfee6e2"/>
 				</line>
 				<pie3DChart>
-					<chart isShowLegend="true" evaluationTime="Report">
-						<reportElement x="260" y="1" width="279" height="158"/>
+					<chart isShowLegend="true" evaluationTime="Group" evaluationGroup="executiveGroup">
+						<reportElement x="260" y="1" width="279" height="158" uuid="182ce7d8-c667-4812-a310-3382d7690042"/>
 						<chartTitle>
 							<font size="9"/>
 						</chartTitle>
@@ -269,35 +276,35 @@
 					</pie3DPlot>
 				</pie3DChart>
 				<textField>
-					<reportElement style="Heading 4" x="0" y="4" width="70" height="19"/>
+					<reportElement style="Heading 4" x="0" y="4" width="70" height="19" uuid="177dff67-5d00-4110-9616-80e511ce9cbd"/>
 					<textElement verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{executive}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F{executive}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="47" y="23" width="48" height="19"/>
+					<reportElement x="47" y="23" width="48" height="19" uuid="55d2c722-46d4-4a94-aa23-d356d8ff016a"/>
 					<textElement verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Hours]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="166" y="23" width="52" height="19"/>
+					<reportElement x="166" y="23" width="52" height="19" uuid="b85c06c2-9341-4d2d-8560-15a6232b2e32"/>
 					<textElement verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Percentage (season)]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="0" y="23" width="43" height="19"/>
+					<reportElement x="0" y="23" width="43" height="19" uuid="2f337f12-9eaf-41f3-97b1-79fe14da852a"/>
 					<textElement verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Project grade]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="101" y="23" width="52" height="19"/>
+					<reportElement x="101" y="23" width="52" height="19" uuid="7058491f-a091-439f-9011-1ef4888d27c9"/>
 					<textElement verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
 					</textElement>
@@ -309,79 +316,79 @@
 	<title>
 		<band height="67">
 			<image>
-				<reportElement x="0" y="0" width="43" height="52"/>
-				<imageExpression class="java.lang.String"><![CDATA["alma/scheduling/psm/reports/images/alma-logo.jpg"]]></imageExpression>
+				<reportElement x="0" y="0" width="43" height="52" uuid="bf4f67ae-33f9-485e-addc-a3351440fa02"/>
+				<imageExpression><![CDATA["alma/scheduling/psm/reports/images/alma-logo.jpg"]]></imageExpression>
 			</image>
 			<staticText>
-				<reportElement mode="Opaque" x="308" y="0" width="88" height="18" forecolor="#010101" backcolor="#7A87CD"/>
+				<reportElement mode="Opaque" x="308" y="0" width="88" height="18" forecolor="#010101" backcolor="#7A87CD" uuid="ddfed7e0-d8c5-4cf8-9124-bba447926b7a"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Hours in Season:]]></text>
 			</staticText>
 			<textField pattern="#,##0.0#;(#)">
-				<reportElement mode="Opaque" x="396" y="0" width="143" height="18" forecolor="#010101" backcolor="#7A87CD"/>
+				<reportElement mode="Opaque" x="396" y="0" width="143" height="18" forecolor="#010101" backcolor="#7A87CD" uuid="78d185ae-911d-44e4-8d47-42445a74b465"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression class="java.lang.Double"><![CDATA[Double.parseDouble($P{totalAvailableTime})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[Double.parseDouble($P{totalAvailableTime})]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Heading 1" mode="Opaque" x="53" y="0" width="243" height="28" forecolor="#C5C5C5" backcolor="#00026F"/>
+				<reportElement style="Heading 1" mode="Opaque" x="53" y="0" width="243" height="28" forecolor="#C5C5C5" backcolor="#00026F" uuid="74956b42-357b-48bc-97c8-26a3da2e2553"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Planning Mode Simulator]]></text>
 			</staticText>
 			<textField>
-				<reportElement style="Heading 1" mode="Opaque" x="53" y="28" width="243" height="24" forecolor="#FEFEFE" backcolor="#00026F"/>
+				<reportElement style="Heading 1" mode="Opaque" x="53" y="28" width="243" height="24" forecolor="#FEFEFE" backcolor="#00026F" uuid="8d2112fa-8f2d-4399-975e-d61c2d5ef092"/>
 				<textElement verticalAlignment="Middle" markup="none">
 					<font size="11" isBold="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{title}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Executive Percentage Balance"]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement x="0" y="55" width="539" height="1" forecolor="#1A0067"/>
+				<reportElement x="0" y="55" width="539" height="1" forecolor="#1A0067" uuid="a069175e-6b3e-4a99-8a86-f8611fdca698"/>
 				<graphicElement>
 					<pen lineWidth="1.75"/>
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement mode="Opaque" x="308" y="18" width="88" height="14" forecolor="#010101" backcolor="#7A87CD"/>
+				<reportElement mode="Opaque" x="308" y="18" width="88" height="14" forecolor="#010101" backcolor="#7A87CD" uuid="383aa839-d991-45c8-ab7c-7368cbbc1995"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Season starts:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="308" y="32" width="88" height="20" forecolor="#010101" backcolor="#7A87CD"/>
+				<reportElement mode="Opaque" x="308" y="32" width="88" height="20" forecolor="#010101" backcolor="#7A87CD" uuid="f6a415fa-7106-470a-957b-968ccdbb14ff"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Season ends:]]></text>
 			</staticText>
 			<textField pattern="">
-				<reportElement mode="Opaque" x="396" y="18" width="143" height="14" forecolor="#010101" backcolor="#7A87CD"/>
+				<reportElement mode="Opaque" x="396" y="18" width="143" height="14" forecolor="#010101" backcolor="#7A87CD" uuid="2a6af01c-f321-45ea-99a9-25be81ca1ba7"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{seasonStart}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{seasonStart}]]></textFieldExpression>
 			</textField>
 			<textField pattern="">
-				<reportElement mode="Opaque" x="396" y="32" width="143" height="20" forecolor="#010101" backcolor="#7A87CD"/>
+				<reportElement mode="Opaque" x="396" y="32" width="143" height="20" forecolor="#010101" backcolor="#7A87CD" uuid="ca14e7cb-99e0-4f75-ab3d-3d465e52b3f2"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{seasonEnd}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{seasonEnd}]]></textFieldExpression>
 			</textField>
 			<rectangle>
-				<reportElement x="302" y="0" width="6" height="52" backcolor="#7A87CD"/>
+				<reportElement x="302" y="0" width="6" height="52" backcolor="#7A87CD" uuid="10e0c70d-7693-40b8-b179-1271e76810dd"/>
 				<graphicElement>
 					<pen lineWidth="0.0" lineStyle="Double"/>
 				</graphicElement>
 			</rectangle>
 			<rectangle>
-				<reportElement x="47" y="0" width="6" height="52" backcolor="#00026F"/>
+				<reportElement x="47" y="0" width="6" height="52" backcolor="#00026F" uuid="30e601d9-d55b-4dd2-9545-bc30042c995f"/>
 				<graphicElement>
 					<pen lineWidth="0.0" lineStyle="Double"/>
 				</graphicElement>
@@ -391,28 +398,27 @@
 	<pageHeader>
 		<band height="27">
 			<textField>
-				<reportElement style="Heading 2" mode="Opaque" x="0" y="1" width="539" height="24" forecolor="#FEFEFE" backcolor="#00026F"/>
+				<reportElement style="Heading 2" mode="Opaque" x="0" y="1" width="539" height="24" forecolor="#FEFEFE" backcolor="#00026F" uuid="d261574c-de82-432d-aba4-d8a6005a7128"/>
 				<textElement verticalAlignment="Middle">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{subtitle}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Observed time dedicated per executive"]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
 	<pageFooter>
 		<band height="50">
 			<textField>
-				<reportElement x="199" y="9" width="80" height="20"/>
+				<reportElement x="199" y="9" width="80" height="20" uuid="cc451b91-0c89-400b-bafe-f27d869d8112"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
-				<reportElement x="282" y="9" width="40" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+				<reportElement x="282" y="9" width="40" height="20" uuid="e6a56c89-5563-4fcb-93f4-17dcfc226093"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement x="0" y="0" width="539" height="1" forecolor="#1A0067"/>
+				<reportElement x="0" y="0" width="539" height="1" forecolor="#1A0067" uuid="410589f9-ae47-4a2d-a90c-38f1ad77e426"/>
 				<graphicElement>
 					<pen lineWidth="1.75"/>
 				</graphicElement>
@@ -422,7 +428,7 @@
 	<summary>
 		<band height="197">
 			<staticText>
-				<reportElement x="0" y="26" width="539" height="148"/>
+				<reportElement x="0" y="26" width="539" height="148" uuid="760618b5-60c1-4135-8516-6a11aeabebc4"/>
 				<textElement textAlignment="Justified">
 					<font isBold="false"/>
 				</textElement>
@@ -438,7 +444,7 @@ The last row of each executive shows the total amounts per executive.
 The pie charts shows a comparison of the "Hours" observed by each executive. This is regardless of the grade, and only considering the hours observed.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="0" width="250" height="20"/>
+				<reportElement x="0" y="0" width="250" height="20" uuid="f597cd21-df2a-4715-843c-94017159019a"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
