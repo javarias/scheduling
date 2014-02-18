@@ -21,7 +21,7 @@ public class DailyTimeIntervalTests extends TestCase {
 	@Override
 	protected void setUp() throws Exception {
 		StringReader reader = new StringReader(s);
-		castorTi = TimeIntervalT.unmarshalTimeIntervalT(reader);
+		castorTi = TimeIntervalT.unmarshal(reader);
 	}
 
 	@Override
