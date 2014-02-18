@@ -81,7 +81,7 @@ public class Executor extends Observable {
     private final static long ms      = 1000;         // milliseconds per second
     private final static long minutes = 60 * ms;      // milliseconds per minute
     private final static long hours   = 60 * minutes; // milliseconds per hour
-    private long startEventTimeoutMS  =  5 * minutes;
+    private long startEventTimeoutMS  =  7 * minutes;
     private long endedEventTimeoutMS  = 10 * ms;
     private long asdmArchiveTimeoutMS =  1 * hours;
     
