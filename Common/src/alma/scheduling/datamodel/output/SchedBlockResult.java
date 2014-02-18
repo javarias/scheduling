@@ -27,6 +27,8 @@ package alma.scheduling.datamodel.output;
 
 import java.util.Date;
 
+import alma.scheduling.datamodel.obsproject.SkyCoordinates;
+
 /**
  * @author Arturo Hoffstadt Urrutia
  * @version 1.0
@@ -46,6 +48,8 @@ public class SchedBlockResult {
 	private ExecutionStatus status;
 	private String type;
 	public Array ArrayRef;
+	private SkyCoordinates representativeSource;
+	private Integer representativeBand;
 	
 	public long getOriginalId() {
 		return originalId;
@@ -147,5 +151,20 @@ public class SchedBlockResult {
 		this.achievedSensitivity = achievedSensitivity;
 	}
 
+	public SkyCoordinates getRepresentativeSource() {
+		return representativeSource;
+	}
+
+	public void setRepresentativeSource(SkyCoordinates representativeSource) {
+		this.representativeSource = representativeSource;
+	}
+
+	public Integer getRepresentativeBand() {
+		return representativeBand;
+	}
+
+	public void setRepresentativeBand(Integer representativeBand) {
+		this.representativeBand = representativeBand;
+	}
 
 }

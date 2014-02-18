@@ -26,12 +26,7 @@ package alma.scheduling.algorithm;
 
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentNavigableMap;
-import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,9 +37,7 @@ import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.executive.ExecutivePercentage;
 import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
-import alma.scheduling.datamodel.observation.ExecBlock;
-import alma.scheduling.datamodel.observation.ExecStatus;
-import alma.scheduling.datamodel.observation.dao.ObservationDao;
+import alma.scheduling.datamodel.observatory.AntennaInstallation;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.ObservingParameters;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
@@ -106,7 +99,7 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
 		double accumTime = obsDao.getAccumulatedObservingTimeForSb(schedBlock.getUid()) / 3600.0;
         int numRep = obsDao.getNumberOfExecutionsForSb(schedBlock.getUid());
 		
-		double expTimeHr = accumTime;
+		double expTimeHr = executionTime;
         double freqGHz = schedBlock.getSchedulingConstraints().getRepresentativeFrequency();
         schedBlockDao.hydrateSchedBlockObsParams(schedBlock);
         Set<ObservingParameters> ops = schedBlock.getObservingParameters();
@@ -150,6 +143,7 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
         double[] tmp = opacityInterpolator.interpolateOpacityAndTemperature(pwv, freqGHz);
         double opacity = tmp[0];
         double atmBrightnessTemp = tmp[1];
+        
         double sensJy =
             InterferometrySensitivityCalculator.pointSourceSensitivity(expTimeHr,
                     freqGHz, bwGHz, raDeg, declDeg, numAnt, antDiamMtr, latitudeDeg,
@@ -181,7 +175,7 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
         if(!accumSensJyCache.containsKey(schedBlock.getUid()))
             accumSens = sensJy;
         else{
-        	double previousSum = accumSensJyCache.get(schedBlock.getUid()) * (numRep - 1);
+        	double previousSum = accumSensJyCache.get(schedBlock.getUid()) * numRep;
         	previousSum = Math.pow(previousSum, 2); 
         	accumSens = Math.sqrt( previousSum + Math.pow(sensJy, 2) ) / 
         				schedBlock.getSchedBlockControl().getNumberOfExecutions();

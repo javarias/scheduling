@@ -31,49 +31,49 @@ import org.hibernate.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.datamodel.GenericDaoImpl;
-import alma.scheduling.datamodel.output.Results;
+import alma.scheduling.datamodel.output.SimulationResults;
 
 public class OutputDaoImpl extends GenericDaoImpl implements OutputDao{
 
     @Override
     @Transactional
-    public void saveResults(Results results) {
+    public void saveResults(SimulationResults results) {
         saveOrUpdate(results);
     }
 
     @Override
     @Transactional
-    public void saveResults(Collection<Results> results) {
+    public void saveResults(Collection<SimulationResults> results) {
         saveOrUpdate(results);
        
     }
 
     @Override
     @Transactional(readOnly=true)
-    public List<Results> getResults() {
-        return findAll(Results.class);
+    public List<SimulationResults> getResults() {
+        return findAll(SimulationResults.class);
     }
 
     @Override
     public void deleteAll() {
-    	getSession().createQuery("delete from " + Results.class.getCanonicalName()).executeUpdate();
+    	getSession().createQuery("delete from " + SimulationResults.class.getCanonicalName()).executeUpdate();
     }
     
     @Override
-    public Results getResult(long id) {
-    	Query q = getSession().createQuery("from Results r where r.id = " + id);
-    	Results retVal = (Results) q.uniqueResult();
+    public SimulationResults getResult(long id) {
+    	Query q = getSession().createQuery("from SimulationResults r where r.id = " + id);
+    	SimulationResults retVal = (SimulationResults) q.uniqueResult();
     	return retVal;
     }
     
     @Override
-    public Results getLastResult() {
+    public SimulationResults getLastResult() {
     	return getResult(getLastResultId());
     }
 
 	@Override
 	public long getLastResultId() {
-		Query q = getSession().createQuery("select r.id from Results r order by r.id desc");
+		Query q = getSession().createQuery("select r.id from SimulationResults r order by r.id desc");
 		long id = (Long) q.list().get(0);
 		return id;
 	}

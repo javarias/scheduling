@@ -36,7 +36,7 @@ import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.output.Affiliation;
 import alma.scheduling.datamodel.output.Array;
 import alma.scheduling.datamodel.output.ObservationProject;
-import alma.scheduling.datamodel.output.Results;
+import alma.scheduling.datamodel.output.SimulationResults;
 import alma.scheduling.datamodel.output.SchedBlockResult;
 
 
@@ -64,7 +64,7 @@ public class XmlOutputDaoImpl implements OutputDao {
 
     @Override
     @Transactional(readOnly=true)
-    public void saveResults(Results results) {
+    public void saveResults(SimulationResults results) {
         // TODO Auto-generated method stub
         alma.scheduling.output.generated.Results r = 
             new alma.scheduling.output.generated.Results();
@@ -192,7 +192,7 @@ public class XmlOutputDaoImpl implements OutputDao {
     }
 
     @Override
-    public void saveResults(Collection<Results> results) {
+    public void saveResults(Collection<SimulationResults> results) {
         config = configDao.getConfiguration();
         Date d = new Date();
         String pathToFile = config.getWorkDirectory() + "/" + config.getOutputDirectory() 
@@ -202,7 +202,7 @@ public class XmlOutputDaoImpl implements OutputDao {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        for(Results r: results){
+        for(SimulationResults r: results){
             saveResults(r);
         }
         try {
@@ -220,17 +220,17 @@ public class XmlOutputDaoImpl implements OutputDao {
     }
 
 	@Override
-	public Results getResult(long id) {
+	public SimulationResults getResult(long id) {
 		return null;
 	}
 
 	@Override
-	public Results getLastResult() {
+	public SimulationResults getLastResult() {
 		return null;
 	}
 	
     @Override
-    public List<Results> getResults() {
+    public List<SimulationResults> getResults() {
         //alma.scheduling.output.generated.Results r;
         //Configuration config = configDao.getConfiguration();
         //config.getOutputDirectory();

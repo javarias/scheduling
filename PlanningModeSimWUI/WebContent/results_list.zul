@@ -23,7 +23,7 @@ sizable="true" onCreate="fillGrid()">
 	</borderlayout>
 	<zscript><![CDATA[
 	import alma.scheduling.datamodel.output.dao.OutputDao;
-	import alma.scheduling.datamodel.output.Results;
+	import alma.scheduling.datamodel.output.SimulationResults;
 	import java.util.List;
 	
 	void fillGrid() {
@@ -36,7 +36,7 @@ sizable="true" onCreate="fillGrid()">
 		Object[][] model = new Object[results.size()][6];
 		
 		for(int i = 0; i < results.size(); i++) {
-			Results r = results.get(i);
+			SimulationResults r = results.get(i);
 			model[i][0] = r.getId().toString();
 			model[i][1] = format.format(r.getStartRealDate());
 			model[i][2] = format.format(r.getStopRealDate());

@@ -129,6 +129,20 @@ public class MainWindowController extends GenericForwardComposer {
     	reportsWindow.doOverlapped();
     }
     
+    public void onClick$menuItemAfterSimRaExec(Event event) {
+    	Window mainWindow = (Window) Path.getComponent("//");
+    	if( mainWindow == null ){
+    		System.out.println("mainWindow is null");
+    	}
+    	HashMap<String, String> param = new HashMap<String, String>();
+    	param.put("id", "reportWindowAfterSimRaExec");
+    	param.put("title", "Right Ascencion Distribution - Executive Breakdown");
+    	param.put("controller", ReportRaExecutiveBreakdownSimController.class.getCanonicalName());
+    	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
+    	reportsWindow.doOverlapped();
+    }
+//    menuItemAfterSimRaExec
+    
     public void onClick$menuItemFinalReport(Event event) {
     	Window mainWindow = (Window) Path.getComponent("//");
     	Window reportsWindow = (Window) Executions.createComponents("final_report.zul", mainWindow, null);

@@ -127,7 +127,7 @@
 		class="alma.scheduling.datamodel.obsproject.dao.FieldSourceDaoImpl">
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
-	    <bean name="observationDao"
+	<bean name="observationDao"
     	class="alma.scheduling.datamodel.observation.dao.ObservationDaoImpl"
     	scope="singleton">
     	<property name="sessionFactory" ref="sessionFactory"/>

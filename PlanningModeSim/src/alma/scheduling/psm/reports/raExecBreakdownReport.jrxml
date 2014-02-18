@@ -10,35 +10,49 @@
 	<style name="Heading 1" fontSize="16" isBold="true"/>
 	<style name="Default"/>
 	<parameter name="totalAvailableTime" class="java.lang.String"/>
+	<parameter name="resultId" class="java.lang.Long"/>
 	<parameter name="seasonStart" class="java.util.Date" isForPrompting="false"/>
 	<parameter name="seasonEnd" class="java.util.Date" isForPrompting="false"/>
 	<queryString language="SQL">
-		<![CDATA[select A.EXECUTIVE as executive, P.STATUS as status
+		<![CDATA[select A.EXECUTIVE as executive, cast(floor(SB.RA/15.0) as decimal(9)) as lstRange, sum(SB.EXECUTION_TIME) as executionTime
 	from OUTPUT_RESULTS as R inner join OUTPUT_OBSERVATION_PROJECT as P on R.ID = P.RESULT_ID 
 	inner join OUTPUT_SCHED_BLOCK_RESULT as SB on P.ID = SB.OBSERVATION_PROJECT_ID 
 	inner join OUTPUT_AFFILIATION as A on P.ID = A.OBSERVATION_PROJECT_ID 
-	where R.ID = 15 order by executive asc, status asc;]]>
+	where R.ID = $P!{resultId} GROUP BY lstRange, executive order by lstRange asc, executive asc]]>
 	</queryString>
 	<field name="executive" class="java.lang.String"/>
-	<field name="status" class="java.lang.String"/>
-	<variable name="complete" class="java.lang.Integer" resetType="Group" resetGroup="executive" calculation="Sum">
-		<variableExpression><![CDATA[($F{status}.compareTo("COMPLETE") == 0 ) ? 1 : 0]]></variableExpression>
+	<field name="lstRange" class="java.lang.Integer"/>
+	<field name="executionTime" class="java.lang.Double"/>
+	<variable name="execTime_CL" class="java.lang.Double" resetType="Group" resetGroup="raRange" calculation="Sum">
+		<variableExpression><![CDATA[($F{executive}.compareTo("CL") == 0 ) ? $F{executionTime} : 0]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.lang.Double(0.0)]]></initialValueExpression>
+	</variable>
+	<variable name="execTime_EA" class="java.lang.Double" resetType="Group" resetGroup="raRange" calculation="Sum">
+		<variableExpression><![CDATA[($F{executive}.compareTo("EA") == 0 ) ? $F{executionTime} : 0]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.lang.Double(0.0)]]></initialValueExpression>
+	</variable>
+	<variable name="execTime_EA_NA" class="java.lang.Double" resetType="Group" resetGroup="raRange" calculation="Sum">
+		<variableExpression><![CDATA[($F{executive}.compareTo("EA/NA") == 0 ) ? $F{executionTime} : 0]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.lang.Double(0.0)]]></initialValueExpression>
+	</variable>
+	<variable name="execTime_EU" class="java.lang.Double" resetType="Group" resetGroup="raRange" calculation="Sum">
+		<variableExpression><![CDATA[($F{executive}.compareTo("EU") == 0 ) ? $F{executionTime} : 0]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.lang.Double(0.0)]]></initialValueExpression>
+	</variable>
+	<variable name="execTime_NA" class="java.lang.Double" resetType="Group" resetGroup="raRange" calculation="Sum">
+		<variableExpression><![CDATA[($F{executive}.compareTo("NA") == 0 ) ? $F{executionTime} : 0]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.lang.Double(0.0)]]></initialValueExpression>
+	</variable>
+	<variable name="execTime_OTHER" class="java.lang.Double" resetType="Group" resetGroup="raRange" calculation="Sum">
+		<variableExpression><![CDATA[($F{executive}.compareTo("OTHER") == 0 ) ? $F{executionTime} : 0]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.lang.Double(0.0)]]></initialValueExpression>
+	</variable>
+	<variable name="totalPerRA" class="java.lang.Integer" resetType="Group" resetGroup="raRange" calculation="Sum">
+		<variableExpression><![CDATA[$F{executionTime}]]></variableExpression>
 		<initialValueExpression><![CDATA[new java.lang.Integer(0)]]></initialValueExpression>
 	</variable>
-	<variable name="inprogress" class="java.lang.Integer" resetType="Group" resetGroup="executive" calculation="Sum">
-		<variableExpression><![CDATA[($F{status}.compareTo("INCOMPLETE") == 0 ) ? 1 : 0]]></variableExpression>
-		<initialValueExpression><![CDATA[new java.lang.Integer(0)]]></initialValueExpression>
-	</variable>
-	<variable name="notstarted" class="java.lang.Integer" resetType="Group" resetGroup="executive" calculation="Sum">
-		<variableExpression><![CDATA[($F{status}.compareTo("NOT_STARTED") == 0 ) ? 1 : 0]]></variableExpression>
-		<initialValueExpression><![CDATA[new java.lang.Integer(0)]]></initialValueExpression>
-	</variable>
-	<variable name="totalPerExec" class="java.lang.Integer" resetType="Group" resetGroup="executive" calculation="Sum">
-		<variableExpression><![CDATA[1]]></variableExpression>
-		<initialValueExpression><![CDATA[new java.lang.Integer(0)]]></initialValueExpression>
-	</variable>
-	<group name="executive">
-		<groupExpression><![CDATA[$F{executive}]]></groupExpression>
+	<group name="raRange" keepTogether="true">
+		<groupExpression><![CDATA[$F{lstRange}]]></groupExpression>
 		<groupHeader>
 			<band height="38">
 				<textField>
@@ -46,14 +60,14 @@
 					<textElement verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$F{executive}]]></textFieldExpression>
+					<textFieldExpression><![CDATA["RA " + $F{lstRange} + " - " + ($F{lstRange} + 1)]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement x="85" y="19" width="88" height="19" uuid="d06fa060-cc42-4e76-8c6b-33bbe029ab17"/>
 					<textElement verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
 					</textElement>
-					<text><![CDATA[Number of Projects]]></text>
+					<text><![CDATA[Time (hours)]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="185" y="19" width="60" height="19" uuid="583b8a1a-1cc6-4100-aae0-b0926b446cda"/>
@@ -67,135 +81,160 @@
 					<textElement verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
 					</textElement>
-					<text><![CDATA[Status]]></text>
+					<text><![CDATA[Executive]]></text>
 				</staticText>
 			</band>
 		</groupHeader>
 		<groupFooter>
-			<band height="83">
+			<band height="125">
 				<rectangle>
-					<reportElement x="0" y="51" width="250" height="15" uuid="acea56c6-e092-4144-8831-b0475b9ee420"/>
+					<reportElement x="0" y="100" width="250" height="15" uuid="acea56c6-e092-4144-8831-b0475b9ee420"/>
 				</rectangle>
 				<staticText>
 					<reportElement x="0" y="1" width="74" height="15" uuid="d5da7d56-db5d-455d-8829-6b55f8a8af72"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<text><![CDATA[Completed]]></text>
+					<text><![CDATA[CL]]></text>
 				</staticText>
-				<textField>
+				<textField pattern="#,###.##">
 					<reportElement x="85" y="1" width="74" height="15" uuid="2f680a74-4a71-43f0-b3fd-4f42176503ac"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$V{complete}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{execTime_CL}]]></textFieldExpression>
 				</textField>
-				<staticText>
-					<reportElement x="224" y="1" width="26" height="15" uuid="51d5d345-12da-4a6d-80cf-7367809c6d47"/>
-					<textElement>
-						<font size="8"/>
-					</textElement>
-					<text><![CDATA[%]]></text>
-				</staticText>
-				<staticText>
-					<reportElement x="224" y="17" width="26" height="15" uuid="ed5a3f55-cee9-4e31-83bf-7e43a26b5962"/>
-					<textElement>
-						<font size="8"/>
-					</textElement>
-					<text><![CDATA[%]]></text>
-				</staticText>
 				<staticText>
 					<reportElement x="0" y="17" width="74" height="15" uuid="91f946d8-0bf3-46ef-8f50-272933766e42"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<text><![CDATA[In progress]]></text>
+					<text><![CDATA[EA]]></text>
 				</staticText>
-				<textField>
+				<textField pattern="#,###.##">
 					<reportElement x="85" y="17" width="74" height="15" uuid="a8aef4e1-c8a5-45a2-8063-f8fe7c9ac628"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$V{inprogress}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{execTime_EA}]]></textFieldExpression>
 				</textField>
-				<staticText>
-					<reportElement x="224" y="34" width="26" height="15" uuid="576f674d-7930-4a8e-885b-3b7ed58a89f3"/>
-					<textElement>
-						<font size="8"/>
-					</textElement>
-					<text><![CDATA[%]]></text>
-				</staticText>
 				<staticText>
 					<reportElement x="0" y="34" width="74" height="15" uuid="a1a62492-c06e-4082-b16d-e6ce7ce5c7c8"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<text><![CDATA[Not started]]></text>
+					<text><![CDATA[EA/NA]]></text>
 				</staticText>
-				<textField>
+				<textField pattern="#,###.##">
 					<reportElement x="85" y="34" width="74" height="15" uuid="1ad933e3-f589-4797-8fb9-71145944524b"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$V{notstarted}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{execTime_EA_NA}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="0" y="53" width="74" height="15" uuid="a2f7c03a-5c79-4723-8e96-e05c56cc4537"/>
+					<reportElement x="0" y="51" width="74" height="15" uuid="a1a62492-c06e-4082-b16d-e6ce7ce5c7c8"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[EU]]></text>
+				</staticText>
+				<textField pattern="#,###.##">
+					<reportElement x="85" y="51" width="74" height="15" uuid="1ad933e3-f589-4797-8fb9-71145944524b"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{execTime_EU}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="0" y="68" width="74" height="15" uuid="a1a62492-c06e-4082-b16d-e6ce7ce5c7c8"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[NA]]></text>
+				</staticText>
+				<textField pattern="#,###.##">
+					<reportElement x="85" y="68" width="74" height="15" uuid="1ad933e3-f589-4797-8fb9-71145944524b"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{execTime_NA}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="0" y="85" width="74" height="15" uuid="a1a62492-c06e-4082-b16d-e6ce7ce5c7c8"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[OTHER]]></text>
+				</staticText>
+				<textField pattern="#,###.##">
+					<reportElement x="85" y="85" width="74" height="15" uuid="1ad933e3-f589-4797-8fb9-71145944524b"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{execTime_OTHER}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="0" y="102" width="74" height="15" uuid="a2f7c03a-5c79-4723-8e96-e05c56cc4537"/>
 					<textElement>
 						<font size="8" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Total]]></text>
 				</staticText>
 				<textField>
-					<reportElement x="85" y="53" width="74" height="15" uuid="edf6dccd-2b99-4ce1-a012-3b3c1b34117a"/>
+					<reportElement x="85" y="102" width="74" height="15" uuid="edf6dccd-2b99-4ce1-a012-3b3c1b34117a"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$V{totalPerExec}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{totalPerRA}]]></textFieldExpression>
 				</textField>
-				<textField pattern="##0.0">
+				<textField pattern="#,###.##%">
 					<reportElement x="185" y="1" width="39" height="15" uuid="9529dfdc-3457-4459-8c5d-14d08bbb9b1d"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$V{complete}.doubleValue() *100 / $V{totalPerExec}.doubleValue()]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{execTime_CL} / $V{totalPerRA}]]></textFieldExpression>
 				</textField>
-				<textField pattern="##0.0">
-					<reportElement x="185" y="17" width="39" height="15" uuid="29802002-59d9-4fd0-8f8c-f80454b3a933"/>
+				<textField pattern="#,###.##%">
+					<reportElement x="185" y="17" width="39" height="15" uuid="9529dfdc-3457-4459-8c5d-14d08bbb9b1d"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$V{inprogress}.doubleValue()  *100/ $V{totalPerExec}.doubleValue()]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{execTime_EA} / $V{totalPerRA}]]></textFieldExpression>
 				</textField>
-				<textField pattern="##0.0">
-					<reportElement x="185" y="34" width="39" height="15" uuid="5a9e94c1-999a-42d0-aa06-f11b4f884cc8"/>
+				<textField pattern="#,###.##%">
+					<reportElement x="185" y="34" width="39" height="15" uuid="9529dfdc-3457-4459-8c5d-14d08bbb9b1d"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$V{notstarted}.doubleValue()  *100/ $V{totalPerExec}.doubleValue()]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{execTime_EA_NA} / $V{totalPerRA}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,###.##%">
+					<reportElement x="185" y="51" width="39" height="15" uuid="9529dfdc-3457-4459-8c5d-14d08bbb9b1d"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{execTime_EU} / $V{totalPerRA}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,###.##%">
+					<reportElement x="185" y="68" width="39" height="15" uuid="9529dfdc-3457-4459-8c5d-14d08bbb9b1d"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{execTime_NA} / $V{totalPerRA}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,###.##%">
+					<reportElement x="185" y="85" width="39" height="15" uuid="9529dfdc-3457-4459-8c5d-14d08bbb9b1d"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{execTime_OTHER} / $V{totalPerRA}]]></textFieldExpression>
 				</textField>
 				<line>
 					<reportElement x="0" y="-2" width="250" height="1" uuid="a77e5484-7fda-44b2-9ef3-ee8a0ff9f533"/>
 				</line>
-				<staticText>
-					<reportElement x="224" y="53" width="26" height="15" uuid="130f3fb9-c72f-4a26-9bb2-c86041fbf2f7"/>
-					<textElement>
-						<font size="8"/>
-					</textElement>
-					<text><![CDATA[%]]></text>
-				</staticText>
-				<staticText>
-					<reportElement x="185" y="53" width="26" height="15" uuid="69aaaf44-58b9-4a60-82f9-8e1dd2213f08"/>
-					<textElement>
-						<font size="8"/>
-					</textElement>
-					<text><![CDATA[100]]></text>
-				</staticText>
 			</band>
 		</groupFooter>
-	</group>
-	<group name="status">
-		<groupExpression><![CDATA[$F{status}]]></groupExpression>
 	</group>
 	<title>
 		<band height="67">
@@ -229,7 +268,7 @@
 				<textElement verticalAlignment="Middle" markup="none">
 					<font size="11" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Observation Projects Completion"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Right Ascension Distribution"]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement x="0" y="55" width="539" height="1" forecolor="#1A0067" uuid="ba042a42-2164-4bc1-976c-c637bfb6d1c0"/>
@@ -286,7 +325,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Number of observation projects per executive"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Breakdown per executive"]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
@@ -316,13 +355,13 @@
 				<textElement textAlignment="Justified">
 					<font isBold="false"/>
 				</textElement>
-				<text><![CDATA[Status indicates how, at the end of simulation, the project finished.
-"Completed" means that according to progress on the observation project, the project was fully observed.
-"In progress" indicates that some scheduling blocks are still pending for completion.
-"Not started" shows how many project where not even started.
+				<text><![CDATA[This report shows the observed time dedicated to each RA range. Each RA range is broken down by executives
 
-The column "Number of Projects", shows how many observing projects fall into each of the above categories.
-Percentage column indicates how many of the total number of observation projects per executive, fall into each of the categories, compared to the total of project of a certain executive.]]></text>
+For each RA range a table is shown with the following columns: 
+Column "Executive" shows the executive in question.
+Column "Time" sums up time from each SB which representative target fall into the specific RA for the given executive.
+Column "Percentage" indicates how much of the time is dedicated to the specified RA for the given executive, compared to the "Total" time per RA range value.
+]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="0" y="5" width="250" height="20" uuid="00ecd954-60f6-48a9-9346-bf3dbfb94078"/>

@@ -139,6 +139,11 @@ public class SchedBlockControl implements Updateable {
         this.accumulatedExecutionTime = accumulatedExecutionTime;
     }
 
+    /**
+     * 
+     * @see #sbMaximumTime
+     * @return
+     */
     public Double getSbMaximumTime() {
         return sbMaximumTime;
     }

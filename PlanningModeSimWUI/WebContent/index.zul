@@ -44,6 +44,7 @@
 						<menupopup>
 							<menuitem label="Executed time per ALMA band" id="menuItemAfterSimBand"/>
 							<menuitem label="Right Ascension Distribution" id="menuItemAfterSimLST"/>
+							<menuitem label="Right Ascencion Distribution - Executive Breakdown" id ="menuItemAfterSimRaExec"/>
 							<menuitem label="Executive Percentage Balance" id="menuItemAfterSimExec"/>
 							<menuitem label="Observation Projects Completion" id="menuItemObsProjectCompletion"/>
 							<menuitem label="Final Report" id="menuItemFinalReport"/>
