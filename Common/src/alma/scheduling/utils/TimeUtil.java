@@ -39,6 +39,8 @@ public class TimeUtil {
     
     private final static DateFormat format = 
         new SimpleDateFormat("'['yyyy-MM-dd'T'HH:mm:ss'] '");
+    public final static int MSECS_IN_HOUR = 60 * 60 * 1000;
+    public final static int MSECS_IN_DAY = 24 * MSECS_IN_HOUR;
     
     public static double getJulianDate(Date ut) {
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UT"));
@@ -252,5 +254,72 @@ public class TimeUtil {
             if(!(cal.get(Calendar.YEAR) % 4 == 0 && cal.get(Calendar.MONTH) > Calendar.FEBRUARY))
                 years++;
         return (int)years;
+    }
+    
+    /**
+     * Calculates the number of hours enclosed within the startTime and the endTime, considering a daily Time Interval.
+     * 
+     * @see DailyTimeInterval
+     * 
+     * @param startDate cannot be null, the startDate must be in the past of the enDate.
+     * @param endDate cannot be null, the endDate must be in the future of startDate.
+     * @param timeInterval cannot be null.
+     * @return the number of hours within the date and time interval.
+     */
+    public static double getHoursInDateTimeInterval(Date startDate, Date endDate, DailyTimeInterval timeInterval) {
+        if (startDate == null || endDate == null || timeInterval == null)
+                throw new IllegalArgumentException("Parameters cannot be null");
+        if (startDate.getTime() >= endDate.getTime())
+                throw new IllegalArgumentException("startDate cannot be after endDate");
+        if (timeInterval.duration == 0)
+                return 0.0;
+
+        boolean isOvernight = (timeInterval.startTime + timeInterval.duration) > MSECS_IN_DAY;
+        double hours = 0.0;
+
+        Calendar startCal = Calendar.getInstance();
+                startCal.setTimeZone(TimeZone.getTimeZone("UTC"));
+                startCal.setTimeInMillis(startDate.getTime());
+        long timeOfStartDay = startCal.get(Calendar.HOUR_OF_DAY) * 60 * 60  * 1000;
+                timeOfStartDay += startCal.get(Calendar.MINUTE) * 60 * 1000;
+                timeOfStartDay += startCal.get(Calendar.SECOND) * 1000;
+                timeOfStartDay += startCal.get(Calendar.MILLISECOND);
+        Date nextDayAfterStart = new Date(startDate.getTime() + (MSECS_IN_DAY - timeOfStartDay));
+
+        Calendar endCal = Calendar.getInstance();
+                endCal.setTimeZone(TimeZone.getTimeZone("UTC"));
+                endCal.setTimeInMillis(endDate.getTime());
+        long timeOfEndDay = endCal.get(Calendar.HOUR_OF_DAY) * 60 * 60  * 1000;
+                timeOfEndDay += endCal.get(Calendar.MINUTE) * 60 * 1000;
+                timeOfEndDay += endCal.get(Calendar.SECOND) * 1000;
+                timeOfEndDay += endCal.get(Calendar.MILLISECOND);
+        Date dayBeforeEnd = new Date(endDate.getTime() - timeOfEndDay);
+
+        double nDays = (dayBeforeEnd.getTime() - nextDayAfterStart.getTime()) / (double)MSECS_IN_DAY;
+        if (isOvernight) {
+        	if (nDays % 2 == 0)
+        		hours += nDays / 2D * timeInterval.duration / (double)MSECS_IN_HOUR;
+        	else {
+        		hours += (nDays - 1) / 2D * timeInterval.duration / (double)MSECS_IN_HOUR;
+        		hours += (timeInterval.startTime + timeInterval.duration - MSECS_IN_DAY) / (double)MSECS_IN_HOUR;
+        	}
+        } else {
+        	hours =+ (nDays + 1) * timeInterval.duration / (double)MSECS_IN_HOUR;
+        	return hours;
+        }
+        
+        //Sum the hours of the first day in the interval
+		if (timeOfStartDay > timeInterval.startTime)
+			hours += (MSECS_IN_DAY - timeOfStartDay) / (double) MSECS_IN_HOUR;
+		else
+			hours += (MSECS_IN_DAY - timeInterval.startTime) / (double) MSECS_IN_HOUR;
+        //Sum the hours of the last day in the interval
+        if(timeOfEndDay > 0) {
+	        if (timeOfEndDay < (timeInterval.startTime + timeInterval.duration - MSECS_IN_DAY))
+	        	hours += timeOfEndDay / (double) MSECS_IN_HOUR;
+	        else
+	        	hours += (timeInterval.startTime + timeInterval.duration - MSECS_IN_DAY) / (double) MSECS_IN_HOUR;
+	    }
+        return hours;
     }
 }
