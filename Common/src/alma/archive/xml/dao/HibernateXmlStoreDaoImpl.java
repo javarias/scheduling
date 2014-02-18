@@ -298,7 +298,7 @@ public class HibernateXmlStoreDaoImpl implements XmlStoreReaderDao {
 	
 	public void closeSession() {
 		if (sf.getCurrentSession() != null && sf.getCurrentSession().isOpen())
-			sf.close();
+			sf.getCurrentSession().close();
 	}
 
 	@Override
