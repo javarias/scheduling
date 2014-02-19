@@ -2,8 +2,6 @@ package alma.archive.xml.dao;
 
 import java.io.StringReader;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
