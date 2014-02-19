@@ -297,12 +297,7 @@ public class TimeUtil {
 
         double nDays = (dayBeforeEnd.getTime() - nextDayAfterStart.getTime()) / (double)MSECS_IN_DAY;
         if (isOvernight) {
-        	if (nDays % 2 == 0)
-        		hours += nDays / 2D * timeInterval.duration / (double)MSECS_IN_HOUR;
-        	else {
-        		hours += (nDays - 1) / 2D * timeInterval.duration / (double)MSECS_IN_HOUR;
-        		hours += (timeInterval.startTime + timeInterval.duration - MSECS_IN_DAY) / (double)MSECS_IN_HOUR;
-        	}
+        	hours += nDays * timeInterval.duration / (double)MSECS_IN_HOUR;
         } else {
         	hours =+ (nDays + 1) * timeInterval.duration / (double)MSECS_IN_HOUR;
         	return hours;
