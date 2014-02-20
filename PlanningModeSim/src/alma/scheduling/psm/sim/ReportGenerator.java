@@ -549,10 +549,10 @@ public class ReportGenerator extends PsmContext {
 	public JasperPrint createArrayConfigurationReport() {
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
-		return createArrayCofnigurationReport(outDao.getLastResultId());
+		return createArrayConfigurationReport(outDao.getLastResultId());
 	}
 	
-	public JasperPrint createArrayCofnigurationReport(long id) {
+	public JasperPrint createArrayConfigurationReport(long id) {
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
 
