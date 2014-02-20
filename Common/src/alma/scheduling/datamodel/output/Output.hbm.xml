@@ -28,6 +28,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
         name="OutputExecutionStatusType">
         <param name="enumClassName">alma.scheduling.datamodel.output.ExecutionStatus</param>
     </typedef>
+    <typedef class="alma.scheduling.datamodel.StringEnumUserType" name="ArrayTypeEnum">
+        <param name="enumClassName">alma.scheduling.datamodel.obsproject.ArrayType</param>
+    </typedef>
     
     <class name="SimulationResults" table="OUTPUT_RESULTS">
         <id column="ID" type="long" name="id">
@@ -112,9 +115,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 		<property name="scientificTime" type="double" column="SCIENTIFIC_TIME"/>
 		<property name="resolution" type="double" column="RESOLUTION"/>
 		<property name="uvCoverage" type="double" column="UV_COVERAGE"/>
-		<property name="minResolution" type="double" column="MIN_RESOLUTION"/>
-		<property name="maxResolution" type="double" column="MAX_RESOLUTION"/>
+		<property name="minBaseline" type="double" column="MIN_BASELINE"/>
+		<property name="maxBaseline" type="double" column="MAX_BASELINE"/>
 		<property name="configurationName" type="string" column="CONFIG_NAME"/>
+		<property name="type" type="ArrayTypeEnum" column="ARRAY_TYPE"/>
 	</class>
 	
 	<class name="Affiliation" table="OUTPUT_AFFILIATION">

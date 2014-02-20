@@ -142,7 +142,8 @@ REPORTS := 	alma/scheduling/psm/reports/bandsBeforeSim.jasper \
 			alma/scheduling/psm/reports/lstRangesBeforeSim.jasper \
 			alma/scheduling/psm/reports/lstRangesAfterSim.jasper \
 			alma/scheduling/psm/reports/completionReport.jasper \
-			alma/scheduling/psm/reports/raExecBreakdownReport.jasper  
+			alma/scheduling/psm/reports/raExecBreakdownReport.jasper \
+			alma/scheduling/psm/reports/arrayConfigurationReport.jasper 
 
 JARFILES=SchedulingPMS SchedulingPMSCli
 SchedulingPMS_DIRS=alma/scheduling/psm/util alma/scheduling/psm/sim alma/scheduling/psm/reports

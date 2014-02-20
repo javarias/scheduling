@@ -115,6 +115,15 @@ public class ResultComposer {
 			arr.setUvCoverage(0.0);
 		else
 			arr.setUvCoverage(arrcfg.getUvCoverage());
+		
+		if(arrcfg.getMaxBaseline() != null)
+			arr.setMaxBaseline(arr.getMaxBaseline());
+		if(arrcfg.getMinBaseline() != null)
+			arr.setMinBaseline(arrcfg.getMinBaseline());
+		if(arrcfg.getArrayType() != null)
+			arr.setType(arrcfg.getArrayType());
+		arr.setConfigurationName(arrcfg.getConfigurationName());
+		
 		results.getArray().add(arr);
 	}
 	

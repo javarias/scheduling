@@ -141,7 +141,19 @@ public class MainWindowController extends GenericForwardComposer {
     	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
     	reportsWindow.doOverlapped();
     }
-//    menuItemAfterSimRaExec
+    
+    public void onClick$menuItemArrayConfiguration(Event event) {
+    	Window mainWindow = (Window) Path.getComponent("//");
+    	if( mainWindow == null ){
+    		System.out.println("mainWindow is null");
+    	}
+    	HashMap<String, String> param = new HashMap<String, String>();
+    	param.put("id", "reportWindowAfterSimArrayConfig");
+    	param.put("title", "Array Configuration Time Usage");
+    	param.put("controller", ReportArrayConfigAfterSimController.class.getCanonicalName());
+    	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
+    	reportsWindow.doOverlapped();
+    }
     
     public void onClick$menuItemFinalReport(Event event) {
     	Window mainWindow = (Window) Path.getComponent("//");

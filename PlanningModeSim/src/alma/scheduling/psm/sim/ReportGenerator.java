@@ -546,6 +546,44 @@ public class ReportGenerator extends PsmContext {
 		return print;
 	}
 	
+	public JasperPrint createArrayConfigurationReport() {
+		ApplicationContext ctx = ReportGenerator.getApplicationContext();
+		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+		return createArrayCofnigurationReport(outDao.getLastResultId());
+	}
+	
+	public JasperPrint createArrayCofnigurationReport(long id) {
+		ApplicationContext ctx = ReportGenerator.getApplicationContext();
+		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+
+		TreeMap<String, Object> props = new TreeMap<String, Object>();
+		
+		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
+		props.put("seasonStart", outDao.getResults().get(0).getObsSeasonStart());
+		props.put("seasonEnd", outDao.getResults().get(0).getObsSeasonEnd());
+		props.put("resultId", id);
+		DataSource dataSource = (DataSource) ctx.getBean("dataSource");
+		try {
+			props.put("REPORT_CONNECTION", dataSource.getConnection());
+		} catch (SQLException e1) {
+			throw new RuntimeException(e1);
+		}
+		props.put(PROP_REPORT_TIME_ZONE, UTC_TZ);
+		JasperPrint print = null;
+		InputStream reportStream = getClass().getClassLoader().getResourceAsStream(
+		"alma/scheduling/psm/reports/arrayConfigurationReport.jasper");
+		synchronized (this) {
+			try {
+				print = JasperFillManager.fillReport(reportStream, props);
+				print.setName("array_config_report");
+				return print;
+			} catch (JRException e) {
+				e.printStackTrace();
+			}
+		}
+		return print;
+	}
+	
 	public JasperPrint createCompletionReport() {
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");

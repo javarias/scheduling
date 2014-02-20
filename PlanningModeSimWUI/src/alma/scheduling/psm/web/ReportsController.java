@@ -86,7 +86,11 @@ public class ReportsController extends GenericForwardComposer implements
 		} else if(w.getId().compareTo("reportWindowAfterSimRaExec") == 0) {
 			print = rg.createRaExecutiveBreakdownReport();
 			print.setName("ra_executive_breakdown_report");
-		}
+		} else if(w.getId().compareTo("reportWindowAfterSimArrayConfig") == 0) {
+			print = rg.createArrayConfigurationReport();
+			print.setName("ra_executive_breakdown_report");
+		} else
+			throw new RuntimeException("Report not supported");
 		showReport(print, reportFrame);
 	}
 
