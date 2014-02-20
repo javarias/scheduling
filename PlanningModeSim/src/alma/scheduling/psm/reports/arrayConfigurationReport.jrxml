@@ -12,13 +12,14 @@
 	<parameter name="seasonEnd" class="java.util.Date" isForPrompting="false"/>
 	<parameter name="resultId" class="java.lang.Long"/>
 	<queryString language="SQL">
-		<![CDATA[select ARRAY.ID as arrayName, ARRAY.CONFIG_NAME as configName, A.EXECUTIVE as executive, ARRAY.CREATION_DATE as creationDate, ARRAY.DELETION_DATE as deletionDate,
-		ARRAY.AVAILABLE_TIME as availableTime,  ARRAY.ARRAY_TYPE as arrayType, sum(SB.EXECUTION_TIME) as executionTime
-		from OUTPUT_RESULTS as R inner join OUTPUT_OBSERVATION_PROJECT as P on R.ID = P.RESULT_ID 
-		inner join OUTPUT_SCHED_BLOCK_RESULT as SB on P.ID = SB.OBSERVATION_PROJECT_ID 
-		inner join OUTPUT_AFFILIATION as A on P.ID = A.OBSERVATION_PROJECT_ID 
-		inner join OUTPUT_ARRAY as ARRAY on SB.ARRAY_REF = ARRAY.ID
-		where R.ID = $P!{resultId} GROUP BY arrayName, executive order by ARRAY.CREATION_DATE asc, executive asc;]]>
+		<![CDATA[select ARRAY.ID as arrayName, ARRAY.ARRAY_TYPE as arrayType, ARRAY.CONFIG_NAME as configName, A.EXECUTIVE as executive,
+	ARRAY.CREATION_DATE as creationDate, ARRAY.DELETION_DATE as deletionDate,
+	ARRAY.AVAILABLE_TIME as availableTime, sum(SB.EXECUTION_TIME) as executionTime
+	from OUTPUT_SCHED_BLOCK_RESULT as SB right join OUTPUT_ARRAY as ARRAY on SB.ARRAY_REF = ARRAY.ID
+	left join OUTPUT_OBSERVATION_PROJECT as P on P.ID = SB.OBSERVATION_PROJECT_ID
+	left join OUTPUT_RESULTS as R on R.ID = P.RESULT_ID
+	left join OUTPUT_AFFILIATION as A on P.ID = A.OBSERVATION_PROJECT_ID
+	where result_id=$P!{resultId} GROUP BY ARRAY.ID, executive order by ARRAY.CREATION_DATE asc, executive asc;]]>
 	</queryString>
 	<field name="arrayName" class="java.lang.String"/>
 	<field name="creationDate" class="java.util.Date"/>
@@ -29,14 +30,14 @@
 	<field name="arrayType" class="java.lang.String"/>
 	<field name="configName" class="java.lang.String"/>
 	<variable name="arrayAvailableTime" class="java.lang.Double" resetType="Group" resetGroup="arrayConfigGroup" calculation="First">
-		<variableExpression><![CDATA[$F{availableTime}]]></variableExpression>
+		<variableExpression><![CDATA[($F{availableTime} == null)? 0 : $F{availableTime}]]></variableExpression>
 	</variable>
 	<variable name="totalExecTime" class="java.lang.Double" resetType="Group" resetGroup="arrayConfigGroup" calculation="Sum">
-		<variableExpression><![CDATA[$F{executionTime}]]></variableExpression>
+		<variableExpression><![CDATA[($F{executionTime} == null)? 0: $F{executionTime}]]></variableExpression>
 		<initialValueExpression><![CDATA[new java.lang.Double(0)]]></initialValueExpression>
 	</variable>
 	<variable name="clTime" class="java.lang.Double" resetType="Group" resetGroup="arrayConfigGroup" calculation="Sum">
-		<variableExpression><![CDATA[($F{executive}.compareTo("CL") == 0 ) ? $F{executionTime} : 0]]></variableExpression>
+		<variableExpression><![CDATA[($F{executive}.compareTo("CL") == 0) ? $F{executionTime} : 0]]></variableExpression>
 		<initialValueExpression><![CDATA[new java.lang.Double(0)]]></initialValueExpression>
 	</variable>
 	<variable name="eaTime" class="java.lang.Double" resetType="Group" resetGroup="arrayConfigGroup" calculation="Sum">
@@ -244,8 +245,8 @@
 						</chartLegend>
 					</chart>
 					<pieDataset>
-						<keyExpression><![CDATA[$F{executive}]]></keyExpression>
-						<valueExpression><![CDATA[$F{executionTime}]]></valueExpression>
+						<keyExpression><![CDATA[($F{executive} == null)? "OTHER" : $F{executive}]]></keyExpression>
+						<valueExpression><![CDATA[($F{executionTime} == null)? 0 : $F{executionTime}]]></valueExpression>
 					</pieDataset>
 					<pie3DPlot isCircular="true">
 						<plot backgroundAlpha="0.5" foregroundAlpha="0.8"/>
@@ -297,7 +298,7 @@
 					<textElement verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
 					</textElement>
-					<textFieldExpression><![CDATA["Array: " + $F{arrayName}]]></textFieldExpression>
+					<textFieldExpression><![CDATA["Array: " + $F{configName} + " - " + $F{arrayType}]]></textFieldExpression>
 				</textField>
 				<textField pattern="yyyy-MM-dd&apos;T&apos;HH:mm:ss zz">
 					<reportElement style="Heading 4" x="0" y="20" width="120" height="15" uuid="81eb0ee3-44c9-41f9-8fb1-162c59ab7350">
@@ -458,16 +459,17 @@
 				<textElement textAlignment="Justified">
 					<font isBold="false"/>
 				</textElement>
-				<text><![CDATA[This report shows the resulting assignation of time to each executive, for observation purposes.
+				<text><![CDATA[This report shows the time assigned to each array configuration, breaking down the time used per each executive. If the array was not used at all by and executive, then null values will show up instead of zeroes.
 
-Information is given per executive.
-"Project grade" column, indicates the grade of the observation project, as given during Phase1.
-"Hours" indicates how much time is dedicated to this category of observation projects.
-"Percentage" is calculated using the number of hours spend on a certain grade of a certain executive, compared to the "Hours in Season" available. (Number which can be seen on top of the report).
+Information is given per array configuration.
+The header of the array info has the array configuration name, the type of array and the starting and ending times for the given configuration.
+"Executive" column, indicates the executive.
+"Hours" indicates how much time was observed by the given executive.
+"Percentage" is calculated using the number of hours spent on the array for the given executive, compared to the "Total Used" hours.
 
-The last row of each executive shows the total amounts per executive.
+The last row of each array configuration shows the total time used by all the executives and the percentage used in comparison with the "Total available time" shown in the next row.
 
-The pie charts shows a comparison of the "Hours" observed by each executive. This is regardless of the grade, and only considering the hours observed.]]></text>
+The pie charts shows a comparison of the "Hours" observed by each executive in the given array configuration. The pie chart only consider the time used.]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="0" y="0" width="250" height="20" uuid="f597cd21-df2a-4715-843c-94017159019a"/>
