@@ -1018,6 +1018,7 @@ public abstract class AbstractXMLStoreProjectDao
 	 */
 	public void tidyUp() {
 		componentFactory.tidyUp();
+		archive.tidyUp();
 	}
 	/* end of Tidying up
 	 * -------------------------------------------------------------- */

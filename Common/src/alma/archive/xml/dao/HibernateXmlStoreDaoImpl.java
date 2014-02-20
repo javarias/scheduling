@@ -304,6 +304,7 @@ public class HibernateXmlStoreDaoImpl implements XmlStoreReaderDao {
 	@Override
 	public void cleanUp() {
 		closeSession();
+		sf.close();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -329,7 +330,7 @@ public class HibernateXmlStoreDaoImpl implements XmlStoreReaderDao {
 			throw new EntityException(e);
 		} finally {
 			if (tx != null)
-				tx.commit();
+				tx.rollback();
 			closeSession();
 		}
 		return retVal;

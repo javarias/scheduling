@@ -112,5 +112,10 @@ public class CorbaComponentArchiveInterface extends AbstractArchiveInterface
 		}
 		return result;
 	}
+
+	@Override
+	public void tidyUp() {
+		//Nothing to to here
+	}
     
 }

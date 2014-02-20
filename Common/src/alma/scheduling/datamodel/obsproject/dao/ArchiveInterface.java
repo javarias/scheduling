@@ -833,5 +833,11 @@ public interface ArchiveInterface {
      */
 	Collection<SBStatus> getSBStatusesForProjectStatus(String projectStatusId)
 			throws EntityException;
+	
+	/**
+	 * Clean up the resources used the this archive interface. <br/>
+	 * After calling this method, the archive interface could be not usable anymore
+	 */
+	public void tidyUp();
 
 }

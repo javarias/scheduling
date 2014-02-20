@@ -100,5 +100,9 @@ public final class HibernateArchiveInterface extends AbstractArchiveInterface
 		schedBlocks.put(id, sb);
 		return sb;
 	}
-	
+
+	@Override
+	public void tidyUp() {
+		dao.cleanUp();
+	}
 }
