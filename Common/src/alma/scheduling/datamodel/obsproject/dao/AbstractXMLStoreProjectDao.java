@@ -835,12 +835,18 @@ public abstract class AbstractXMLStoreProjectDao
 				final alma.entity.xmlbinding.obsproject.ObsProject        op     = archive.cachedObsProject(projectId);
 				final alma.entity.xmlbinding.schedblock.SchedBlockEntityT sbEnt  = schedBlock.getSchedBlockEntity();
 				final                                   SBStatusRefT      sbsRef = schedBlock.getSBStatusRef();
-				final alma.entity.xmlbinding.obsproject.ObsProjectEntityT prjEnt = op.getObsProjectEntity();
+				alma.entity.xmlbinding.obsproject.ObsProjectEntityT prjEnt;
+				if( op != null ){
+					prjEnt = op.getObsProjectEntity();
+				}else{  
+					prjEnt = null;
+					logger.warning("Could not get project " +  projectId + " from the archive cached projects");
+				}
 				f.format("\tSB %s, SBS %s, part of %s (%s)%n",
-                         (sbEnt  == null)? "<null>": sbEnt.getEntityId(),
-                         (sbsRef == null)? "<null>": sbsRef.getEntityId(),
-                         op.getProjectName(),
-                         (prjEnt == null)? "<null>": prjEnt.getEntityId());
+						(sbEnt  == null)? "<null>": sbEnt.getEntityId(),
+						(sbsRef == null)? "<null>": sbsRef.getEntityId(),
+						(op == null)? "<null>"    : op.getProjectName(),
+						(prjEnt == null)? "<null>": prjEnt.getEntityId());
 			}
 			lines ++;
 			if (lines == MaxItemsPerLogMessage) {
