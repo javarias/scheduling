@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: Results.java,v 1.6 2010/08/13 21:52:48 javarias Exp $"
  */
 package alma.scheduling.datamodel.output;
 
@@ -36,6 +35,7 @@ import java.util.Set;
 public class SimulationResults {
 
     private Long id;
+    private String name;
 	private double availableTime;
 	private double maintenanceTime;
 	private double operationTime;
@@ -157,4 +157,12 @@ public class SimulationResults {
         this.id = id;
     }
 
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+    
 }

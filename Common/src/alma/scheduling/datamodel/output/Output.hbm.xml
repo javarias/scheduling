@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
         <id column="ID" type="long" name="id">
         	<generator class="native"/>
         </id>
-        
+        <property name="name" column="NAME" type="string"/>
         <property name="availableTime" column="AVAILABLE_TIME" type="double"/>
         <property name="maintenanceTime" column="MAINTENANCE_TIME" type="double"/>
         <property name="operationTime" column="OPERATION_TIME" type="double"/>
