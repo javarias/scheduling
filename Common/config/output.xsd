@@ -14,6 +14,7 @@
 	
 	<xs:complexType name="Results">
 		<xs:sequence>
+			<xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="availableTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="maintenanceTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="obsSeasonEnd" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
@@ -40,6 +41,10 @@
 			<xs:element name="scientificTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="uvCoverage" type="xs:double" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="originalId" type="xs:long" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="minBaseline" type="xs:double" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="maxBaseline" type="xs:double" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="configurationName" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="type" type="xs:string" minOccurs="1" maxOccurs="1"/>
 		</xs:sequence>
 		<xs:attribute name="id" type="xs:NCName" use="required"/>		
 	</xs:complexType>
@@ -77,6 +82,7 @@
 			<xs:element name="startDate" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="status" type="ExecutionStatus" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="type" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="source" type="SkyCoordinatesT" minOccurs="1" maxOccurs="1"/>
 			<!-- Reference to Array -->
 			<xs:element name="ArrayRef" minOccurs="1" maxOccurs="1">
 				<xs:complexType>
@@ -93,4 +99,9 @@
 			<xs:enumeration value="NOT_STARTED"/>
 		</xs:restriction>
 	</xs:simpleType>
+	
+	<xs:complexType name="SkyCoordinatesT">
+		<xs:attribute name="RA" type="xs:double" use="required"/>
+		<xs:attribute name="Dec" type="xs:double" use="required"/>
+	</xs:complexType>
 </xs:schema>
