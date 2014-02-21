@@ -83,6 +83,14 @@
 			<xs:element name="status" type="ExecutionStatus" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="type" type="xs:string" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="source" type="SkyCoordinatesT" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="representativeBand" minOccurs="1" maxOccurs="1">
+				<xs:simpleType>
+					<xs:restriction base="xs:short">
+						<xs:minInclusive value="0"/>
+						<xs:maxInclusive value="13"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
 			<!-- Reference to Array -->
 			<xs:element name="ArrayRef" minOccurs="1" maxOccurs="1">
 				<xs:complexType>
