@@ -442,6 +442,7 @@ public class SessionManager {
 
 			final StartSessionEvent event = new StartSessionEvent(
 					UTCUtility.utcJavaToOmg(System.currentTimeMillis()),
+					arrayName,
 					currentSessionRef,
 					currentSB);
 			publish(event, "start session");
