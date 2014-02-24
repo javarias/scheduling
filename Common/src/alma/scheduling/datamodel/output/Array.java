@@ -43,6 +43,9 @@ public class Array {
 	private double resolution;
 	private double uvCoverage;
 	private String name;
+	private String configurationName;
+	private double minBaseline;
+	private double maxBaseline;
 
 	public Array(){
 
@@ -118,6 +121,30 @@ public class Array {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getConfigurationName() {
+		return configurationName;
+	}
+
+	public void setConfigurationName(String configurationName) {
+		this.configurationName = configurationName;
+	}
+
+	public double getMinBaseline() {
+		return minBaseline;
+	}
+
+	public void setMinBaseline(double minBaseline) {
+		this.minBaseline = minBaseline;
+	}
+
+	public double getMaxBaseline() {
+		return maxBaseline;
+	}
+
+	public void setMaxBaseline(double maxBaseline) {
+		this.maxBaseline = maxBaseline;
 	}
 
 	@Override

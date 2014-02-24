@@ -171,7 +171,8 @@ public class Simulator extends PsmContext {
         		execDao.getCurrentSeason().getEndDate(), 
         		// TODO: Fix Configuration datamodel to include start and stop dates.
         		execDao.getCurrentSeason().getStartDate(), 
-        		execDao.getCurrentSeason().getEndDate() );
+        		execDao.getCurrentSeason().getEndDate(),
+        		execDao.getCurrentSeason().getTotalObservingHours());
         
         //This is the timeline
         LinkedList<TimeEvent> timesToCheck = new LinkedList<TimeEvent>();
@@ -279,7 +280,7 @@ public class Simulator extends PsmContext {
             DynamicSchedulingAlgorithm dsa;
             System.out.println(TimeUtil.getUTString(time) + "Array "
                     + ev.getArray().getId() + " created");
-            rc.notifyArrayCreation(ev.getArray());
+            rc.notifyArrayCreation(ev.getArray(), ti);
             //TODO: Fix this
             dsa = getDSA(ctx, DSAPolicyName);
             dsa.setVerboseLevel(verboseLvl);

@@ -49,19 +49,19 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
     
     private static Logger logger = LoggerFactory.getLogger(DynamicSchedulingAlgorithmImpl.class);
 
-    private SchedBlockRanker ranker;
+    protected SchedBlockRanker ranker;
     /** it should contains all the Pre-Update Selectors*/
-    private Collection<SchedBlockSelector> preUpdateSelectors;
-    private Collection<SchedBlockSelector> postUpdateSelectors;
-    private Collection<ModelUpdater> updaters;
-    private Collection<ModelUpdater> firstRunUpdaters;
-    private ArrayConfiguration array;
-    private static int nProjects;
+    protected Collection<SchedBlockSelector> preUpdateSelectors;
+    protected Collection<SchedBlockSelector> postUpdateSelectors;
+    protected Collection<ModelUpdater> updaters;
+    protected Collection<ModelUpdater> firstRunUpdaters;
+    protected ArrayConfiguration array;
+    protected static int nProjects;
     /**
      * Stores the current SBs selected from selectors
      */
-    private HashMap<String, SchedBlock> sbs;
-    private List<SBRank> ranks;
+    protected HashMap<String, SchedBlock> sbs;
+    protected List<SBRank> ranks;
     
     public DynamicSchedulingAlgorithmImpl(){
         sbs =  new HashMap<String, SchedBlock>();

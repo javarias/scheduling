@@ -24,7 +24,6 @@
  */
 package alma.scheduling.psm.sim;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,6 +35,7 @@ import java.util.Set;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
+import alma.scheduling.datamodel.executive.TimeInterval;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.observation.ExecBlock;
 import alma.scheduling.datamodel.observation.dao.ObservationDao;
@@ -46,10 +46,8 @@ import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.ObservingParameters;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.SchedBlockState;
-import alma.scheduling.datamodel.obsproject.ScienceGrade;
 import alma.scheduling.datamodel.obsproject.ScienceParameters;
 import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
-import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 import alma.scheduling.datamodel.output.Affiliation;
 import alma.scheduling.datamodel.output.Array;
 import alma.scheduling.datamodel.output.ExecutionStatus;
@@ -57,6 +55,7 @@ import alma.scheduling.datamodel.output.ObservationProject;
 import alma.scheduling.datamodel.output.Results;
 import alma.scheduling.datamodel.output.SchedBlockResult;
 import alma.scheduling.utils.DSAContextFactory;
+import alma.scheduling.utils.TimeUtil;
 
 /** 
  * Gathers notifications from the Simulator, and generates an output that <br>
@@ -82,21 +81,22 @@ public class ResultComposer {
 		arraysUsed = new HashMap<String, ArrayConfiguration>();
 	}
 	
-	public void notifyExecutiveData(ApplicationContext ctx, Date obsSeasonStart, Date obsSeasonEnd, Date simStart, Date simStop){
+	public void notifyExecutiveData(ApplicationContext ctx, Date obsSeasonStart, Date obsSeasonEnd, Date simStart, Date simStop, double obsHrs){
 		this.context = ctx;
 		results.setObsSeasonStart(obsSeasonStart);
 		results.setObsSeasonEnd(obsSeasonEnd);
 		results.setStartSimDate(obsSeasonStart);
 		results.setStopSimDate(obsSeasonEnd);
-		results.setAvailableTime( (results.getObsSeasonEnd().getTime() - results.getObsSeasonStart().getTime())/3600/1000);
+		results.setAvailableTime(obsHrs);
 		results.setStartRealDate(new Date());
 	}
 	
-	public void notifyArrayCreation(ArrayConfiguration arrcfg){
+	public void notifyArrayCreation(ArrayConfiguration arrcfg, TimeInterval timeInterval){
 		Array arr = new Array();
 		arr.setCreationDate( arrcfg.getStartTime() );
 		arr.setDeletionDate( arrcfg.getEndTime() );
-		arr.setAvailableTime( (arr.getDeletionDate().getTime() - arr.getCreationDate().getTime())/3600/1000);
+		arr.setAvailableTime(TimeUtil.getHoursInDateTimeInterval(
+				arrcfg.getStartTime(), arrcfg.getEndTime(), timeInterval));
 		arr.setOriginalId(arrcfg.getId());
 		if (arrcfg.getResolution() == null)
 			arr.setResolution(0.0);
@@ -106,6 +106,10 @@ public class ResultComposer {
 			arr.setUvCoverage(0.0);
 		else
 			arr.setUvCoverage(arrcfg.getUvCoverage());
+		arr.setMinBaseline(arrcfg.getMinBaseline());
+		arr.setMaxBaseline(arrcfg.getMaxBaseline());
+		arr.setConfigurationName(arrcfg.getConfigurationName());
+		arr.setName(arrcfg.getConfigurationName());
 		results.getArray().add(arr);
 	}
 	
@@ -197,7 +201,6 @@ public class ResultComposer {
 		results.setStopRealDate( new Date() );
 		
 		ObsProjectDao obsProjectDao = (ObsProjectDao) context.getBean("obsProjectDao");
-		SchedBlockDao schedBlockDao = (SchedBlockDao) context.getBean("sbDao");
 		ExecutiveDAO execDao = (ExecutiveDAO) context.getBean("execDao");
 		ObservationDao obsDao = context.getBean(DSAContextFactory.SCHEDULING_OBSERVATION_DAO_BEAN, ObservationDao.class);
 		
@@ -318,7 +321,7 @@ public class ResultComposer {
 		        sbr.setRepresentativeFrequency( ((SchedBlock)ptrOu).getSchedulingConstraints().getRepresentativeFrequency() );
 		        //TODO: Add frequency band
 		        sbr.setType( "SCIENTIFIC");
-		        sbr.setStatus( ExecutionStatus.INCOMPLETE);
+		        sbr.setStatus(ExecutionStatus.INCOMPLETE);
         		sbrSet.add( sbr );
         		
         		// From Stop notification.
@@ -352,14 +355,4 @@ public class ResultComposer {
 	 	}
 	}
 	
-	private String getInheritance(Object o){
-    	Class<?> c = o.getClass();
-	    List<Class> l = new ArrayList<Class>();
-	    printAncestor(c, l);
-	    if (l.size() != 0) {
-	    	for (Class<?> cl : l)
-	    	return l.get(0).getCanonicalName();
-	    }
-	    return null;
-	}
 }
