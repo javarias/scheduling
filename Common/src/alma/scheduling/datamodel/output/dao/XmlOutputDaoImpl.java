@@ -394,7 +394,6 @@ public class XmlOutputDaoImpl implements StreamBasedOutputDao {
                  tmpSb.setExecutionTime(xmlSb.getExecutionTime());
                  tmpSb.setId(xmlSb.getId());
                  tmpSb.setOriginalId(xmlSb.getOriginalId());
-                 //TODO: Missing ALMA UID
                  tmpSb.setMode(xmlSb.getMode());
                  tmpSb.setRepresentativeFrequency(xmlSb.getRepresentativeFrequency());
                  tmpSb.setGoalSensitivity(xmlSb.getGoalSensitivity());
@@ -404,8 +403,8 @@ public class XmlOutputDaoImpl implements StreamBasedOutputDao {
                  tmpSb.setType(xmlSb.getType());
                  tmpSb.setRepresentativeBand(new Short(xmlSb.getRepresentativeBand()).intValue());
                  SkyCoordinates source = new SkyCoordinates();
-                 source.setRA(tmpSb.getRepresentativeSource().getRA());
-                 source.setDec(tmpSb.getRepresentativeSource().getDec());
+                 source.setRA(xmlSb.getSource().getRA());
+                 source.setDec(xmlSb.getSource().getDec());
                  tmpSb.setRepresentativeSource((source));
                  tmpSb.setArrayRef(arrayMap.get(xmlSb.getArrayRef().getArrayRef()));
              }
