@@ -74,7 +74,7 @@
 			<xs:element name="endDate" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="executionTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="id" type="xs:long" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="originalId" type="xs:long" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="originalId" type="xs:string" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="mode" type="xs:string" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="representativeFrequency" type="xs:double" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="goalSensitivity" type="xs:double" minOccurs="1" maxOccurs="1"/>

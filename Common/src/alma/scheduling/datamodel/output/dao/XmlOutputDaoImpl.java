@@ -238,6 +238,32 @@ public class XmlOutputDaoImpl implements StreamBasedOutputDao {
             r.setStartRealDate(results.getStartRealDate());
             r.setStopRealDate(results.getStopRealDate());
             
+            //set the Arrays
+            {
+            alma.scheduling.output.generated.Array a[] =
+                new alma.scheduling.output.generated.Array[results.getArray().size()];
+            int i = 0;
+            for(Array tmpA: results.getArray()){
+                a[i] = new alma.scheduling.output.generated.Array();
+            	a[i].setId(new Long(i).toString());
+            	tmpA.setId(i);
+                a[i].setAvailablelTime( tmpA.getAvailableTime());
+                a[i].setCreationDate(tmpA.getCreationDate());
+                a[i].setDeletionDate(tmpA.getDeletionDate());
+                // Id needs to be a string, as it is used for XPath reference check in XML schema.
+                a[i].setOriginalId(i);
+                a[i].setMaintenanceTime(tmpA.getMaintenanceTime());
+                a[i].setScientificTime(tmpA.getScientificTime());
+                a[i].setResolution(tmpA.getResolution());
+                a[i].setUvCoverage(tmpA.getUvCoverage());
+                a[i].setMinBaseline(tmpA.getMinBaseline());
+                a[i].setMaxBaseline(tmpA.getMaxBaseline());
+                a[i].setConfigurationName(tmpA.getConfigurationName());
+                a[i].setType(tmpA.getType().toString());
+                i++;
+            }
+            r.setArray(a);
+            }
             //set the observation projects
             alma.scheduling.output.generated.ObservationProject op[] =
                 new alma.scheduling.output.generated.ObservationProject[results.getObservationProject().size()];
@@ -300,29 +326,6 @@ public class XmlOutputDaoImpl implements StreamBasedOutputDao {
             }
             
             r.setObservationProject(op);
-            
-            //set the Arrays
-            alma.scheduling.output.generated.Array a[] =
-                new alma.scheduling.output.generated.Array[results.getArray().size()];
-            int i = 0;
-            for(Array tmpA: results.getArray()){
-                a[i] = new alma.scheduling.output.generated.Array();
-                a[i].setAvailablelTime( tmpA.getAvailableTime());
-                a[i].setCreationDate(tmpA.getCreationDate());
-                a[i].setDeletionDate(tmpA.getDeletionDate());
-                // Id needs to be a string, as it is used for XPath reference check in XML schema.
-                a[i].setOriginalId( tmpA.getId() );
-                a[i].setMaintenanceTime(tmpA.getMaintenanceTime());
-                a[i].setScientificTime(tmpA.getScientificTime());
-                a[i].setResolution( tmpA.getResolution());
-                a[i].setUvCoverage( tmpA.getUvCoverage());
-                a[i].setMinBaseline(tmpA.getMinBaseline());
-                a[i].setMaxBaseline(tmpA.getMaxBaseline());
-                a[i].setConfigurationName(tmpA.getConfigurationName());
-                a[i].setType(tmpA.getType().toString());
-                i++;
-            }
-            r.setArray(a);
             
             return r;
     }

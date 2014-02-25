@@ -47,8 +47,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
         <property name="stopSimDate" column="STOP_SIM_DATE" type="timestamp" />
         <property name="startRealDate" column="START_REAL_DATE" type="timestamp" />
         <property name="stopRealDate" column="STOP_REAL_DATE" type="timestamp" />
-        
-		<set name="array" table="OUTPUT_ARRAY" cascade="save-update,lock, delete, delete-orphan">
+		<set name="array" table="OUTPUT_ARRAY" cascade="save-update,lock, delete, delete-orphan" lazy="false">
 			<key column="RESULT_ID" />
 			<one-to-many class="Array" />
 		</set>
@@ -87,7 +86,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 		
 		<property name="endDate" type="timestamp" column="END_DATE" />
 		<property name="executionTime" type="double" column="EXECUTION_TIME"/>
-		<property name="originalId" type="long" column="ORIGINAL_ID" />		
+		<property name="originalId" type="string" column="ORIGINAL_ID" />		
 		<property name="mode" type="string" column="RESULT_MODE"/>
 		<property name="representativeFrequency" type="double" column="REPRESENTATIVE_FREQUENCY"/>
 		<property name="goalSensitivity" type="double" column="GOAL_SENSITIVITY"/>
