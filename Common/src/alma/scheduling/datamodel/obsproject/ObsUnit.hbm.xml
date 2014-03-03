@@ -164,6 +164,11 @@
 				<property column="STATUS_TIMESTAMP" generated="never" lazy="false"
 					name="timestamp" type="string" />
 			</component>
+			<component class="TemporalConstraint">
+				<property name="startTime" column="TC_START_TIME" type="timestamp" />
+				<property name="stopTime" column="TC_STOP_TIME" type="timestamp"/>
+				<property name="margin" column="TC_EXECUTION_MARGIN" type="double"/>
+			</component>
 		</joined-subclass>
 		<joined-subclass name="ObsUnitSet" table="OBSUNITSET">
 			<key column="OBSUNITSETID" />

@@ -1210,8 +1210,9 @@ public class ExecutionContext {
 		double time = schedBlock.getSchedBlockControl()
 				.getAccumulatedExecutionTime() + (secs / 3600.0);
 		schedBlock.getSchedBlockControl().setAccumulatedExecutionTime(time);
-		schedBlock.getSchedBlockControl().setExecutionCount(
-				schedBlock.getSchedBlockControl().getExecutionCount() + 1);
+		if (!schedBlock.getSchedBlockControl().getIndefiniteRepeat())
+			schedBlock.getSchedBlockControl().setNumberOfExecutions(
+					schedBlock.getSchedBlockControl().getNumberOfExecutions() + 1);
 		ObsProject prj = getModel().getObsProjectDao().findByEntityId(
 				schedBlock.getProjectUid());
 		prj.setTotalExecutionTime(time + prj.getTotalExecutionTime());

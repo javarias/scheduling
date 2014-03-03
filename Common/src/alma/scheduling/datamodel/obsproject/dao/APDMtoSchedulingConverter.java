@@ -1251,14 +1251,14 @@ public class APDMtoSchedulingConverter {
 		result.setSbMaximumTime(TimeConverter.convertedValue(
 								control.getSBMaximumTime(),
 								TimeTUnitType.H));
-
+		result.setExecutionCount(control.getExecutionCount());
 		if (sbStatus == null) {
 			result.setAccumulatedExecutionTime(0.0);
-			result.setExecutionCount(0);
+			result.setNumberOfExecutions(0);;
 			result.setState(SchedBlockState.READY);
 		} else {
 			result.setAccumulatedExecutionTime(sbStatus.getTotalUsedTimeInSec()/3600.0);
-			result.setExecutionCount(sbExecutionCount(sbStatus));
+			result.setNumberOfExecutions((sbExecutionCount(sbStatus)));
 			result.setState(sbState(sbStatus));
 		}
 		logger.fine("ended createSchedBlockControl(...)");
