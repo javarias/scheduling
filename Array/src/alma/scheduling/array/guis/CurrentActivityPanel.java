@@ -1192,7 +1192,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel
 								e.getClass().getSimpleName(), e.getMessage()),
 						e);
 				setStatusMessage(String.format(
-					"Cannot destroy array - internal error! See logs for details."),
+					"Cannot destroy array - internal error! See logs for details. \n This could be caused because DataCapturer is still running!"),
 					Color.RED);
 			}
 			destroyArray.setEnabled(true);

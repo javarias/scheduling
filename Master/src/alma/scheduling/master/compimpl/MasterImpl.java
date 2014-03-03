@@ -434,7 +434,7 @@ public class MasterImpl implements ComponentLifecycle, MasterOperations {
 			AcsJControlInternalExceptionEx ex = new AcsJControlInternalExceptionEx(
 					e);
 			ex.log(m_logger);
-			ex.toControlInternalExceptionEx();
+			throw ex.toControlInternalExceptionEx();
 		}
 		m_logger.fine(String.format("removing (%s) from active arrays",
 				arrayName));
