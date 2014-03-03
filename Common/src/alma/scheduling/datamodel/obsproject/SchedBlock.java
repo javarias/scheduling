@@ -242,7 +242,7 @@ public class SchedBlock extends ObsUnit {
 			status.setExecutionsRemaining(0);
 		} else {
 			status.setHasExecutionCount(true);
-			status.setExecutionsRemaining(getSchedBlockControl().getExecutionCount());
+			status.setExecutionsRemaining(getSchedBlockControl().getExecutionCount() - getSchedBlockControl().getNumberOfExecutions());
 		}
 	}
 

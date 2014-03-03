@@ -50,8 +50,7 @@ public class SchedBlockControl implements Updateable {
     private Boolean indefiniteRepeat;
     
     /**
-     * How many times a SchedBlock has been executed so far. This field needs to be
-     * updated every time the SchedBlock is executed. 
+     * The number of times to execute this SB.
      */
     private Integer executionCount;
 
@@ -72,7 +71,10 @@ public class SchedBlockControl implements Updateable {
     /** Sensitivity achieved so far (Jy) */
     private Double achievedSensitivity;
     
-    /** Times that the Sb has been executed, initiallly is zero*/
+    /**
+     * How many times a SchedBlock has been executed so far. This field needs to be
+     * updated every time the SchedBlock is executed. 
+     */
     private Integer numberOfExecutions = 0;
     
     public SchedBlockControl() {
