@@ -2,16 +2,20 @@ package alma.scheduling.datamodel.obsproject;
 
 import java.util.Date;
 
-public class TemporalConstraints {
+public class TemporalConstraint {
 	
 	private Date startTime;
 	private Date endTime;
-	/**
-	 * TODO: Unit?
-	 */
-	private double margin;
+	private Long id;
 	
-	
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
 	public Date getStartTime() {
 		return startTime;
 	}
@@ -28,19 +32,4 @@ public class TemporalConstraints {
 		this.endTime = endTime;
 	}
 	
-	/**
-	 * @see #margin
-	 * @return
-	 */
-	public double getMargin() {
-		return margin;
-	}
-	
-	/**
-	 * @see #margin
-	 * @param margin
-	 */
-	public void setMargin(double margin) {
-		this.margin = margin;
-	}
 }

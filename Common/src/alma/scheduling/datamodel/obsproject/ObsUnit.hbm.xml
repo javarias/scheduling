@@ -147,6 +147,10 @@
 				<key column="SCHEDBLOCKID" />
 				<one-to-many class="Target" />
 			</set>
+			<set cascade="save-update, lock, delete, delete-orphan" name="temporalConstraints">
+				<key column="SCHEDBLOCKID" />
+				<one-to-many class="TemporalConstraint"
+			</set>
 			<many-to-one column="EXECUTIVE_ID" name="executive"
 				not-null="false" />
 			<component class="alma.entity.xmlbinding.sbstatus.SBStatusEntityT"
@@ -163,11 +167,6 @@
 					lazy="false" name="documentVersion" type="string" />
 				<property column="STATUS_TIMESTAMP" generated="never" lazy="false"
 					name="timestamp" type="string" />
-			</component>
-			<component class="TemporalConstraint">
-				<property name="startTime" column="TC_START_TIME" type="timestamp" />
-				<property name="stopTime" column="TC_STOP_TIME" type="timestamp"/>
-				<property name="margin" column="TC_EXECUTION_MARGIN" type="double"/>
 			</component>
 		</joined-subclass>
 		<joined-subclass name="ObsUnitSet" table="OBSUNITSET">
@@ -195,6 +194,16 @@
 			</component>
 		</joined-subclass>
 	</class>
+	<class name="TemporalConstraint" table="TEMPORAL_CONSTRAINT">
+		<id column="ID" name="id">
+			<generator class="native" />
+		</id>
+		<property name="startTime" column="START_TIME" type="timestamp" />
+		<property name="stopTime" column="STOP_TIME" type="timestamp"/>
+	</class>
+	
+	
+	
 	<!-- Care must be taken because the rising time could be bigger than the 
 		setting time, which happens when the interval of observability crosses the 
 		24 hr boundary. -->
