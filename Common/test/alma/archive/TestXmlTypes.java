@@ -18,14 +18,11 @@
 package alma.archive;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.namespace.NamespaceContext;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -33,9 +30,6 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -45,9 +39,7 @@ import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.SAXException;
 
-import alma.archive.xml.ObsProjectEntity;
 import alma.archive.xml.XmlEntity;
-import alma.entity.xmlbinding.obsproject.ObsProject;
 
 public class TestXmlTypes {
 

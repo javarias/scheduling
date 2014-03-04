@@ -727,6 +727,8 @@ public abstract class AbstractArchiveInterface implements ArchiveInterface  {
 			result = cachedSBStatus(id);
 		} else {
 			SBStatusEntityT idT = new SBStatusEntityT(); idT.setEntityId(id);
+			if (stateArchive == null)
+				return null;
 			result = stateArchive.getSBStatus(idT);
 			sbStatuses.put(id, result);
 		}

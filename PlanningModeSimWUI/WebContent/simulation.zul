@@ -8,13 +8,14 @@
 		<radiogroup id="sg1">
 			<attribute name="onCheck">
 				if (self.getSelectedItem().getId().equals("radioArchive")) {
+					System.out.println(alma.scheduling.psm.web.SimulationController.DATA_LOADER_ATTRNAME + ":" + alma.scheduling.psm.sim.InputActions.ALMA_ARCHIVE_FULL_DATA_LOADER);
 					textBoxManagerConfig.setDisabled(true);
 					Sessions.getCurrent().setAttribute(alma.scheduling.psm.web.SimulationController.DATA_LOADER_ATTRNAME, 
 						alma.scheduling.psm.sim.InputActions.ALMA_ARCHIVE_FULL_DATA_LOADER);
 				} else if (self.getSelectedItem().getId().equals("radioXML")) {
 					textBoxManagerConfig.setDisabled(true);
 					Sessions.getCurrent().setAttribute(alma.scheduling.psm.web.SimulationController.DATA_LOADER_ATTRNAME, 
-						alma.scheduling.psm.sim.InputActions.DATA_CLEANER_BEAN);
+						alma.scheduling.psm.sim.InputActions.IMMUTABLE_DATA_LOADER_BEAN);
 				}
 			</attribute>
 		</radiogroup>

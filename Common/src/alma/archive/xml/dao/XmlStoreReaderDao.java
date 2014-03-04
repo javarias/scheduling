@@ -5,6 +5,7 @@ import java.util.List;
 
 import alma.archive.xml.ObsProjectEntity;
 import alma.archive.xml.ObsProposalEntity;
+import alma.archive.xml.ObsReviewEntity;
 import alma.archive.xml.SchedBlockEntity;
 
 /**
@@ -83,9 +84,24 @@ public interface XmlStoreReaderDao {
 	
 	public Iterable<SchedBlockEntity> getSchedBlocksIterator(Collection<String> uids);
 	
+	
 	/**
-	 * Clean up and releases resources of the underlying Data Storage mechaninsm
+	 * Returns the SchedBlocks according to the given uids. 
+	 * 
+	 * @param uids the uids to look into the table. if it is null, this method will retrieve all elements in the table
+	 * @return 
+	 */
+	public List<ObsReviewEntity> getObsReviews(Collection<String> uids);
+	
+	
+	public Iterable<ObsReviewEntity> getObsReviewsIterator(Collection<String> uids);
+	
+	
+	/**
+	 * Clean up and releases resources of the underlying Data Storage backend
 	 */
 	public void cleanUp();
+	
+	
 
 }

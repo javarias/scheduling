@@ -300,10 +300,9 @@ public class Phase1XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 					ByteArrayOutputStream os = new ByteArrayOutputStream();
 					e.printStackTrace(new PrintWriter(os));
 					logger.severe("Cannot get APDM ObsProposals\n" + os.toString());
-				} finally {
-					xmlStoreDao.closeSession();
 				}
 			}
+			xmlStoreDao.closeSession();
 		return result;
 	}
 
@@ -317,7 +316,7 @@ public class Phase1XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 		List<alma.entity.xmlbinding.obsproject.ObsProject>   apdmProjects;
 		
 		Date start = new Date();
-		apdmProposals = fetchInterestingAPDMProposals("2012.1");
+		apdmProposals = fetchInterestingAPDMProposals("2013.1");
 		Date end = new Date();
 		logger.info("Fetching APDM Proposals from archive took " + (end.getTime() - start.getTime()) + " ms");
 		

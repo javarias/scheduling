@@ -27,6 +27,7 @@ import alma.archive.database.helpers.DBConfiguration;
 import alma.archive.exceptions.general.DatabaseException;
 import alma.archive.xml.ObsProjectEntity;
 import alma.archive.xml.ObsProposalEntity;
+import alma.archive.xml.ObsReviewEntity;
 import alma.archive.xml.SchedBlockEntity;
 import alma.archive.xml.XmlEntity;
 
@@ -125,8 +126,10 @@ public class HibernateXmlStoreDaoImpl implements XmlStoreReaderDao {
 	 */
 	public Iterable<ObsProposalEntity> getObsProposalsIterator(String XPathQuery) {
 		openSession();
+		sf.getCurrentSession().beginTransaction();
 		SQLQuery q = sf.getCurrentSession().createSQLQuery("SELECT * from xml_obsproposal_entities where " +
 		"existsnode(XML,'"+ XPathQuery + "', '"+ APDM_XSD_NAMESPACES +"') = 1");
+		System.out.println("Using query: " + q .getQueryString());
 		q.addEntity(ObsProposalEntity.class);
 		return new QueryIterable<ObsProposalEntity>(q);
 	}
@@ -236,6 +239,7 @@ public class HibernateXmlStoreDaoImpl implements XmlStoreReaderDao {
 	 */
 	public Iterable<ObsProjectEntity> getObsProjectsIterator(Collection<String> uids) {
 		openSession();
+		sf.getCurrentSession().beginTransaction();
 		Criteria c = sf.getCurrentSession().createCriteria(ObsProjectEntity.class);
 		if (!(uids == null || uids.size() == 0)) {
 			c.add(Restrictions.in("uid", uids));
@@ -251,6 +255,7 @@ public class HibernateXmlStoreDaoImpl implements XmlStoreReaderDao {
 	 */
 	public Iterable<SchedBlockEntity> getSchedBlocksIterator(Collection<String> uids) {
 		openSession();
+		sf.getCurrentSession().beginTransaction();
 		Criteria c = sf.getCurrentSession().createCriteria(SchedBlockEntity.class);
 		if (!(uids == null || uids.size() == 0)) {
 			c.add(Restrictions.in("uid", uids));
@@ -296,18 +301,55 @@ public class HibernateXmlStoreDaoImpl implements XmlStoreReaderDao {
 	
 	public void closeSession() {
 		if (sf.getCurrentSession() != null && sf.getCurrentSession().isOpen())
+			try {
+				if (sf.getCurrentSession().getTransaction() != null)
+					sf.getCurrentSession().getTransaction().rollback();
+			} catch(HibernateException ex) {
+				//Do nothing, no active valid transaction
+			}
 			sf.getCurrentSession().close();
 	}
 
 	@Override
+	public List<ObsReviewEntity> getObsReviews(Collection<String> uids) {
+		openSession();
+		Transaction t = null;
+		Criteria c = sf.getCurrentSession().createCriteria(ObsReviewEntity.class);
+		if (!(uids == null || uids.size() == 0)) {
+			c.add(Restrictions.in("uid", uids));
+		}
+		t = sf.getCurrentSession().beginTransaction();
+		@SuppressWarnings("unchecked")
+		List<ObsReviewEntity> retVal =  c.list();
+		t.commit();
+		return retVal;
+	}
+
+	@Override
+	public Iterable<ObsReviewEntity> getObsReviewsIterator(
+			Collection<String> uids) {
+		openSession();
+		sf.getCurrentSession().beginTransaction();
+		Criteria c = sf.getCurrentSession().createCriteria(ObsReviewEntity.class);
+		if (!(uids == null || uids.size() == 0)) {
+			c.add(Restrictions.in("uid", uids));
+		}
+		return new CriteriaIterable<ObsReviewEntity>(c);
+	}
+	
+
+	@Override
 	public void cleanUp() {
 		closeSession();
+		sf.close();
 	}
 	
 	@SuppressWarnings("unchecked")
 	public <CT> CT genericRetrieval(String id,
 			Class<? extends XmlEntity> hClass, Class<CT> cClass)
 			throws EntityException, UserException {
+		if (id == null)
+			System.err.println("Cannot retrieve null id: " + id);
 		CT retVal = null;
 		Transaction  tx = null;
 		try {
@@ -325,9 +367,13 @@ public class HibernateXmlStoreDaoImpl implements XmlStoreReaderDao {
 			throw new EntityException(e);
 		} catch (TransformerException e) {
 			throw new EntityException(e);
-		} finally {
+		} catch (NullPointerException e) {
+			System.err.println("Failed to get " + cClass + " Id: " + id);
+			throw  new EntityException(e);
+		}
+		finally {
 			if (tx != null)
-				tx.commit();
+				tx.rollback();
 			closeSession();
 		}
 		return retVal;
