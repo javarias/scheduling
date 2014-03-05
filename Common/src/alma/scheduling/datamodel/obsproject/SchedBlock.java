@@ -54,6 +54,9 @@ public class SchedBlock extends ObsUnit {
     /** The targets. Each one includes a FieldSource, the ObservingParameters and an InstrumentSpec. */
     private Set<Target> targets = new HashSet<Target>();
     
+    /** Temporal Constraints that the SB may have.*/
+    private Set<TemporalConstraint> temporalConstraints = new HashSet<TemporalConstraint>();
+    
     /** Weather dependent variables, an Updateable. Needs to be updated for the current conditions. */
     private WeatherDependentVariables weatherDependentVariables;
     
@@ -429,6 +432,14 @@ public class SchedBlock extends ObsUnit {
 		} catch (Exception e) {
 			return false;
 		}
+	}
+	
+	public Set<TemporalConstraint> getTemporalConstraints() {
+		return temporalConstraints;
+	}
+
+	public void setTemporalConstraints(Set<TemporalConstraint> temporalConstraints) {
+		this.temporalConstraints = temporalConstraints;
 	}
 
 	@Override
