@@ -149,7 +149,7 @@
 			</set>
 			<set cascade="save-update, lock, delete, delete-orphan" name="temporalConstraints">
 				<key column="SCHEDBLOCKID" />
-				<one-to-many class="TemporalConstraint"
+				<one-to-many class="TemporalConstraint"/>
 			</set>
 			<many-to-one column="EXECUTIVE_ID" name="executive"
 				not-null="false" />
@@ -199,7 +199,7 @@
 			<generator class="native" />
 		</id>
 		<property name="startTime" column="START_TIME" type="timestamp" />
-		<property name="stopTime" column="STOP_TIME" type="timestamp"/>
+		<property name="endTime" column="END_TIME" type="timestamp"/>
 	</class>
 	
 	
