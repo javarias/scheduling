@@ -173,6 +173,11 @@
 		<property name="dao" ref="obsProjectDao" />
 	</bean> 
 	
+	<bean id="executiveDataLoader" class="alma.scheduling.dataload.ExecutiveDataLoader" scope="singleton">
+		<property name="dbDao" ref="execDao" />
+		<property name="xmlDao" ref="xmlExecDao" />
+	</bean>
+	
 	<bean id="AlmaArchiveObsProjectDataLoader" class="alma.scheduling.dataload.obsproject.AlmaArchiveObsProjectLoaderImpl"
 	scope="singleton">
 		<property name="archiveProjectDao" ref="archProjectDao"/>
@@ -201,10 +206,7 @@
 		<property name="loaders">
 			<list>
 				<ref bean="obsProjectDataLoader"/>
-				<bean class="alma.scheduling.dataload.ExecutiveDataLoader">
-					<property name="dbDao" ref="execDao" />
-					<property name="xmlDao" ref="xmlExecDao" />
-				</bean>
+				<ref bean="executiveDataLoader"/>
 				<bean class="alma.scheduling.dataload.observatory.ObservatoryDataLoader">
 					<property name="dao" ref="observatoryDao" />
 					<property name="xmlDao" ref="xmlObservatoryDao" />
@@ -219,10 +221,7 @@
 		<property name="loaders">
 			<list>
 				<ref bean="AlmaArchiveObsProjectDataLoader"/>
-				<bean class="alma.scheduling.dataload.ExecutiveDataLoader">
-					<property name="dbDao" ref="execDao" />
-					<property name="xmlDao" ref="xmlExecDao" />
-				</bean>
+				<ref bean="executiveDataLoader"/>
 				<bean class="alma.scheduling.dataload.observatory.ObservatoryDataLoader">
 					<property name="dao" ref="observatoryDao" />
 					<property name="xmlDao" ref="xmlObservatoryDao" />
