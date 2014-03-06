@@ -32,8 +32,6 @@
 		<property name="minPoolSize" value="5" />
 		<property name="acquireIncrement" value="1" />
 		<property name="acquireRetryAttempts" value="5" />
-		<property name="unreturnedConnectionTimeout" value="100" />
-		<property name="debugUnreturnedConnectionStackTraces" value="true"/>
 	</bean>
 
 	<!-- Hibernate SessionFactory -->

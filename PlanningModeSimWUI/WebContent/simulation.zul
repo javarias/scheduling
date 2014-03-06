@@ -212,7 +212,7 @@ eq.subscribe(new org.zkoss.zk.ui.event.EventListener() {
 						<radio id="radioXML" label="XML Projects DAO" radiogroup="sg1" selected="true">
 							<attribute name="onCreate">
 								Sessions.getCurrent().setAttribute(alma.scheduling.psm.web.SimulationController.DATA_LOADER_ATTRNAME, 
-								alma.scheduling.psm.sim.InputActions.DATA_CLEANER_BEAN);
+								alma.scheduling.psm.sim.InputActions.IMMUTABLE_DATA_LOADER_BEAN);
 							</attribute>
 						</radio> 
 						</row>
