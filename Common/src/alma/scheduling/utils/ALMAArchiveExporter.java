@@ -138,6 +138,7 @@ public class ALMAArchiveExporter {
 			}
 		}
 		obsProposalUids = retval;
+		archiveDao.closeSession();
 		return retval;
 	}
 	
@@ -146,9 +147,11 @@ public class ALMAArchiveExporter {
 		for(String uid: obsProposalUids) {
 			String filename = uid.replace("/", "_").replace(":", "_");
 			File destSubDir = new File(destDir, "ObsProposal");
+			FileReader r = null;
 			try {
+				r = new FileReader(new File(destSubDir, filename + ".xml"));
 				alma.entity.xmlbinding.obsproposal.ObsProposal proposal = 
-				alma.entity.xmlbinding.obsproposal.ObsProposal.unmarshalObsProposal(new FileReader(new File(destSubDir, filename + ".xml")));
+				alma.entity.xmlbinding.obsproposal.ObsProposal.unmarshalObsProposal(r);
 				alma.entity.xmlbinding.obsproject.ObsProjectRefT projectRef = proposal.getObsProjectRef();
 				if (projectRef == null) continue;
 				String  projUid = projectRef.getEntityId();
@@ -162,6 +165,12 @@ public class ALMAArchiveExporter {
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 				continue;
+			} finally {
+				if (r !=null )
+					try {
+						r.close();
+					} catch (IOException e) {
+					}
 			}
 		}
 		
@@ -213,6 +222,7 @@ public class ALMAArchiveExporter {
 				continue;
 			}
 		}
+		archiveDao.closeSession();
 		return retval;
 	}
 	
@@ -221,9 +231,11 @@ public class ALMAArchiveExporter {
 		for(String uid: obsProjectUids) {
 			String filename = uid.replace("/", "_").replace(":", "_");
 			File destSubDir = new File(destDir, "ObsProject");
+			FileReader r = null;
 			try {
+				r =  new FileReader(new File(destSubDir, filename));
 				alma.entity.xmlbinding.obsproject.ObsProject project = 
-						alma.entity.xmlbinding.obsproject.ObsProject.unmarshalObsProject(new FileReader(new File(destSubDir, filename)));
+						alma.entity.xmlbinding.obsproject.ObsProject.unmarshalObsProject(r);
 				alma.entity.xmlbinding.obsreview.ObsReviewRefT reviewRef = project.getObsReviewRef();
 				if (reviewRef == null) continue;
 				String  reviewUid = reviewRef.getEntityId();
@@ -237,6 +249,12 @@ public class ALMAArchiveExporter {
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 				continue;
+			} finally {
+				if (r != null)
+					try {
+						r.close();
+					} catch (IOException e) {
+					}
 			}
 		}
 		
@@ -288,6 +306,7 @@ public class ALMAArchiveExporter {
 				continue;
 			}
 		}
+		archiveDao.closeSession();
 		return retval;
 	}
 	
@@ -296,9 +315,11 @@ public class ALMAArchiveExporter {
 		for(String uid: obsReviewUids) {
 			String filename = uid.replace("/", "_").replace(":", "_") + ".xml";
 			File destSubDir = new File(destDir, "ObsReview");
+			FileReader r = null;
 			try {
+				r = new FileReader(new File(destSubDir, filename));
 				ObsReview review = 
-						alma.entity.xmlbinding.obsreview.ObsReview.unmarshalObsReview(new FileReader(new File(destSubDir, filename)));
+						alma.entity.xmlbinding.obsreview.ObsReview.unmarshalObsReview(r);
 				retval.addAll(processObsUnitSet(review.getObsPlan()));
 			} catch (MarshalException e) {
 				e.printStackTrace();
@@ -309,6 +330,12 @@ public class ALMAArchiveExporter {
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 				continue;
+			} finally {
+				if (r != null)
+					try {
+						r.close();
+					} catch (IOException e) {
+					}
 			}
 		}
 		getSchedBlocksFromArchive(retval);
@@ -359,6 +386,7 @@ public class ALMAArchiveExporter {
 				continue;
 			}
 		}
+		archiveDao.closeSession();
 		return retval;
 	}
 	
@@ -370,9 +398,9 @@ public class ALMAArchiveExporter {
 			destFile.createNewFile();
 		FileOutputStream os = null;
 		try {
-		os = new FileOutputStream(destFile);
-		os.write(e.domToString().getBytes());
-		System.out.println(destFile.getAbsolutePath());
+			os = new FileOutputStream(destFile);
+			os.write(e.domToString().getBytes());
+			System.out.println(destFile.getAbsolutePath());
 		} finally {
 			if (os != null)
 				try {
@@ -384,11 +412,11 @@ public class ALMAArchiveExporter {
 	
 	public static void main(String[] args) throws DatabaseException {
 		ALMAArchiveExporter exporter = new ALMAArchiveExporter(new File("./export/"));
-//		exporter.saveObsProposals("2013.1");
+		exporter.saveObsProposals("2013.1");
 //		exporter.loadObsProposals();
-//		exporter.saveObsProjects();
-//		exporter.saveObsReviews();
-		exporter.loadObsReviews();
+		exporter.saveObsProjects();
+		exporter.saveObsReviews();
+//		exporter.loadObsReviews();
 		exporter.saveSchedBlocks();
 	}
 	
