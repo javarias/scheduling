@@ -24,6 +24,7 @@
 package alma.scheduling.datamodel.obsproject.dao;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
@@ -32,6 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.Vector;
 import java.util.logging.Logger;
@@ -86,6 +88,7 @@ import alma.scheduling.datamodel.obsproject.ScienceGrade;
 import alma.scheduling.datamodel.obsproject.ScienceParameters;
 import alma.scheduling.datamodel.obsproject.SkyCoordinates;
 import alma.scheduling.datamodel.obsproject.Target;
+import alma.scheduling.datamodel.obsproject.TemporalConstraint;
 import alma.scheduling.datamodel.obsproject.dao.ProjectImportEvent.ImportStatus;
 import alma.scheduling.formatting.Format;
 import alma.scheduling.utils.ErrorHandling;
@@ -107,6 +110,11 @@ public class APDMtoSchedulingConverter {
 	private static final double defaultSBMaximumHours = 0.5;
 	private static final double defaultSBEstimatedExecutionHours = 0.5;
 	private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+	private static final DateFormat dateFormatWithTZ = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+	static {
+		dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+		dateFormatWithTZ.setTimeZone(TimeZone.getTimeZone("UTC"));
+	}
 	/* End Constants
 	 * ============================================================= */
 
@@ -815,6 +823,7 @@ public class APDMtoSchedulingConverter {
 		Preconditions preconditions;
 		SchedulingConstraints schedulingConstraints;
 		SchedBlockControl schedBlockControl;
+		Set<TemporalConstraint> tempConstraints;
 		
 		try {
 			obsUnitControl = createObsUnitControl(
@@ -902,6 +911,40 @@ public class APDMtoSchedulingConverter {
 			notifier.notifyEvent(event);
 			throw e;
 		}
+		
+		//Create temporal constraints, if there is any
+		tempConstraints = new HashSet<TemporalConstraint>();
+		for (alma.entity.xmlbinding.schedblock.TemporalConstraintsT apdmTc: apdmSB.getTemporalConstraints()) {
+			TemporalConstraint tc = new TemporalConstraint();
+			long margin = 0;
+			if (apdmTc.getAllowedMargin() != null)
+				margin = (long)TimeConverter.convertedValue( apdmTc.getAllowedMargin(), TimeTUnitType.MS);
+			try {
+				if (apdmTc.getStartTime() != null) {
+					tc.setStartTime(dateFormatWithTZ.parse(apdmTc.getStartTime()));
+					tc.setStartTime(new Date(tc.getStartTime().getTime() - margin));
+				}
+			} catch (ParseException e) {
+				logger.warning("Cannot create Temporal Constraint for SB uid: " + 
+						apdmSB.getSchedBlockEntity() == null? "null" : apdmSB.getSchedBlockEntity().getEntityId() +
+						" startTime: " + apdmTc.getStartTime());
+				e.printStackTrace();
+			}
+			try {
+				if (apdmTc.getEndTime() != null) {
+					tc.setEndTime(dateFormatWithTZ.parse(apdmTc.getEndTime()));
+					tc.setEndTime(new Date(tc.getEndTime().getTime() + margin));
+				}
+			} catch (ParseException e) {
+				logger.warning("Cannot create Temporal Constraint for SB uid: " + 
+						apdmSB.getSchedBlockEntity() == null? "null" : apdmSB.getSchedBlockEntity().getEntityId() +
+						" endTime: " + apdmTc.getStartTime());
+				e.printStackTrace();
+			}
+			tempConstraints.add(tc);
+		}
+		if (tempConstraints.size() > 0)
+			schedBlock.setTemporalConstraints(tempConstraints);
 		
 		// Now, all the Target stuff.
 		Map<String, ObservingParameters> observingParameters =
