@@ -11,10 +11,12 @@ import java.util.UUID;
 
 import javax.xml.transform.TransformerException;
 
+import org.springframework.beans.BeansException;
 import org.xml.sax.SAXException;
 
 import alma.entity.xmlbinding.obsproposal.types.InvestigatorTAssociatedExecType;
 import alma.scheduling.SchedulingPolicyFile;
+import alma.scheduling.dataload.DataLoader;
 import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.executive.ExecutivePercentage;
 import alma.scheduling.datamodel.executive.ObservingSeason;
@@ -25,6 +27,7 @@ import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.SchedBlockControl;
 import alma.scheduling.datamodel.obsproject.SchedBlockState;
 import alma.scheduling.datamodel.obsproject.SchedulingConstraints;
+import alma.scheduling.datamodel.obsproject.SkyCoordinates;
 import alma.scheduling.datamodel.obsproject.Target;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 import alma.scheduling.utils.DSAContextFactory;
@@ -37,7 +40,14 @@ public abstract class BaseAlgorithmTestCase extends TestCase {
 		if (System.getProperty("alma.scheduling.properties") == null) {
 			System.setProperty("alma.scheduling.properties", "Common/src/scheduling.properties");
 		}
-		DSAContextFactory.getContext();
+		try {
+			((DataLoader)(DSAContextFactory.getContext().getBean("weatherDataLoader"))).load();
+			((DataLoader)(DSAContextFactory.getContext().getBean("weatherSimDataLoader"))).load();
+		} catch (BeansException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	protected SchedBlock createBasicSB() {
@@ -58,6 +68,10 @@ public abstract class BaseAlgorithmTestCase extends TestCase {
 		fsobs.setAlwaysVisible(true);
 		fsobs.setAlwaysHidden(false);
 		fs.setObservability(fsobs);
+		SkyCoordinates coord = new SkyCoordinates();
+		coord.setRA(12.5);
+		coord.setDec(-60.0);
+		fs.setCoordinates(coord);
 		t.setSource(fs);
 		c.setRepresentativeTarget(t);
 		sb.setSchedulingConstraints(c);

@@ -45,6 +45,7 @@ import alma.scheduling.datamodel.obsproject.SchedBlockState;
 import alma.scheduling.datamodel.obsproject.ScienceParameters;
 import alma.scheduling.datamodel.obsproject.SkyCoordinates;
 import alma.scheduling.datamodel.obsproject.Target;
+import alma.scheduling.datamodel.obsproject.TemporalConstraint;
 
 public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
 
@@ -290,6 +291,7 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
 	@Override
 	@Transactional(readOnly=false)
 	public void deleteAll() {
+		getSession().createQuery("delete from " + TemporalConstraint.class.getCanonicalName()).executeUpdate();
 		getSession().createQuery("delete from " + SchedBlock.class.getCanonicalName()).executeUpdate();
 		
 	}
