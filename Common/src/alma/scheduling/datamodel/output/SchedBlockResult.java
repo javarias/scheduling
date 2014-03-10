@@ -39,7 +39,7 @@ public class SchedBlockResult {
 	private Date endDate;
 	private double executionTime;
 	private long id;
-	private long originalId;
+	private String originalId;
 	private String mode;
 	private double representativeFrequency;
 	private double goalSensitivity;
@@ -51,11 +51,11 @@ public class SchedBlockResult {
 	private SkyCoordinates representativeSource;
 	private Integer representativeBand;
 	
-	public long getOriginalId() {
+	public String getOriginalId() {
 		return originalId;
 	}
 
-	public void setOriginalId(long originalId) {
+	public void setOriginalId(String originalId) {
 		this.originalId = originalId;
 	}
 

@@ -73,10 +73,11 @@ public class InputActions extends PsmContext {
 	}
 	
     public void fullLoad(String dataLoader) throws Exception {
+    	logger.info("Using " + dataLoader + " for getting projects");
         ApplicationContext ctx = getApplicationContext();
         DataLoader weatherLoader = 
         		(DataLoader) ctx.getBean(WEATHER_PARAMS_LOADER_BEAN);
-        DataLoader loader = (DataLoader) ctx.getBean(IMMUTABLE_DATA_LOADER_BEAN);
+        DataLoader loader = (DataLoader) ctx.getBean(dataLoader);
         Date start = new Date();
         weatherLoader.load();
         loader.load();

@@ -35,6 +35,7 @@ import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.obsproject.TemporalConstraint;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 import alma.scheduling.utils.TimeUtil;
 
@@ -114,4 +115,27 @@ public class FieldSourceObservableSelector extends AbstractBaseSelector {
         return crit;
     }
 
+	@Override
+	public boolean canBeSelected(SchedBlock sb, Date date) {
+		//Not using a query yet to handle time constrained observations.
+		//For the query it is necessary to use a schedblock LEFT JOIN time constraint 
+		if (sb.getTemporalConstraints() == null)
+			return true;
+		for(TemporalConstraint c: sb.getTemporalConstraints()) {
+			if (c.getStartTime() != null && c.getEndTime() != null) {
+				if (date.after(c.getStartTime()) && date.before(c.getEndTime()))
+					return true;
+			} else if (c.getStartTime() != null) {
+				if (date.after(c.getStartTime()))
+					return true;
+			} else if (c.getEndTime() != null) {
+				if (date.before(c.getEndTime()))
+					return true;
+			}
+		}
+		return false;
+	}
+
+    
+    
 }

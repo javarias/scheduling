@@ -47,6 +47,7 @@
 							<menuitem label="Right Ascencion Distribution - Executive Breakdown" id ="menuItemAfterSimRaExec"/>
 							<menuitem label="Executive Percentage Balance" id="menuItemAfterSimExec"/>
 							<menuitem label="Observation Projects Completion" id="menuItemObsProjectCompletion"/>
+							<menuitem label="Array Configuration Time Usage" id="menuItemArrayConfiguration" /> 
 							<menuitem label="Final Report" id="menuItemFinalReport"/>
 						</menupopup>
 					</menu>

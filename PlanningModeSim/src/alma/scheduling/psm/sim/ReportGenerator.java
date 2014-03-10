@@ -85,6 +85,9 @@ import alma.scheduling.utils.CoordinatesUtil;
 public class ReportGenerator extends PsmContext {
 
 	private static org.slf4j.Logger logger = LoggerFactory.getLogger(ReportGenerator.class);
+	
+	private static final String PROP_REPORT_TIME_ZONE = "REPORT_TIME_ZONE";
+	private static final TimeZone UTC_TZ = TimeZone.getTimeZone("UTC");
 
 	private static final double ReceiverBandsRange[][] = 
 	{
@@ -212,6 +215,7 @@ public class ReportGenerator extends PsmContext {
 		} catch (SQLException e1) {
 			throw new RuntimeException(e1);
 		}
+		props.put(PROP_REPORT_TIME_ZONE, UTC_TZ);
 		InputStream reportStream = getClass().getClassLoader().getResourceAsStream("alma/scheduling/psm/reports/lstRangesBeforeSim.jasper");
 		logger.info("Creating RA ranges before simulation report");
 		try {
@@ -241,6 +245,7 @@ public class ReportGenerator extends PsmContext {
 		} catch (SQLException e1) {
 			throw new RuntimeException(e1);
 		}
+		props.put(PROP_REPORT_TIME_ZONE, UTC_TZ);
 		InputStream reportStream = getClass().getClassLoader().getResourceAsStream("alma/scheduling/psm/reports/lstRangesBeforeSim.jasper");
 		logger.info("Creating RA ranges before simulation report");
 		try {
@@ -314,6 +319,7 @@ public class ReportGenerator extends PsmContext {
 		} catch (SQLException e1) {
 			throw new RuntimeException(e1);
 		}
+		props.put(PROP_REPORT_TIME_ZONE, UTC_TZ);
 		InputStream reportStream = getClass().getClassLoader().getResourceAsStream("alma/scheduling/psm/reports/lstRangesAfterSim.jasper");
 		logger.info("Creating RA ranges after simulation report");
 		try {
@@ -419,6 +425,7 @@ public class ReportGenerator extends PsmContext {
 		} catch (SQLException e1) {
 			throw new RuntimeException(e1);
 		}
+		props.put(PROP_REPORT_TIME_ZONE, UTC_TZ);
 		synchronized (this) {
 //			JRDataSource dataSource = getExecutiveAfterSimData(id);
 			try {
@@ -484,6 +491,7 @@ public class ReportGenerator extends PsmContext {
 		} catch (SQLException e1) {
 			throw new RuntimeException(e1);
 		}
+		props.put(PROP_REPORT_TIME_ZONE, UTC_TZ);
 		JasperPrint print = null;
 		InputStream reportStream = getClass().getClassLoader().getResourceAsStream(
 		"alma/scheduling/psm/reports/completionReport.jasper");
@@ -522,6 +530,7 @@ public class ReportGenerator extends PsmContext {
 		} catch (SQLException e1) {
 			throw new RuntimeException(e1);
 		}
+		props.put(PROP_REPORT_TIME_ZONE, UTC_TZ);
 		JasperPrint print = null;
 		InputStream reportStream = getClass().getClassLoader().getResourceAsStream(
 		"alma/scheduling/psm/reports/raExecBreakdownReport.jasper");
@@ -529,6 +538,44 @@ public class ReportGenerator extends PsmContext {
 			try {
 				print = JasperFillManager.fillReport(reportStream, props);
 				print.setName("completion_report");
+				return print;
+			} catch (JRException e) {
+				e.printStackTrace();
+			}
+		}
+		return print;
+	}
+	
+	public JasperPrint createArrayConfigurationReport() {
+		ApplicationContext ctx = ReportGenerator.getApplicationContext();
+		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+		return createArrayConfigurationReport(outDao.getLastResultId());
+	}
+	
+	public JasperPrint createArrayConfigurationReport(long id) {
+		ApplicationContext ctx = ReportGenerator.getApplicationContext();
+		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+
+		TreeMap<String, Object> props = new TreeMap<String, Object>();
+		
+		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
+		props.put("seasonStart", outDao.getResults().get(0).getObsSeasonStart());
+		props.put("seasonEnd", outDao.getResults().get(0).getObsSeasonEnd());
+		props.put("resultId", id);
+		DataSource dataSource = (DataSource) ctx.getBean("dataSource");
+		try {
+			props.put("REPORT_CONNECTION", dataSource.getConnection());
+		} catch (SQLException e1) {
+			throw new RuntimeException(e1);
+		}
+		props.put(PROP_REPORT_TIME_ZONE, UTC_TZ);
+		JasperPrint print = null;
+		InputStream reportStream = getClass().getClassLoader().getResourceAsStream(
+		"alma/scheduling/psm/reports/arrayConfigurationReport.jasper");
+		synchronized (this) {
+			try {
+				print = JasperFillManager.fillReport(reportStream, props);
+				print.setName("array_config_report");
 				return print;
 			} catch (JRException e) {
 				e.printStackTrace();
@@ -1017,5 +1064,5 @@ public class ReportGenerator extends PsmContext {
 		}
 		return new String("N/A");
 	}
-
+	
 }

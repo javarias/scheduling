@@ -1,13 +1,14 @@
 <?page title="Results" contentType="text/html;charset=UTF-8"?>
 <zk>
 <window title="Results" id="resultsList" border="normal" 
-height="300px" width="620px" closable="true" maximizable="true" 
-sizable="true" onCreate="fillGrid()">
+height="300px" width="750px" closable="true" maximizable="true" 
+sizable="true" apply="alma.scheduling.psm.web.ResultsListComposer">
 	<borderlayout>
 		<center flex="true">
 			<grid id="grid" >
 				<columns>
 					<column label="Id" width="30px"/>
+					<column label="Name" width ="125px"/>
 					<column label="Start Time" width="125px"/>
 					<column label="End Time" width="125px" />
 					<column label="Simulated start time" width="125px" />
@@ -18,47 +19,20 @@ sizable="true" onCreate="fillGrid()">
 			</grid>
 		</center>
 		<south>
-			<button label="Delete all results" onClick="deleteAllResults()" />
+			<grid>
+			<columns>
+				<column>
+						<button label="Export all results" href="servlets/export_output"/>
+					</column>
+					<column>
+						<button label="Load results from file" id="buttonLoadResults" upload="true"/>
+					</column>
+					<column>
+						<button label="Delete all results" id="buttonDeleteAllResults" />
+					</column>
+				</columns>
+			</grid>
 		</south>
 	</borderlayout>
-	<zscript><![CDATA[
-	import alma.scheduling.datamodel.output.dao.OutputDao;
-	import alma.scheduling.datamodel.output.SimulationResults;
-	import java.util.List;
-	
-	void fillGrid() {
-		final java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-		format.setTimeZone(TimeZone.getTimeZone("UTC"));
-		org.springframework.context.ApplicationContext ctx = alma.scheduling.psm.util.PsmContext.getApplicationContext();
-		OutputDao outDao = (OutputDao)ctx.getBean("outDao");
-		List results = outDao.getResults();
-		
-		Object[][] model = new Object[results.size()][6];
-		
-		for(int i = 0; i < results.size(); i++) {
-			SimulationResults r = results.get(i);
-			model[i][0] = r.getId().toString();
-			model[i][1] = format.format(r.getStartRealDate());
-			model[i][2] = format.format(r.getStopRealDate());
-			model[i][3] = format.format(r.getStartSimDate());
-			model[i][4] = format.format(r.getStopSimDate());
-			Button b = new Button("Get");
-			b.setHref("servlets/get_reports?id=" + r.getId());
-			model[i][5] = b;
-		}
-		ListModel strset = new SimpleListModel(model);
-		grid.setModel(strset);
-		grid.setRowRenderer(new alma.scheduling.psm.web.GenericRowRenderer());
-	}
-	
-	void deleteAllResults() {
-		org.springframework.context.ApplicationContext ctx = alma.scheduling.psm.util.PsmContext.getApplicationContext();
-		OutputDao outDao = (OutputDao)ctx.getBean("outDao");
-		outDao.deleteAll();
-		Event closeEvent = new Event("onClose", resultsList);
-		Events.postEvent(closeEvent);
-	}
-	]]>
-	</zscript>
 </window>
 </zk>

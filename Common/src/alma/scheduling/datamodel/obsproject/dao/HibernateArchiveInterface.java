@@ -17,19 +17,6 @@
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
-import java.io.StringReader;
-import java.util.logging.Logger;
-
-import javax.xml.transform.TransformerException;
-
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
 import org.omg.CORBA.UserException;
 
 import alma.acs.entityutil.EntityDeserializer;

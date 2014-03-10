@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version last-->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Crowding Report" pageWidth="595" pageHeight="842" columnWidth="539" leftMargin="36" rightMargin="20" topMargin="30" bottomMargin="30" uuid="2ff0defe-daef-4b51-807a-005956ef00ff">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="almads test hsqldb"/>
+	<style name="Heading 4" fontSize="12" isBold="true" isItalic="true"/>
+	<style name="Heading 2" fontSize="14" isBold="true" isItalic="true"/>
+	<style name="Heading 1" fontSize="16" isBold="true"/>
+	<style name="Default"/>
+	<parameter name="totalAvailableTime" class="java.lang.String"/>
+	<parameter name="scientificTime" class="java.lang.String"/>
+	<parameter name="seasonStart" class="java.util.Date" isForPrompting="false"/>
+	<parameter name="seasonEnd" class="java.util.Date" isForPrompting="false"/>
+	<parameter name="resultId" class="java.lang.Long"/>
+	<queryString language="SQL">
+		<![CDATA[select ARRAY.ID as arrayName, ARRAY.ARRAY_TYPE as arrayType, ARRAY.CONFIG_NAME as configName, A.EXECUTIVE as executive,
+	ARRAY.CREATION_DATE as creationDate, ARRAY.DELETION_DATE as deletionDate,
+	ARRAY.AVAILABLE_TIME as availableTime, sum(SB.EXECUTION_TIME) as executionTime
+	from OUTPUT_SCHED_BLOCK_RESULT as SB right join OUTPUT_ARRAY as ARRAY on SB.ARRAY_REF = ARRAY.ID
+	left join OUTPUT_OBSERVATION_PROJECT as P on P.ID = SB.OBSERVATION_PROJECT_ID
+	left join OUTPUT_RESULTS as R on R.ID = P.RESULT_ID
+	left join OUTPUT_AFFILIATION as A on P.ID = A.OBSERVATION_PROJECT_ID
+	where result_id=$P!{resultId} GROUP BY ARRAY.ID, executive order by ARRAY.CREATION_DATE asc, executive asc;]]>
+	</queryString>
+	<field name="arrayName" class="java.lang.String"/>
+	<field name="creationDate" class="java.util.Date"/>
+	<field name="deletionDate" class="java.util.Date"/>
+	<field name="availableTime" class="java.lang.Double"/>
+	<field name="executive" class="java.lang.String"/>
+	<field name="executionTime" class="java.lang.Double"/>
+	<field name="arrayType" class="java.lang.String"/>
+	<field name="configName" class="java.lang.String"/>
+	<variable name="arrayAvailableTime" class="java.lang.Double" resetType="Group" resetGroup="arrayConfigGroup" calculation="First">
+		<variableExpression><![CDATA[($F{availableTime} == null)? 0 : $F{availableTime}]]></variableExpression>
+	</variable>
+	<variable name="totalExecTime" class="java.lang.Double" resetType="Group" resetGroup="arrayConfigGroup" calculation="Sum">
+		<variableExpression><![CDATA[($F{executionTime} == null)? 0: $F{executionTime}]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.lang.Double(0)]]></initialValueExpression>
+	</variable>
+	<variable name="clTime" class="java.lang.Double" resetType="Group" resetGroup="arrayConfigGroup" calculation="Sum">
+		<variableExpression><![CDATA[($F{executive}.compareTo("CL") == 0) ? $F{executionTime} : 0]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.lang.Double(0)]]></initialValueExpression>
+	</variable>
+	<variable name="eaTime" class="java.lang.Double" resetType="Group" resetGroup="arrayConfigGroup" calculation="Sum">
+		<variableExpression><![CDATA[($F{executive}.compareTo("EA") == 0 ) ? $F{executionTime} : 0]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.lang.Double(0)]]></initialValueExpression>
+	</variable>
+	<variable name="ea_naTime" class="java.lang.Double" resetType="Group" resetGroup="arrayConfigGroup" calculation="Sum">
+		<variableExpression><![CDATA[($F{executive}.compareTo("EA_NA") == 0 || $F{executive}.compareTo("EA/NA") == 0) ? $F{executionTime} : 0]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.lang.Double(0)]]></initialValueExpression>
+	</variable>
+	<variable name="euTime" class="java.lang.Double" resetType="Group" resetGroup="arrayConfigGroup" calculation="Sum">
+		<variableExpression><![CDATA[($F{executive}.compareTo("EU") == 0 ) ? $F{executionTime} : 0]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.lang.Double(0)]]></initialValueExpression>
+	</variable>
+	<variable name="naTime" class="java.lang.Double" resetType="Group" resetGroup="arrayConfigGroup" calculation="Sum">
+		<variableExpression><![CDATA[($F{executive}.compareTo("NA") == 0 ) ? $F{executionTime} : 0]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.lang.Double(0)]]></initialValueExpression>
+	</variable>
+	<variable name="otherTime" class="java.lang.Double" resetType="Group" resetGroup="arrayConfigGroup" calculation="Sum">
+		<variableExpression><![CDATA[($F{executive}.compareTo("OTHER") == 0 ) ? $F{executionTime} : 0]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.lang.Double(0)]]></initialValueExpression>
+	</variable>
+	<group name="arrayConfigGroup">
+		<groupExpression><![CDATA[$F{arrayName}]]></groupExpression>
+		<groupHeader>
+			<band>
+				<property name="local_mesure_unitheight" value="pixel"/>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="205">
+				<property name="local_mesure_unitheight" value="pixel"/>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				<textField pattern="#,##0.0#;(#)">
+					<reportElement x="53" y="162" width="48" height="15" uuid="3e29b4c7-8722-4a8a-b1bc-9b539855bf9d"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{totalExecTime}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement style="Default" x="0" y="65" width="43" height="15" uuid="8bfed570-36c7-4383-8235-c7db0fa9b7d1"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[CL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="80" width="43" height="15" uuid="bcf8999b-4be5-4afe-8a33-2de2228c2cf4"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[EA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="95" width="43" height="15" uuid="f6d39338-f4a7-41b6-a387-1de3b91b464f"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[EA_NA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="110" width="43" height="15" uuid="f6d39338-f4a7-41b6-a387-1de3b91b464f"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[EU]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="125" width="43" height="15" uuid="f6d39338-f4a7-41b6-a387-1de3b91b464f"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[NA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="140" width="43" height="15" uuid="f6d39338-f4a7-41b6-a387-1de3b91b464f"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[OTHER]]></text>
+				</staticText>
+				<textField pattern="#,##0.0#;(#)">
+					<reportElement x="47" y="65" width="48" height="15" uuid="96424264-09d4-427b-81ad-dd530fea99e4"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{clTime}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.0#;(#)">
+					<reportElement x="47" y="80" width="48" height="15" uuid="ad615422-b86d-44a3-b0f5-9c795e8176c4"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{eaTime}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.0#;(#)">
+					<reportElement x="47" y="95" width="48" height="15" uuid="d2ba8813-4e2c-4559-9778-7ffb7c6eb772"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{ea_naTime}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.0#;(#)">
+					<reportElement x="47" y="110" width="48" height="15" uuid="d2ba8813-4e2c-4559-9778-7ffb7c6eb772"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{euTime}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.0#;(#)">
+					<reportElement x="47" y="125" width="48" height="15" uuid="d2ba8813-4e2c-4559-9778-7ffb7c6eb772"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{naTime}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.0#;(#)">
+					<reportElement x="47" y="140" width="48" height="15" uuid="d2ba8813-4e2c-4559-9778-7ffb7c6eb772"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{otherTime}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="1" y="162" width="43" height="15" uuid="6bd62418-d7da-4f6e-81e9-ed2abc3e009c"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Total used]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="62" width="250" height="1" uuid="25d7b1a9-8938-4a7b-880f-04b1b629494d"/>
+				</line>
+				<textField pattern="#,###.##%">
+					<reportElement x="131" y="65" width="39" height="14" uuid="1c192a06-cc47-495e-b478-b81e904f69cf"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{clTime} / $V{totalExecTime}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,###.##%">
+					<reportElement x="131" y="80" width="39" height="14" uuid="e3111629-ba1c-46d3-8f3c-b1c31020325d">
+						<property name="local_mesure_unitwidth" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{eaTime} / $V{totalExecTime}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,###.##%">
+					<reportElement x="131" y="95" width="39" height="15" uuid="a9501b93-be2e-4bad-9a00-f3f89489938c"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{ea_naTime} / $V{totalExecTime}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,###.##%">
+					<reportElement x="131" y="110" width="39" height="15" uuid="a9501b93-be2e-4bad-9a00-f3f89489938c"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{euTime} / $V{totalExecTime}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,###.##%">
+					<reportElement x="131" y="125" width="39" height="15" uuid="a9501b93-be2e-4bad-9a00-f3f89489938c"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{naTime} / $V{totalExecTime}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,###.##%">
+					<reportElement x="131" y="140" width="39" height="15" uuid="a9501b93-be2e-4bad-9a00-f3f89489938c"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{otherTime} / $V{totalExecTime}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,###.##%">
+					<reportElement x="131" y="162" width="39" height="15" uuid="66b95ffc-631e-4c0e-b30b-40e3e8c47217"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{totalExecTime} / $V{arrayAvailableTime}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="0" y="158" width="250" height="1" uuid="da7a37db-1d41-4e6f-8ead-297ed1a205a7"/>
+				</line>
+				<line>
+					<reportElement x="2" y="202" width="250" height="1" uuid="ba871d39-a8f8-4fa2-9412-9172acfee6e2"/>
+				</line>
+				<pie3DChart>
+					<chart isShowLegend="true" evaluationTime="Group" evaluationGroup="arrayConfigGroup">
+						<reportElement x="260" y="34" width="279" height="158" uuid="182ce7d8-c667-4812-a310-3382d7690042"/>
+						<chartTitle>
+							<font size="9"/>
+						</chartTitle>
+						<chartSubtitle>
+							<font size="8"/>
+						</chartSubtitle>
+						<chartLegend position="Right">
+							<font size="8"/>
+						</chartLegend>
+					</chart>
+					<pieDataset>
+						<keyExpression><![CDATA[($F{executive} == null)? "OTHER" : $F{executive}]]></keyExpression>
+						<valueExpression><![CDATA[($F{executionTime} == null)? 0 : $F{executionTime}]]></valueExpression>
+					</pieDataset>
+					<pie3DPlot isCircular="true">
+						<plot backgroundAlpha="0.5" foregroundAlpha="0.8"/>
+						<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
+					</pie3DPlot>
+				</pie3DChart>
+				<staticText>
+					<reportElement x="47" y="41" width="48" height="19" uuid="55d2c722-46d4-4a94-aa23-d356d8ff016a"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Hours]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="41" width="43" height="19" uuid="2f337f12-9eaf-41f3-97b1-79fe14da852a"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Executive]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="118" y="41" width="52" height="19" uuid="7058491f-a091-439f-9011-1ef4888d27c9"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Percentage (observed)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="177" width="43" height="25" uuid="b769a689-4de7-4cc8-a5a5-d7c67e8834a7"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Total time available]]></text>
+				</staticText>
+				<textField pattern="#,##0.0#;(#)">
+					<reportElement x="53" y="182" width="48" height="15" uuid="a1d55c19-2654-4193-b027-7ee386d5ec96"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{arrayAvailableTime}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="Heading 4" x="0" y="5" width="260" height="15" uuid="177dff67-5d00-4110-9616-80e511ce9cbd">
+						<property name="local_mesure_unity" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<property name="local_mesure_unitheight" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Array: " + $F{configName} + " - " + $F{arrayType}]]></textFieldExpression>
+				</textField>
+				<textField pattern="yyyy-MM-dd&apos;T&apos;HH:mm:ss zz">
+					<reportElement style="Heading 4" x="0" y="20" width="120" height="15" uuid="81eb0ee3-44c9-41f9-8fb1-162c59ab7350">
+						<property name="local_mesure_unitx" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="local_mesure_unitheight" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="local_mesure_unitwidth" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{creationDate}]]></textFieldExpression>
+				</textField>
+				<textField pattern="yyyy-MM-dd&apos;T&apos;HH:mm:ss zz">
+					<reportElement style="Heading 4" x="140" y="20" width="120" height="15" uuid="aa71b975-deef-4c6f-998c-ea64358a289a">
+						<property name="local_mesure_unitx" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="local_mesure_unitheight" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement verticalAlignment="Middle" markup="none">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{deletionDate}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement style="Heading 4" x="120" y="20" width="20" height="15" uuid="488166b1-529c-4610-81a3-f092fd2eb97c"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[-]]></text>
+				</staticText>
+			</band>
+		</groupFooter>
+	</group>
+	<title>
+		<band height="67">
+			<image>
+				<reportElement x="0" y="0" width="43" height="52" uuid="bf4f67ae-33f9-485e-addc-a3351440fa02"/>
+				<imageExpression><![CDATA["alma/scheduling/psm/reports/images/alma-logo.jpg"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement mode="Opaque" x="308" y="0" width="88" height="18" forecolor="#010101" backcolor="#7A87CD" uuid="ddfed7e0-d8c5-4cf8-9124-bba447926b7a"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hours in Season:]]></text>
+			</staticText>
+			<textField pattern="#,##0.0#;(#)">
+				<reportElement mode="Opaque" x="396" y="0" width="143" height="18" forecolor="#010101" backcolor="#7A87CD" uuid="78d185ae-911d-44e4-8d47-42445a74b465"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[Double.parseDouble($P{totalAvailableTime})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Heading 1" mode="Opaque" x="53" y="0" width="243" height="28" forecolor="#C5C5C5" backcolor="#00026F" uuid="74956b42-357b-48bc-97c8-26a3da2e2553"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Planning Mode Simulator]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Heading 1" mode="Opaque" x="53" y="28" width="243" height="24" forecolor="#FEFEFE" backcolor="#00026F" uuid="403ab266-57ba-4c74-a439-fc9c4920c6f5"/>
+				<box padding="0" topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" markup="none">
+					<font fontName="SansSerif" size="11" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single" lineSpacingSize="1.0" firstLineIndent="0" leftIndent="0" rightIndent="0" spacingBefore="0" spacingAfter="0" tabStopWidth="40"/>
+				</textElement>
+				<text><![CDATA[Array configuration balance]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="55" width="539" height="1" forecolor="#1A0067" uuid="a069175e-6b3e-4a99-8a86-f8611fdca698"/>
+				<graphicElement>
+					<pen lineWidth="1.75"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement mode="Opaque" x="308" y="18" width="88" height="14" forecolor="#010101" backcolor="#7A87CD" uuid="383aa839-d991-45c8-ab7c-7368cbbc1995"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Season starts:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="308" y="32" width="88" height="20" forecolor="#010101" backcolor="#7A87CD" uuid="f6a415fa-7106-470a-957b-968ccdbb14ff"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Season ends:]]></text>
+			</staticText>
+			<textField pattern="yyyy-MM-dd&apos;T&apos;HH:mm:ss zz">
+				<reportElement mode="Opaque" x="396" y="18" width="143" height="14" forecolor="#010101" backcolor="#7A87CD" uuid="2a6af01c-f321-45ea-99a9-25be81ca1ba7"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{seasonStart}]]></textFieldExpression>
+			</textField>
+			<textField pattern="yyyy-MM-dd&apos;T&apos;HH:mm:ss zz">
+				<reportElement mode="Opaque" x="396" y="32" width="143" height="20" forecolor="#010101" backcolor="#7A87CD" uuid="ca14e7cb-99e0-4f75-ab3d-3d465e52b3f2"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{seasonEnd}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="302" y="0" width="6" height="52" backcolor="#7A87CD" uuid="10e0c70d-7693-40b8-b179-1271e76810dd"/>
+				<graphicElement>
+					<pen lineWidth="0.0" lineStyle="Double"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="47" y="0" width="6" height="52" backcolor="#00026F" uuid="30e601d9-d55b-4dd2-9545-bc30042c995f"/>
+				<graphicElement>
+					<pen lineWidth="0.0" lineStyle="Double"/>
+				</graphicElement>
+			</rectangle>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="27">
+			<staticText>
+				<reportElement style="Heading 2" mode="Opaque" x="0" y="1" width="539" height="24" forecolor="#FEFEFE" backcolor="#00026F" uuid="c3cb950b-e25f-4100-8b53-ef265075d3b6"/>
+				<box padding="0" topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" markup="none">
+					<font fontName="SansSerif" size="12" isBold="true" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single" lineSpacingSize="1.0" firstLineIndent="0" leftIndent="0" rightIndent="0" spacingBefore="0" spacingAfter="0" tabStopWidth="40"/>
+				</textElement>
+				<text><![CDATA[Observed time dedicated per configuration]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<pageFooter>
+		<band height="50">
+			<textField>
+				<reportElement x="199" y="9" width="80" height="20" uuid="cc451b91-0c89-400b-bafe-f27d869d8112"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="282" y="9" width="40" height="20" uuid="e6a56c89-5563-4fcb-93f4-17dcfc226093"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="0" width="539" height="1" forecolor="#1A0067" uuid="410589f9-ae47-4a2d-a90c-38f1ad77e426"/>
+				<graphicElement>
+					<pen lineWidth="1.75"/>
+				</graphicElement>
+			</line>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="197">
+			<staticText>
+				<reportElement x="0" y="26" width="539" height="148" uuid="760618b5-60c1-4135-8516-6a11aeabebc4"/>
+				<textElement textAlignment="Justified">
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[This report shows the time assigned to each array configuration, breaking down the time used per each executive. If the array was not used at all by and executive, then null values will show up instead of zeroes.
+
+Information is given per array configuration.
+The header of the array info has the array configuration name, the type of array and the starting and ending times for the given configuration.
+"Executive" column, indicates the executive.
+"Hours" indicates how much time was observed by the given executive.
+"Percentage" is calculated using the number of hours spent on the array for the given executive, compared to the "Total Used" hours.
+
+The last row of each array configuration shows the total time used by all the executives and the percentage used in comparison with the "Total available time" shown in the next row.
+
+The pie charts shows a comparison of the "Hours" observed by each executive in the given array configuration. The pie chart only consider the time used.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="0" width="250" height="20" uuid="f597cd21-df2a-4715-843c-94017159019a"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Explanation of the report]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

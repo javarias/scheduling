@@ -154,6 +154,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
             <bean id="{concat('postUpdateSelectorAndUpdater', '_', @name)}" class="alma.scheduling.algorithm.sbselection.MasterSelectorWithUpdater">
                 <property name="selectors">
                     <set>
+                    	<ref bean="sourceSelector"/>
                     	<xsl:if test="count(SelectionCriteria/AltitudeSelector) = 1">
                     		<ref bean="altitudeSelector" />
                     	</xsl:if>

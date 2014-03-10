@@ -147,7 +147,7 @@
 				<key column="SCHEDBLOCKID" />
 				<one-to-many class="Target" />
 			</set>
-			<set cascade="save-update, lock, delete, delete-orphan" name="temporalConstraints">
+			<set cascade="save-update, lock, delete, delete-orphan" name="temporalConstraints" lazy="false">
 				<key column="SCHEDBLOCKID" />
 				<one-to-many class="TemporalConstraint"/>
 			</set>

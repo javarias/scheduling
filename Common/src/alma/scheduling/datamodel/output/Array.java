@@ -27,6 +27,8 @@ package alma.scheduling.datamodel.output;
 
 import java.util.Date;
 
+import alma.scheduling.datamodel.obsproject.ArrayType;
+
 /**
  * @author Arturo Hoffstadt Urrutia
  * @version 1.0
@@ -43,9 +45,10 @@ public class Array {
 	private double scientificTime;
 	private double resolution;
 	private double uvCoverage;
-	private double minResolution;
-	private double maxResolution;
+	private double minBaseline;
+	private double maxBaseline;
 	private String configurationName;
+	private ArrayType type;
 
 	public Array(){
 
@@ -123,20 +126,20 @@ public class Array {
 		this.originalId = originalId;
 	}
 
-	public double getMinResolution() {
-		return minResolution;
+	public double getMinBaseline() {
+		return minBaseline;
 	}
 
-	public void setMinResolution(double minResolution) {
-		this.minResolution = minResolution;
+	public void setMinBaseline(double minBaseline) {
+		this.minBaseline = minBaseline;
 	}
 
-	public double getMaxResolution() {
-		return maxResolution;
+	public double getMaxBaseline() {
+		return maxBaseline;
 	}
 
-	public void setMaxResolution(double maxResolution) {
-		this.maxResolution = maxResolution;
+	public void setMaxBaseline(double maxBaseline) {
+		this.maxBaseline = maxBaseline;
 	}
 
 	public String getConfigurationName() {
@@ -145,6 +148,14 @@ public class Array {
 
 	public void setConfigurationName(String configurationName) {
 		this.configurationName = configurationName;
+	}
+
+	public ArrayType getType() {
+		return type;
+	}
+
+	public void setType(ArrayType type) {
+		this.type = type;
 	}
 	
 }

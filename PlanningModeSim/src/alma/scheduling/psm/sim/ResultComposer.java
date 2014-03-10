@@ -115,6 +115,15 @@ public class ResultComposer {
 			arr.setUvCoverage(0.0);
 		else
 			arr.setUvCoverage(arrcfg.getUvCoverage());
+		
+		if(arrcfg.getMaxBaseline() != null)
+			arr.setMaxBaseline(arrcfg.getMaxBaseline());
+		if(arrcfg.getMinBaseline() != null)
+			arr.setMinBaseline(arrcfg.getMinBaseline());
+		if(arrcfg.getArrayType() != null)
+			arr.setType(arrcfg.getArrayType());
+		arr.setConfigurationName(arrcfg.getConfigurationName());
+		
 		results.getArray().add(arr);
 	}
 	
@@ -292,7 +301,6 @@ public class ResultComposer {
     void prepareSbrSet( ObsUnit ptrOu, HashSet<SchedBlockResult> sbrSet, ObservationDao obsDao ){
     	if( ptrOu instanceof SchedBlock ){
     		SchedBlock sb = (SchedBlock) ptrOu;
-    		long sbId = sb.getId();
     		
 			for (ExecBlock eb: obsDao.getAllExecBlocksForSB(sb.getUid())) {
 			
@@ -326,7 +334,7 @@ public class ResultComposer {
 				System.out.println("SensitivityGoal: " + ((ScienceParameters) params).getSensitivityGoal() );
 		            }
 		        }
-		        sbr.setOriginalId( sbId );
+		        sbr.setOriginalId(sb.getUid());
 		        sbr.setMode( "N/A" );
 		        sbr.setRepresentativeFrequency( ((SchedBlock)ptrOu).getSchedulingConstraints().getRepresentativeFrequency() );
 		        sbr.setRepresentativeBand(sb.getRepresentativeBand());

@@ -15,9 +15,6 @@
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/ACSErrTypeCommon-working@oper01.aoc.ste.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/acsjlog-working@oper01.aoc.ste.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/activation-1.1.jar"/>
-	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/ant-1.6.5.jar"/>
-	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/ant-1.7.1.jar"/>
-	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/ant-launcher-1.7.1.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/antlr-2.7.7.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/aopalliance-1.0.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/APDMEntities-working@oper01.aoc.ste.jar"/>
@@ -59,7 +56,6 @@
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/c3p0-0.9.1.2.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/carol-2.0.5.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/cas-client-core-3.1.5.jar"/>
-	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/castor-1.2.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/castor-working@oper01.aoc.ste.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/cdi-api-1.0-CR1.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/cglib-2.1_3.jar"/>
@@ -94,7 +90,6 @@
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/connector-api-1.5.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/dom4j-1.6.1-sources.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/dom4j-1.6.1.jar"/>
-	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/ehcache-1.4.1.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/ehcache-core-2.1.0-javadoc.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/ehcache-core-2.1.0-sources.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/ehcache-core-2.1.0.jar"/>
@@ -106,10 +101,8 @@
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/geronimo-stax-api_1.0_spec-1.0.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/google-collections-1.0-rc3.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/groovy-all-2.0.1.jar"/>
-	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/hibernate-3.2.6.ga.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/hibernate-annotations-3.3.1.GA.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/hibernate-cglib-repack-2.1_3.jar"/>
-	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/hibernate-commons-annotations-3.0.0.ga.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/hibernate-core-3.3.1.GA-javadoc.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/hibernate-core-3.3.1.GA-sources.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/hibernate-core-3.3.1.GA.jar"/>
@@ -152,7 +145,6 @@
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/jsr107cache-1.0.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/jta-1.1-sources.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/jta-1.1.jar"/>
-	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/junit-3.8.2.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/jxl-2.6.10.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/jython-2.2.1.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/log4j-1.2.15.jar"/>
@@ -167,7 +159,6 @@
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/poi-ooxml-schemas-3.7.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/portlet-api-1.0.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/portlet-api-2.0.jar"/>
-	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/pull-parser-2.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/qdox-1.5.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/relaxngDatatype-20030807.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/rhino-1.7R3.jar"/>
@@ -180,11 +171,8 @@
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/SchedulingPMSCli-working@oper01.aoc.ste.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/SchedulingTypes-working@oper01.aoc.ste.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/serializer-2.7.1.jar"/>
-	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/servlet-api-2.5.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/slf4j-api-1.5.11.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/slf4j-jdk14-1.5.11.jar"/>
-	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/slf4j-log4j12-1.5.11-sources.jar"/>
-	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/slf4j-log4j12-1.5.11.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/spring-aop-2.5.5-sources.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/spring-aop-2.5.5.jar"/>
 	<classpathentry kind="lib" path="/SCHEDULING/PlanningModeSimWUI/lib/spring-beans-2.5.5.jar"/>

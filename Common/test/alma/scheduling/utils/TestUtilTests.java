@@ -29,7 +29,7 @@ public class TestUtilTests extends TestCase {
 		Date endDate = new Date(startDate.getTime() + TimeUtil.MSECS_IN_DAY * 4 + 16 * TimeUtil.MSECS_IN_HOUR);
 		DailyTimeInterval ti = new DailyTimeInterval(16 * TimeUtil.MSECS_IN_HOUR, 12 * TimeUtil.MSECS_IN_HOUR);
 		double hours = TimeUtil.getHoursInDateTimeInterval(startDate, endDate, ti);
-		assertEquals(32.0, hours);
+		assertEquals(56.0, hours);
 	}
 	
 	public void testNHoursInDateTimeIntervalOvernightOddDays() throws Exception {
@@ -41,7 +41,7 @@ public class TestUtilTests extends TestCase {
 		Date endDate = new Date(startDate.getTime() + TimeUtil.MSECS_IN_DAY * 5 + 16 * TimeUtil.MSECS_IN_HOUR);
 		DailyTimeInterval ti = new DailyTimeInterval(16 * TimeUtil.MSECS_IN_HOUR, 12 * TimeUtil.MSECS_IN_HOUR);
 		double hours = TimeUtil.getHoursInDateTimeInterval(startDate, endDate, ti);
-		assertEquals(36.0, hours);
+		assertEquals(68.0, hours);
 	}
 	
 	public void testNHoursInDateTimeIntervalOvernightDifficult() throws Exception {
@@ -53,6 +53,6 @@ public class TestUtilTests extends TestCase {
 		Date endDate = new Date(startDate.getTime() + TimeUtil.MSECS_IN_DAY * 4 + 10 * TimeUtil.MSECS_IN_HOUR);
 		DailyTimeInterval ti = new DailyTimeInterval(16 * TimeUtil.MSECS_IN_HOUR, 12 * TimeUtil.MSECS_IN_HOUR);
 		double hours = TimeUtil.getHoursInDateTimeInterval(startDate, endDate, ti);
-		assertEquals(34.0, hours);
+		assertEquals(58.0, hours);
 	}
 }

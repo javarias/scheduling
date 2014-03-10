@@ -367,14 +367,14 @@
 				</textElement>
 				<text><![CDATA[Season ends:]]></text>
 			</staticText>
-			<textField pattern="">
+			<textField pattern="yyyy-MM-dd&apos;T&apos;HH:mm:ss zz">
 				<reportElement mode="Opaque" x="396" y="18" width="143" height="14" forecolor="#010101" backcolor="#7A87CD" uuid="2a6af01c-f321-45ea-99a9-25be81ca1ba7"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{seasonStart}]]></textFieldExpression>
 			</textField>
-			<textField pattern="">
+			<textField pattern="yyyy-MM-dd&apos;T&apos;HH:mm:ss zz">
 				<reportElement mode="Opaque" x="396" y="32" width="143" height="20" forecolor="#010101" backcolor="#7A87CD" uuid="ca14e7cb-99e0-4f75-ab3d-3d465e52b3f2"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
