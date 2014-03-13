@@ -31,6 +31,8 @@ import org.hibernate.Query;
 import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.datamodel.GenericDaoImpl;
@@ -289,7 +291,7 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
     }
 
 	@Override
-	@Transactional(readOnly=false)
+	@Transactional(readOnly=false, isolation=Isolation.SERIALIZABLE, propagation=Propagation.REQUIRES_NEW)
 	public void deleteAll() {
 		getSession().createQuery("delete from " + TemporalConstraint.class.getCanonicalName()).executeUpdate();
 		getSession().createQuery("delete from " + SchedBlock.class.getCanonicalName()).executeUpdate();
