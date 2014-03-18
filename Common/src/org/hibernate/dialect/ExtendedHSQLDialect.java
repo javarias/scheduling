@@ -33,4 +33,12 @@ public class ExtendedHSQLDialect extends HSQLDialect {
 				referencedTable, primaryKey, referencesPrimaryKey);
 		return str + " on delete cascade"; 
 	}
+
+
+	@Override
+	public Boolean performTemporaryTableDDLInIsolation() {
+		return false;
+	}
+	
+	
 }
