@@ -13,7 +13,7 @@ public class MappingTest extends TestCase {
 	
 	private Configuration getConfiguration() {
 		Configuration config = new Configuration();
-		config.setProperty("hibernate.connection.url", "jdbc:hsqldb:mem");
+		config.setProperty("hibernate.connection.url", "jdbc:hsqldb:mem:test");
 		config.setProperty("hibernate.connection.username", "sa");
 		config.setProperty("hibernate.connection.password", "");
 		config.setProperty("hibernate.connection.driver_class", "org.hsqldb.jdbcDriver");
