@@ -4,7 +4,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -99,6 +104,40 @@ public class ALMAArchiveExporter {
 			}
 		}
 		return obsReviewUids;
+	}
+	
+	public Set<String> loadObsProjects() {
+		File destSubDir = new File(destDir, "ObsProject");
+		if (!destSubDir.exists())
+			throw new IllegalArgumentException(destSubDir.getAbsolutePath() + " doesn't exists. Cannot continue.");
+		if (!destSubDir.isDirectory() )
+			throw new IllegalArgumentException(destSubDir.getAbsolutePath() + " is not a directory. Cannot continue.");
+		if (!destSubDir.canRead()) 
+			throw new IllegalArgumentException(destSubDir.getAbsolutePath() + " is not a readeable. Cannot continue.");
+		obsProjectUids = new HashSet<String>();
+		for (File f: destSubDir.listFiles()) {
+			alma.entity.xmlbinding.obsproject.ObsProject project;
+			FileReader r = null;
+			try {
+				System.out.println("Reading " + f);
+				r = new FileReader(f);
+				project = alma.entity.xmlbinding.obsproject.ObsProject.unmarshalObsProject(r);
+				obsProjectUids.add(project.getObsProjectEntity().getEntityId());
+			} catch (MarshalException e) {
+				e.printStackTrace(); continue;
+			} catch (ValidationException e) {
+				e.printStackTrace(); continue;
+			} catch (FileNotFoundException e) {
+				e.printStackTrace(); continue;
+			} finally {
+				if (r != null)
+					try {
+						r.close();
+					} catch (IOException e) {
+					}
+			}
+		}
+		return obsProjectUids;
 	}
 	
 	/**
@@ -410,6 +449,99 @@ public class ALMAArchiveExporter {
 		}
 	}
 	
+	public String synchronizeProjectGrade(String uid) throws SQLException {
+		Connection conn = archiveDao.getConnection();
+		Statement stmt = null;
+		try {
+			stmt = conn.createStatement();
+			String qString = "select APRC_LETTER_GRADE from proposal where ARCHIVE_UID = '" + uid +"'";
+			System.out.println("Query: " + qString);
+			ResultSet rs = stmt.executeQuery(qString);
+			if (!rs.next()) {
+				System.err.println("No Result");
+				return "D";
+			}
+			String grade = rs.getString("APRC_LETTER_GRADE");
+			if (grade == null)
+				return "D";
+			if (grade.equals("A") || grade.equals("B") || grade.equals("C"))
+				return grade;
+			return "D";
+		}finally {
+			if (stmt != null)
+				stmt.close();
+			archiveDao.closeSession();
+		}
+	}
+	
+	public void synchronizeProjectGrade() {
+		File propDir = new File(destDir, "ObsProposal");
+		File prjDir = new File(destDir, "ObsProject");
+		if (!propDir.exists() || !prjDir.exists())
+			throw new IllegalArgumentException(propDir.getAbsolutePath() + " doesn't exists. Cannot continue.");
+		if (!propDir.isDirectory() )
+			throw new IllegalArgumentException(propDir.getAbsolutePath() + " is not a directory. Cannot continue.");
+		if (!propDir.canRead()) 
+			throw new IllegalArgumentException(propDir.getAbsolutePath() + " is not a readeable. Cannot continue.");
+		alma.entity.xmlbinding.obsproposal.ObsProposal proposal;
+		alma.entity.xmlbinding.obsproject.ObsProject project;
+		FileReader r = null;
+		FileWriter w = null;
+		for (String uid : obsProposalUids) {
+			try {
+				File fprop = new File(propDir, uid.replace(":", "_").replace("/", "_") + ".xml");
+				String grade = synchronizeProjectGrade(uid);
+				System.out.println("Reading " + fprop);
+				r = new FileReader(fprop);
+				proposal = alma.entity.xmlbinding.obsproposal.ObsProposal
+						.unmarshalObsProposal(r);
+				r.close();
+				if (proposal.getObsProjectRef() == null)
+					continue;
+				String prjuid = proposal.getObsProjectRef().getEntityId();
+				File prjF = new File(prjDir, prjuid.replace(":", "_").replace("/", "_") + ".xml");
+				r = new FileReader(prjF);
+				project = alma.entity.xmlbinding.obsproject.ObsProject.unmarshalObsProject(r);
+				project.setLetterGrade(grade);
+				System.out.println("grade: " + grade);
+				w = new FileWriter(prjF);
+				project.marshal(w);
+			} catch (SQLException e) {
+				e.printStackTrace();
+				continue;
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+				continue;
+			} catch (MarshalException e) {
+				e.printStackTrace();
+				continue;
+			} catch (ValidationException e) {
+				e.printStackTrace();
+				continue;
+			} catch (IOException e) {
+				e.printStackTrace();
+				continue;
+			} finally {
+				proposal = null;
+				project = null;
+				if (r != null) {
+					try {
+						r.close();
+					} catch (IOException e) {
+					} 
+					r = null;
+				}
+				if (w != null) {
+					try {
+						w.close();
+					} catch (IOException e) {
+					}
+					w = null;
+				}
+			}
+		}
+	}
+	
 	public static void main(String[] args) throws DatabaseException {
 		ALMAArchiveExporter exporter = new ALMAArchiveExporter(new File("./export/"));
 		exporter.saveObsProposals("2013.1");
@@ -417,7 +549,8 @@ public class ALMAArchiveExporter {
 		exporter.saveObsProjects();
 		exporter.saveObsReviews();
 //		exporter.loadObsReviews();
-		exporter.saveSchedBlocks();
+		exporter.saveSchedBlocks();		
+		exporter.synchronizeProjectGrade();
 	}
 	
 }

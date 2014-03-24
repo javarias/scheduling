@@ -17,6 +17,11 @@
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import org.omg.CORBA.UserException;
 
 import alma.acs.entityutil.EntityDeserializer;
@@ -33,6 +38,7 @@ import alma.entity.xmlbinding.obsproposal.ObsProposal;
 import alma.entity.xmlbinding.obsreview.ObsReview;
 import alma.entity.xmlbinding.schedblock.SchedBlock;
 import alma.lifecycle.persistence.StateArchive;
+import alma.scheduling.utils.SchedulingProperties;
 import alma.xmlstore.OperationalOperations;
 
 public final class HibernateArchiveInterface extends AbstractArchiveInterface
@@ -76,6 +82,16 @@ public final class HibernateArchiveInterface extends AbstractArchiveInterface
 	public ObsProject getObsProject(String id) throws EntityException,
 			UserException {
 		ObsProject op = dao.genericRetrieval(id, ObsProjectEntity.class, ObsProject.class);
+		if (SchedulingProperties.readGradeFromProposalTable()) {
+			String grade;
+			try {
+				grade = getLetterGrade(op.getObsProposalRef().getEntityId());
+			} catch (SQLException e) {
+				throw new EntityException("Problem reading letter grade from PROPOSAL table", e);
+			}
+			if (grade != null)
+				op.setLetterGrade(grade);
+		}
 		obsProjects.put(id, op);
 		return op;
 	}
@@ -86,6 +102,30 @@ public final class HibernateArchiveInterface extends AbstractArchiveInterface
 		SchedBlock sb = dao.genericRetrieval(id, SchedBlockEntity.class, SchedBlock.class);
 		schedBlocks.put(id, sb);
 		return sb;
+	}
+	
+	private String getLetterGrade(String obsProposalUid) throws SQLException {
+		Connection conn = dao.getConnection();
+		Statement stmt = null;
+		try {
+			stmt = conn.createStatement();
+			String qString = "select APRC_LETTER_GRADE from proposal where ARCHIVE_UID = '" + obsProposalUid +"'";
+			ResultSet rs = stmt.executeQuery(qString);
+			if (!rs.next()) {
+				System.err.println("No Result for " + obsProposalUid);
+				return "D";
+			}
+			String grade = rs.getString("APRC_LETTER_GRADE");
+			if (grade == null)
+				return "D";
+			if (grade.equals("A") || grade.equals("B") || grade.equals("C"))
+				return grade;
+			return "D";
+		}finally {
+			if (stmt != null)
+				stmt.close();
+			dao.closeSession();
+		}
 	}
 
 	@Override

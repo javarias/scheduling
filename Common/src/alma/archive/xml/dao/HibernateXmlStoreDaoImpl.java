@@ -1,6 +1,7 @@
 package alma.archive.xml.dao;
 
 import java.io.StringReader;
+import java.sql.Connection;
 import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
@@ -377,5 +378,11 @@ public class HibernateXmlStoreDaoImpl implements XmlStoreReaderDao {
 			closeSession();
 		}
 		return retVal;
+	}
+	
+	public Connection getConnection() {
+		openSession();
+		sf.getCurrentSession().beginTransaction();
+		return sf.getCurrentSession().connection();
 	}
 }
