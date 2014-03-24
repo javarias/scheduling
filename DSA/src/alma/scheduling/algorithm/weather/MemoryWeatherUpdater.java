@@ -26,6 +26,7 @@ import java.util.HashMap;
 
 import alma.scheduling.algorithm.astro.SystemTemperatureCalculator;
 import alma.scheduling.algorithm.modelupd.ModelUpdater;
+import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.FieldSource;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.Target;
@@ -45,7 +46,7 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
     }
     
     @Override
-    public synchronized void update(Date date, Collection<SchedBlock> sbs) {
+    public synchronized void update(Date date, Collection<SchedBlock> sbs, ArrayConfiguration arrConf) {
         /*this is to assure of the atomicity of the update operation*/
         if(needsToUpdate(date) == false)
             return;

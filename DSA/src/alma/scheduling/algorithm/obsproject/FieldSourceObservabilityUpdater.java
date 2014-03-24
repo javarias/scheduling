@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import alma.scheduling.algorithm.AlgorithmPart;
 import alma.scheduling.algorithm.modelupd.ModelUpdater;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
+import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.FieldSource;
 import alma.scheduling.datamodel.obsproject.FieldSourceObservability;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
@@ -119,7 +120,7 @@ public class FieldSourceObservabilityUpdater implements ModelUpdater, AlgorithmP
     }
 
     @Override
-    public void update(Date date, Collection<SchedBlock> sbs) {
+    public void update(Date date, Collection<SchedBlock> sbs, ArrayConfiguration arrConf) {
         update(date);
         
     }

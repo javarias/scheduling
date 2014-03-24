@@ -37,6 +37,7 @@ import alma.scheduling.algorithm.modelupd.ModelUpdater;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.algorithm.sbselection.SchedBlockSelector;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
+import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.FieldSource;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.Target;
@@ -140,11 +141,11 @@ public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
         } catch (NoSbSelectedException e) {
             return;
         }
-        update(date,sbs);
+        update(date,sbs, null);
     }
 
     @Override
-    public synchronized void update(Date date, Collection<SchedBlock> sbs) {
+    public synchronized void update(Date date, Collection<SchedBlock> sbs, ArrayConfiguration arrConf) {
         /*this is to assure of the atomicity of the update operation*/
         if(needsToUpdate(date) == false)
             return;

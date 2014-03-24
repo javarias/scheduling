@@ -33,7 +33,7 @@ public class TestWeatherSelectors extends BaseAlgorithmTestCase {
 		sbDao.saveOrUpdate(tmp);
 		
 		WeatherTsysSelector weatherSelector = new WeatherTsysSelector("weatherSelector");
-		assertEquals(true, weatherSelector.canBeSelected(tmp, new Date()));
+		assertEquals(true, weatherSelector.canBeSelected(tmp, new Date(), null));
 		
 		alg.setArray(new ArrayConfiguration());
 		alg.selectCandidateSB();
@@ -62,7 +62,7 @@ public class TestWeatherSelectors extends BaseAlgorithmTestCase {
 		sbDao.saveOrUpdate(tmp);
 		
 		OpacitySelector opacitySelector = new OpacitySelector("opacitySelector");
-		assertEquals(true, opacitySelector.canBeSelected(tmp, new Date()));
+		assertEquals(true, opacitySelector.canBeSelected(tmp, new Date(), null));
 		
 		tmp = createBasicSB();
 		tmp.getSchedulingConstraints().setRepresentativeFrequency(380.0D);
@@ -71,7 +71,7 @@ public class TestWeatherSelectors extends BaseAlgorithmTestCase {
 		w =  new WeatherDependentVariables();
 		w.setZenithOpacity(0.03D);
 		tmp.setWeatherDependentVariables(w);
-		assertEquals(true, opacitySelector.canBeSelected(tmp, new Date()));
+		assertEquals(true, opacitySelector.canBeSelected(tmp, new Date(), null));
 		
 		tmp = createBasicSB();
 		tmp.getSchedulingConstraints().setRepresentativeFrequency(100.0D);
@@ -80,7 +80,7 @@ public class TestWeatherSelectors extends BaseAlgorithmTestCase {
 		w =  new WeatherDependentVariables();
 		w.setZenithOpacity(0.5D);
 		tmp.setWeatherDependentVariables(w);
-		assertEquals(true, opacitySelector.canBeSelected(tmp, new Date()));
+		assertEquals(true, opacitySelector.canBeSelected(tmp, new Date(), null));
 		
 		alg.setArray(new ArrayConfiguration());
 		alg.selectCandidateSB();

@@ -27,6 +27,8 @@ package alma.scheduling.algorithm.modelupd;
 
 import java.util.Collection;
 import java.util.Date;
+
+import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 
 public interface ModelUpdater {
@@ -35,7 +37,7 @@ public interface ModelUpdater {
     
     public void update(Date date);
     
-    public void update(Date date, Collection<SchedBlock> sbs);
+    public void update(Date date, Collection<SchedBlock> sbs, ArrayConfiguration arrConf);
     
     public void update (Date date, SchedBlock sb);
 }

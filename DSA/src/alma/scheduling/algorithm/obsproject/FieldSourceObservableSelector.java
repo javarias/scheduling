@@ -116,7 +116,7 @@ public class FieldSourceObservableSelector extends AbstractBaseSelector {
     }
 
 	@Override
-	public boolean canBeSelected(SchedBlock sb, Date date) {
+	public boolean canBeSelected(SchedBlock sb, Date date, ArrayConfiguration arrConf) {
 		//Not using a query yet to handle time constrained observations.
 		//For the query it is necessary to use a schedblock LEFT JOIN time constraint 
 		if (sb.getTemporalConstraints() == null || sb.getTemporalConstraints().size() == 0)

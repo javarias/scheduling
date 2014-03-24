@@ -86,7 +86,7 @@ public class WeatherTsysSelector extends AbstractBaseSelector {
     }
 
     @Override
-    public boolean canBeSelected(SchedBlock sb, Date date) {
+    public boolean canBeSelected(SchedBlock sb, Date date, ArrayConfiguration arrConf) {
         return ((sb.getWeatherDependentVariables().getProjectedTsys() 
                 - sb.getWeatherDependentVariables().getTsys()) / 
                 sb.getWeatherDependentVariables().getProjectedTsys() ) < tsysVariation;

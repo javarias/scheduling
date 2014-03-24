@@ -55,7 +55,7 @@ public class AltitudeSelector extends AbstractBaseSelector {
 	}
 
 	@Override
-	public boolean canBeSelected(SchedBlock sb, Date date) {
+	public boolean canBeSelected(SchedBlock sb, Date date, ArrayConfiguration arrConf) {
 		double currElevetion = sb.getRepresentativeCoordinates().getElevation(date);
 		if (currElevetion >= 15.0)
 			return true;

@@ -50,7 +50,7 @@ public class OpacitySelector extends AbstractBaseSelector {
 	}
 
 	@Override
-	public boolean canBeSelected(SchedBlock sb, Date date) {
+	public boolean canBeSelected(SchedBlock sb, Date date, ArrayConfiguration arrConf) {
 		double opacity = sb.getWeatherDependentVariables().getZenithOpacity();
         double frequency = sb.getSchedulingConstraints()
                 .getRepresentativeFrequency(); // GHz

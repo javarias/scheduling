@@ -82,5 +82,5 @@ public interface SchedBlockSelector {
       * @date the date to evaluate if the sb can be selected or not.
       * @return True if the SchedBlock can be selected or False otherwise
       */
-     public boolean canBeSelected(SchedBlock sb, Date date);
+     public boolean canBeSelected(SchedBlock sb, Date date, ArrayConfiguration arrConf);
 }
