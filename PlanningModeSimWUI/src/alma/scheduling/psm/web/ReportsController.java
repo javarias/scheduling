@@ -69,6 +69,8 @@ public class ReportsController extends GenericForwardComposer implements
 			print = rg.createBandsBeforeSimReport();
 		} else if (w.getId().compareTo("reportWindowBeforeSimLST") == 0) {
 			print = rg.createLstRangesBeforeSimReport();
+		} else if (w.getId().compareTo("reportWindowBeforeSimExec") == 0) {
+			print = rg.createExecutiveReportBeforeSim();
 		} else if (w.getId().compareTo("reportWindowAfterSimExec") == 0) {
 			print = rg.createExecutiveReport();
 		} else if (w.getId().compareTo("reportWindowAfterSimLST") == 0) {

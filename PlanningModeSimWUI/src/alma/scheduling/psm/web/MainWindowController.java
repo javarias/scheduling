@@ -90,6 +90,20 @@ public class MainWindowController extends GenericForwardComposer {
     	reportsWindow.doOverlapped();
     }
     
+    public void onClick$menuItemBeforeSimExec(Event event) {
+    	Window mainWindow = (Window) Path.getComponent("//");
+    	if( mainWindow == null ){
+    		System.out.println("mainWindow is null");
+    	}
+    	HashMap<String, String> param = new HashMap<String, String>();
+    	param.put("id", "reportWindowBeforeSimExec");
+    	param.put("title", "Requested time per Executive");
+    	param.put("controller", ReportExecBeforeSimController.class.getCanonicalName());
+    	System.out.println("lala1");
+    	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
+    	reportsWindow.doOverlapped();
+    }
+    
     public void onClick$menuItemAfterSimLST(Event event) {
     	Window mainWindow = (Window) Path.getComponent("//");
     	if( mainWindow == null ){

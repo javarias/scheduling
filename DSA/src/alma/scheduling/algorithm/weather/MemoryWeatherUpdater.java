@@ -175,6 +175,7 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
         double pwv = cache.get(date).getPwv();
         double ppwv = cache.get(date).getPpwv();
         
+        ErrorHandling.getInstance().debug("pwv: " + pwv + " - ppwv:" + ppwv);
         // inside the for of method of above
         double frequency = sb.getSchedulingConstraints()
                 .getRepresentativeFrequency(); // GHz

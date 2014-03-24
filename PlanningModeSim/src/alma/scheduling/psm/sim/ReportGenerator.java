@@ -439,6 +439,52 @@ public class ReportGenerator extends PsmContext {
 		return print;
 	}
 	
+	public JasperPrint createExecutiveReportBeforeSim() {
+		ApplicationContext ctx = ReportGenerator.getApplicationContext();
+		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+		return createExecutiveReportBeforeSim(outDao.getLastResultId());
+	}
+	
+	/** Creates the executive requested time jasper report.
+	 * The returned object can then be rendered to screen, or other media, such as PDF.
+	 * @return JasperPrint object with the generated report
+	 */
+	public JasperPrint createExecutiveReportBeforeSim(long id) {
+		JasperPrint print = null;
+		InputStream reportStream = getClass().getClassLoader().getResourceAsStream(
+		"alma/scheduling/psm/reports/executiveReportBeforeSim.jasper");
+
+		// Parameters
+		ApplicationContext ctx = ReportGenerator.getApplicationContext();
+		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+		SimulationResults result = outDao.getResult(id);
+
+		TreeMap<String, Object> props = new TreeMap<String, Object>();
+		props.put("totalAvailableTime", Double.toString( result.getAvailableTime() ) );
+		props.put("scientificTime", Double.toString( result.getScientificTime() ) );
+		props.put("seasonStart", result.getObsSeasonStart());
+		props.put("seasonEnd", result.getObsSeasonEnd());
+//		JRDataSource data = getLstRangeAfterSimData(outDao.getResult(id));
+		DataSource dataSource = (DataSource) ctx.getBean("dataSource");
+		try {
+			props.put("REPORT_CONNECTION", dataSource.getConnection());
+		} catch (SQLException e1) {
+			throw new RuntimeException(e1);
+		}
+		props.put(PROP_REPORT_TIME_ZONE, UTC_TZ);
+		synchronized (this) {
+//			JRDataSource dataSource = getExecutiveAfterSimData(id);
+			try {
+				print = JasperFillManager.fillReport(reportStream, props);
+				print.setName("executive_time_requested_report");
+				return print;
+			} catch (JRException e) {
+				e.printStackTrace();
+			}
+		}
+		return print;
+	}
+	
 	public JasperPrint createExecutiveReport() {
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
@@ -804,19 +850,24 @@ public class ReportGenerator extends PsmContext {
 		TreeMap<String, Object> props = new TreeMap<String, Object>();
 		SimulationResults result = outDao.getResult(id);
 		props.put("totalAvailableTime", Double.toString(result.getAvailableTime()));
-		props.put("seasonStart", dateFormatter.format(result.getObsSeasonStart()));
-		props.put("seasonEnd", dateFormatter.format(result.getObsSeasonEnd()));
-		props.put("title", "Receiver Bands Crowding");
-		props.put("subtitle", "Time observed per band");
-		JRDataSource dataSource = getBandsAfterSimData(id);
+		props.put("seasonStart", result.getObsSeasonStart());
+		props.put("seasonEnd", result.getObsSeasonEnd());
+		props.put("resultId", id);
+		DataSource dataSource = (DataSource) ctx.getBean("dataSource");
+		try {
+			props.put("REPORT_CONNECTION", dataSource.getConnection());
+		} catch (SQLException e1) {
+			throw new RuntimeException(e1);
+		}
+		props.put(PROP_REPORT_TIME_ZONE, UTC_TZ);
 		InputStream reportStream = getClass().getClassLoader()
 		.getResourceAsStream(
-				"alma/scheduling/psm/reports/bandsBeforeSim.jasper");
+				"alma/scheduling/psm/reports/bandsAfterSim.jasper");
 		synchronized (this) {
 			logger.info("Creating band usage report");
 			try {
 				JasperPrint print = JasperFillManager.fillReport(reportStream,
-						props, dataSource);
+						props);
 				print.setName("band_time_used_report");
 				return print;
 			} catch (JRException e) {
