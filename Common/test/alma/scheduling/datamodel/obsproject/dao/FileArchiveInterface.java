@@ -692,4 +692,9 @@ public class FileArchiveInterface implements ArchiveInterface {
 		
 	}
 
+	@Override
+	public void tidyUp() {
+		// NO-OP
+	}
+
 }
