@@ -678,11 +678,17 @@ public class ReportGenerator extends PsmContext {
 		props.put("seasonEnd", dateFormatter.format( currObsSeason.getEndDate() ) );
 		props.put("title", "Frequency Bands Usage");
 		props.put("subtitle", "Requested time per frequency bands");
-		JRDataSource dataSource = getBandsBeforeSimData();
+		DataSource dataSource = (DataSource) ctx.getBean("dataSource");
+		try {
+			props.put("REPORT_CONNECTION", dataSource.getConnection());
+		} catch (SQLException e1) {
+			throw new RuntimeException(e1);
+		}
+		props.put(PROP_REPORT_TIME_ZONE, UTC_TZ);
 		InputStream reportStream = getClass().getClassLoader().getResourceAsStream("alma/scheduling/psm/reports/bandsBeforeSim.jasper");
 		logger.info("Creating crowding report");
 		try {
-			JasperPrint print = JasperFillManager.fillReport(reportStream, props, dataSource);
+			JasperPrint print = JasperFillManager.fillReport(reportStream, props);
 			print.setName("band_time_requested_report");
 			return print;
 		} catch (JRException e) {
@@ -707,11 +713,17 @@ public class ReportGenerator extends PsmContext {
 		props.put("seasonEnd", dateFormatter.format(result.getObsSeasonEnd()));
 		props.put("title", "Frequency Bands Usage");
 		props.put("subtitle", "Requested time per frequency bands");
-		JRDataSource dataSource = getBandsBeforeSimData();
+		DataSource dataSource = (DataSource) ctx.getBean("dataSource");
+		try {
+			props.put("REPORT_CONNECTION", dataSource.getConnection());
+		} catch (SQLException e1) {
+			throw new RuntimeException(e1);
+		}
+		props.put(PROP_REPORT_TIME_ZONE, UTC_TZ);
 		InputStream reportStream = getClass().getClassLoader().getResourceAsStream("alma/scheduling/psm/reports/bandsBeforeSim.jasper");
 		logger.info("Creating crowding report");
 		try {
-			JasperPrint print = JasperFillManager.fillReport(reportStream, props, dataSource);
+			JasperPrint print = JasperFillManager.fillReport(reportStream, props);
 			print.setName("band_time_requested_report");
 			return print;
 		} catch (JRException e) {

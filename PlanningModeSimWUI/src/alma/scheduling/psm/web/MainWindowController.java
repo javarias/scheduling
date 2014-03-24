@@ -205,6 +205,19 @@ public class MainWindowController extends GenericForwardComposer {
     	}    	
     	aboutWindow.doOverlapped();
     }
+    
+    public void onClick$menuItemSyncGrades(Event event) {
+    	Window syncGradesWindow = (Window) Path.getComponent("/mainWindow/windowPh1MSynch");
+    	if( syncGradesWindow == null ){
+    		System.out.println("syncGradesWindow is null");
+    		Window mainWindow = (Window) Path.getComponent("//");
+        	if( mainWindow == null ){
+        		System.out.println("mainWindow is null");
+        	}
+        	syncGradesWindow = (Window) Executions.createComponents("Phase1MSynch.zul", mainWindow , null);
+    	}    	
+    	syncGradesWindow.doOverlapped();
+    }
 
 	@Override
 	public void doAfterCompose(Component comp) throws Exception {

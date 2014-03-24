@@ -4,6 +4,7 @@
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="localhost test hsqldb"/>
 	<style name="Heading 4" fontSize="12" isBold="true" isItalic="true"/>
 	<style name="Heading 2" fontSize="14" isBold="true" isItalic="true"/>
 	<style name="Heading 1" fontSize="16" isBold="true"/>
@@ -13,8 +14,15 @@
 	<parameter name="subtitle" class="java.lang.String"/>
 	<parameter name="seasonStart" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="seasonEnd" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[select SCHEDBLOCK.REPR_BAND as band, OBSUNIT.OBSUNIT_CTRL_MAX_TIME as executionTime, SCIENCE_GRADE as grade 
+	from OBSUNIT inner join SCHEDBLOCK on OBSUNIT.OBSUNITID = SCHEDBLOCK.SCHEDBLOCKID 
+	where SCHEDBLOCK.SCIENCE_GRADE <> 'D'
+	order by band asc, grade asc;]]>
+	</queryString>
 	<field name="band" class="java.lang.String"/>
 	<field name="executionTime" class="java.lang.Double"/>
+	<field name="grade" class="java.lang.String"/>
 	<variable name="totalSchedBlocks" class="java.lang.Integer" resetType="Group" resetGroup="bandGroup" calculation="Count">
 		<variableExpression><![CDATA[$F{band}]]></variableExpression>
 		<initialValueExpression><![CDATA[new java.lang.Integer(0)]]></initialValueExpression>
@@ -174,9 +182,9 @@
 	</pageFooter>
 	<summary>
 		<band height="415">
-			<barChart>
+			<stackedBarChart>
 				<chart isShowLegend="false">
-					<reportElement x="0" y="15" width="539" height="212" uuid="c699745a-b7e7-4004-afee-5a2f7f545283"/>
+					<reportElement x="0" y="15" width="539" height="212" uuid="04e504da-828b-4ca0-88aa-a9c4dd615754"/>
 					<chartTitle/>
 					<chartSubtitle/>
 					<chartLegend>
@@ -225,7 +233,7 @@
 						</axisFormat>
 					</valueAxisFormat>
 				</barPlot>
-			</barChart>
+			</stackedBarChart>
 			<staticText>
 				<reportElement x="0" y="281" width="539" height="134" uuid="1e85b262-0761-4e70-aa28-de3669751c7c"/>
 				<textElement textAlignment="Justified">

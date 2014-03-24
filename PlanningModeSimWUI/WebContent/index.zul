@@ -55,6 +55,11 @@
 					<menuitem label="Previous Results" id="menuItemOlderResults"/>
 				</menupopup>
 			</menu>
+			<menu label="Tools">
+				<menupopup>
+					<menuitem label="Synchronize project grades..." id="menuItemSyncGrades" />
+				</menupopup>
+			</menu>
 <!--			<menu label="View">-->
 <!--				<menupopup>-->
 <!--					<menuitem label="Cascade" />-->

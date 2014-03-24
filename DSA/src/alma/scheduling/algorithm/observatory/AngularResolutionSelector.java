@@ -36,7 +36,7 @@ public class AngularResolutionSelector extends AbstractBaseSelector {
 		retVal.add(Restrictions.sqlRestriction("MAX_ANG_RESOLUTION >= " + lambda + " / " + maxBL + " * " + convertToArcSec));
 //		retVal.add(Restrictions.leProperty("schedulingConstraints.minAngularResolution" , lambda + " / " + maxBL + " * " + convertToArcSec));
 //		retVal.add(Restrictions.geProperty("schedulingConstraints.maxAngularResolution" , lambda + " / " + maxBL + " * " + convertToArcSec));
-		return retVal;
+		return null;
 	}
 	
 }
