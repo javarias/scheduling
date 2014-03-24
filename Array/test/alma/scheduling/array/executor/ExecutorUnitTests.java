@@ -31,7 +31,6 @@ import org.omg.CORBA.Context;
 import org.omg.CORBA.ContextList;
 import org.omg.CORBA.DomainManager;
 import org.omg.CORBA.ExceptionList;
-import org.omg.CORBA.InterfaceDef;
 import org.omg.CORBA.NVList;
 import org.omg.CORBA.NamedValue;
 import org.omg.CORBA.Object;
@@ -722,11 +721,6 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 
 		@Override
 		public void _release() {
-		}
-
-		
-		public InterfaceDef _get_interface() {
-			return null;
 		}
 
 		@Override
