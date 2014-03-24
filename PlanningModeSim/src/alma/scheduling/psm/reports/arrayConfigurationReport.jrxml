@@ -19,7 +19,7 @@
 	left join OUTPUT_OBSERVATION_PROJECT as P on P.ID = SB.OBSERVATION_PROJECT_ID
 	left join OUTPUT_RESULTS as R on R.ID = P.RESULT_ID
 	left join OUTPUT_AFFILIATION as A on P.ID = A.OBSERVATION_PROJECT_ID
-	where result_id=$P!{resultId} GROUP BY ARRAY.ID, executive order by ARRAY.CREATION_DATE asc, executive asc;]]>
+	where result_id=$P!{resultId} GROUP BY ARRAY.ID, executive order by ARRAY.CREATION_DATE asc, arrayName asc, executive asc;]]>
 	</queryString>
 	<field name="arrayName" class="java.lang.String"/>
 	<field name="creationDate" class="java.util.Date"/>

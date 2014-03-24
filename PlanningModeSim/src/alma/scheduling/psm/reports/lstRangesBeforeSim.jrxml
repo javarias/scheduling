@@ -13,12 +13,14 @@
 	<parameter name="seasonStart" class="java.util.Date" isForPrompting="false"/>
 	<parameter name="seasonEnd" class="java.util.Date" isForPrompting="false"/>
 	<queryString language="SQL">
-		<![CDATA[select E.NAME as executive, cast(floor(S.RA/15.0) as decimal(9)) as lstRange, sum(SB.SCHEDBLOCK_CTRL_MAX_TIME) as executionTime
-	from Schedblock as SB inner join PI on SB.PINAME = PI.EMAIL 
+		<![CDATA[select E.NAME as executive, cast(floor(S.RA/15.0) as decimal(9)) as lstRange, sum(OU.OBSUNIT_CTRL_MAX_TIME) as executionTime
+	from Schedblock as SB inner join OBSUNIT as OU on SB.SCHEDBLOCKID = OU.OBSUNITID
+	inner join PI on SB.PINAME = PI.EMAIL
 	inner join PI_MEMBERSHIP PIM on PI.ID = PIM.PI_ID 
 	inner join EXECUTIVE as E on PIM.EXECUTIVE_NAME = E.ID
 	inner join TARGET as T on SB.REPR_TARGET = T.ID
 	inner join SOURCE as S on T.SOURCE = S.ID
+	where SB.SCIENCE_GRADE <> 'D'
 	group by executive, lstRange order by lstRange asc, executive asc;]]>
 	</queryString>
 	<field name="executive" class="java.lang.String"/>
