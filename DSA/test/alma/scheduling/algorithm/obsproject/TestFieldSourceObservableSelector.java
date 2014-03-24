@@ -232,4 +232,31 @@ public class TestFieldSourceObservableSelector extends BaseAlgorithmTestCase {
 		}
 		assertEquals(true, false);
 	}
+	
+	public void testNoTimeConstrainedSelection() throws Exception {
+		final String xmlToLoad = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
+				"<Policies><SchedulingPolicy name=\"TestPolicy\">\n<SelectionCriteria>\n" +
+				"</SelectionCriteria>\n" +
+				"<Scorers></Scorers></SchedulingPolicy></Policies>";
+		DynamicSchedulingAlgorithm alg = super.convertAndRetrieveAlgorithmBean(xmlToLoad);
+		
+		SchedBlockDao sbDao = (SchedBlockDao) DSAContextFactory.getContext().getBean("sbDao");
+		SchedBlock tmp = createBasicSB();
+		tmp.setExecutive(initializeDummyExecutive((ExecutiveDAO) DSAContextFactory.getContext().getBean("execDao")));
+		sbDao.saveOrUpdate(tmp);
+		
+		System.out.println("Number of SBs: " + sbDao.countAll());
+		
+		ArrayConfiguration arrConf = new ArrayConfiguration();
+		arrConf.setMaxBaseline(442.0D);
+		
+		cal.set(2013, 0, 15, 0, 0);
+		alg.setArray(arrConf);
+		alg.initialize(cal.getTime());
+		alg.selectCandidateSB();
+		alg.updateCandidateSB(cal.getTime());
+		alg.rankSchedBlocks();
+		SchedBlock sb = alg.getSelectedSchedBlock();
+		assertEquals("uid://A000/X0/X0", sb.getUid());
+	}
 }
