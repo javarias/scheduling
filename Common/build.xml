@@ -107,12 +107,24 @@
 				<pathelement path="${classpath}"/>
 			</classpath>
 		</junit>
-			<junit fork="yes" printsummary="withOutAndErr">
+		<junit fork="yes" printsummary="withOutAndErr">
 			<sysproperty key="net.sourceforge.cobertura.datafile"
         		file="cobertura.ser" />
 			<formatter type="xml" />
 			<jvmarg value="-Dalma.scheduling.properties=Common/src/scheduling.properties" />
 			<test name="alma.scheduling.datamodel.observation.dao.ObservationDaoImplTest" todir="${junit.output.dir}" />
+			<classpath>
+				<pathelement path="${instrumented.dir}"/>
+				<pathelement path="bin"/>
+				<path refid="cobertura.classpath"/>
+				<pathelement path="${classpath}"/>
+			</classpath>
+		</junit>
+		<junit fork="yes" printsummary="withOutAndErr">
+			<sysproperty key="net.sourceforge.cobertura.datafile"
+        		file="cobertura.ser" />
+			<formatter type="xml" />
+			<test name="alma.scheduling.datamodel.obsproject.dao.APDMtoSchedulingConverterTests" todir="${junit.output.dir}" />
 			<classpath>
 				<pathelement path="${instrumented.dir}"/>
 				<pathelement path="bin"/>
