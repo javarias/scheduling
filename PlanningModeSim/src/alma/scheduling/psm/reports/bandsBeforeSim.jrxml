@@ -22,7 +22,6 @@
 	</queryString>
 	<field name="band" class="java.lang.String"/>
 	<field name="executionTime" class="java.lang.Double"/>
-	<field name="grade" class="java.lang.String"/>
 	<variable name="totalSchedBlocks" class="java.lang.Integer" resetType="Group" resetGroup="bandGroup" calculation="Count">
 		<variableExpression><![CDATA[$F{band}]]></variableExpression>
 		<initialValueExpression><![CDATA[new java.lang.Integer(0)]]></initialValueExpression>

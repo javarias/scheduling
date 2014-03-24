@@ -48,6 +48,20 @@ public class ZippedReportsServlet extends HttpServlet {
 		
 		JasperPrint print = null;
 		if (id != null)
+			print = rg.createArrayConfigurationReport(Long.valueOf(id));
+		else
+			print = rg.createArrayConfigurationReport();
+		exporter.setParameter(JRPdfExporterParameter.JASPER_PRINT, print);
+		try {
+			exporter.exportReport();
+			addNewZipPdfEntry(zout, print.getName(), out);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			out.reset();
+		}
+		
+		if (id != null)
 			print = rg.createBandsAfterSimReport(Long.valueOf(id));
 		else
 			print = rg.createBandsAfterSimReport();
@@ -121,6 +135,20 @@ public class ZippedReportsServlet extends HttpServlet {
 			print = rg.createLstRangesBeforeSimReport(Long.valueOf(id));
 		else 
 			print = rg.createLstRangesBeforeSimReport();
+		exporter.setParameter(JRPdfExporterParameter.JASPER_PRINT, print);
+		try {
+			exporter.exportReport();
+			addNewZipPdfEntry(zout, print.getName(), out);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			out.reset();
+		}
+		
+		if (id != null)
+			print = rg.createRaExecutiveBreakdownReport(Long.valueOf(id));
+		else 
+			print = rg.createRaExecutiveBreakdownReport();
 		exporter.setParameter(JRPdfExporterParameter.JASPER_PRINT, print);
 		try {
 			exporter.exportReport();

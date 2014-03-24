@@ -29,6 +29,7 @@ import alma.scheduling.datamodel.obsproject.SchedBlockState;
 import alma.scheduling.datamodel.obsproject.SchedulingConstraints;
 import alma.scheduling.datamodel.obsproject.SkyCoordinates;
 import alma.scheduling.datamodel.obsproject.Target;
+import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 import alma.scheduling.utils.DSAContextFactory;
 import alma.scheduling.utils.DynamicSchedulingPolicyFactory;
@@ -128,7 +129,9 @@ public abstract class BaseAlgorithmTestCase extends TestCase {
 
 	@Override
 	protected void tearDown() throws Exception {
+		ObsProjectDao prjDao = (ObsProjectDao) DSAContextFactory.getContext().getBean("obsProjectDao");
 		SchedBlockDao sbDao = (SchedBlockDao) DSAContextFactory.getContext().getBean("sbDao");
+		prjDao.deleteAll();
 		sbDao.deleteAll();
 		for(SchedulingPolicyFile file: PoliciesContainersDirectory.getInstance().getAllPoliciesFiles())
 			PoliciesContainersDirectory.getInstance().remove(

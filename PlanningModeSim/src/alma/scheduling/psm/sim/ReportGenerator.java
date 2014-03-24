@@ -485,6 +485,7 @@ public class ReportGenerator extends PsmContext {
 		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
 		props.put("seasonStart", outDao.getResults().get(0).getObsSeasonStart());
 		props.put("seasonEnd", outDao.getResults().get(0).getObsSeasonEnd());
+		props.put("resultId", id);
 		DataSource dataSource = (DataSource) ctx.getBean("dataSource");
 		try {
 			props.put("REPORT_CONNECTION", dataSource.getConnection());
@@ -537,7 +538,7 @@ public class ReportGenerator extends PsmContext {
 		synchronized (this) {
 			try {
 				print = JasperFillManager.fillReport(reportStream, props);
-				print.setName("completion_report");
+				print.setName("ra_executive_breakdown_report");
 				return print;
 			} catch (JRException e) {
 				e.printStackTrace();

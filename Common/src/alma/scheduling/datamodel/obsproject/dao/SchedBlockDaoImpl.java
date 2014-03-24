@@ -256,7 +256,8 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
         		"where sb.uid = ?");
         query.setParameter(0, entityId);
         SchedBlock retVal = (SchedBlock)query.uniqueResult();
-        retVal.getExecutive().getName();
+        if (retVal.getExecutive() != null)
+        	retVal.getExecutive().getName();
         retVal.getParent();
         retVal.setParent(retVal.getParent()); // Weirdness
         

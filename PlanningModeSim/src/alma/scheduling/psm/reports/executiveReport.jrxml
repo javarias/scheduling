@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version last-->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Crowding Report" pageWidth="595" pageHeight="842" columnWidth="539" leftMargin="36" rightMargin="20" topMargin="30" bottomMargin="30" uuid="2ff0defe-daef-4b51-807a-005956ef00ff">
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="SWDB HSQLDB Test"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="localhost test hsqldb"/>
 	<style name="Heading 4" fontSize="12" isBold="true" isItalic="true"/>
 	<style name="Heading 2" fontSize="14" isBold="true" isItalic="true"/>
 	<style name="Heading 1" fontSize="16" isBold="true"/>
@@ -61,7 +61,7 @@
 						<keyExpression><![CDATA[$F{executive}]]></keyExpression>
 						<valueExpression><![CDATA[$V{totalExecTime}]]></valueExpression>
 					</pieDataset>
-					<pie3DPlot isCircular="true">
+					<pie3DPlot isCircular="true" labelFormat="{2}" legendLabelFormat="{0}">
 						<plot backgroundAlpha="0.5" foregroundAlpha="0.8"/>
 						<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
 					</pie3DPlot>
@@ -255,7 +255,7 @@
 				</line>
 				<pie3DChart>
 					<chart isShowLegend="true" evaluationTime="Group" evaluationGroup="executiveGroup">
-						<reportElement x="260" y="1" width="279" height="158" uuid="182ce7d8-c667-4812-a310-3382d7690042"/>
+						<reportElement x="260" y="1" width="279" height="158" uuid="469a21a3-512d-4322-9cd9-22932ec963cb"/>
 						<chartTitle>
 							<font size="9"/>
 						</chartTitle>
@@ -267,10 +267,11 @@
 						</chartLegend>
 					</chart>
 					<pieDataset>
+						<dataset resetType="Group" resetGroup="executiveGroup"/>
 						<keyExpression><![CDATA[$F{grade}]]></keyExpression>
 						<valueExpression><![CDATA[$F{executionTime}]]></valueExpression>
 					</pieDataset>
-					<pie3DPlot isCircular="true">
+					<pie3DPlot isCircular="true" labelFormat="{2}" legendLabelFormat="{0}">
 						<plot backgroundAlpha="0.5" foregroundAlpha="0.8"/>
 						<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
 					</pie3DPlot>

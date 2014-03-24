@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version last-->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Crowding Report" pageWidth="595" pageHeight="842" columnWidth="539" leftMargin="36" rightMargin="20" topMargin="30" bottomMargin="30" uuid="2ff0defe-daef-4b51-807a-005956ef00ff">
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="almads test hsqldb"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="localhost test hsqldb"/>
 	<style name="Heading 4" fontSize="12" isBold="true" isItalic="true"/>
 	<style name="Heading 2" fontSize="14" isBold="true" isItalic="true"/>
 	<style name="Heading 1" fontSize="16" isBold="true"/>
@@ -12,9 +12,9 @@
 	<parameter name="seasonEnd" class="java.util.Date" isForPrompting="false"/>
 	<parameter name="resultId" class="java.lang.Long"/>
 	<queryString language="SQL">
-		<![CDATA[select ARRAY.ID as arrayName, ARRAY.ARRAY_TYPE as arrayType, ARRAY.CONFIG_NAME as configName, A.EXECUTIVE as executive,
+		<![CDATA[select ARRAY.ID as arrayName, ARRAY.ARRAY_TYPE as arrayType, ARRAY.CONFIG_NAME as configName, ISNULL(A.EXECUTIVE, 'OTHER') as executive,
 	ARRAY.CREATION_DATE as creationDate, ARRAY.DELETION_DATE as deletionDate,
-	ARRAY.AVAILABLE_TIME as availableTime, sum(SB.EXECUTION_TIME) as executionTime
+	ARRAY.AVAILABLE_TIME as availableTime, sum(ISNULL(SB.EXECUTION_TIME, 0)) as executionTime
 	from OUTPUT_SCHED_BLOCK_RESULT as SB right join OUTPUT_ARRAY as ARRAY on SB.ARRAY_REF = ARRAY.ID
 	left join OUTPUT_OBSERVATION_PROJECT as P on P.ID = SB.OBSERVATION_PROJECT_ID
 	left join OUTPUT_RESULTS as R on R.ID = P.RESULT_ID
@@ -233,7 +233,7 @@
 				</line>
 				<pie3DChart>
 					<chart isShowLegend="true" evaluationTime="Group" evaluationGroup="arrayConfigGroup">
-						<reportElement x="260" y="34" width="279" height="158" uuid="182ce7d8-c667-4812-a310-3382d7690042"/>
+						<reportElement x="260" y="34" width="279" height="158" uuid="3680d850-efd2-4791-b771-04359004147f"/>
 						<chartTitle>
 							<font size="9"/>
 						</chartTitle>
@@ -245,6 +245,7 @@
 						</chartLegend>
 					</chart>
 					<pieDataset>
+						<dataset resetType="Group" resetGroup="arrayConfigGroup"/>
 						<keyExpression><![CDATA[($F{executive} == null)? "OTHER" : $F{executive}]]></keyExpression>
 						<valueExpression><![CDATA[($F{executionTime} == null)? 0 : $F{executionTime}]]></valueExpression>
 					</pieDataset>
