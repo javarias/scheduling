@@ -43,11 +43,13 @@ public class AngularResolutionSelector extends AbstractBaseSelector {
 	@Override
 	public boolean canBeSelected(SchedBlock sb, Date date, ArrayConfiguration arrConf) {
 		double maxBL = arrConf.getMaxBaseline();
-		double lambda = Constants.LIGHT_SPEED / sb.getRepresentativeFrequency() * 1E9;
+		double lambda = Constants.LIGHT_SPEED / (sb.getRepresentativeFrequency() * 1E9);
+//		System.out.println("maxBL: " + maxBL + " - lambda: " + lambda);
 		if (arrConf.getArrayType().compareTo(ArrayType.TWELVE_M) == 0) {
 			if (sb.getSchedulingConstraints().getMinAngularResolution() == 0 
 					|| sb.getSchedulingConstraints().getMaxAngularResolution() == 0)
 				return true; //cycle 1 sb have this issue
+//			System.out.println(sb.getSchedulingConstraints().getMinAngularResolution() + " <= " + (lambda / maxBL * convertToArcSec) + " <= " + sb.getSchedulingConstraints().getMaxAngularResolution());
 			if (sb.getSchedulingConstraints().getMinAngularResolution() <= (lambda / maxBL * convertToArcSec)
 					&& sb.getSchedulingConstraints().getMaxAngularResolution() >= (lambda / maxBL * convertToArcSec))
 				return true;
