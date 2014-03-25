@@ -758,7 +758,7 @@ public class ReportGenerator extends PsmContext {
 		props.put("totalAvailableTime", Double.toString(result.getAvailableTime()));
 		props.put("seasonStart", dateFormatter.format(result.getObsSeasonStart()));
 		props.put("seasonEnd", dateFormatter.format(result.getObsSeasonEnd()));
-		props.put("title", "Frequency Bands Usage");
+		props.put("title", "Requested time per band");
 		props.put("subtitle", "Requested time per frequency bands");
 		DataSource dataSource = (DataSource) ctx.getBean("dataSource");
 		try {
@@ -869,6 +869,111 @@ public class ReportGenerator extends PsmContext {
 				JasperPrint print = JasperFillManager.fillReport(reportStream,
 						props);
 				print.setName("band_time_used_report");
+				return print;
+			} catch (JRException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+	}
+	
+	/** 
+	 * Uses the very last result to create the report.
+	 * 
+	 * @see ReportGenerator#createBandsAfterSimReport(long)
+	 * @return JasperPrint object, containing the receiver band report after simulations.
+	 */
+	public JasperPrint createBandsAfterSimExecBreakdownReport() {
+		ApplicationContext ctx = ReportGenerator.getApplicationContext();
+		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+		return createBandsAfterSimExecBreakdownReport(outDao.getLastResultId());
+	}
+
+	/** Creates a project for band crowding data, after simulations.
+	 * This method returns a JasperPrint object, which can be used for rendering
+	 * the report to several different medias.
+	 * @param id the results used to create the report
+	 * @return JasperPrint object, containing the receiver band report after simulations.
+	 */
+	public JasperPrint createBandsAfterSimExecBreakdownReport(long id) {
+		ApplicationContext ctx = ReportGenerator.getApplicationContext();
+		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+
+
+		TreeMap<String, Object> props = new TreeMap<String, Object>();
+		SimulationResults result = outDao.getResult(id);
+		props.put("totalAvailableTime", Double.toString(result.getAvailableTime()));
+		props.put("seasonStart", result.getObsSeasonStart());
+		props.put("seasonEnd", result.getObsSeasonEnd());
+		props.put("resultId", id);
+		DataSource dataSource = (DataSource) ctx.getBean("dataSource");
+		try {
+			props.put("REPORT_CONNECTION", dataSource.getConnection());
+		} catch (SQLException e1) {
+			throw new RuntimeException(e1);
+		}
+		props.put(PROP_REPORT_TIME_ZONE, UTC_TZ);
+		InputStream reportStream = getClass().getClassLoader()
+		.getResourceAsStream(
+				"alma/scheduling/psm/reports/bandsAfterSimExecBreakdown.jasper");
+		synchronized (this) {
+			logger.info("Creating band usage report");
+			try {
+				JasperPrint print = JasperFillManager.fillReport(reportStream,
+						props);
+				print.setName("band_time_used_exec_breakdown_report");
+				return print;
+			} catch (JRException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+	}
+	
+	/** 
+	 * Uses the very last result to create the report.
+	 * 
+	 * @see ReportGenerator#createBandsAfterSimReport(long)
+	 * @return JasperPrint object, containing the receiver band report after simulations.
+	 */
+	public JasperPrint createBandsBeforeSimExecBreakdownReport() {
+		ApplicationContext ctx = ReportGenerator.getApplicationContext();
+		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+		return createBandsBeforeSimExecBreakdownReport(outDao.getLastResultId());
+	}
+
+	/** Creates a project for band crowding data, after simulations.
+	 * This method returns a JasperPrint object, which can be used for rendering
+	 * the report to several different medias.
+	 * @param id the results used to create the report
+	 * @return JasperPrint object, containing the receiver band report after simulations.
+	 */
+	public JasperPrint createBandsBeforeSimExecBreakdownReport(long id) {
+		ApplicationContext ctx = ReportGenerator.getApplicationContext();
+		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+
+
+		TreeMap<String, Object> props = new TreeMap<String, Object>();
+		SimulationResults result = outDao.getResult(id);
+		props.put("totalAvailableTime", Double.toString(result.getAvailableTime()));
+		props.put("seasonStart", result.getObsSeasonStart());
+		props.put("seasonEnd", result.getObsSeasonEnd());
+		DataSource dataSource = (DataSource) ctx.getBean("dataSource");
+		try {
+			props.put("REPORT_CONNECTION", dataSource.getConnection());
+		} catch (SQLException e1) {
+			throw new RuntimeException(e1);
+		}
+		props.put(PROP_REPORT_TIME_ZONE, UTC_TZ);
+		InputStream reportStream = getClass().getClassLoader()
+		.getResourceAsStream(
+				"alma/scheduling/psm/reports/bandsBeforeSimExecBreakdown.jasper");
+		synchronized (this) {
+			logger.info("Creating band usage report");
+			try {
+				JasperPrint print = JasperFillManager.fillReport(reportStream,
+						props);
+				print.setName("band_time_requested_exec_breakdown_report");
 				return print;
 			} catch (JRException e) {
 				e.printStackTrace();

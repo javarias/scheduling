@@ -67,6 +67,8 @@ public class ReportsController extends GenericForwardComposer implements
 		JasperPrint print = null;
 		if (w.getId().compareTo("reportWindowBeforeSimBand") == 0) {
 			print = rg.createBandsBeforeSimReport();
+		} else if (w.getId().compareTo("reportWindowBeforeSimBandExec") == 0) { 
+			print = rg.createBandsBeforeSimExecBreakdownReport();
 		} else if (w.getId().compareTo("reportWindowBeforeSimLST") == 0) {
 			print = rg.createLstRangesBeforeSimReport();
 		} else if (w.getId().compareTo("reportWindowBeforeSimExec") == 0) {
@@ -77,6 +79,8 @@ public class ReportsController extends GenericForwardComposer implements
 			print = rg.createLstRangeAfterSimReport();
 		} else if (w.getId().compareTo("reportWindowAfterSimBand") == 0) {
 			print = rg.createBandsAfterSimReport();
+		} else if (w.getId().compareTo("reportWindowAfterSimBandExec") == 0) {
+			print = rg.createBandsAfterSimExecBreakdownReport();
 		} else if (w.getId().compareTo("reportWindowAfterSimCompletion") == 0) {
 			print = rg.createCompletionReport();
 		} else if(w.getId().compareTo("reportWindowAfterSimRaExec") == 0) {

@@ -76,7 +76,35 @@ public class ZippedReportsServlet extends HttpServlet {
 		}
 		
 		if (id != null)
+			print = rg.createBandsAfterSimExecBreakdownReport(Long.valueOf(id));
+		else
+			print = rg.createBandsAfterSimReport();
+		exporter.setParameter(JRPdfExporterParameter.JASPER_PRINT, print);
+		try {
+			exporter.exportReport();
+			addNewZipPdfEntry(zout, print.getName(), out);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			out.reset();
+		}
+		
+		if (id != null)
 			print = rg.createBandsBeforeSimReport(Long.valueOf(id));
+		else
+			print = rg.createBandsBeforeSimReport();
+		exporter.setParameter(JRPdfExporterParameter.JASPER_PRINT, print);
+		try {
+			exporter.exportReport();
+			addNewZipPdfEntry(zout, print.getName(), out);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			out.reset();
+		}
+		
+		if (id != null)
+			print = rg.createBandsBeforeSimExecBreakdownReport(Long.valueOf(id));
 		else
 			print = rg.createBandsBeforeSimReport();
 		exporter.setParameter(JRPdfExporterParameter.JASPER_PRINT, print);

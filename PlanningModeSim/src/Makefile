@@ -138,7 +138,9 @@ USER_IDL =
 # Jarfiles and their directories
 #
 REPORTS := 	alma/scheduling/psm/reports/bandsBeforeSim.jasper \
+	 	alma/scheduling/psm/reports/bandsBeforeSimExecBreakdown.jasper \
 	 	alma/scheduling/psm/reports/bandsAfterSim.jasper \
+	 	alma/scheduling/psm/reports/bandsAfterSimExecBreakdown.jasper \
 		alma/scheduling/psm/reports/executiveReport.jasper \
 		alma/scheduling/psm/reports/executiveReportBeforeSim.jasper \
 		alma/scheduling/psm/reports/lstRangesBeforeSim.jasper \

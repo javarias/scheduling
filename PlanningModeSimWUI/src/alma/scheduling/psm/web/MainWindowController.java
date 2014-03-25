@@ -169,6 +169,32 @@ public class MainWindowController extends GenericForwardComposer {
     	reportsWindow.doOverlapped();
     }
     
+    public void onClick$menuItemBeforeSimBandExec(Event event) {
+    	Window mainWindow = (Window) Path.getComponent("//");
+    	if( mainWindow == null ){
+    		System.out.println("mainWindow is null");
+    	}
+    	HashMap<String, String> param = new HashMap<String, String>();
+    	param.put("id", "reportWindowBeforeSimBandExec");
+    	param.put("title", "Requested time per band - Executive breakdown");
+    	param.put("controller", ReportBandBeforeSimExecController.class.getCanonicalName());
+    	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
+    	reportsWindow.doOverlapped();
+    }
+    
+    public void onClick$menuItemAfterSimBandExec(Event event) {
+    	Window mainWindow = (Window) Path.getComponent("//");
+    	if( mainWindow == null ){
+    		System.out.println("mainWindow is null");
+    	}
+    	HashMap<String, String> param = new HashMap<String, String>();
+    	param.put("id", "reportWindowAfterSimBandExec");
+    	param.put("title", "Frequency Bands Usage (After simulation) - Executive Breakdown");
+    	param.put("controller", ReportBandAfterSimExecController.class.getCanonicalName());
+    	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
+    	reportsWindow.doOverlapped();
+    }
+    
     public void onClick$menuItemFinalReport(Event event) {
     	Window mainWindow = (Window) Path.getComponent("//");
     	Window reportsWindow = (Window) Executions.createComponents("final_report.zul", mainWindow, null);

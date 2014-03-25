@@ -37,6 +37,7 @@
 					<menu label="Before Simulation">
 						<menupopup>
 							<menuitem label="Requested time per ALMA band" id="menuItemBeforeSimBand"/>
+							<menuitem label="Requested time per ALMA band - Exectutive Breakdown" id="menuItemBeforeSimBandExec"/>
 							<menuitem label="Right Ascension Distribution" id="menuItemBeforeSimLST"/>
 							<menuitem label="Requested time per Executive" id="menuItemBeforeSimExec"/>
 						</menupopup>
@@ -44,6 +45,7 @@
 					<menu label="After Simulation">
 						<menupopup>
 							<menuitem label="Executed time per ALMA band" id="menuItemAfterSimBand"/>
+							<menuitem label="Executed time per ALMA band - Executive Breakdown" id="menuItemAfterSimBandExec"/>
 							<menuitem label="Right Ascension Distribution" id="menuItemAfterSimLST"/>
 							<menuitem label="Right Ascencion Distribution - Executive Breakdown" id ="menuItemAfterSimRaExec"/>
 							<menuitem label="Executive Percentage Balance" id="menuItemAfterSimExec"/>
