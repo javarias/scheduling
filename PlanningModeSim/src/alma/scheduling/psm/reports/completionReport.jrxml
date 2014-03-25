@@ -14,11 +14,12 @@
 	<parameter name="seasonEnd" class="java.util.Date" isForPrompting="false"/>
 	<parameter name="resultId" class="java.lang.Long"/>
 	<queryString language="SQL">
-		<![CDATA[select A.EXECUTIVE as executive, P.STATUS as status
-	from OUTPUT_RESULTS as R inner join OUTPUT_OBSERVATION_PROJECT as P on R.ID = P.RESULT_ID 
-	inner join OUTPUT_SCHED_BLOCK_RESULT as SB on P.ID = SB.OBSERVATION_PROJECT_ID 
-	inner join OUTPUT_AFFILIATION as A on P.ID = A.OBSERVATION_PROJECT_ID 
-	where R.ID = $P!{resultId} order by executive asc, status asc;]]>
+		<![CDATA[select E.NAME as executive, RP.STATUS as status
+	from OUTPUT_OBSERVATION_PROJECT as RP inner join OBSPROJECT as P on RP.ORIGINAL_ID = P.OBSPROJECTID
+	inner join PI on P.PI = PI.email
+	inner join PI_MEMBERSHIP PIM on PI.ID = PIM.PI_ID 
+	inner join EXECUTIVE as E on PIM.EXECUTIVE_NAME = E.ID
+	where RP.RESULT_ID = $P!{resultId} order by executive asc, status asc;]]>
 	</queryString>
 	<field name="executive" class="java.lang.String"/>
 	<field name="status" class="java.lang.String"/>
