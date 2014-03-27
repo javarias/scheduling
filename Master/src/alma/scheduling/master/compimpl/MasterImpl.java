@@ -340,6 +340,32 @@ public class MasterImpl implements ComponentLifecycle, MasterOperations {
 		String schedArrayName = null;
 		operatorLog.info("Destroying %s", arrayName);
 		m_logger.info("About to destroy array: " + arrayName);
+
+		try {
+			m_logger.finest("About to release CONTROL Array");
+			controlMaster.destroyArray(arrayName);
+			m_logger.finest("Released CONTROL Array");
+			operatorLog.info("Released Control component for %s", arrayName);
+		} catch (InaccessibleException e) {
+			operatorLog
+					.warning(
+							"Cannot release CONTROL component for %s - CONTROL internal error",
+							arrayName);
+			AcsJControlInternalExceptionEx ex = new AcsJControlInternalExceptionEx(
+					e);
+			ex.log(m_logger);
+			throw ex.toControlInternalExceptionEx();
+		} catch (InvalidRequestEx e) {
+			operatorLog
+					.warning(
+							"Cannot release CONTROL component for %s - CONTROL internal error",
+							arrayName);
+			AcsJControlInternalExceptionEx ex = new AcsJControlInternalExceptionEx(
+					e);
+			ex.log(m_logger);
+			throw ex.toControlInternalExceptionEx();
+		}
+		
 		Array array = null;
 		try {
 			schedArrayName = NameTranslator.arrayToComponentName(arrayName);
@@ -411,31 +437,7 @@ public class MasterImpl implements ComponentLifecycle, MasterOperations {
 		}
 		for (String key : toBeDeleted)
 			arrayCallbacks.remove(key);
-
-		try {
-			m_logger.finest("About to release CONTROL Array");
-			controlMaster.destroyArray(arrayName);
-			m_logger.finest("Released CONTROL Array");
-			operatorLog.info("Released Control component for %s", arrayName);
-		} catch (InaccessibleException e) {
-			operatorLog
-					.warning(
-							"Cannot release CONTROL component for %s - CONTROL internal error",
-							arrayName);
-			AcsJControlInternalExceptionEx ex = new AcsJControlInternalExceptionEx(
-					e);
-			ex.log(m_logger);
-			throw ex.toControlInternalExceptionEx();
-		} catch (InvalidRequestEx e) {
-			operatorLog
-					.warning(
-							"Cannot release CONTROL component for %s - CONTROL internal error",
-							arrayName);
-			AcsJControlInternalExceptionEx ex = new AcsJControlInternalExceptionEx(
-					e);
-			ex.log(m_logger);
-			throw ex.toControlInternalExceptionEx();
-		}
+		
 		m_logger.fine(String.format("removing (%s) from active arrays",
 				arrayName));
 		activeArrays.remove(arrayName);
