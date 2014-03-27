@@ -254,7 +254,7 @@ public class MainWindowController extends GenericForwardComposer {
         	if( mainWindow == null ){
         		System.out.println("mainWindow is null");
         	}
-        	syncGradesWindow = (Window) Executions.createComponents("Phase1MSynch.zul", mainWindow , null);
+        	syncGradesWindow = (Window) Executions.createComponents("Ph1MSynchCSVFile.zul", mainWindow , null);
     	}    	
     	syncGradesWindow.doOverlapped();
     }
