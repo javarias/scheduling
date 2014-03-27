@@ -236,6 +236,8 @@ public class ResultComposer {
 			outputOp.setScienceRank( op.getScienceRank());
 			outputOp.setScienceScore( op.getScienceScore() );
 			outputOp.setGrade( op.getLetterGrade().toString() );
+			outputOp.setCode(op.getCode());
+			outputOp.setArchiveUid(op.getUid());
 
 			HashSet<SchedBlockResult> sbrSet = new HashSet<SchedBlockResult>();
 			obsProjectDao.hydrateSchedBlocks(op);			

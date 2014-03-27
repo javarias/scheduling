@@ -69,6 +69,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 		<property name="originalId" type="long" column="ORIGINAL_ID" />
 		<property name="status" type="OutputExecutionStatusType" column="STATUS"/>
 		<property name="executionTime" type="double" column="EXECUTION_TIME"/>
+		<property name="code" type="string" column="CODE"/>
+		<property name="archiveUid" type="string" column="ARCHIVE_UID"/>
 		<set name="affiliation" table="OUTPUT_AFFILIATION" cascade="save-update,lock, delete, delete-orphan" lazy="false">
 			<key column="OBSERVATION_PROJECT_ID" />
 			<one-to-many class="Affiliation" />

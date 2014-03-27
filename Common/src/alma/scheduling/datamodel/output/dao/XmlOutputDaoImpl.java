@@ -277,6 +277,8 @@ public class XmlOutputDaoImpl implements StreamBasedOutputDao {
                 op[i].setScienceScore( tmpOp.getScienceScore());
                 op[i].setId(tmpOp.getId());
                 op[i].setOriginalId(tmpOp.getOriginalId());
+                op[i].setArchive_uid(tmpOp.getArchiveUid());
+                op[i].setCode(tmpOp.getCode());
                 //TODO: Fix this pre-set status. Using valueof() method returns null pointer.
                 op[i].setStatus( alma.scheduling.output.generated.types.ExecutionStatus.valueOf( tmpOp.getStatus().toString() ) );
                 

@@ -56,6 +56,8 @@
 			<xs:element name="executionTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="originalId" type="xs:long" minOccurs="1" maxOccurs="1"/>			
 			<xs:element name="id" type="xs:long" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="code" type="xs:string" minOccurs="1" maxOccurs="1" />
+			<xs:element name="archive_uid" type="xs:string" minOccurs="1" maxOccurs="1" />
 			<xs:element name="status" type="ExecutionStatus" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="SchedBlock" type="SchedBlock" minOccurs="1" maxOccurs="unbounded"/>
 			<xs:element name="Affiliation" type="Affiliation" minOccurs="1" maxOccurs="unbounded"/>
