@@ -16,15 +16,7 @@
 	<classpathentry kind="lib" path="Common/lib/spring-aop.jar"/>
 	<classpathentry kind="lib" path="Common/lib/spring-context.jar"/>
 	<classpathentry kind="lib" path="Common/lib/spring-expression.jar"/>
-	<classpathentry kind="lib" path="PlanningModeSim/lib/commons-cli.jar"/>
-	<classpathentry kind="lib" path="PlanningModeSim/lib/jasperreports.jar"/>
-	<classpathentry kind="lib" path="DSA/lib/jmock.jar"/>
-	<classpathentry kind="lib" path="DSA/lib/jmock-legacy.jar"/>
-	<classpathentry kind="lib" path="DSA/lib/objenesis.jar"/>
-	<classpathentry kind="lib" path="DSA/lib/junit.jar"/>
 	<classpathentry kind="lib" path="Common/lib/commons-logging.jar"/>
-	<classpathentry kind="lib" path="DSA/lib/hamcrest-library.jar"/>
-	<classpathentry kind="lib" path="DSA/lib/hamcrest-core.jar"/>
 	<classpathentry kind="lib" path="Common/lib/commons-lang.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>

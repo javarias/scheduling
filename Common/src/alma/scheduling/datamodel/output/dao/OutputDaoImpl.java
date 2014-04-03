@@ -3,20 +3,20 @@ package alma.scheduling.datamodel.output.dao;
 import java.util.Collection;
 import java.util.List;
 
-import alma.scheduling.datamodel.output.Results;
+import alma.scheduling.datamodel.output.SimulationResults;
 
 public class OutputDaoImpl implements OutputDao {
 
 	@Override
-	public void saveResults(Results results) {
+	public void saveResults(SimulationResults results) {
 	}
 
 	@Override
-	public void saveResults(Collection<Results> results) {
+	public void saveResults(Collection<SimulationResults> results) {
 	}
 
 	@Override
-	public List<Results> getResults() {
+	public List<SimulationResults> getResults() {
 		return null;
 	}
 
@@ -26,12 +26,12 @@ public class OutputDaoImpl implements OutputDao {
 	}
 
 	@Override
-	public Results getResult(long id) {
+	public SimulationResults getResult(long id) {
 		return null;
 	}
 
 	@Override
-	public Results getLastResult() {
+	public SimulationResults getLastResult() {
 		return null;
 	}
 

@@ -160,7 +160,7 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
 	public void updateModel(Date ut, Collection<SchedBlock> filteredSBs){
 	    for(ModelUpdater updater: updaters)
 	        if (updater.needsToUpdate(ut)) 
-	            updater.update(ut, filteredSBs);
+	            updater.update(ut, filteredSBs, array);
 	}
 	
     public void updateModel(Date ut){

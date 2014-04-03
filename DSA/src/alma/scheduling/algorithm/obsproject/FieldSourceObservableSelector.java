@@ -31,6 +31,7 @@ import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.obsproject.TemporalConstraint;
 import alma.scheduling.datamodel.obsproject.Target;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 import alma.scheduling.utils.TimeUtil;
@@ -96,6 +97,7 @@ public class FieldSourceObservableSelector extends AbstractBaseSelector {
 				return true;
 		}
 		return false;
+//TODO: Add time constrained observations
 	}
 	
 	

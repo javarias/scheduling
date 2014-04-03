@@ -90,6 +90,20 @@ public class MainWindowController extends GenericForwardComposer {
     	reportsWindow.doOverlapped();
     }
     
+    public void onClick$menuItemBeforeSimExec(Event event) {
+    	Window mainWindow = (Window) Path.getComponent("//");
+    	if( mainWindow == null ){
+    		System.out.println("mainWindow is null");
+    	}
+    	HashMap<String, String> param = new HashMap<String, String>();
+    	param.put("id", "reportWindowBeforeSimExec");
+    	param.put("title", "Requested time per Executive");
+    	param.put("controller", ReportExecBeforeSimController.class.getCanonicalName());
+    	System.out.println("lala1");
+    	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
+    	reportsWindow.doOverlapped();
+    }
+    
     public void onClick$menuItemAfterSimLST(Event event) {
     	Window mainWindow = (Window) Path.getComponent("//");
     	if( mainWindow == null ){
@@ -125,6 +139,58 @@ public class MainWindowController extends GenericForwardComposer {
     	param.put("id", "reportWindowAfterSimCompletion");
     	param.put("title", "Observation Projects Completion");
     	param.put("controller", ReportObsProjectCompletionController.class.getCanonicalName());
+    	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
+    	reportsWindow.doOverlapped();
+    }
+    
+    public void onClick$menuItemAfterSimRaExec(Event event) {
+    	Window mainWindow = (Window) Path.getComponent("//");
+    	if( mainWindow == null ){
+    		System.out.println("mainWindow is null");
+    	}
+    	HashMap<String, String> param = new HashMap<String, String>();
+    	param.put("id", "reportWindowAfterSimRaExec");
+    	param.put("title", "Right Ascencion Distribution - Executive Breakdown");
+    	param.put("controller", ReportRaExecutiveBreakdownSimController.class.getCanonicalName());
+    	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
+    	reportsWindow.doOverlapped();
+    }
+    
+    public void onClick$menuItemArrayConfiguration(Event event) {
+    	Window mainWindow = (Window) Path.getComponent("//");
+    	if( mainWindow == null ){
+    		System.out.println("mainWindow is null");
+    	}
+    	HashMap<String, String> param = new HashMap<String, String>();
+    	param.put("id", "reportWindowAfterSimArrayConfig");
+    	param.put("title", "Array Configuration Time Usage");
+    	param.put("controller", ReportArrayConfigAfterSimController.class.getCanonicalName());
+    	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
+    	reportsWindow.doOverlapped();
+    }
+    
+    public void onClick$menuItemBeforeSimBandExec(Event event) {
+    	Window mainWindow = (Window) Path.getComponent("//");
+    	if( mainWindow == null ){
+    		System.out.println("mainWindow is null");
+    	}
+    	HashMap<String, String> param = new HashMap<String, String>();
+    	param.put("id", "reportWindowBeforeSimBandExec");
+    	param.put("title", "Requested time per band - Executive breakdown");
+    	param.put("controller", ReportBandBeforeSimExecController.class.getCanonicalName());
+    	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
+    	reportsWindow.doOverlapped();
+    }
+    
+    public void onClick$menuItemAfterSimBandExec(Event event) {
+    	Window mainWindow = (Window) Path.getComponent("//");
+    	if( mainWindow == null ){
+    		System.out.println("mainWindow is null");
+    	}
+    	HashMap<String, String> param = new HashMap<String, String>();
+    	param.put("id", "reportWindowAfterSimBandExec");
+    	param.put("title", "Frequency Bands Usage (After simulation) - Executive Breakdown");
+    	param.put("controller", ReportBandAfterSimExecController.class.getCanonicalName());
     	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
     	reportsWindow.doOverlapped();
     }
@@ -178,6 +244,19 @@ public class MainWindowController extends GenericForwardComposer {
         	aboutWindow = (Window) Executions.createComponents("about.zul", mainWindow , null);
     	}    	
     	aboutWindow.doOverlapped();
+    }
+    
+    public void onClick$menuItemSyncGrades(Event event) {
+    	Window syncGradesWindow = (Window) Path.getComponent("/mainWindow/windowPh1MSynch");
+    	if( syncGradesWindow == null ){
+    		System.out.println("syncGradesWindow is null");
+    		Window mainWindow = (Window) Path.getComponent("//");
+        	if( mainWindow == null ){
+        		System.out.println("mainWindow is null");
+        	}
+        	syncGradesWindow = (Window) Executions.createComponents("Ph1MSynchCSVFile.zul", mainWindow , null);
+    	}    	
+    	syncGradesWindow.doOverlapped();
     }
 
 	@Override

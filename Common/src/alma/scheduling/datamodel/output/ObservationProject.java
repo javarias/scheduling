@@ -43,6 +43,8 @@ public class ObservationProject {
 	private ExecutionStatus status;
 	public Set<Affiliation> affiliation;
 	public Set<SchedBlockResult> schedBlock;
+	private String archiveUid;
+	private String code;
 	
 	public String getOriginalId() {
 		return originalId;
@@ -120,4 +122,19 @@ public class ObservationProject {
 		this.grade = grade;
 	}
 
+	public String getArchiveUid() {
+		return archiveUid;
+	}
+
+	public void setArchiveUid(String archiveUid) {
+		this.archiveUid = archiveUid;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
 }

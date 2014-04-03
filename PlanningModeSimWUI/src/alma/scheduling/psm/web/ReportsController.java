@@ -67,23 +67,28 @@ public class ReportsController extends GenericForwardComposer implements
 		JasperPrint print = null;
 		if (w.getId().compareTo("reportWindowBeforeSimBand") == 0) {
 			print = rg.createBandsBeforeSimReport();
-			print.setName("band_time_requested_report");
+		} else if (w.getId().compareTo("reportWindowBeforeSimBandExec") == 0) { 
+			print = rg.createBandsBeforeSimExecBreakdownReport();
 		} else if (w.getId().compareTo("reportWindowBeforeSimLST") == 0) {
 			print = rg.createLstRangesBeforeSimReport();
-			print.setName("ra_time_requested_report");
+		} else if (w.getId().compareTo("reportWindowBeforeSimExec") == 0) {
+			print = rg.createExecutiveReportBeforeSim();
 		} else if (w.getId().compareTo("reportWindowAfterSimExec") == 0) {
 			print = rg.createExecutiveReport();
-			print.setName("executive_time_used_report");
 		} else if (w.getId().compareTo("reportWindowAfterSimLST") == 0) {
 			print = rg.createLstRangeAfterSimReport();
-			print.setName("ra_time_used_report");
 		} else if (w.getId().compareTo("reportWindowAfterSimBand") == 0) {
 			print = rg.createBandsAfterSimReport();
-			print.setName("band_time_used_report");
+		} else if (w.getId().compareTo("reportWindowAfterSimBandExec") == 0) {
+			print = rg.createBandsAfterSimExecBreakdownReport();
 		} else if (w.getId().compareTo("reportWindowAfterSimCompletion") == 0) {
 			print = rg.createCompletionReport();
-			print.setName("completion_report");
-		}
+		} else if(w.getId().compareTo("reportWindowAfterSimRaExec") == 0) {
+			print = rg.createRaExecutiveBreakdownReport();
+		} else if(w.getId().compareTo("reportWindowAfterSimArrayConfig") == 0) {
+			print = rg.createArrayConfigurationReport();
+		} else
+			throw new RuntimeException("Report not supported");
 		showReport(print, reportFrame);
 	}
 

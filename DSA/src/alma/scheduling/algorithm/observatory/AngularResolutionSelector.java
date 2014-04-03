@@ -6,13 +6,14 @@ import java.util.Date;
 import alma.scheduling.algorithm.sbselection.AbstractBaseSelector;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
+import alma.scheduling.datamodel.obsproject.ArrayType;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.utils.Constants;
 
 public class AngularResolutionSelector extends AbstractBaseSelector {
 
 	private static final double convertToArcSec = 180.D / Math.PI * 3600.0D;
-	private static final String lambda = Constants.LIGHT_SPEED + " / ( REPR_FREQ * 1E9 )";
+	private static final String LAMBDA = Constants.LIGHT_SPEED + " / ( REPR_FREQ * 1E9 )";
 	
 	public AngularResolutionSelector(String selectorName) {
 		super(selectorName);
@@ -25,19 +26,26 @@ public class AngularResolutionSelector extends AbstractBaseSelector {
 	}
 
 	@Override
-	public boolean canBeSelected(SchedBlock sb, Date date,
-			ArrayConfiguration arrConf) {
 		double maxBL = arrConf.getMaxBaseline();
-		double l = Constants.LIGHT_SPEED / sb.getRepresentativeFrequency();
-		if (sb.getSchedulingConstraints().getMinAngularResolution() <= l / maxBL * convertToArcSec &&
-				sb.getSchedulingConstraints().getMaxAngularResolution() >= l / maxBL * convertToArcSec)
-			return true;
-		return false;
 	}
 
 	@Override
-	public boolean canBeSelected(SchedBlock sb, Date date) {
-		return super.canBeSelected(sb, date);
+	public boolean canBeSelected(SchedBlock sb, Date date, ArrayConfiguration arrConf) {
+		double maxBL = arrConf.getMaxBaseline();
+		double lambda = Constants.LIGHT_SPEED / (sb.getRepresentativeFrequency() * 1E9);
+//		System.out.println("maxBL: " + maxBL + " - lambda: " + lambda);
+		if (arrConf.getArrayType().compareTo(ArrayType.TWELVE_M) == 0) {
+			if (sb.getSchedulingConstraints().getMinAngularResolution() == 0 
+					|| sb.getSchedulingConstraints().getMaxAngularResolution() == 0)
+				return true; //cycle 1 sb have this issue
+//			System.out.println(sb.getSchedulingConstraints().getMinAngularResolution() + " <= " + (lambda / maxBL * convertToArcSec) + " <= " + sb.getSchedulingConstraints().getMaxAngularResolution());
+			if (sb.getSchedulingConstraints().getMinAngularResolution() <= (lambda / maxBL * convertToArcSec)
+					&& sb.getSchedulingConstraints().getMaxAngularResolution() >= (lambda / maxBL * convertToArcSec))
+				return true;
+			return false;
+		}
+		return true;
+		//sb.getSchedulingConstraints().getMinAngularResolution() <= (Constants.LIGHT_SPEED / sb.getRepresentativeFrequency() * 1E9)
 	}
 
 //	@Override

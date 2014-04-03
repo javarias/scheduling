@@ -27,7 +27,7 @@ package alma.scheduling.datamodel.output.dao;
 import java.util.Collection;
 import java.util.List;
 
-import alma.scheduling.datamodel.output.Results;
+import alma.scheduling.datamodel.output.SimulationResults;
 
 public interface OutputDao {
 
@@ -35,14 +35,14 @@ public interface OutputDao {
      * Save the result in the DB or XML
      * @param results
      */
-    public void saveResults(Results results);
+    public void saveResults(SimulationResults results);
     
     /**
      * Save a batch of results in the DB. The implementor of this method should
      * define the entire function as Transactional 
      * @param The collection to be saved in the DB
      */
-    public void saveResults(Collection<Results> results);
+    public void saveResults(Collection<SimulationResults> results);
     
     /**
      * Get all the results of the stored in the DB. <br> 
@@ -52,13 +52,13 @@ public interface OutputDao {
      * 
      * @return The results obtained from DB, can be null if there are no results in the DB
      */
-    public List<Results> getResults();
+    public List<SimulationResults> getResults();
     
     public void deleteAll();
     
-    public Results getResult(long id);
+    public SimulationResults getResult(long id);
     
-    public Results getLastResult();
+    public SimulationResults getLastResult();
     
     public long getLastResultId();
     

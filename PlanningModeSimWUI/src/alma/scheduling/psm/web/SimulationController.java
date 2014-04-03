@@ -119,12 +119,7 @@ public class SimulationController extends GenericForwardComposer implements
 
 		InputActions inputActions = InputActions.getInstance(((String) Sessions
 				.getCurrent().getAttribute("workDir")));
-		try {
-			inputActions.load((String) Sessions.getCurrent().getAttribute(DATA_LOADER_ATTRNAME));
-		} catch (NoSuchBeanDefinitionException e) {
-			logger.warn("No remote operations available, fallback to local");
-			inputActions.load((String) Sessions.getCurrent().getAttribute(DATA_LOADER_ATTRNAME));
-		}
+		inputActions.load(InputActions.DATA_CLEANER_BEAN);
 		enableButtonsForActions(inputActions.getCurrentSimulationState().getAvailableActions());
 		System.out.println("Fullload finished");
 		updateDates();
@@ -148,7 +143,7 @@ public class SimulationController extends GenericForwardComposer implements
 
 		InputActions inputActions = InputActions.getInstance(((String) Sessions
 				.getCurrent().getAttribute("workDir")));
-		inputActions.clean((String) Sessions.getCurrent().getAttribute(DATA_LOADER_ATTRNAME));
+		inputActions.clean(InputActions.DATA_CLEANER_BEAN);
 		
 		enableButtonsForActions(inputActions.getCurrentSimulationState().getAvailableActions());
 		simulationPercentageLabel.setValue("Simulation not started");

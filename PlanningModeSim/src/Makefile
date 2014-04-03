@@ -137,15 +137,23 @@ USER_IDL =
 #
 # Jarfiles and their directories
 #
+REPORTS := 	alma/scheduling/psm/reports/bandsBeforeSim.jasper \
+	 	alma/scheduling/psm/reports/bandsBeforeSimExecBreakdown.jasper \
+	 	alma/scheduling/psm/reports/bandsAfterSim.jasper \
+	 	alma/scheduling/psm/reports/bandsAfterSimExecBreakdown.jasper \
+		alma/scheduling/psm/reports/executiveReport.jasper \
+		alma/scheduling/psm/reports/executiveReportBeforeSim.jasper \
+		alma/scheduling/psm/reports/lstRangesBeforeSim.jasper \
+		alma/scheduling/psm/reports/lstRangesAfterSim.jasper \
+		alma/scheduling/psm/reports/completionReport.jasper \
+		alma/scheduling/psm/reports/raExecBreakdownReport.jasper \
+		alma/scheduling/psm/reports/arrayConfigurationReport.jasper 
+
 JARFILES=SchedulingPMS SchedulingPMSCli
 SchedulingPMS_DIRS=alma/scheduling/psm/util alma/scheduling/psm/sim alma/scheduling/psm/reports
 SchedulingPMS_EXTRAS=alma/scheduling/psm/reports/general_report.xsl \
 					 ph1mContext.xml \
-					 alma/scheduling/psm/reports/bandsBeforeSim.jasper \
-					 alma/scheduling/psm/reports/executiveReport.jasper \
-					 alma/scheduling/psm/reports/lstRangesBeforeSim.jasper \
-					 alma/scheduling/psm/reports/lstRangesAfterSim.jasper \
-					 alma/scheduling/psm/reports/completionReport.jasper \
+					 $(REPORTS) \
 					 alma/scheduling/psm/reports/images/alma-logo.jpg \
 					 alma/scheduling/algorithm/weather/data/simulation/Opacity_average_15min_all.dat \
 					 alma/scheduling/algorithm/weather/data/simulation/Opacity_good_15min_all.dat \
@@ -251,11 +259,7 @@ build_compiler: alma/util/JasperReportsCompiler.java
 	@javac -cp $(shell vltMakeJavaClasspath) $^
 	@jar cf ../lib/jasperCompiler.jar alma/util/*.class
 
-build_reports: 	alma/scheduling/psm/reports/bandsBeforeSim.jasper \
-				alma/scheduling/psm/reports/executiveReport.jasper \
-				alma/scheduling/psm/reports/lstRangesBeforeSim.jasper \
-				alma/scheduling/psm/reports/lstRangesAfterSim.jasper \
-				alma/scheduling/psm/reports/completionReport.jasper \
+build_reports: $(REPORTS)
 	
 %.jasper: %.jrxml
 	acsStartJava -endorsed alma.util.JasperReportsCompiler $^
