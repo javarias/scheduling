@@ -46,7 +46,6 @@ public class InteractiveSchedBlockSelector extends AbstractBaseSelector {
 		return canBeSelected(sb, date);
 	}
 
-	@Override
 	public boolean canBeSelected(SchedBlock sb, Date date) {
 		if (!sb.getManual())
 			return true;

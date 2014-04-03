@@ -78,7 +78,6 @@ public class FieldSourceObservableSelector extends AbstractBaseSelector {
 		return canBeSelected(sb, date);
 	}
 
-	@Override
 	public boolean canBeSelected(SchedBlock sb, Date date) {
 		double longitude = configDao.getConfiguration().getArrayCenterLongitude();
         double lst = TimeUtil.getLocalSiderealTime(date, longitude);

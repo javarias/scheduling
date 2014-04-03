@@ -26,10 +26,6 @@ public class AngularResolutionSelector extends AbstractBaseSelector {
 	}
 
 	@Override
-		double maxBL = arrConf.getMaxBaseline();
-	}
-
-	@Override
 	public boolean canBeSelected(SchedBlock sb, Date date, ArrayConfiguration arrConf) {
 		double maxBL = arrConf.getMaxBaseline();
 		double lambda = Constants.LIGHT_SPEED / (sb.getRepresentativeFrequency() * 1E9);

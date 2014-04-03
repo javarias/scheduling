@@ -68,7 +68,6 @@ public class SunAvoidanceSelector extends AbstractBaseSelector {
 		return canBeSelected(sb, date);
 	}
 
-	@Override
 	public boolean canBeSelected(SchedBlock sb, Date date) {
 		SunAstroData sunData = CoordinatesUtil.getSunAstroData(date);
 		double highRa, lowRa, highDec, lowDec;

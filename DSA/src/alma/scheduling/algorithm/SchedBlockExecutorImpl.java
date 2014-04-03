@@ -218,7 +218,7 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
         ExecutiveTimeSpent ets = new ExecutiveTimeSpent();
         ets.setExecutive(execDao.getExecutive(schedBlock.getPiName()));
         ets.setObservingSeason(execDao.getCurrentSeason());
-        ets.setSbId(schedBlock.getId());
+        ets.setSbUid(schedBlock.getUid());
         ets.setTimeSpent(executionTime / 3600000.0F);
         ExecutivePercentage ep = execDao.getExecutivePercentage(schedBlock.getExecutive(), execDao.getCurrentSeason());
         ep.setRemainingObsTime(ep.getRemainingObsTime() - schedBlock.getSchedBlockControl().getSbMaximumTime().floatValue());

@@ -55,7 +55,6 @@ public class ProjectCodeSelector extends AbstractBaseSelector {
 		return canBeSelected(sb, date);
 	}
 
-	@Override
 	public boolean canBeSelected(SchedBlock sb, Date date) {
 		if (sb.getProject().getCode().matches(code))
 			return true;

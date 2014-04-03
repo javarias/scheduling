@@ -75,7 +75,6 @@ public class BandSelector extends AbstractBaseSelector {
 		return canBeSelected(sb, date);
 	}
 
-	@Override
 	public boolean canBeSelected(SchedBlock sb, Date date) {
 		for (int b: allowedBands) {
 			if (sb.getSchedulingConstraints().getRepresentativeBand() == b)

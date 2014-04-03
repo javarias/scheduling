@@ -58,7 +58,6 @@ public class SchedBlockStatusSelector extends AbstractBaseSelector {
 		return canBeSelected(sb, date);
 	}
 
-	@Override
 	public boolean canBeSelected(SchedBlock sb, Date date) {
 		if (sb.getSchedBlockControl().getState().compareTo(SchedBlockState.READY) == 0)
 			return true;
