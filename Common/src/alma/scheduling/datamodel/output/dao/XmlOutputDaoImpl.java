@@ -247,8 +247,8 @@ public class XmlOutputDaoImpl implements StreamBasedOutputDao {
             	a[i].setId(new Long(i).toString());
             	tmpA.setId(i);
                 a[i].setAvailablelTime( tmpA.getAvailableTime());
-                a[i].setCreationDate(tmpA.getCreationDate());
-                a[i].setDeletionDate(tmpA.getDeletionDate());
+                a[i].setStartDate(tmpA.getCreationDate());
+                a[i].setEndDate(tmpA.getDeletionDate());
                 // Id needs to be a string, as it is used for XPath reference check in XML schema.
                 a[i].setOriginalId(i);
                 a[i].setMaintenanceTime(tmpA.getMaintenanceTime());
@@ -352,8 +352,8 @@ public class XmlOutputDaoImpl implements StreamBasedOutputDao {
             Array tmpArray = new Array();
             arrayMap.put(xmlArray.getId(), tmpArray);
             tmpArray.setAvailableTime(xmlArray.getAvailablelTime());
-            tmpArray.setCreationDate(xmlArray.getCreationDate());
-            tmpArray.setDeletionDate(xmlArray.getDeletionDate());
+            tmpArray.setCreationDate(xmlArray.getStartDate());
+            tmpArray.setDeletionDate(xmlArray.getEndDate());
             tmpArray.setMaintenanceTime(xmlArray.getMaintenanceTime());
             tmpArray.setScientificTime(xmlArray.getScientificTime());
             tmpArray.setResolution( xmlArray.getResolution());

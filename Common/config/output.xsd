@@ -32,21 +32,23 @@
 	</xs:complexType>
 	
 	<xs:complexType name="Array">
-		<xs:sequence>
-			<xs:element name="availablelTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="creationDate" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="deletionDate" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="maintenanceTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="resolution" type="xs:double" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="scientificTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="uvCoverage" type="xs:double" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="originalId" type="xs:long" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="minBaseline" type="xs:double" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="maxBaseline" type="xs:double" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="configurationName" type="xs:string" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="type" type="xs:string" minOccurs="1" maxOccurs="1"/>
-		</xs:sequence>
-		<xs:attribute name="id" type="xs:NCName" use="required"/>		
+		<xs:complexContent>
+			<xs:extension base="Task">
+				<xs:sequence>
+					<xs:element name="availablelTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="maintenanceTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="resolution" type="xs:double" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="scientificTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="uvCoverage" type="xs:double" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="originalId" type="xs:long" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="minBaseline" type="xs:double" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="maxBaseline" type="xs:double" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="configurationName" type="xs:string" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="type" type="xs:string" minOccurs="1" maxOccurs="1"/>
+				</xs:sequence>
+				<xs:attribute name="id" type="xs:NCName" use="required"/>	
+		</xs:extension>
+		</xs:complexContent>	
 	</xs:complexType>
 	
 	<xs:complexType name="ObservationProject">
@@ -72,34 +74,36 @@
 	</xs:complexType>
 
 	<xs:complexType name="SchedBlock">
-		<xs:sequence>
-			<xs:element name="endDate" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="executionTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="id" type="xs:long" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="originalId" type="xs:string" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="mode" type="xs:string" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="representativeFrequency" type="xs:double" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="goalSensitivity" type="xs:double" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="achievedSensitivity" type="xs:double" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="startDate" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="status" type="ExecutionStatus" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="type" type="xs:string" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="source" type="SkyCoordinatesT" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="representativeBand" minOccurs="1" maxOccurs="1">
-				<xs:simpleType>
-					<xs:restriction base="xs:short">
-						<xs:minInclusive value="0"/>
-						<xs:maxInclusive value="13"/>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:element>
-			<!-- Reference to Array -->
-			<xs:element name="ArrayRef" minOccurs="1" maxOccurs="1">
-				<xs:complexType>
-					<xs:attribute name="arrayRef" type="xs:NCName" use="required"/>
-				</xs:complexType>
-			</xs:element>
-		</xs:sequence>
+		<xs:complexContent>
+			<xs:extension base="Task">
+				<xs:sequence>
+					<xs:element name="executionTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="id" type="xs:long" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="originalId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="mode" type="xs:string" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="representativeFrequency" type="xs:double" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="goalSensitivity" type="xs:double" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="achievedSensitivity" type="xs:double" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="status" type="ExecutionStatus" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="type" type="xs:string" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="source" type="SkyCoordinatesT" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="representativeBand" minOccurs="1" maxOccurs="1">
+						<xs:simpleType>
+							<xs:restriction base="xs:short">
+								<xs:minInclusive value="0"/>
+								<xs:maxInclusive value="13"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+					<!-- Reference to Array -->
+					<xs:element name="ArrayRef" minOccurs="1" maxOccurs="1">
+						<xs:complexType>
+							<xs:attribute name="arrayRef" type="xs:NCName" use="required"/>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 
 	<xs:simpleType name="ExecutionStatus">
@@ -113,5 +117,12 @@
 	<xs:complexType name="SkyCoordinatesT">
 		<xs:attribute name="RA" type="xs:double" use="required"/>
 		<xs:attribute name="Dec" type="xs:double" use="required"/>
+	</xs:complexType>
+	
+	<xs:complexType name="Task" abstract="true">
+		<xs:sequence>
+			<xs:element name="startDate" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="endDate" type="xs:dateTime" minOccurs="1" maxOccurs="1" />
+		</xs:sequence>
 	</xs:complexType>
 </xs:schema>
