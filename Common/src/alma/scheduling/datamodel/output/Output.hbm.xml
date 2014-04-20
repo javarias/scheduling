@@ -28,12 +28,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
         name="OutputExecutionStatusType">
         <param name="enumClassName">alma.scheduling.datamodel.output.ExecutionStatus</param>
     </typedef>
+    <typedef class="alma.scheduling.datamodel.StringEnumUserType" name="ArrayTypeEnum">
+        <param name="enumClassName">alma.scheduling.datamodel.obsproject.ArrayType</param>
+    </typedef>
     
-    <class name="Results" table="OUTPUT_RESULTS">
+    <class name="SimulationResults" table="OUTPUT_RESULTS">
         <id column="ID" type="long" name="id">
         	<generator class="native"/>
         </id>
-        
+        <property name="name" column="NAME" type="string"/>
         <property name="availableTime" column="AVAILABLE_TIME" type="double"/>
         <property name="maintenanceTime" column="MAINTENANCE_TIME" type="double"/>
         <property name="operationTime" column="OPERATION_TIME" type="double"/>
@@ -44,8 +47,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
         <property name="stopSimDate" column="STOP_SIM_DATE" type="timestamp" />
         <property name="startRealDate" column="START_REAL_DATE" type="timestamp" />
         <property name="stopRealDate" column="STOP_REAL_DATE" type="timestamp" />
-        
-		<set name="array" table="OUTPUT_ARRAY" cascade="save-update,lock, delete, delete-orphan">
+		<set name="array" table="OUTPUT_ARRAY" cascade="save-update,lock, delete, delete-orphan" lazy="false">
 			<key column="RESULT_ID" />
 			<one-to-many class="Array" />
 		</set>
@@ -67,6 +69,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 		<property name="originalId" type="long" column="ORIGINAL_ID" />
 		<property name="status" type="OutputExecutionStatusType" column="STATUS"/>
 		<property name="executionTime" type="double" column="EXECUTION_TIME"/>
+		<property name="code" type="string" column="CODE"/>
+		<property name="archiveUid" type="string" column="ARCHIVE_UID"/>
 		<set name="affiliation" table="OUTPUT_AFFILIATION" cascade="save-update,lock, delete, delete-orphan" lazy="false">
 			<key column="OBSERVATION_PROJECT_ID" />
 			<one-to-many class="Affiliation" />
@@ -84,7 +88,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 		
 		<property name="endDate" type="timestamp" column="END_DATE" />
 		<property name="executionTime" type="double" column="EXECUTION_TIME"/>
-		<property name="originalId" type="long" column="ORIGINAL_ID" />		
+		<property name="originalId" type="string" column="ORIGINAL_ID" />		
 		<property name="mode" type="string" column="RESULT_MODE"/>
 		<property name="representativeFrequency" type="double" column="REPRESENTATIVE_FREQUENCY"/>
 		<property name="goalSensitivity" type="double" column="GOAL_SENSITIVITY"/>
@@ -92,6 +96,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 		<property name="startDate" type="timestamp" column="START_DATE" />
 		<property name="status" type="OutputExecutionStatusType" column="STATUS"/>
 		<property name="type" type="string" column="TYPE"/>
+		<property name="representativeBand" type="integer" column="REPRESENTATIVE_BAND" />
+		<component name="representativeSource" class="alma.scheduling.datamodel.obsproject.SkyCoordinates">
+            <property name="RA" type="double" column="RA"/>
+            <property name="Dec" type="double" column="DEC"/>
+        </component>
 		<many-to-one name="ArrayRef" column="ARRAY_REF"  
         	 not-null="false" class="Array" cascade="save-update,lock, delete" lazy="false"/>
 	</class>
@@ -107,6 +116,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 		<property name="scientificTime" type="double" column="SCIENTIFIC_TIME"/>
 		<property name="resolution" type="double" column="RESOLUTION"/>
 		<property name="uvCoverage" type="double" column="UV_COVERAGE"/>
+		<property name="minBaseline" type="double" column="MIN_BASELINE"/>
+		<property name="maxBaseline" type="double" column="MAX_BASELINE"/>
+		<property name="configurationName" type="string" column="CONFIG_NAME"/>
+		<property name="type" type="ArrayTypeEnum" column="ARRAY_TYPE"/>
 	</class>
 	
 	<class name="Affiliation" table="OUTPUT_AFFILIATION">

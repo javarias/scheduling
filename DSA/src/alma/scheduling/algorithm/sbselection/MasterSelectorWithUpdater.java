@@ -60,7 +60,7 @@ public class MasterSelectorWithUpdater extends MasterSelector implements
     }
 
     @Override
-    public synchronized void update(Date date, Collection<SchedBlock> sbs) {
+    public synchronized void update(Date date, Collection<SchedBlock> sbs, ArrayConfiguration arrConf) {
         this.sbs = sbs;
         ArrayList<SchedBlock> trash = new ArrayList<SchedBlock>();
         ArrayList<DSAErrorStruct> updateErrors =  new ArrayList<DSAErrorStruct>();
@@ -79,7 +79,7 @@ public class MasterSelectorWithUpdater extends MasterSelector implements
             }
             for(SchedBlockSelector s: selectors){
             	try {
-            		if(!s.canBeSelected(sb, date)){
+            		if(!s.canBeSelected(sb, date, arrConf)){
             			trash.add(sb);
             			break;
             		}

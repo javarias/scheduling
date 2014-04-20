@@ -93,7 +93,6 @@ public class ExecutiveSelector extends AbstractBaseSelector {
 		return canBeSelected(sb, date);
 	}
 
-	@Override
 	public boolean canBeSelected(SchedBlock sb, Date date) {
 		ExecutivePercentage ep = execDao.getExecutivePercentage(sb.getExecutive(), execDao.getCurrentSeason());
 		double maxExecTime = sb.getSchedBlockControl().getSbMaximumTime();

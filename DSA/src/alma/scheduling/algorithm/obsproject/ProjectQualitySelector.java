@@ -89,7 +89,6 @@ public class ProjectQualitySelector extends AbstractBaseSelector {
 		return canBeSelected(sb, date);
 	}
 
-	@Override
 	public boolean canBeSelected(SchedBlock sb, Date date) {
 		for(String grade: allowedGrades) {
 			if (sb.getProject().getLetterGrade().compareTo(ScienceGrade.valueOf(grade)) == 0)

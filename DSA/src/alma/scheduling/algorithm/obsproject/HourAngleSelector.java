@@ -79,7 +79,6 @@ public class HourAngleSelector extends AbstractBaseSelector {
 		return canBeSelected(sb, date);
 	}
 
-	@Override
 	public boolean canBeSelected(SchedBlock sb, Date date) {
 		double raLowLimit = CoordinatesUtil.getRA(date, 20.0, Constants.CHAJNANTOR_LONGITUDE) * 15.0;
 		double raHighLimit = CoordinatesUtil.getRA(date, 4.0, Constants.CHAJNANTOR_LONGITUDE) * 15.0;

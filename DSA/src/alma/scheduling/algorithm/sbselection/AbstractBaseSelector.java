@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import alma.scheduling.algorithm.VerboseLevel;
+import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.utils.TimeUtil;
 
@@ -81,7 +82,7 @@ public abstract class AbstractBaseSelector implements SchedBlockSelector {
     }
 
     @Override
-    public boolean canBeSelected(SchedBlock sb, Date date) {
+    public boolean canBeSelected(SchedBlock sb, Date date, ArrayConfiguration arrConf) {
     	throw new java.lang.RuntimeException("Not Implemented");
     }
 }

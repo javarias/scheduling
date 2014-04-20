@@ -119,10 +119,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
                         </xsl:if>
                         <xsl:if test="count(SelectionCriteria/SchedBlockGradeSelector) = 1">
                             <ref bean="projectQualitySelector" />
-                        </xsl:if>
-                        <xsl:if test="count(SelectionCriteria/ArrayAngularResolutionSelector) = 1">
-                            <ref bean="arrayAngularResolutionSelector" />
-                        </xsl:if>   
+                        </xsl:if> 
                         	<ref bean="interactiveProjectsSelector" /> 
                         <xsl:if test="count(SelectionCriteria/ProjectCodeSelector) = 1">
                             <ref bean="{concat('projectCodeSelector', '_', @name)}" />
@@ -154,12 +151,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
             <bean id="{concat('postUpdateSelectorAndUpdater', '_', @name)}" class="alma.scheduling.algorithm.sbselection.MasterSelectorWithUpdater">
                 <property name="selectors">
                     <set>
+                    	<ref bean="sourceSelector"/>
                     	<xsl:if test="count(SelectionCriteria/AltitudeSelector) = 1">
                     		<ref bean="altitudeSelector" />
                     	</xsl:if>
 						<xsl:if test="count(SelectionCriteria/OpacitySelector) = 1">
 							<ref bean="opacitySelector" />
-						</xsl:if> 
+						</xsl:if>
+			            <xsl:if test="count(SelectionCriteria/ArrayAngularResolutionSelector) = 1">
+                            <ref bean="arrayAngularResolutionSelector" />
+                        </xsl:if>  
                         <xsl:if test="count(SelectionCriteria/WeatherSelector) = 1">
                             <ref bean="{concat('weatherTsysSelector', '_', @name)}" />
                         </xsl:if>

@@ -24,6 +24,6 @@
       <module organisation="org.seasar" resolver="seasar"/>
     </modules>
     <caches>
-    	<cache name="avoid-cache" useOrigin="true"/>
+    	<cache name="avoid-cache" useOrigin="true" defaultTTL="1s" basedir="/tmp/ivy2/trunk" artifactPattern="[module]/[artifact].[ext]"/>
     </caches>
 </ivysettings>

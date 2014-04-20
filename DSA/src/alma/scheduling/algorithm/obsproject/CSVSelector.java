@@ -61,7 +61,6 @@ public class CSVSelector extends AbstractBaseSelector {
 		return canBeSelected(sb, date);
 	}
 
-	@Override
 	public boolean canBeSelected(SchedBlock sb, Date date) {
 		if(sb.getCsv() == csv)
 			return true;

@@ -8,6 +8,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
-
 import alma.scheduling.psm.sim.ReportGenerator;
 
 public class ZippedReportsServlet extends HttpServlet {
@@ -48,6 +48,20 @@ public class ZippedReportsServlet extends HttpServlet {
 		
 		JasperPrint print = null;
 		if (id != null)
+			print = rg.createArrayConfigurationReport(Long.valueOf(id));
+		else
+			print = rg.createArrayConfigurationReport();
+		exporter.setParameter(JRPdfExporterParameter.JASPER_PRINT, print);
+		try {
+			exporter.exportReport();
+			addNewZipPdfEntry(zout, print.getName(), out);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			out.reset();
+		}
+		
+		if (id != null)
 			print = rg.createBandsAfterSimReport(Long.valueOf(id));
 		else
 			print = rg.createBandsAfterSimReport();
@@ -62,7 +76,35 @@ public class ZippedReportsServlet extends HttpServlet {
 		}
 		
 		if (id != null)
+			print = rg.createBandsAfterSimExecBreakdownReport(Long.valueOf(id));
+		else
+			print = rg.createBandsAfterSimReport();
+		exporter.setParameter(JRPdfExporterParameter.JASPER_PRINT, print);
+		try {
+			exporter.exportReport();
+			addNewZipPdfEntry(zout, print.getName(), out);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			out.reset();
+		}
+		
+		if (id != null)
 			print = rg.createBandsBeforeSimReport(Long.valueOf(id));
+		else
+			print = rg.createBandsBeforeSimReport();
+		exporter.setParameter(JRPdfExporterParameter.JASPER_PRINT, print);
+		try {
+			exporter.exportReport();
+			addNewZipPdfEntry(zout, print.getName(), out);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			out.reset();
+		}
+		
+		if (id != null)
+			print = rg.createBandsBeforeSimExecBreakdownReport(Long.valueOf(id));
 		else
 			print = rg.createBandsBeforeSimReport();
 		exporter.setParameter(JRPdfExporterParameter.JASPER_PRINT, print);
@@ -131,6 +173,20 @@ public class ZippedReportsServlet extends HttpServlet {
 			out.reset();
 		}
 		
+		if (id != null)
+			print = rg.createRaExecutiveBreakdownReport(Long.valueOf(id));
+		else 
+			print = rg.createRaExecutiveBreakdownReport();
+		exporter.setParameter(JRPdfExporterParameter.JASPER_PRINT, print);
+		try {
+			exporter.exportReport();
+			addNewZipPdfEntry(zout, print.getName(), out);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			out.reset();
+		}
+		
 		InputStream is = null;
 		if (id == null)
 			is = rg.getFinalReport();
@@ -155,7 +211,10 @@ public class ZippedReportsServlet extends HttpServlet {
 		resp.setContentLength(byteZipOut.toString().length());
 		resp.setHeader("Content-Transfer-Encoding", "binary");
 		resp.setHeader("Content-Disposition","attachment; filename=\"" + "reports_id-" + id + ".zip\"");
-		resp.getWriter().write(byteZipOut.toString());
+		ServletOutputStream sOut = resp.getOutputStream();
+		sOut.write(byteZipOut.toByteArray());
+		sOut.flush();
+		sOut.close();
 	}
 	
 	private void addNewZipPdfEntry(ZipOutputStream zout, String reportName, ByteArrayOutputStream reportOut) throws IOException {

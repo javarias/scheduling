@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Crowding Report" pageWidth="595" pageHeight="842" columnWidth="539" leftMargin="36" rightMargin="20" topMargin="30" bottomMargin="30">
+<!-- Created with Jaspersoft Studio version last-->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Crowding Report" pageWidth="595" pageHeight="842" columnWidth="539" leftMargin="36" rightMargin="20" topMargin="30" bottomMargin="30" uuid="62a6ad41-97e7-4950-9316-b48c3d3e6721">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="localhost test hsqldb"/>
 	<style name="Heading 4" fontSize="12" isBold="true" isItalic="true"/>
 	<style name="Heading 2" fontSize="14" isBold="true" isItalic="true"/>
 	<style name="Heading 1" fontSize="16" isBold="true"/>
@@ -12,6 +14,12 @@
 	<parameter name="subtitle" class="java.lang.String"/>
 	<parameter name="seasonStart" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="seasonEnd" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[select SCHEDBLOCK.REPR_BAND as band, OBSUNIT.OBSUNIT_CTRL_MAX_TIME as executionTime, SCIENCE_GRADE as grade 
+	from OBSUNIT inner join SCHEDBLOCK on OBSUNIT.OBSUNITID = SCHEDBLOCK.SCHEDBLOCKID 
+	where SCHEDBLOCK.SCIENCE_GRADE <> 'D'
+	order by band asc, grade asc;]]>
+	</queryString>
 	<field name="band" class="java.lang.String"/>
 	<field name="executionTime" class="java.lang.Double"/>
 	<variable name="totalSchedBlocks" class="java.lang.Integer" resetType="Group" resetGroup="bandGroup" calculation="Count">
@@ -27,19 +35,16 @@
 		<groupFooter>
 			<band height="15">
 				<textField>
-					<reportElement x="0" y="0" width="80" height="15"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{band}]]></textFieldExpression>
+					<reportElement x="0" y="0" width="80" height="15" uuid="11015f87-fb2f-4029-a557-e0f4a8f4a6f6"/>
+					<textFieldExpression><![CDATA[$F{band}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="83" y="0" width="81" height="15"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.Integer"><![CDATA[$V{totalSchedBlocks}]]></textFieldExpression>
+					<reportElement x="83" y="0" width="81" height="15" uuid="3478353d-e3f0-4145-9f18-eb6609c11d88"/>
+					<textFieldExpression><![CDATA[$V{totalSchedBlocks}]]></textFieldExpression>
 				</textField>
 				<textField pattern="#,##0.0#;(#)">
-					<reportElement x="181" y="0" width="69" height="15"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{totalHoursExec}]]></textFieldExpression>
+					<reportElement x="181" y="0" width="69" height="15" uuid="97735ca3-2b1c-401d-9aca-c062cfc07978"/>
+					<textFieldExpression><![CDATA[$V{totalHoursExec}]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupFooter>
@@ -47,79 +52,79 @@
 	<title>
 		<band height="67">
 			<image>
-				<reportElement x="0" y="0" width="43" height="52"/>
-				<imageExpression class="java.lang.String"><![CDATA["alma/scheduling/psm/reports/images/alma-logo.jpg"]]></imageExpression>
+				<reportElement x="0" y="0" width="43" height="52" uuid="f4d0b08c-8bd3-4b15-ab06-41a0581c453c"/>
+				<imageExpression><![CDATA["alma/scheduling/psm/reports/images/alma-logo.jpg"]]></imageExpression>
 			</image>
 			<staticText>
-				<reportElement mode="Opaque" x="308" y="0" width="88" height="18" forecolor="#010101" backcolor="#7A87CD"/>
+				<reportElement mode="Opaque" x="308" y="0" width="88" height="18" forecolor="#010101" backcolor="#7A87CD" uuid="ca28080c-a468-4b7a-9f01-790b2b6f49d7"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Hours in Season:]]></text>
 			</staticText>
 			<textField pattern="#,##0.0#;(#)">
-				<reportElement mode="Opaque" x="396" y="0" width="143" height="18" forecolor="#010101" backcolor="#7A87CD"/>
+				<reportElement mode="Opaque" x="396" y="0" width="143" height="18" forecolor="#010101" backcolor="#7A87CD" uuid="53230611-ba8c-4aa4-902a-98dbfa98eb3c"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression class="java.lang.Double"><![CDATA[Double.parseDouble($P{totalAvailableTime})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[Double.parseDouble($P{totalAvailableTime})]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Heading 1" mode="Opaque" x="53" y="0" width="243" height="28" forecolor="#C5C5C5" backcolor="#00026F"/>
+				<reportElement style="Heading 1" mode="Opaque" x="53" y="0" width="243" height="28" forecolor="#C5C5C5" backcolor="#00026F" uuid="f074afa3-e9ed-4a88-b301-8c78dec1751c"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Planning Mode Simulator]]></text>
 			</staticText>
 			<textField>
-				<reportElement style="Heading 1" mode="Opaque" x="53" y="28" width="243" height="24" forecolor="#FEFEFE" backcolor="#00026F"/>
+				<reportElement style="Heading 1" mode="Opaque" x="53" y="28" width="243" height="24" forecolor="#FEFEFE" backcolor="#00026F" uuid="5242589d-61b7-46a1-b86f-c04d558e3331"/>
 				<textElement verticalAlignment="Middle" markup="none">
 					<font size="11" isBold="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{title}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{title}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement x="0" y="55" width="539" height="1" forecolor="#1A0067"/>
+				<reportElement x="0" y="55" width="539" height="1" forecolor="#1A0067" uuid="8cd95e2f-7792-4164-8c15-48469f4571f7"/>
 				<graphicElement>
 					<pen lineWidth="1.75"/>
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement mode="Opaque" x="308" y="18" width="88" height="14" forecolor="#010101" backcolor="#7A87CD"/>
+				<reportElement mode="Opaque" x="308" y="18" width="88" height="14" forecolor="#010101" backcolor="#7A87CD" uuid="d532c332-44f5-4873-a530-dfa02c3e500a"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Season starts:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="308" y="32" width="88" height="20" forecolor="#010101" backcolor="#7A87CD"/>
+				<reportElement mode="Opaque" x="308" y="32" width="88" height="20" forecolor="#010101" backcolor="#7A87CD" uuid="21abe746-6528-414b-8f93-c5e332e0597a"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Season ends:]]></text>
 			</staticText>
-			<textField pattern="">
-				<reportElement mode="Opaque" x="396" y="18" width="143" height="14" forecolor="#010101" backcolor="#7A87CD"/>
+			<textField pattern="yyyy-MM-dd&apos;T&apos;HH:mm:ss zz">
+				<reportElement mode="Opaque" x="396" y="18" width="143" height="14" forecolor="#010101" backcolor="#7A87CD" uuid="a4aa28bf-b3ef-4724-889b-0934c8089cbe"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{seasonStart}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{seasonStart}]]></textFieldExpression>
 			</textField>
-			<textField pattern="">
-				<reportElement mode="Opaque" x="396" y="32" width="143" height="20" forecolor="#010101" backcolor="#7A87CD"/>
+			<textField pattern="yyyy-MM-dd&apos;T&apos;HH:mm:ss zz">
+				<reportElement mode="Opaque" x="396" y="32" width="143" height="20" forecolor="#010101" backcolor="#7A87CD" uuid="75348605-e1dc-43df-85bd-fe340460773d"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{seasonEnd}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{seasonEnd}]]></textFieldExpression>
 			</textField>
 			<rectangle>
-				<reportElement x="302" y="0" width="6" height="52" backcolor="#7A87CD"/>
+				<reportElement x="302" y="0" width="6" height="52" backcolor="#7A87CD" uuid="de62ab7e-1415-4919-b1be-47465218d272"/>
 				<graphicElement>
 					<pen lineWidth="0.0" lineStyle="Double"/>
 				</graphicElement>
 			</rectangle>
 			<rectangle>
-				<reportElement x="47" y="0" width="6" height="52" backcolor="#00026F"/>
+				<reportElement x="47" y="0" width="6" height="52" backcolor="#00026F" uuid="b82dc2bf-15be-463f-8947-d6ad7c846714"/>
 				<graphicElement>
 					<pen lineWidth="0.0" lineStyle="Double"/>
 				</graphicElement>
@@ -132,28 +137,28 @@
 	<columnHeader>
 		<band height="50">
 			<textField>
-				<reportElement style="Heading 2" mode="Opaque" x="0" y="1" width="539" height="24" forecolor="#FEFEFE" backcolor="#00026F"/>
+				<reportElement style="Heading 2" mode="Opaque" x="0" y="1" width="539" height="24" forecolor="#FEFEFE" backcolor="#00026F" uuid="06745ee1-c5bf-4f40-9714-51a387cde200"/>
 				<textElement verticalAlignment="Middle">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{subtitle}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{subtitle}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="35" width="80" height="15"/>
+				<reportElement x="0" y="35" width="80" height="15" uuid="a6254d0c-5f4b-4bae-9dfe-bd0d1dc49a7c"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Band]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="83" y="35" width="98" height="15"/>
+				<reportElement x="83" y="35" width="98" height="15" uuid="c3543c12-fcf1-472a-89bf-f268829e156e"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Number of SBs]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="181" y="35" width="81" height="15"/>
+				<reportElement x="181" y="35" width="81" height="15" uuid="36fa8ec5-9c9a-47f6-9922-dc5ec01aa453"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
@@ -164,22 +169,21 @@
 	<pageFooter>
 		<band height="50">
 			<textField evaluationTime="Report">
-				<reportElement x="282" y="7" width="40" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+				<reportElement x="282" y="7" width="40" height="20" uuid="ea948660-4bc0-4c55-93e8-c027982214c0"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="199" y="7" width="80" height="20"/>
+				<reportElement x="199" y="7" width="80" height="20" uuid="8c45bc7d-4e7b-4d5c-b861-e03a93035eba"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageFooter>
 	<summary>
 		<band height="415">
-			<barChart>
+			<stackedBarChart>
 				<chart isShowLegend="false">
-					<reportElement x="0" y="15" width="539" height="212"/>
+					<reportElement x="0" y="15" width="539" height="212" uuid="04e504da-828b-4ca0-88aa-a9c4dd615754"/>
 					<chartTitle/>
 					<chartSubtitle/>
 					<chartLegend>
@@ -228,9 +232,9 @@
 						</axisFormat>
 					</valueAxisFormat>
 				</barPlot>
-			</barChart>
+			</stackedBarChart>
 			<staticText>
-				<reportElement x="0" y="281" width="539" height="134"/>
+				<reportElement x="0" y="281" width="539" height="134" uuid="1e85b262-0761-4e70-aa28-de3669751c7c"/>
 				<textElement textAlignment="Justified">
 					<font isBold="false"/>
 				</textElement>
@@ -243,7 +247,7 @@ The bar chart, shows per observing band, the number of hours requested or observ
 It is important to notice that the second column, gives the number of scheduling blocks instead of the number of observation projects, as a single observation project, could observe more than one frequency band through several scheduling blocks.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="248" width="250" height="20"/>
+				<reportElement x="0" y="248" width="250" height="20" uuid="28495eaf-a64e-4162-bf78-bcab76175572"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>

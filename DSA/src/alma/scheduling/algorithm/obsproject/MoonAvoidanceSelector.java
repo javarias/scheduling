@@ -68,7 +68,6 @@ public class MoonAvoidanceSelector extends AbstractBaseSelector {
 		return canBeSelected(sb, date);
 	}
 
-	@Override
 	public boolean canBeSelected(SchedBlock sb, Date date) {
 		MoonAstroData moonData = CoordinatesUtil.getMoonAstroData(date);
 		double highRa, lowRa, highDec, lowDec;

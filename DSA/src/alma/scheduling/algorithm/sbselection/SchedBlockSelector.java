@@ -61,13 +61,4 @@ public interface SchedBlockSelector {
       */
      public boolean canBeSelected(SchedBlock sb, Date date, ArrayConfiguration arrConf);
      
-     /**
-      * Determine if the SchedBlock passed as parameter can be selected by the class
-      * implementing this interface.
-      * 
-      * @param sb The SchedBlock to be evaluated.
-      * @param date the date to evaluate if the SchedBlock whether can be selected or not.
-      * @return True if the SchedBlock can be selected or False otherwise
-      */
-     public boolean canBeSelected(SchedBlock sb, Date date);
 }

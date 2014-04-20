@@ -25,7 +25,7 @@ export SCHEDULING_TEST_OPTIONS="-Dscheduling.`whoami` -Dscheduling.autoPopupPlug
 
 JAVA_OPTIONS="-Darchive.configFile=$TESTDIR/archiveConfig.properties -Duispec4j.test.library=junit $JAVA_OPTIONS"
 JAVA_OPTIONS="-DACS.managerhost=localhost $JAVA_OPTIONS"
-JAVA_OPTIONS="-Xmx1024m $JAVA_OPTIONS"
+JAVA_OPTIONS="-Xmx2048m $JAVA_OPTIONS"
 JAVA_OPTIONS="-Dalma.run.location=$RUNLOCATION $JAVA_OPTIONS"
 JAVA_OPTIONS="$SCHEDULING_TEST_OPTIONS $JAVA_OPTIONS"
 JAVA_OPTIONS="$JAVA_OPTIONS -DBLCorrelator=CORRELATOR_12m_1QUADRANT"

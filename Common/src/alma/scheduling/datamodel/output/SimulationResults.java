@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: Results.java,v 1.6 2010/08/13 21:52:48 javarias Exp $"
  */
 package alma.scheduling.datamodel.output;
 
@@ -33,8 +32,9 @@ import java.util.Set;
  * @version 1.0
  * @created 02-Mar-2010 11:49:25 AM
  */
-public class Results {
+public class SimulationResults {
 
+    private String name;
 	private double availableTime;
 	private double maintenanceTime;
 	private double operationTime;
@@ -48,7 +48,7 @@ public class Results {
 	public Set<Array> array;
 	public Set<ObservationProject> observationProject;
 
-	public Results(){
+	public SimulationResults(){
 
 	}
 
@@ -147,16 +147,12 @@ public class Results {
 	public void setStopRealDate(Date stopRealDate) {
 		this.stopRealDate = stopRealDate;
 	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((startRealDate == null) ? 0 : startRealDate.hashCode());
-		return result;
+	
+	public String getName() {
+		return name;
 	}
 
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -165,10 +161,10 @@ public class Results {
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof Results)) {
+		if (!(obj instanceof SimulationResults)) {
 			return false;
 		}
-		Results other = (Results) obj;
+		SimulationResults other = (SimulationResults) obj;
 		if (startRealDate == null) {
 			if (other.startRealDate != null) {
 				return false;
@@ -180,4 +176,8 @@ public class Results {
 	}
 	
 
+	public void setName(String name) {
+		this.name = name;
+	}
+    
 }

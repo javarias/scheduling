@@ -24,6 +24,7 @@
  */
 package alma.scheduling.psm.sim;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,6 +36,8 @@ import java.util.Set;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
+import alma.scheduling.datamodel.executive.ObservingSeason;
+import alma.scheduling.datamodel.executive.PIMembership;
 import alma.scheduling.datamodel.executive.TimeInterval;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.observation.ExecBlock;
@@ -46,13 +49,15 @@ import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.ObservingParameters;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.SchedBlockState;
+import alma.scheduling.datamodel.obsproject.ScienceGrade;
 import alma.scheduling.datamodel.obsproject.ScienceParameters;
 import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
+import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 import alma.scheduling.datamodel.output.Affiliation;
 import alma.scheduling.datamodel.output.Array;
 import alma.scheduling.datamodel.output.ExecutionStatus;
 import alma.scheduling.datamodel.output.ObservationProject;
-import alma.scheduling.datamodel.output.Results;
+import alma.scheduling.datamodel.output.SimulationResults;
 import alma.scheduling.datamodel.output.SchedBlockResult;
 import alma.scheduling.utils.DSAContextFactory;
 import alma.scheduling.utils.TimeUtil;
@@ -70,33 +75,36 @@ import alma.scheduling.utils.TimeUtil;
 public class ResultComposer {
 
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(ResultComposer.class);
-	private Results results;
+	private SimulationResults results;
 	private ApplicationContext context = null;
 	private Map<String, ArrayConfiguration> arraysUsed;
 	
 	public ResultComposer(){
-		results = new Results();
+		results = new SimulationResults();
 		results.setArray( new HashSet<Array>() );
 		results.setObservationProject( new HashSet<ObservationProject>() );
 		arraysUsed = new HashMap<String, ArrayConfiguration>();
 	}
 	
-	public void notifyExecutiveData(ApplicationContext ctx, Date obsSeasonStart, Date obsSeasonEnd, Date simStart, Date simStop, double obsHrs){
+	public void notifyExecutiveData(ApplicationContext ctx, ObservingSeason obsSeason, Date simStart, Date simStop){
 		this.context = ctx;
-		results.setObsSeasonStart(obsSeasonStart);
-		results.setObsSeasonEnd(obsSeasonEnd);
-		results.setStartSimDate(obsSeasonStart);
-		results.setStopSimDate(obsSeasonEnd);
-		results.setAvailableTime(obsHrs);
+		results.setObsSeasonStart(obsSeason.getStartDate());
+		results.setObsSeasonEnd(obsSeason.getEndDate());
+		results.setStartSimDate(obsSeason.getStartDate());
+		results.setStopSimDate(obsSeason.getEndDate());
+		results.setAvailableTime(obsSeason.getTotalObservingHours());
 		results.setStartRealDate(new Date());
 	}
 	
-	public void notifyArrayCreation(ArrayConfiguration arrcfg, TimeInterval timeInterval){
+	public void notifyArrayCreation(ArrayConfiguration arrcfg, TimeInterval ti){
 		Array arr = new Array();
 		arr.setCreationDate( arrcfg.getStartTime() );
 		arr.setDeletionDate( arrcfg.getEndTime() );
-		arr.setAvailableTime(TimeUtil.getHoursInDateTimeInterval(
-				arrcfg.getStartTime(), arrcfg.getEndTime(), timeInterval));
+		if (ti == null)
+			arr.setAvailableTime( (arr.getDeletionDate().getTime() - arr.getCreationDate().getTime())/3600/1000);
+		else
+			arr.setAvailableTime(TimeUtil.getHoursInDateTimeInterval(
+					arr.getCreationDate(), arr.getDeletionDate(), ti));
 		arr.setOriginalId(arrcfg.getId());
 		if (arrcfg.getResolution() == null)
 			arr.setResolution(0.0);
@@ -106,10 +114,15 @@ public class ResultComposer {
 			arr.setUvCoverage(0.0);
 		else
 			arr.setUvCoverage(arrcfg.getUvCoverage());
-		arr.setMinBaseline(arrcfg.getMinBaseline());
-		arr.setMaxBaseline(arrcfg.getMaxBaseline());
+		
+		if(arrcfg.getMaxBaseline() != null)
+			arr.setMaxBaseline(arrcfg.getMaxBaseline());
+		if(arrcfg.getMinBaseline() != null)
+			arr.setMinBaseline(arrcfg.getMinBaseline());
+		if(arrcfg.getArrayType() != null)
+			arr.setType(arrcfg.getArrayType());
 		arr.setConfigurationName(arrcfg.getConfigurationName());
-		arr.setName(arrcfg.getConfigurationName());
+		
 		results.getArray().add(arr);
 	}
 	
@@ -201,6 +214,7 @@ public class ResultComposer {
 		results.setStopRealDate( new Date() );
 		
 		ObsProjectDao obsProjectDao = (ObsProjectDao) context.getBean("obsProjectDao");
+		SchedBlockDao schedBlockDao = (SchedBlockDao) context.getBean("sbDao");
 		ExecutiveDAO execDao = (ExecutiveDAO) context.getBean("execDao");
 		ObservationDao obsDao = context.getBean(DSAContextFactory.SCHEDULING_OBSERVATION_DAO_BEAN, ObservationDao.class);
 		
@@ -208,8 +222,8 @@ public class ResultComposer {
 		for( ObsProject op : obsProjectDao.getObsProjectsOrderBySciRank() ){
 			
 			//If the project was Cancelled, or Grade is D we do not consider it for results. 
-//			if( op.getStatus().compareTo("CANCELLED") == 0 || op.getLetterGrade() == ScienceGrade.D )
-//				continue;
+			if( op.getStatus().compareTo("CANCELLED") == 0 || op.getLetterGrade() == ScienceGrade.D )
+				continue;
 			
 			System.out.println("\\-Completing observation project #" + op.getUid());
 			ObservationProject outputOp = new ObservationProject();
@@ -218,6 +232,8 @@ public class ResultComposer {
 			outputOp.setScienceRank( op.getScienceRank());
 			outputOp.setScienceScore( op.getScienceScore() );
 			outputOp.setGrade( op.getLetterGrade().toString() );
+			outputOp.setCode(op.getCode());
+			outputOp.setArchiveUid(op.getUid());
 
 			HashSet<SchedBlockResult> sbrSet = new HashSet<SchedBlockResult>();
 			obsProjectDao.hydrateSchedBlocks(op);			
@@ -319,9 +335,11 @@ public class ResultComposer {
 		        sbr.setOriginalId( sbId );
 		        sbr.setMode( "N/A" );
 		        sbr.setRepresentativeFrequency( ((SchedBlock)ptrOu).getSchedulingConstraints().getRepresentativeFrequency() );
+		        sbr.setRepresentativeBand(sb.getRepresentativeBand());
 		        //TODO: Add frequency band
+		        sbr.setRepresentativeSource(sb.getRepresentativeCoordinates());
 		        sbr.setType( "SCIENTIFIC");
-		        sbr.setStatus(ExecutionStatus.INCOMPLETE);
+		        sbr.setStatus( ExecutionStatus.INCOMPLETE);
         		sbrSet.add( sbr );
         		
         		// From Stop notification.
@@ -343,7 +361,7 @@ public class ResultComposer {
 	/**
 	 * Saves results into the database.
 	 */
-	public Results getResults(){
+	public SimulationResults getResults(){
 		return this.results;		
 	}
 	
@@ -355,4 +373,14 @@ public class ResultComposer {
 	 	}
 	}
 	
+	private String getInheritance(Object o){
+    	Class<?> c = o.getClass();
+	    List<Class> l = new ArrayList<Class>();
+	    printAncestor(c, l);
+	    if (l.size() != 0) {
+	    	for (Class<?> cl : l)
+	    	return l.get(0).getCanonicalName();
+	    }
+	    return null;
+	}
 }

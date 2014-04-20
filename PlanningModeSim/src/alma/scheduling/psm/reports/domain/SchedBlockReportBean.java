@@ -4,7 +4,7 @@ public class SchedBlockReportBean {
 	
 	private String band;
 	private String executive;
-	private String lstRange;
+	private Integer lstRange;
 	private double executionTime;
 	private double frequency;
 	
@@ -42,11 +42,11 @@ public class SchedBlockReportBean {
 		this.executionTime = executionTime;
 	}
 	
-	public String getLstRange() {
+	public Integer getLstRange() {
 		return lstRange;
 	}
 
-	public void setLstRange(String lstRange) {
+	public void setLstRange(Integer lstRange) {
 		this.lstRange = lstRange;
 	}
 

@@ -62,7 +62,7 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
     private static Logger logger = LoggerFactory.getLogger(SchedBlockExecutorImpl.class);
     private Map<String, Double> accumSensJyCache;
     /**In milliseconds*/
-    private final long executionTime = 60 * 60 * 1000 + 20 * 60 * 1000; //1 hr 20 min.
+//    private final long executionTime = 60 * 60 * 1000 + 20 * 60 * 1000; //1 hr 20 min.
     private final ConcurrentNavigableMap<String, ExecBlock> activeExecBlocks;
     private ConfigurationDao configDao;
     private ExecutiveDAO execDao;
@@ -105,6 +105,8 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
 		double accumTime = obsDao.getAccumulatedObservingTimeForSb(schedBlock.getUid()) / 3600.0;
         int numRep = obsDao.getNumberOfExecutionsForSb(schedBlock.getUid());
 		
+        long executionTime = (long)(schedBlock.getSchedBlockControl().getSbMaximumTime() * 60 * 60 * 1000);
+        
 		double expTimeHr = executionTime;
         double freqGHz = schedBlock.getSchedulingConstraints().getRepresentativeFrequency();
         schedBlockDao.hydrateSchedBlockObsParams(schedBlock);
@@ -191,7 +193,8 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
         accumSensJyCache.put(schedBlock.getUid(), accumSens);
         
         //TODO: Missing max number of repetitions in SB
-        if ((accumSens * FUDGE_FACTOR <= sensGoalJy) || (accumTime >= schedBlock.getObsUnitControl().getMaximumTime())) {
+//        if ((accumSens * FUDGE_FACTOR <= sensGoalJy) || (accumTime >= schedBlock.getObsUnitControl().getMaximumTime())) {
+        if ( (numRep + 1) == schedBlock.getSchedBlockControl().getExecutionCount()) {
             schedBlock.getSchedBlockControl().setState(SchedBlockState.FULLY_OBSERVED);
         }
         else{

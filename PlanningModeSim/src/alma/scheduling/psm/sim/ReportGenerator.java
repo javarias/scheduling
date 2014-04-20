@@ -66,7 +66,7 @@ import alma.scheduling.datamodel.obsproject.ScienceParameters;
 import alma.scheduling.datamodel.obsproject.SkyCoordinates;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 import alma.scheduling.datamodel.output.ObservationProject;
-import alma.scheduling.datamodel.output.Results;
+import alma.scheduling.datamodel.output.SimulationResults;
 import alma.scheduling.datamodel.output.SchedBlockResult;
 import alma.scheduling.datamodel.output.dao.OutputDao;
 import alma.scheduling.psm.reports.domain.ObsProjectReportBean;
@@ -127,7 +127,7 @@ public class ReportGenerator extends PsmContext {
 		ExecutiveDAO execDao = (ExecutiveDAO) ctx.getBean("execDao");
 		TreeMap<String, ArrayList<SchedBlockReportBean>> SBPerLstRange = new TreeMap<String, ArrayList<SchedBlockReportBean>>();
 		ArrayList<SchedBlockReportBean> data = new ArrayList<SchedBlockReportBean>();
-		Collection<SchedBlock> sbs = sbDao.findAll();
+		List<SchedBlock> sbs = sbDao.findAll();
 
 		for (int i = 0; i < 24; i++) 
 			SBPerLstRange.put( determineLst( 0.1 + i ), new ArrayList<SchedBlockReportBean>() );
@@ -207,7 +207,7 @@ public class ReportGenerator extends PsmContext {
 		// Parameters
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
-		Results result = outDao.getResult(id);
+		SimulationResults result = outDao.getResult(id);
 		TreeMap<String, Object> props = new TreeMap<String, Object>();
 		props.put("totalAvailableTime", Double.toString(result.getAvailableTime()));
 		props.put("seasonStart", dateFormatter.format(result.getObsSeasonStart()));
@@ -343,7 +343,7 @@ public class ReportGenerator extends PsmContext {
 	 * which contains only a brief summary of observation projects executions.
 	 * @return JRDataSource, a collection of ObsProjectReportsBean, with summary of executions.
 	 */
-	private JRDataSource getExecutiveAfterSimData(Results result) {
+	private JRDataSource getExecutiveAfterSimData(SimulationResults result) {
 		JRBeanCollectionDataSource dataSource = null;
 		TreeMap<String, ArrayList<ObsProjectReportBean>> OPPerExecutive = new TreeMap<String, ArrayList<ObsProjectReportBean>>();
 		ArrayList<ObsProjectReportBean> data = new ArrayList<ObsProjectReportBean>();
@@ -394,12 +394,13 @@ public class ReportGenerator extends PsmContext {
 		// Parameters
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+		SimulationResults result = outDao.getResult(id);
 
 		TreeMap<String, Object> props = new TreeMap<String, Object>();
-		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
-		props.put("scientificTime", Double.toString( outDao.getResults().get(0).getScientificTime() ) );
-		props.put("seasonStart", dateFormatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
-		props.put("seasonEnd", dateFormatter.format( outDao.getResults().get(0).getObsSeasonEnd() ) );
+		props.put("totalAvailableTime", Double.toString( result.getAvailableTime() ) );
+		props.put("scientificTime", Double.toString( result.getScientificTime() ) );
+		props.put("seasonStart", result.getObsSeasonStart());
+		props.put("seasonEnd", result.getObsSeasonEnd());
 		props.put("title", "Executive Percentage Balance");
 		props.put("subtitle", "Observed time dedicated per executive");
 		synchronized (this) {
@@ -524,7 +525,7 @@ public class ReportGenerator extends PsmContext {
 		
 		// Retrieve SBs
 		logger.info("Retrieving Data...");
-		Collection<SchedBlock> sbs = sbDao.findAll();
+		List<SchedBlock> sbs = sbDao.findAll();
 		
 		for(SchedBlock sb: sbs){
 			sbDao.hydrateSchedBlockObsParams( sb );
@@ -686,7 +687,7 @@ public class ReportGenerator extends PsmContext {
 
 
 		TreeMap<String, Object> props = new TreeMap<String, Object>();
-		Results result = outDao.getResult(id);
+		SimulationResults result = outDao.getResult(id);
 		props.put("totalAvailableTime", Double.toString(result.getAvailableTime()));
 		props.put("seasonStart", dateFormatter.format(result.getObsSeasonStart()));
 		props.put("seasonEnd", dateFormatter.format(result.getObsSeasonEnd()));
@@ -745,7 +746,7 @@ public class ReportGenerator extends PsmContext {
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		SchedBlockDao sbDao = (SchedBlockDao) ctx.getBean("sbDao");
 
-		Collection<SchedBlock> sbs = sbDao.findAll();
+		List<SchedBlock> sbs = sbDao.findAll();
 		ArrayList<SchedBlock> lstRanges[] = new ArrayList[24];
 		for(int i = 0; i < lstRanges.length; i++)
 			lstRanges[i] = new ArrayList<SchedBlock>();
@@ -777,7 +778,7 @@ public class ReportGenerator extends PsmContext {
 	public void finalreport(){
 		ApplicationContext ctx = getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
-		Results lastResult = outDao.getResults().get(outDao.getResults().size()-1 );
+		SimulationResults lastResult = outDao.getResults().get(outDao.getResults().size()-1 );
 
 		URL xslt = getClass().getClassLoader()
 		.getResource("alma/scheduling/psm/reports/general_report.xsl");
@@ -798,7 +799,7 @@ public class ReportGenerator extends PsmContext {
 	public void writeFinalReportToDisc() {
 		ApplicationContext ctx = getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
-		Results lastResult = outDao.getResults().get(outDao.getResults().size()-1 );
+		SimulationResults lastResult = outDao.getResults().get(outDao.getResults().size()-1 );
 		String htmlOut = this.getReportDirectory() + "/" +  "report_" +
 			lastResult.getStartRealDate().getTime() + ".html";
 		FileOutputStream fos = null;
@@ -834,7 +835,7 @@ public class ReportGenerator extends PsmContext {
 	public InputStream getFinalReport(long entityId) throws FileNotFoundException {
 		ApplicationContext ctx = getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
-		Results result = outDao.getResult(entityId);
+		SimulationResults result = outDao.getResult(entityId);
 		return getFinalReport(result);
 	}
 	
@@ -848,11 +849,11 @@ public class ReportGenerator extends PsmContext {
 	public InputStream getFinalReport() throws FileNotFoundException {
 		ApplicationContext ctx = getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
-		Results result = outDao.getLastResult();
+		SimulationResults result = outDao.getLastResult();
 		return getFinalReport(result);
 	}
 	
-	private InputStream getFinalReport(Results result) throws FileNotFoundException {
+	private InputStream getFinalReport(SimulationResults result) throws FileNotFoundException {
 		URL xslt = getClass().getClassLoader()
 			.getResource("alma/scheduling/psm/reports/general_report.xsl");
 		// TODO: Change names to a more characteristic name
@@ -919,7 +920,7 @@ public class ReportGenerator extends PsmContext {
 	private String getFilename(reportTypes type){
 		ApplicationContext ctx = getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
-		Results lastResult = outDao.getResults().get(outDao.getResults().size()-1 );
+		SimulationResults lastResult = outDao.getResults().get(outDao.getResults().size()-1 );
 		Date date = lastResult.getStartRealDate();
 
 		String s = dateFormatter.format(date);

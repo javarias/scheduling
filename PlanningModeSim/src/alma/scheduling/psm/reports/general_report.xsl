@@ -73,7 +73,7 @@
   <!-- Per array template -->
   <xsl:template match="Array">
     <a name="Array-{@id}"/>
-    <h3>Array ID <xsl:value-of select="@id"/></h3>
+    <h3>Array ID <xsl:value-of select="configurationName"/> (<xsl:value-of select="@id"/>)</h3>
       <ul>
 	<li><b>Array created in: </b> <xsl:value-of select="creationDate"/></li>
 	<li><b>Array deleted in: </b> <xsl:value-of select="deletionDate"/></li>
@@ -87,7 +87,7 @@
 
   <!-- Per observation project template -->
   <xsl:template match="ObservationProject">
-    <h3>Observation Project ID <xsl:value-of select="originalId"/></h3>
+    <h3>Observation Project ID <xsl:value-of select="code"/> (<xsl:value-of select="archive_uid"/>)</h3>
       <ul>
 		<li><b>Science Rank: </b> <xsl:value-of select="scienceRank"/></li>
 		<li><b>Science Score: </b> <xsl:value-of select="scienceScore"/></li>

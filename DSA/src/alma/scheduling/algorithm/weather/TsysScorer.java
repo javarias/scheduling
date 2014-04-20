@@ -51,6 +51,8 @@ public class TsysScorer extends AbstractBaseRanker {
 			rank.setUid(sb.getUid());
 			double score = sb.getWeatherDependentVariables().getZenithTsys() / 
 					sb.getWeatherDependentVariables().getTsys();
+			//set priority on higher bands
+			score += sb.getRepresentativeBand() / 10;  
 			rank.setRank(score);
 			ranks.add(rank);
 			} catch (RuntimeException ex) {

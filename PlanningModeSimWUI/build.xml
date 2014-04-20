@@ -28,7 +28,7 @@
 	<property name="build.dir" value="build" />
 	<property name="src.dir" value="src" />
 	<property name="lib.dir" value="lib" />
-	<property name="war.output" value="aprc-tool.war" />
+	<property name="war.output" value="sched-planning-tool.war" />
 
 	<target name="download-ivy" unless="skip.download">
 		<mkdir dir="${ivy.jar.dir}"/>

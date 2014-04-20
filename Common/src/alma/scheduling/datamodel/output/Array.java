@@ -27,6 +27,8 @@ package alma.scheduling.datamodel.output;
 
 import java.util.Date;
 
+import alma.scheduling.datamodel.obsproject.ArrayType;
+
 /**
  * @author Arturo Hoffstadt Urrutia
  * @version 1.0
@@ -42,10 +44,11 @@ public class Array {
 	private double scientificTime;
 	private double resolution;
 	private double uvCoverage;
-	private String name;
-	private String configurationName;
 	private double minBaseline;
 	private double maxBaseline;
+	private String configurationName;
+	private ArrayType type;
+	private int id;
 
 	public Array(){
 
@@ -115,22 +118,6 @@ public class Array {
 		this.originalId = originalId;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getConfigurationName() {
-		return configurationName;
-	}
-
-	public void setConfigurationName(String configurationName) {
-		this.configurationName = configurationName;
-	}
-
 	public double getMinBaseline() {
 		return minBaseline;
 	}
@@ -147,13 +134,39 @@ public class Array {
 		this.maxBaseline = maxBaseline;
 	}
 
+	public String getConfigurationName() {
+		return configurationName;
+	}
+
+	public void setConfigurationName(String configurationName) {
+		this.configurationName = configurationName;
+	}
+	
+	public ArrayType getType() {
+		return type;
+	}
+
+	public void setType(ArrayType type) {
+		this.type = type;
+	}
+	
+	
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result
 				+ ((creationDate == null) ? 0 : creationDate.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((configurationName == null) ? 0 : configurationName.hashCode());
 		return result;
 	}
 
@@ -176,14 +189,16 @@ public class Array {
 		} else if (!creationDate.equals(other.creationDate)) {
 			return false;
 		}
-		if (name == null) {
-			if (other.name != null) {
+		if (configurationName == null) {
+			if (other.configurationName != null) {
 				return false;
 			}
-		} else if (!name.equals(other.name)) {
+		} else if (!configurationName.equals(other.configurationName)) {
 			return false;
 		}
 		return true;
 	}
+
+	
 	
 }

@@ -37,20 +37,30 @@
 					<menu label="Before Simulation">
 						<menupopup>
 							<menuitem label="Requested time per ALMA band" id="menuItemBeforeSimBand"/>
+							<menuitem label="Requested time per ALMA band - Exectutive Breakdown" id="menuItemBeforeSimBandExec"/>
 							<menuitem label="Right Ascension Distribution" id="menuItemBeforeSimLST"/>
+							<menuitem label="Requested time per Executive" id="menuItemBeforeSimExec"/>
 						</menupopup>
 					</menu>
 					<menu label="After Simulation">
 						<menupopup>
 							<menuitem label="Executed time per ALMA band" id="menuItemAfterSimBand"/>
+							<menuitem label="Executed time per ALMA band - Executive Breakdown" id="menuItemAfterSimBandExec"/>
 							<menuitem label="Right Ascension Distribution" id="menuItemAfterSimLST"/>
+							<menuitem label="Right Ascencion Distribution - Executive Breakdown" id ="menuItemAfterSimRaExec"/>
 							<menuitem label="Executive Percentage Balance" id="menuItemAfterSimExec"/>
 							<menuitem label="Observation Projects Completion" id="menuItemObsProjectCompletion"/>
+							<menuitem label="Array Configuration Time Usage" id="menuItemArrayConfiguration" /> 
 							<menuitem label="Final Report" id="menuItemFinalReport"/>
 						</menupopup>
 					</menu>
 					<menuseparator />
 					<menuitem label="Previous Results" id="menuItemOlderResults"/>
+				</menupopup>
+			</menu>
+			<menu label="Tools">
+				<menupopup>
+					<menuitem label="Synchronize project grades..." id="menuItemSyncGrades" />
 				</menupopup>
 			</menu>
 <!--			<menu label="View">-->
@@ -76,6 +86,6 @@
 			</menu>
 		</menubar>
 	</window>
-	<timer id="timerKeepAliveSession" repeats="true" delay="600000"/>
+	<timer repeats="true" running="true" delay="1000" onTimer=""/>
 
 </zk>

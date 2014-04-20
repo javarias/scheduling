@@ -58,9 +58,7 @@ public class WeatherFullSelector extends AbstractBaseSelector {
         return sbs;
     }
 
-	@Override
-	public boolean canBeSelected(SchedBlock sb, Date date,
-			ArrayConfiguration arrConf) {
+	public boolean canBeSelected(SchedBlock sb, Date date) {
 		return canBeSelected(sb, date);
 	}
 

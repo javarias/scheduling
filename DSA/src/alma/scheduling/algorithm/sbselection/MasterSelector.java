@@ -91,7 +91,6 @@ public class MasterSelector implements SchedBlockSelector {
         return sbs;
     }
 
-    @Override
     public boolean canBeSelected(SchedBlock sb, Date date) {
     	throw new java.lang.RuntimeException("Not Implemented");
     }

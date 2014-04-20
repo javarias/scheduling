@@ -60,6 +60,9 @@ public abstract class SchedulingProperties {
 	
 	/** This enable the classic method to get data from archive using CORBA components*/
 	private static String PROP_USE_CLASSIC_ARCHIVE_IF		= "scheduling.archive.classic";
+	
+	/** Does the importer read from PROPOSAL table in archive?*/
+	private static String PROP_SYNCH_PROP_GRADES			= "scheduling.synchLetterGrades";
 //	private static String PROP_USE_EXPERIMENTAL_HIBERNATE_XMLSTORE_IF = "scheduling.archive.hibernate";
 	/* End of the properties we know about
 	 * ============================================================= */
@@ -229,6 +232,13 @@ public abstract class SchedulingProperties {
 			}
 		}
 		throw new InvalidPropertyValueException(PROP_PHASE1_SB_SOURCE_VALUE, env, Phase1SBSourceValue.possibilities());
+	}
+	
+	public static boolean readGradeFromProposalTable() {
+		final String env = System.getProperty(PROP_SYNCH_PROP_GRADES);
+		if (env != null)
+			return true;
+		return false;
 	}
 	
 	/* End of Phase 1 SB Source property

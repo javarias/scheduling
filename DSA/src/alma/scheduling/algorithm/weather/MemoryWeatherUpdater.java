@@ -26,6 +26,7 @@ import java.util.HashMap;
 
 import alma.scheduling.algorithm.astro.SystemTemperatureCalculator;
 import alma.scheduling.algorithm.modelupd.ModelUpdater;
+import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.FieldSource;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.Target;
@@ -45,7 +46,7 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
     }
     
     @Override
-    public synchronized void update(Date date, Collection<SchedBlock> sbs) {
+    public synchronized void update(Date date, Collection<SchedBlock> sbs, ArrayConfiguration arrConf) {
         /*this is to assure of the atomicity of the update operation*/
         if(needsToUpdate(date) == false)
             return;
@@ -63,13 +64,13 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
         //check if dao supports get value of PWV first
         //In practical terms the current time is now plus half an hour in the future
         //This will work only for online system, for simulation the weather DAO doesn't support the PWV value
-        System.out.println(!weatherDao.hasPWV() + ", " + (date.getTime() < System.currentTimeMillis() + (29 * 60 * 1000)));
+        ErrorHandling.getInstance().debug(!weatherDao.hasPWV() + ", " + (date.getTime() < System.currentTimeMillis() + (29 * 60 * 1000)));
         if (!weatherDao.hasPWV() || (date.getTime() < System.currentTimeMillis() + (29 * 60 * 1000))) {
         	TemperatureHistRecord tr = weatherDao.getTemperatureForTime(date);
-        	ErrorHandling.getInstance().info("temperature record: time = " + tr.getTime() + "; value = "
+        	ErrorHandling.getInstance().debug("temperature record: time = " + tr.getTime() + "; value = "
         			+ tr.getValue());
         	HumidityHistRecord hr = weatherDao.getHumidityForTime(date);
-        	ErrorHandling.getInstance().info("humidity record: time = " + hr.getTime() + "; value = "
+        	ErrorHandling.getInstance().debug("humidity record: time = " + hr.getTime() + "; value = "
         			+ hr.getValue());
         	pwv = estimatePWV(hr.getValue(), tr.getValue()); // mm
         } else {
@@ -99,11 +100,11 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
             double Tatm = tmp[1];
             double tsys = SystemTemperatureCalculator.getTsys(ra, decl,
                     latitude, frequency, tau_zero, Tatm, date);
-            ErrorHandling.getInstance().info("tsys: " + tsys);
+            ErrorHandling.getInstance().debug("tsys: " + tsys);
 
             double zenithTsys = SystemTemperatureCalculator.getZenithTsys(frequency,
             		tau_zero, Tatm);
-            ErrorHandling.getInstance().info("curr tsys: " + zenithTsys);
+            ErrorHandling.getInstance().debug("curr tsys: " + zenithTsys);
             
             double tau = SystemTemperatureCalculator.getOpacity(tau_zero, ra, decl, latitude, date);
             tmp = interpolateOpacityAndTemperature(ppwv, frequency);
@@ -132,7 +133,7 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
             cache.clear();
         if (cache.get(date) == null) {
             // get current PWV
-            System.out.println("Start Calculations");
+            ErrorHandling.getInstance().debug("Start Calculations");
             Date t1 = new Date();
             //Check if the time to get the PWV is current or future
             //check if dao supports get value of PWV first
@@ -170,14 +171,17 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
             tmp.setPpwv(ppwv);
             cache.put(date, tmp);
             Date t2 = new Date();
-            System.out.println("Weather Calculations takes: " + (t2.getTime() - t1.getTime()) + " ms");
+            ErrorHandling.getInstance().debug("Weather Calculations takes: " + (t2.getTime() - t1.getTime()) + " ms");
         }
+        ErrorHandling.getInstance().debug("Starting weather calculations for SB: " + sb.getUid());
         double pwv = cache.get(date).getPwv();
         double ppwv = cache.get(date).getPpwv();
         
+        ErrorHandling.getInstance().debug("pwv: " + pwv + " - ppwv:" + ppwv);
         // inside the for of method of above
-        double frequency = sb.getSchedulingConstraints()
-                .getRepresentativeFrequency(); // GHz
+        double frequency = 225.0; //GHz TODO: Improve the selection criteria based on opacity to not fix this value
+//        		sb.getSchedulingConstraints()
+//                .getRepresentativeFrequency(); // GHz
         Target target = sb.getSchedulingConstraints().getRepresentativeTarget();
         FieldSource src = target.getSource();
         double ra = src.getCoordinates().getRA(); // degrees
@@ -196,21 +200,23 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
         
         double tau = SystemTemperatureCalculator.getOpacity(tau_zero, ra, decl, latitude, date);
         ErrorHandling.getInstance().debug("tau_zero:" + tau_zero + "; " + "tau: " + tau);
+
+        
+        WeatherDependentVariables vars = new WeatherDependentVariables();
+        vars.setTsys(tsys);
+        vars.setOpacity(tau);
+        vars.setZenithOpacity(tau_zero);
+        vars.setZenithTsys(currTsys);
+        sb.setWeatherDependentVariables(vars);
+        
+        //projected values
         tmp = interpolateOpacityAndTemperature(ppwv, frequency);
         tau_zero = tmp[0];
         Tatm = tmp[1];
         double ptsys = SystemTemperatureCalculator.getTsys(ra, decl,
                 latitude, frequency, tau_zero, Tatm, date);
-
-        
-        WeatherDependentVariables vars = new WeatherDependentVariables();
-        vars.setTsys(tsys);
         vars.setProjectedTsys(ptsys);
         vars.setProjectionTimeIncr(projTimeIncr);
-        vars.setOpacity(tau);
-        vars.setZenithOpacity(tau_zero);
-        vars.setZenithTsys(currTsys);
-        sb.setWeatherDependentVariables(vars);
         //schedBlockDao.saveOrUpdate(sb); //TODO: Remove this? This should not be here, degrade a lot the performance of the simulator
     }
 
