@@ -125,9 +125,9 @@ public class ReportGenerator extends PsmContext {
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		SchedBlockDao sbDao = (SchedBlockDao) ctx.getBean("sbDao");
 		ExecutiveDAO execDao = (ExecutiveDAO) ctx.getBean("execDao");
-		TreeMap<String, ArrayList<SchedBlockReportBean>> SBPerLstRange = new TreeMap<String, ArrayList<SchedBlockReportBean>>();
+		TreeMap<Integer, ArrayList<SchedBlockReportBean>> SBPerLstRange = new TreeMap<Integer, ArrayList<SchedBlockReportBean>>();
 		ArrayList<SchedBlockReportBean> data = new ArrayList<SchedBlockReportBean>();
-		List<SchedBlock> sbs = sbDao.findAll();
+		Collection<SchedBlock> sbs = sbDao.findAll();
 
 		for (int i = 0; i < 24; i++) 
 			SBPerLstRange.put( determineLst( 0.1 + i ), new ArrayList<SchedBlockReportBean>() );
@@ -247,7 +247,7 @@ public class ReportGenerator extends PsmContext {
 	 * @return A collection of beans containing the data of all ScheckBlocks.
 	 */
 
-	public JRDataSource getLstRangeAfterSimData(Results result){
+	public JRDataSource getLstRangeAfterSimData(SimulationResults result){
 		JRBeanCollectionDataSource dataSource = null;
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		SchedBlockDao sbDao = (SchedBlockDao) ctx.getBean("sbDao");
@@ -297,7 +297,7 @@ public class ReportGenerator extends PsmContext {
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
 
-		Results result = outDao.getResult(id);
+		SimulationResults result = outDao.getResult(id);
 		TreeMap<String, Object> props = new TreeMap<String, Object>();
 		props.put("totalAvailableTime", Double.toString(result.getAvailableTime()));
 		props.put("scientificTime", Double.toString(result.getScientificTime()));
@@ -525,7 +525,7 @@ public class ReportGenerator extends PsmContext {
 		
 		// Retrieve SBs
 		logger.info("Retrieving Data...");
-		List<SchedBlock> sbs = sbDao.findAll();
+		Collection<SchedBlock> sbs = sbDao.findAll();
 		
 		for(SchedBlock sb: sbs){
 			sbDao.hydrateSchedBlockObsParams( sb );
@@ -598,7 +598,7 @@ public class ReportGenerator extends PsmContext {
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
 
-		Results result = outDao.getResult(id);
+		SimulationResults result = outDao.getResult(id);
 		TreeMap<String, Object> props = new TreeMap<String, Object>();
 		props.put("totalAvailableTime", Double.toString(result.getAvailableTime()));
 		props.put("seasonStart", dateFormatter.format(result.getObsSeasonStart()));
@@ -631,7 +631,7 @@ public class ReportGenerator extends PsmContext {
 		}
 	}
 	
-	private JRDataSource getBandsAfterSimData(Results result) {
+	private JRDataSource getBandsAfterSimData(SimulationResults result) {
 		JRBeanCollectionDataSource dataSource = null;
 		ArrayList<SchedBlockReportBean> data = new ArrayList<SchedBlockReportBean>();
 		// Create inmediately the entries for bands, so we keep order (if we rely on DB, the may not be ordered
@@ -746,7 +746,7 @@ public class ReportGenerator extends PsmContext {
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		SchedBlockDao sbDao = (SchedBlockDao) ctx.getBean("sbDao");
 
-		List<SchedBlock> sbs = sbDao.findAll();
+		Collection<SchedBlock> sbs = sbDao.findAll();
 		ArrayList<SchedBlock> lstRanges[] = new ArrayList[24];
 		for(int i = 0; i < lstRanges.length; i++)
 			lstRanges[i] = new ArrayList<SchedBlock>();
@@ -955,12 +955,12 @@ public class ReportGenerator extends PsmContext {
 		return new String("Band N/A");
 	}
 
-	private String determineLst( double ra ){
+	private Integer determineLst( double ra ){
 		for (int i = 0; i < 24; i++) {
 			if (ra >= i && ra <= (i + 1))
-				return new String( i + "-" + (i + 1) );
+				return i;
 		}
-		return new String("N/A");
+		return null;
 	}
 
 }

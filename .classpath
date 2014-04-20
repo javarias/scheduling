@@ -19,5 +19,7 @@
 	<classpathentry kind="lib" path="Common/lib/commons-logging.jar"/>
 	<classpathentry kind="lib" path="Common/lib/commons-lang.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="PlanningModeSim/lib/commons-cli.jar"/>
+	<classpathentry kind="lib" path="PlanningModeSim/lib/jasperreports.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

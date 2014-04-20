@@ -170,8 +170,7 @@ public class Simulator extends PsmContext {
         		execDao.getCurrentSeason(),
         		// TODO: Fix Configuration datamodel to include start and stop dates.
         		execDao.getCurrentSeason().getStartDate(), 
-        		execDao.getCurrentSeason().getEndDate(),
-        		execDao.getCurrentSeason().getTotalObservingHours());
+        		execDao.getCurrentSeason().getEndDate());
         
         //This is the timeline
         LinkedList<TimeEvent> timesToCheck = new LinkedList<TimeEvent>();

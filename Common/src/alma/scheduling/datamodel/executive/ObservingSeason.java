@@ -101,12 +101,6 @@ public class ObservingSeason implements Comparable<ObservingSeason>{
 	public void setObservingInterval(TimeInterval observingInterval) {
 		this.observingInterval = observingInterval;
 	}
-	
-	 public double getTotalObservingHours() {
-		 if (observingInterval == null)
-			 return (endDate.getTime() - startDate.getTime()) / 3600000.0;
-		 return TimeUtil.getHoursInDateTimeInterval(startDate, endDate, observingInterval);
-	 }
     
 	public double getTotalObservingHours() {
 		if (observingInterval == null) {
