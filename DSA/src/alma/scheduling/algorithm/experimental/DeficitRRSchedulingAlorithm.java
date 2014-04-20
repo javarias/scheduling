@@ -81,6 +81,7 @@ public class DeficitRRSchedulingAlorithm extends DynamicSchedulingAlgorithmImpl 
 					rrPtr = serviceQueues.higherKey(rrPtr);
 				else
 					rrPtr = serviceQueues.firstKey();
+				continue;
 			}
 			double currDeficit = deficitCounters.get(rrPtr);
 			if (!rrPtr.equals(prevRrPtr))
