@@ -5,7 +5,7 @@
             <xs:sequence>
                 <xs:element name="ArchiveUID" type="xs:string"/>
                 <xs:element name="Code" type="xs:string"/>
-                <xs:element name="Name" type="xs:string" minOccurs="0"/>
+                <xs:element name="Name" type="xs:string"/>
                 <xs:element name="PrincipalInvestigator" type="xs:string"/>
                 <xs:element name="ScientificScore" type="xs:float"/>
                 <xs:element name="ScientificRank" type="xs:int"/>
@@ -62,8 +62,8 @@
         <xs:complexContent>
             <xs:extension base="ObsUnitT">
                 <xs:sequence>
-                    <xs:element name="ArchiveUID" type="xs:string" minOccurs="0"/>
-                    <xs:element name="Name" type="xs:string" minOccurs="0"/>
+                    <xs:element name="ArchiveUID" type="xs:string"/>
+                    <xs:element name="Name" type="xs:string"/>
                     <xs:element name="WeatherConstraints" type="WeatherConstraintsT"/>
                     <xs:element name="SchedulingConstraints" type="SchedulingConstraintsT"/>
                     <xs:element name="Preconditions" type="PreconditionsT"/>
@@ -83,8 +83,10 @@
         <xs:attribute name="maxSeeing" type="xs:double"/>
     </xs:complexType>
     <xs:complexType name="SchedulingConstraintsT">
+    	<xs:attribute name="minAngularResolution" type="xs:double"/>
         <xs:attribute name="maxAngularResolution" type="xs:double"/>
         <xs:attribute name="representativeFrequency" type="xs:double"/>
+        <xs:attribute name="representativeBand" type="BandT"/>
         <xs:attribute name="representativeTargetIdRef" type="xs:NCName"/>
     </xs:complexType>
     <xs:complexType name="PreconditionsT">
@@ -162,16 +164,17 @@
     	<xs:sequence>
     		<xs:element name="MaximumTime" type="xs:double" maxOccurs="1">
     			<xs:annotation>
-    				<xs:documentation>Time in hours</xs:documentation>
+    				<xs:documentation>Time in hours, maximum allowed for all the repetitions</xs:documentation>
     			</xs:annotation>
     		</xs:element>
     		<xs:element name="EstimatedExecutionTime" type="xs:double" maxOccurs="1">
     			<xs:annotation>
-    				<xs:documentation>Time in hours</xs:documentation>
+    				<xs:documentation>Time in hours. maximum allowed for a single execution</xs:documentation>
     			</xs:annotation>
     		</xs:element>
     		<xs:element name="ArrayRequested" type="ArrayTypeT" maxOccurs="1"/>
     		<xs:element name="IndefiniteRepeat" type="xs:boolean" maxOccurs="1"/>
+    		<xs:element name="NRepetitions" type="xs:integer" maxOccurs="1"/>
     	</xs:sequence>
     </xs:complexType>
     	<xs:simpleType name="ArrayTypeT">
@@ -188,6 +191,12 @@
 			<xs:enumeration value="B" />
 			<xs:enumeration value="C" />
 			<xs:enumeration value="D" />
+		</xs:restriction>
+	</xs:simpleType>
+		<xs:simpleType name="BandT">
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="10"/>
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>

@@ -107,10 +107,17 @@ public class SchedBlockControl implements Updateable {
         this.indefiniteRepeat = indefiniteRepeat;
     }
 
+    /**
+     * @see #executionCount
+     * @return
+     */
     public Integer getExecutionCount() {
         return executionCount;
     }
 
+    /**
+     * @see #executionCount
+     */
     public void setExecutionCount(Integer executionCount) {
         this.executionCount = executionCount;
     }
@@ -151,10 +158,18 @@ public class SchedBlockControl implements Updateable {
         this.sbMaximumTime = sbMaximumTime;
     }
 
+    /**
+     * @see #numberOfExecutions
+     * @return
+     */
     public Integer getNumberOfExecutions() {
         return numberOfExecutions;
     }
 
+    /**
+     * @see #numberOfExecutions
+     * @return
+     */
     public void setNumberOfExecutions(Integer numberOfExecutions) {
         this.numberOfExecutions = numberOfExecutions;
     }

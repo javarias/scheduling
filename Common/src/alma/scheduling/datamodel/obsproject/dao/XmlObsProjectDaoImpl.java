@@ -203,9 +203,11 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                 schedBlock.addTarget(t);
             }
             SchedulingConstraints sc = new SchedulingConstraints(
+            		xmlSchedBlock.getSchedulingConstraints().getMinAngularResolution(),
                     xmlSchedBlock.getSchedulingConstraints().getMaxAngularResolution(),
                     xmlSchedBlock.getSchedulingConstraints().getRepresentativeFrequency(),
                     targets.get(xmlSchedBlock.getSchedulingConstraints().getRepresentativeTargetIdRef()));
+            sc.setRepresentativeBand(xmlSchedBlock.getSchedulingConstraints().getRepresentativeBand());
             schedBlock.setSchedulingConstraints(sc);
             Preconditions pc =
                 new Preconditions(xmlSchedBlock.getPreconditions().getMaxAllowedHA(),
@@ -243,6 +245,7 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                 sbc.setIndefiniteRepeat(sbControl.getIndefiniteRepeat());
                 sbc.setState(SchedBlockState.READY);
                 sbc.setSbMaximumTime(sbControl.getEstimatedExecutionTime());
+                sbc.setExecutionCount(sbControl.getNRepetitions());
                 schedBlock.setSchedBlockControl(sbc);
             }
         }

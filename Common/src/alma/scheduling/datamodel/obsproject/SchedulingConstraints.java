@@ -44,9 +44,11 @@ public class SchedulingConstraints {
 
 	public SchedulingConstraints() { }
     
-    public SchedulingConstraints(Double maxAngularResolution,
+    public SchedulingConstraints( Double minAngularResolution,
+    		Double maxAngularResolution,
             Double representativeFrequency,
             Target representativeTarget) {
+    	this.minAngularResolution = minAngularResolution;
         this.maxAngularResolution = maxAngularResolution;
         this.representativeFrequency = representativeFrequency;
         this.representativeTarget = representativeTarget;
