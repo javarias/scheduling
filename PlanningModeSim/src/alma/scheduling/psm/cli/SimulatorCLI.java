@@ -136,7 +136,7 @@ public class SimulatorCLI {
 		InputActions input = InputActions.getInstance(workDir);
 		//load
 		
-		input.fullLoad(null);
+		input.fullLoad(InputActions.IMMUTABLE_DATA_LOADER_BEAN);
 		//run
 		PsmContext.setApplicationContext(ctx);
 		Simulator sim = new Simulator(workDir);
