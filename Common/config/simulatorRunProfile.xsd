@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:obs="http://www.almaobservatory.org/scheduling/observatory"
+	targetNamespace="http://www.almaobservatory.org/scheduling/simrunprof"
+	xmlns="http://www.almaobservatory.org/scheduling/simrunprof"
+	xsi:schemaLocation="http://www.almaobservatory.org/scheduling/observatory observatory.xsd">
+	
+	<xs:import namespace="http://www.almaobservatory.org/scheduling/observatory" 
+		schemaLocation="observatory.xsd"/>
+	
+	<xs:element name="ObsCycleProfiles">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="ObsCycleProfile" type="ObsCycleProfileT" minOccurs="1" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:complexType name="ObsCycleProfileT">
+		<xs:sequence>
+			<xs:element name="DateInterval" type="DateIntervalT" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="ArrayLSTRequestedInterval" type="ArrayLSTRequestedIntervalT" 
+					minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="ArrayLSTRequestedIntervalT">
+		<xs:complexContent>
+			<xs:extension base="obs:ArrayConfigurationLiteT">
+				<xs:sequence>
+					<xs:element name="IntervalRequested" type="LSTIntervalT" minOccurs="1" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<xs:complexType name="DateIntervalT">
+		<xs:attribute name="startDate" type="xs:date" use="required"/>
+		<xs:attribute name="endDate" type="xs:date" use="required"/>
+	</xs:complexType>
+	
+	<xs:complexType name="LSTIntervalT">
+		<xs:attribute name="startLST" type="LST" use="required"/>
+		<xs:attribute name="endLST" type="LST" use="required"/>
+	</xs:complexType>
+	
+	<xs:simpleType name="LST">
+		<xs:restriction base="xs:double">
+			<xs:minInclusive value="0.0"/>
+			<xs:maxExclusive value="24.0"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+</xs:schema>

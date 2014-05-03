@@ -52,5 +52,10 @@
                    package="alma.scheduling.input.observatory.generated"
                    types="j2"
                    warnings="false" />
+        <castor-srcgen file="config/simulatorRunProfile.xsd"
+                   todir="src"
+                   package="alma.scheduling.input.observatory.generated"
+                   types="j2"
+                   warnings="false" />
 	</target>
 </project>
