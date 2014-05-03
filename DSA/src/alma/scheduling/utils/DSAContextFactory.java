@@ -68,7 +68,7 @@ public class DSAContextFactory extends CommonContextFactory {
 	protected static final String SCHEDULING_DSA_DEFAULT_SPRING_CONFIG = "classpath:alma/scheduling/algorithm/DSAContext.xml";
 	public static final String SCHEDULING_DSA_RESULTS_DAO_BEAN="DSAResultDAO";
 	
-	private static ApplicationContext context = null;
+	protected static ApplicationContext context = null;
 	private static ArrayList<String> availablePolicies = null;
 	
 	private static Logger logger = LoggerFactory.getLogger(DSAContextFactory.class);

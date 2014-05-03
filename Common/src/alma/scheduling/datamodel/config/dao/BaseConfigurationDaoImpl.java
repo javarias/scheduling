@@ -36,7 +36,7 @@ public abstract class BaseConfigurationDaoImpl implements ConfigurationDao {
 		if (config != null)
 			return config;
 		if (ENV_WORK_DIR == null && System.getProperty(PROP_WORK_DIR) == null)
-			throw new IllegalArgumentException(ENV_VARIABLE + " env variable and " + PROP_WORK_DIR + "java property not set");
+			throw new IllegalArgumentException(ENV_VARIABLE + " env variable and " + PROP_WORK_DIR + " java property not set");
 		FileReader reader = null;
 		alma.scheduling.input.config.generated.Configuration xmlConfig = null;
 		try {

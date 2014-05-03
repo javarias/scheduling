@@ -26,10 +26,7 @@
 package alma.scheduling.psm.cli;
 
 import java.io.File;
-import java.io.IOException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 
 import org.apache.commons.cli.CommandLine;
@@ -40,9 +37,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.springframework.context.ApplicationContext;
-import org.xml.sax.SAXException;
 
 import alma.scheduling.datamodel.config.dao.ConfigurationDaoImpl;
 import alma.scheduling.psm.sim.InputActions;

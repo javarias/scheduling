@@ -176,5 +176,10 @@ public class ArrayConfiguration {
 		return false;
 	}
     
-	
+	@Override
+	public String toString() {
+		return "ArrayConfiguration [configurationName=" + configurationName
+				+ ", arrayType=" + arrayType + ", minBaseline=" + minBaseline
+				+ ", maxBaseline=" + maxBaseline + "]";
+	}
 }
