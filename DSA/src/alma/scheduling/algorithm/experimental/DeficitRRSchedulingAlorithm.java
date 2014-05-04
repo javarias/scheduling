@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.slf4j.Logger;
@@ -35,12 +36,16 @@ public class DeficitRRSchedulingAlorithm extends DynamicSchedulingAlgorithmImpl 
 	private Executive rrPtr = null;
 	private Executive prevRrPtr = null;
 	
-	@Override
-	public void rankSchedBlocks() {
+	public DeficitRRSchedulingAlorithm() {
+		super();
 		serviceQueues = new TreeMap<>();
 		deficitCounters = new TreeMap<>();
 		quantumSize = new TreeMap<>();
 		too = new ArrayList<SchedBlock>();
+	}
+	
+	@Override
+	public void rankSchedBlocks() {
 	}
 
 	@Override
@@ -74,8 +79,21 @@ public class DeficitRRSchedulingAlorithm extends DynamicSchedulingAlgorithmImpl 
 	@Override
 	public SchedBlock getSelectedSchedBlock() {
 		updateQueues();
+		if (areAllFlowsEmpty())
+			return null;
 		SchedBlock sb = null;
+		int i = 0;
 		while (sb == null) {
+			i++;
+			if (i > serviceQueues.size()) {
+				prevRrPtr = null;
+				i = 1;
+			}
+			double currDeficit = deficitCounters.get(rrPtr);
+			if (!rrPtr.equals(prevRrPtr))
+				currDeficit += quantumSize.get(rrPtr);
+			deficitCounters.put(rrPtr, currDeficit);
+			
 			if(serviceQueues.get(rrPtr).size() == 0) {
 				if (serviceQueues.higherKey(rrPtr) != null)
 					rrPtr = serviceQueues.higherKey(rrPtr);
@@ -83,17 +101,13 @@ public class DeficitRRSchedulingAlorithm extends DynamicSchedulingAlgorithmImpl 
 					rrPtr = serviceQueues.firstKey();
 				continue;
 			}
-			double currDeficit = deficitCounters.get(rrPtr);
-			if (!rrPtr.equals(prevRrPtr))
-				currDeficit += quantumSize.get(rrPtr);
-			if (currDeficit < serviceQueues.get(rrPtr).get(0).getSchedBlockControl().getSbMaximumTime()) {
+			if (currDeficit > serviceQueues.get(rrPtr).get(0).getSchedBlockControl().getSbMaximumTime()) {
 				sb = serviceQueues.get(rrPtr).get(0);
 				currDeficit -= sb.getSchedBlockControl().getSbMaximumTime();
 				deficitCounters.put(rrPtr, currDeficit);
 				prevRrPtr = rrPtr;
 			}
 			else {
-				deficitCounters.put(rrPtr, currDeficit);
 				if (serviceQueues.higherKey(rrPtr) != null)
 					rrPtr = serviceQueues.higherKey(rrPtr);
 				else
@@ -122,14 +136,14 @@ public class DeficitRRSchedulingAlorithm extends DynamicSchedulingAlgorithmImpl 
 	public void initialize(Date ut) {
 		Collection<Executive> execs = execDao.getAllExecutive();
 		for (Executive e: execs) {
-			serviceQueues.put(e, (List<SchedBlock>)new ArrayList<SchedBlock>());
+			serviceQueues.put(e, new ArrayList<SchedBlock>());
 			deficitCounters.put(e, 0D);
 			quantumSize.put(e, e.getDefaultPercentage()/100D);
 		}
 		double maxQuantaFactor = 1D / Collections.max(quantumSize.values());
 		for(Executive e: quantumSize.keySet()) {
 			quantumSize.put(e, quantumSize.get(e) * maxQuantaFactor * QUANTA_BASE_VALUE);
-			logger.debug("Executive: " + e.getName() + " Quanta value: " + quantumSize.get(e));
+			logger.info("Executive: " + e.getName() + " Quanta value: " + quantumSize.get(e));
 		}
 		
 		rrPtr = serviceQueues.firstKey();
@@ -159,4 +173,11 @@ public class DeficitRRSchedulingAlorithm extends DynamicSchedulingAlgorithmImpl 
 		}
 	}
 	
+	private boolean areAllFlowsEmpty() {
+		for(Entry<Executive, List<SchedBlock>> e: serviceQueues.entrySet()) {
+			if (e.getValue().size() > 0)
+				return false;
+		}
+		return true;
+	}
 }

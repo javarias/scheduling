@@ -241,8 +241,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
                 </property>
             </bean>
             
-            <bean id="{@name}" class="alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl"
-                scope="prototype">
+ <!--            <bean id="{@name}" class="alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl" -->
+ 			<bean id="{@name}" class="alma.scheduling.algorithm.experimental.DeficitRRSchedulingAlorithm"
+                scope="singleton">
                 <property name="ranker" ref="{concat('finalRanker', '_', @name)}"/>
                 <property name="preUpdateSelectors">
                     <set>

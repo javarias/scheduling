@@ -31,7 +31,7 @@ import java.util.Set;
 /**
  * An Executive is an entity that has the right to observe in the ALMA telescope.
  */
-public class Executive {
+public class Executive implements Comparable<Executive>{
     
     /**
      * Default percentage of the total telescope observation time for a season the
@@ -111,5 +111,10 @@ public class Executive {
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public int compareTo(Executive o) {
+		return name.compareTo(o.getName());
 	}
 }
