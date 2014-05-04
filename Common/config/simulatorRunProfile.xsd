@@ -36,8 +36,8 @@
 	</xs:complexType>
 	
 	<xs:complexType name="DateIntervalT">
-		<xs:attribute name="startDate" type="xs:date" use="required"/>
-		<xs:attribute name="endDate" type="xs:date" use="required"/>
+		<xs:attribute name="startDate" type="xs:dateTime" use="required"/>
+		<xs:attribute name="endDate" type="xs:dateTime" use="required"/>
 	</xs:complexType>
 	
 	<xs:complexType name="LSTIntervalT">

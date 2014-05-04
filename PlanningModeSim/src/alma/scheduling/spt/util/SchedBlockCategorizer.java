@@ -3,6 +3,7 @@ package alma.scheduling.spt.util;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,8 +19,12 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
 
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 import org.springframework.context.ApplicationContext;
 
+import alma.scheduling.datamodel.executive.ObservingSeason;
+import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.observatory.dao.ObservatoryDao;
 import alma.scheduling.datamodel.obsproject.ArrayType;
@@ -27,6 +32,12 @@ import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.ScienceGrade;
 import alma.scheduling.datamodel.obsproject.SkyCoordinates;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
+import alma.scheduling.input.observatory.generated.ArrayLSTRequestedInterval;
+import alma.scheduling.input.observatory.generated.DateInterval;
+import alma.scheduling.input.observatory.generated.IntervalRequested;
+import alma.scheduling.input.observatory.generated.ObsCycleProfile;
+import alma.scheduling.input.observatory.generated.ObsCycleProfiles;
+import alma.scheduling.input.observatory.generated.types.ArrayTypeT;
 import alma.scheduling.utils.Constants;
 import alma.scheduling.utils.DSAContextFactory;
 import alma.scheduling.utils.TimeUtil;
@@ -335,10 +346,46 @@ public class SchedBlockCategorizer {
 			}
 			System.out.println("------------------------------------------------------------------------\n");
 		}
-		
+		sbc.getObsCycleProfiles(ranges);
 //		sbc.calculateLSTForInterval(startDate, endDate, new File("lstRange.csv"));
 	}
 	
-	
+	private void getObsCycleProfiles(Map<ArrayConfigurationCapabilities, Set<LSTRange>> LSTRanges) {
+		ObsCycleProfiles profiles = new ObsCycleProfiles();
+		ExecutiveDAO execDao = (ExecutiveDAO) DSAContextFactory.getContext().getBean(DSAContextFactory.SCHEDULING_EXECUTIVE_DAO_BEAN);
+		ObservingSeason cycle = execDao.getCurrentSeason();
+		ObsCycleProfile prof = new ObsCycleProfile();
+		DateInterval di = new DateInterval();
+		di.setStartDate(cycle.getStartDate());
+		di.setEndDate(cycle.getEndDate());
+		prof.setDateInterval(di);
+		profiles.addObsCycleProfile(prof);
+		for (ArrayConfigurationCapabilities ac: LSTRanges.keySet()) {
+			ArrayLSTRequestedInterval a = new ArrayLSTRequestedInterval();
+			a.setArrayName(ac.getArrayName());
+			a.setArrayType(ArrayTypeT.fromValue(ac.getArrayType().toString()));
+			a.setConfigurationName(ac.getConfigurationName());
+			a.setEndTime(ac.getEndTime());
+			a.setMaxBaseLine(ac.getMaxBaseline());
+			a.setMinBaseLine(ac.getMinBaseline());
+			a.setNumberOfAntennas(ac.getNumberOfAntennas());
+			a.setStartTime(ac.getStartTime());
+			for(LSTRange lr: LSTRanges.get(ac)) {
+				IntervalRequested i = new IntervalRequested();
+				i.setEndLST(lr.getEndLST());
+				i.setStartLST(lr.getStartLST());
+				a.addIntervalRequested(i);
+			}
+			prof.addArrayLSTRequestedInterval(a);
+		}
+		try {
+			FileWriter out = new FileWriter(new File("/tmp/test.xml"));
+			profiles.marshal(out);
+			System.out.println(out.toString());
+		} catch (MarshalException | ValidationException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 }
