@@ -1,6 +1,6 @@
 package alma.scheduling.spt.util;
 
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 
 import alma.scheduling.datamodel.config.dao.ConfigurationDaoImpl;
 import alma.scheduling.psm.sim.InputActions;
@@ -18,7 +18,7 @@ public class SimulatorContextFactory extends DSAContextFactory {
 	public static final String DATA_CLEANER_BEAN = "dataCleaner";
 	
 	public static synchronized void closeContext() {
-		((ConfigurableApplicationContext)context).close();
+		((GenericApplicationContext)context).close();
 		context = null;
 	}
 	

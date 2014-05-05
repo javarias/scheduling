@@ -1,9 +1,8 @@
-package alma.scheduling.spt.util;
+package alma.scheduling.spt.array;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,6 +37,9 @@ import alma.scheduling.input.observatory.generated.IntervalRequested;
 import alma.scheduling.input.observatory.generated.ObsCycleProfile;
 import alma.scheduling.input.observatory.generated.ObsCycleProfiles;
 import alma.scheduling.input.observatory.generated.types.ArrayTypeT;
+import alma.scheduling.spt.util.ArrayConfigurationCapabilities;
+import alma.scheduling.spt.util.LSTRange;
+import alma.scheduling.spt.util.SimulatorContextFactory;
 import alma.scheduling.utils.Constants;
 import alma.scheduling.utils.DSAContextFactory;
 import alma.scheduling.utils.TimeUtil;
@@ -45,7 +47,7 @@ import alma.scheduling.utils.TimeUtil;
 public class SchedBlockCategorizer {
 
 	private static final double convertToArcSec = 180.D / Math.PI * 3600.0D;
-	private static final double PHI = -23.019283333 * Math.PI/180.0;
+	private static final double PHI = -23.022894444444443 * Math.PI/180.0;
 	private ObservatoryDao obsDao;
 	private SchedBlockDao sbDao;
 	private Map<ArrayConfigurationCapabilities, Set<SchedBlock>> arraySBMap;
@@ -151,8 +153,8 @@ public class SchedBlockCategorizer {
 			fw.write("set multiplot\n");
 			for(SchedBlock sb: sbs) {
 				SkyCoordinates c = sb.getRepresentativeCoordinates();
-				fw.write("plot asin(sin(" + (-23.019283333*Math.PI/180) + ")*sin(" + (c.getDec()*Math.PI/180) + ")"
-						+ "+cos("+ (-23.019283333*Math.PI/180) + ")*cos(" + (c.getDec()*Math.PI/180) + ")*cos(x*"+(Math.PI/12)+"-"+(c.getRA())*Math.PI/180 +"))*180/"+ Math.PI +" title '"+ title +"';\n");
+				fw.write("plot asin(sin(" + (-23.022894444444443*Math.PI/180) + ")*sin(" + (c.getDec()*Math.PI/180) + ")"
+						+ "+cos("+ (-23.022894444444443*Math.PI/180) + ")*cos(" + (c.getDec()*Math.PI/180) + ")*cos(x*"+(Math.PI/12)+"-"+(c.getRA())*Math.PI/180 +"))*180/"+ Math.PI +" title '"+ title +"';\n");
 			}
 			fw.write("unset multiplot;");
 		} catch (IOException e) {
@@ -180,7 +182,7 @@ public class SchedBlockCategorizer {
 			fw = new FileWriter(out);
 			Date currDate = start;
 			while (currDate.before(end)) {
-				fw.write(format.format(currDate)+ ";" + TimeUtil.getLocalSiderealTime(currDate, -23.019283333) + "\n");
+				fw.write(format.format(currDate)+ ";" + TimeUtil.getLocalSiderealTime(currDate, -23.022894444444443) + "\n");
 				currDate = new Date(currDate.getTime() + 15 * 60 * 1000);
 			}
 		} catch (IOException e) {
@@ -298,59 +300,7 @@ public class SchedBlockCategorizer {
 		
 	}
 	
-	public static void main(String[] args) {
-		HashSet<SchedBlock> allSB = new HashSet<>();
-		SchedBlockCategorizer sbc = new SchedBlockCategorizer();
-		sbc.getSBArrayMapping();
-		Map<ArrayConfigurationCapabilities, Set<SchedBlock>> sbCriticalSet = sbc.findCriticalSBSet();
-		System.out.println(sbCriticalSet);
-		
-		for(ArrayConfigurationCapabilities ac: sbCriticalSet.keySet()) {
-			System.out.println(ac);
-			ArrayList<SchedBlock> sortedList = new ArrayList<>(sbCriticalSet.get(ac));
-			Collections.sort(sortedList, new SkyCoordinatesComparator());
-			for (SchedBlock sb: sortedList) {
-				double lstMaxH = (sb.getRepresentativeCoordinates().getRA()) *12.0/180.0;
-				double lstMaxHMin = (lstMaxH - 2) < 0? lstMaxH + 22:lstMaxH - 2;
-				double lstMaxHMax = (lstMaxH + 2) >= 24? lstMaxH - 22:lstMaxH + 2;
-				System.out.println(String.format("%s\t%s\tRa: %.4f\tDec: %.4f\tLST:%.4f\tLST Range: %.4f -- %.4f", 
-						sb.getUid(), sb.getLetterGrade(), sb.getRepresentativeCoordinates().getRA() *12.0/180.0, sb.getRepresentativeCoordinates().getDec(),
-						lstMaxH, lstMaxHMin, lstMaxHMax));
-//				System.out.println(sbc.getHighestAltitudeLSTand15LST(sb.getRepresentativeCoordinates()));
-			}
-//			sbc.showGnuPlot(sortedList, ac.getConfigurationName());
-			System.out.println("---------------------------------------------------------------------------\n");
-		}
-		allSB.addAll(sbc.unmappedSBs);
-		for(ArrayConfigurationCapabilities ac:sbc.arraySBMap.keySet()) {
-			allSB.addAll(sbc.arraySBMap.get(ac));
-		}
-		System.out.println("Total SB: " + allSB.size());
-		System.out.println("Unmapped Scheduling Blocks: " + sbc.unmappedSBs.size());
-//		for (SchedBlock sb: sbc.unmappedSBs) {
-//			System.out.println(sb.getUid() + "\t" + sb.getObsUnitControl().getArrayRequested());
-//		}
-		
-		Map<SchedBlock, Set<ArrayConfigurationCapabilities>> complementToSbCritSet = sbc.findComplementToCriticalSet(sbCriticalSet);
-		for (SchedBlock sb: complementToSbCritSet.keySet()) {
-			System.out.println(String.format("%s\t%s\tRa: %.4f\tDec: %.4f\t", 
-					sb.getUid(), sb.getLetterGrade(), sb.getRepresentativeCoordinates().getRA() *12.0/180.0, sb.getRepresentativeCoordinates().getDec()));
-			System.out.println(complementToSbCritSet.get(sb));
-		}
-		
-		Map<ArrayConfigurationCapabilities, Set<LSTRange>> ranges = sbc.getProposedLSTRanges(sbCriticalSet, 8.0);
-		for (Entry<ArrayConfigurationCapabilities, Set<LSTRange>> e: ranges.entrySet()) {
-			System.out.println(e.getKey());
-			for(LSTRange r: e.getValue()) {
-				System.out.println(r);
-			}
-			System.out.println("------------------------------------------------------------------------\n");
-		}
-		sbc.getObsCycleProfiles(ranges);
-//		sbc.calculateLSTForInterval(startDate, endDate, new File("lstRange.csv"));
-	}
-	
-	private void getObsCycleProfiles(Map<ArrayConfigurationCapabilities, Set<LSTRange>> LSTRanges) {
+	public ObsCycleProfiles getObsCycleProfiles(Map<ArrayConfigurationCapabilities, Set<LSTRange>> LSTRanges) {
 		ObsCycleProfiles profiles = new ObsCycleProfiles();
 		ExecutiveDAO execDao = (ExecutiveDAO) DSAContextFactory.getContext().getBean(DSAContextFactory.SCHEDULING_EXECUTIVE_DAO_BEAN);
 		ObservingSeason cycle = execDao.getCurrentSeason();
@@ -378,14 +328,70 @@ public class SchedBlockCategorizer {
 			}
 			prof.addArrayLSTRequestedInterval(a);
 		}
-		try {
-			FileWriter out = new FileWriter(new File("/tmp/test.xml"));
-			profiles.marshal(out);
-			System.out.println(out.toString());
-		} catch (MarshalException | ValidationException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		return profiles;
+//		try {
+//			FileWriter out = new FileWriter(new File("/tmp/test.xml"));
+//			profiles.marshal(out);
+//			System.out.println(out.toString());
+//		} catch (MarshalException | ValidationException | IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+	}
+	
+	public ObsCycleProfiles calculateObsCycleProfiles() {
+		HashSet<SchedBlock> allSB = new HashSet<>();
+		getSBArrayMapping();
+		Map<ArrayConfigurationCapabilities, Set<SchedBlock>> sbCriticalSet = findCriticalSBSet();
+		System.out.println(sbCriticalSet);
+		
+		for(ArrayConfigurationCapabilities ac: sbCriticalSet.keySet()) {
+			System.out.println(ac);
+			ArrayList<SchedBlock> sortedList = new ArrayList<>(sbCriticalSet.get(ac));
+			Collections.sort(sortedList, new SkyCoordinatesComparator());
+			for (SchedBlock sb: sortedList) {
+				double lstMaxH = (sb.getRepresentativeCoordinates().getRA()) *12.0/180.0;
+				double lstMaxHMin = (lstMaxH - 2) < 0? lstMaxH + 22:lstMaxH - 2;
+				double lstMaxHMax = (lstMaxH + 2) >= 24? lstMaxH - 22:lstMaxH + 2;
+				System.out.println(String.format("%s\t%s\tRa: %.4f\tDec: %.4f\tLST:%.4f\tLST Range: %.4f -- %.4f", 
+						sb.getUid(), sb.getLetterGrade(), sb.getRepresentativeCoordinates().getRA() *12.0/180.0, sb.getRepresentativeCoordinates().getDec(),
+						lstMaxH, lstMaxHMin, lstMaxHMax));
+//				System.out.println(sbc.getHighestAltitudeLSTand15LST(sb.getRepresentativeCoordinates()));
+			}
+//			sbc.showGnuPlot(sortedList, ac.getConfigurationName());
+			System.out.println("---------------------------------------------------------------------------\n");
 		}
+		allSB.addAll(unmappedSBs);
+		for(ArrayConfigurationCapabilities ac:arraySBMap.keySet()) {
+			allSB.addAll(arraySBMap.get(ac));
+		}
+		System.out.println("Total SB: " + allSB.size());
+		System.out.println("Unmapped Scheduling Blocks: " + unmappedSBs.size());
+//		for (SchedBlock sb: sbc.unmappedSBs) {
+//			System.out.println(sb.getUid() + "\t" + sb.getObsUnitControl().getArrayRequested());
+//		}
+		
+		Map<SchedBlock, Set<ArrayConfigurationCapabilities>> complementToSbCritSet = findComplementToCriticalSet(sbCriticalSet);
+		for (SchedBlock sb: complementToSbCritSet.keySet()) {
+			System.out.println(String.format("%s\t%s\tRa: %.4f\tDec: %.4f\t", 
+					sb.getUid(), sb.getLetterGrade(), sb.getRepresentativeCoordinates().getRA() *12.0/180.0, sb.getRepresentativeCoordinates().getDec()));
+			System.out.println(complementToSbCritSet.get(sb));
+		}
+		
+		Map<ArrayConfigurationCapabilities, Set<LSTRange>> ranges = getProposedLSTRanges(sbCriticalSet, 8.0);
+		for (Entry<ArrayConfigurationCapabilities, Set<LSTRange>> e: ranges.entrySet()) {
+			System.out.println(e.getKey());
+			for(LSTRange r: e.getValue()) {
+				System.out.println(r);
+			}
+			System.out.println("------------------------------------------------------------------------\n");
+		}
+		return getObsCycleProfiles(ranges);
+//		sbc.calculateLSTForInterval(startDate, endDate, new File("lstRange.csv"));
+	}
+	
+	public void cleanUp() {
+		SimulatorContextFactory.closeContext();
 	}
 	
 }
