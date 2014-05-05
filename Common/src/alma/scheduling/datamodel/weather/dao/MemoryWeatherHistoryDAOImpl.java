@@ -27,6 +27,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import alma.scheduling.datamodel.weather.HumidityHistRecord;
+import alma.scheduling.datamodel.weather.OpacityHistRecord;
 import alma.scheduling.datamodel.weather.PathFluctHistRecord;
 import alma.scheduling.datamodel.weather.TemperatureHistRecord;
 import alma.scheduling.datamodel.weather.WeatherHistRecord;
@@ -45,23 +47,32 @@ public class MemoryWeatherHistoryDAOImpl extends WeatherHistoryDAOImpl
     
     private TemperatureHistRecord tempCache[] = null;
     private PathFluctHistRecord phaseCache[] = null;
+    private HumidityHistRecord humidityCache[] = null;
     private Long startTime = null;
     private Double maxTime = null;
 
+    @Override
     public TemperatureHistRecord getTemperatureForTime(Date ut) {
         if(tempCache == null)
             fillCache();
         return getWeatherRecordForTime(ut, tempCache);
     }
     
+    @Override
     public PathFluctHistRecord getPathFluctForTime(Date ut) {
         if(phaseCache == null)
             fillCache();
         return getWeatherRecordForTime(ut, phaseCache);
     }
     
-    
-    /**
+    @Override
+	public HumidityHistRecord getHumidityForTime(Date ut) {
+    	if (humidityCache == null)
+    		fillCache();
+    	return getWeatherRecordForTime(ut, humidityCache);
+	}
+
+	/**
      * 
      * @param ut the time
      * @param cache the cache where to extract ten weather data
@@ -112,6 +123,15 @@ public class MemoryWeatherHistoryDAOImpl extends WeatherHistoryDAOImpl
 			List<PathFluctHistRecord> tmp = findAllOrdered(PathFluctHistRecord.class);
 			for (int i = 0; i < phaseCache.length; i++) {
 				phaseCache[i] = tmp.get(i);
+			}
+		}
+		{
+			humidityCache = new HumidityHistRecord[35065];
+			List<OpacityHistRecord> tmp = findAllOrdered(OpacityHistRecord.class);
+			for (int i = 0; i < humidityCache.length; i++) {
+				double h = -4.0757E-2 + Math.sqrt(Math.pow(4.0757E-2, 2) - 4 * 9.59E-4 * (6.7787E-3 - tmp.get(i).getValue()));
+				h = h / (2 * 9.59E-4);
+				humidityCache[i] = new HumidityHistRecord(tmp.get(i).getTime(), h, 0.1, 0.1);
 			}
 		}
 	}

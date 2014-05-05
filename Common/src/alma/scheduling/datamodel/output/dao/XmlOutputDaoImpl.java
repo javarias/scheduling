@@ -244,7 +244,7 @@ public class XmlOutputDaoImpl implements StreamBasedOutputDao {
             int i = 0;
             for(Array tmpA: results.getArray()){
                 a[i] = new alma.scheduling.output.generated.Array();
-            	a[i].setId(new Long(i).toString());
+            	a[i].setId("id"+new Long(i).toString());
             	tmpA.setId(i);
                 a[i].setAvailablelTime( tmpA.getAvailableTime());
                 a[i].setStartDate(tmpA.getCreationDate());
@@ -320,7 +320,7 @@ public class XmlOutputDaoImpl implements StreamBasedOutputDao {
                     sb[j].setSource(source);
                     alma.scheduling.output.generated.ArrayRef aRef = 
                         new alma.scheduling.output.generated.ArrayRef();
-                    aRef.setArrayRef(Long.toString(tmpSb.getArrayRef().getId()));
+                    aRef.setArrayRef("id"+Long.toString(tmpSb.getArrayRef().getId()));
                     sb[j].setArrayRef(aRef);
                 }
                 op[i].setSchedBlock(sb);

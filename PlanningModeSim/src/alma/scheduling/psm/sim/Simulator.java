@@ -283,6 +283,7 @@ public class Simulator extends PsmContext {
             dsa = getDSA(ctx, DSAPolicyName);
             dsa.setVerboseLevel(verboseLvl);
             dsa.setArray(ev.getArray());
+            dsa.initialize(time);
             arraysCreated.put(ev.getArray(), dsa);
             System.out
                     .println(TimeUtil.getUTString(time)

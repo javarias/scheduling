@@ -28,7 +28,7 @@
 			<xs:element name="Array" type="Array" minOccurs="1" maxOccurs="unbounded"/>
 			<xs:element name="ObservationProject" type="ObservationProject" minOccurs="1" maxOccurs="unbounded"/>
 		</xs:sequence>
-		<xs:attribute name="id" type="xs:NCName" use="required"/>		
+		<xs:attribute name="id" type="xs:NCName" use="optional"/>		
 	</xs:complexType>
 	
 	<xs:complexType name="Array">
@@ -61,7 +61,7 @@
 			<xs:element name="code" type="xs:string" minOccurs="1" maxOccurs="1" />
 			<xs:element name="archive_uid" type="xs:string" minOccurs="1" maxOccurs="1" />
 			<xs:element name="status" type="ExecutionStatus" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="SchedBlock" type="SchedBlock" minOccurs="1" maxOccurs="unbounded"/>
+			<xs:element name="SchedBlock" type="SchedBlock" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="Affiliation" type="Affiliation" minOccurs="1" maxOccurs="unbounded"/>
 		</xs:sequence>
 	</xs:complexType>
