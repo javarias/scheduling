@@ -5,6 +5,9 @@ import java.io.Writer;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.NavigableMap;
+import java.util.NavigableSet;
+import java.util.TreeMap;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -17,10 +20,14 @@ import alma.scheduling.input.observatory.generated.types.ArrayTypeT;
 public class ArrayLSTRequestedIntervalWrapper {
 
 	private final ArrayLSTRequestedInterval a;
+	private final NavigableMap<Double, NavigableSet<Date>> proposedStartDates;
+	private final NavigableMap<Double, NavigableSet<Date>> proposedEndDates;
 
 	public ArrayLSTRequestedIntervalWrapper(ArrayLSTRequestedInterval a) {
 		super();
 		this.a = a;
+		proposedStartDates = new TreeMap<>();
+		proposedEndDates = new TreeMap<>();
 	}
 
 	public boolean isValid() {
@@ -181,6 +188,14 @@ public class ArrayLSTRequestedIntervalWrapper {
 
 	public void setStartTime(Date startTime) {
 		a.setStartTime(startTime);
+	}
+
+	public NavigableMap<Double, NavigableSet<Date>> getProposedStartDates() {
+		return proposedStartDates;
+	}
+
+	public NavigableMap<Double, NavigableSet<Date>> getProposedEndDates() {
+		return proposedEndDates;
 	}
 
 	public String toString() {

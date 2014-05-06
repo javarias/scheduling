@@ -1,18 +1,23 @@
 package alma.scheduling.spt.array;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.NavigableSet;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import alma.scheduling.input.observatory.generated.ArrayConfigurationLite;
 import alma.scheduling.input.observatory.generated.ArrayLSTRequestedInterval;
 import alma.scheduling.input.observatory.generated.IntervalRequested;
 import alma.scheduling.input.observatory.generated.ObsCycleProfiles;
+import alma.scheduling.spt.util.ArrayLSTRequestedIntervalWrapper;
 import alma.scheduling.utils.TimeUtil;
 
 public class ArrayConfigurationsExplorerSA {
@@ -20,6 +25,7 @@ public class ArrayConfigurationsExplorerSA {
 	private ObsCycleProfiles arrayProfiles;
 	private NavigableMap<Double, NavigableSet<Date>> startLSTDateMap;
 	private NavigableMap<Double, NavigableSet<Date>> endLSTDateMap;
+	private Set<ArrayLSTRequestedIntervalWrapper> arrayConfigurations;
 //	private NavigableMap<Date, Double> dateLSTMap;
 	
 	private final static double ALMA_LONGITUDE = -67.75492777777778;
@@ -37,6 +43,7 @@ public class ArrayConfigurationsExplorerSA {
 		
 		startLSTDateMap = new TreeMap<>();
 		endLSTDateMap = new TreeMap<>();
+		arrayConfigurations = new HashSet<>();
 //		dateLSTMap = new TreeMap<>();
 		Date currDate = arrayProfiles.getObsCycleProfile(0).getDateInterval().getStartDate();
 		currDate = new Date(currDate.getTime() + 23*60*60*1000);
@@ -73,7 +80,11 @@ public class ArrayConfigurationsExplorerSA {
 			for (IntervalRequested interval: ari.getIntervalRequested()) {
 				double startLST = selectNearestLST(interval.getStartLST());
 				double endLST = selectNearestLST(interval.getEndLST());
-				selectWeeklyIntervals(startLST, endLST);
+				System.out.println(ari.getConfigurationName());
+				NavigableSet<Date>[] dates = selectWeeklyIntervals(startLST, endLST);
+				ArrayLSTRequestedIntervalWrapper a = new ArrayLSTRequestedIntervalWrapper(ari);
+				a.getProposedStartDates().put(startLST, dates[0]);
+				a.getProposedEndDates().put(endLST, dates[1]);
 			}
 		}
 	}
@@ -91,8 +102,14 @@ public class ArrayConfigurationsExplorerSA {
 			return ceilingStart;
 	}
 	
-	private NavigableMap<Date, Date> selectWeeklyIntervals(double startLST, double endLST) {
-		NavigableMap<Date, Date> retVal = new TreeMap<>();
+	/**
+	 * 
+	 * @param startLST
+	 * @param endLST
+	 * @return the potential start dates and end dates for the given lst interval 
+	 */
+	private NavigableSet<Date>[] selectWeeklyIntervals(double startLST, double endLST) {
+		NavigableSet<Date>[] retVal = new TreeSet[2];
 		NavigableSet<Date> startDates = new TreeSet<>();
 		NavigableSet<Date> endDates = new TreeSet<>();
 		//First look for start dates
@@ -136,10 +153,17 @@ public class ArrayConfigurationsExplorerSA {
 		}
 		System.out.println("------------------------------------------------------------------------------------");
 		
+		retVal[0] = startDates;
+		retVal[1] = endDates;
 		
 		return retVal;
 	}
 	
+	private List<ArrayConfigurationLite> neighbour() {
+		final ArrayList<ArrayConfigurationLite> retval = new ArrayList<>();
+		
+		return retval;
+	}
 	
 	public static void main(String[] args) {
 		ArrayConfigurationsExplorerSA sa = new ArrayConfigurationsExplorerSA();
