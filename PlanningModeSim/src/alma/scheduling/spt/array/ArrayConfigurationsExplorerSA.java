@@ -13,6 +13,7 @@ import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.input.observatory.generated.ArrayConfigurationLite;
 import alma.scheduling.input.observatory.generated.ArrayLSTRequestedInterval;
 import alma.scheduling.input.observatory.generated.IntervalRequested;
@@ -29,11 +30,11 @@ public class ArrayConfigurationsExplorerSA {
 //	private NavigableMap<Date, Double> dateLSTMap;
 	
 	private final static double ALMA_LONGITUDE = -67.75492777777778;
-	private final static double LST_TOLERANCE = 2.0;
+	private final static double LST_TOLERANCE = 3.0;
 	private final static long WEEK_DURATION_MS = 7 * 24 * 60 *60 * 1000;
 	private final static SimpleDateFormat utcFormat;
 	static{
-		utcFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		utcFormat = new SimpleDateFormat("yyyy-MM-dd");
 		utcFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 	}
 	
@@ -75,18 +76,21 @@ public class ArrayConfigurationsExplorerSA {
 		sbc.cleanUp();
 	}
 	
-	private void calculateDateIntervals() {
+	private Set<ArrayLSTRequestedIntervalWrapper> calculateDateIntervals() {
+		HashSet<ArrayLSTRequestedIntervalWrapper> retval = new HashSet<>();
 		for (ArrayLSTRequestedInterval ari: arrayProfiles.getObsCycleProfile(0).getArrayLSTRequestedInterval()) {
+			ArrayLSTRequestedIntervalWrapper a = new ArrayLSTRequestedIntervalWrapper(ari);
 			for (IntervalRequested interval: ari.getIntervalRequested()) {
 				double startLST = selectNearestLST(interval.getStartLST());
 				double endLST = selectNearestLST(interval.getEndLST());
 				System.out.println(ari.getConfigurationName());
 				NavigableSet<Date>[] dates = selectWeeklyIntervals(startLST, endLST);
-				ArrayLSTRequestedIntervalWrapper a = new ArrayLSTRequestedIntervalWrapper(ari);
 				a.getProposedStartDates().put(startLST, dates[0]);
 				a.getProposedEndDates().put(endLST, dates[1]);
 			}
+			retval.add(a);
 		}
+		return retval;
 	}
 	
 	private double selectNearestLST(double lst) {
@@ -165,8 +169,26 @@ public class ArrayConfigurationsExplorerSA {
 		return retval;
 	}
 	
+	private List<ArrayConfiguration> findInitialSolution(Set<ArrayLSTRequestedIntervalWrapper> arraySet) {
+		ArrayConfigurationsExplorerGreedy greedy = new ArrayConfigurationsExplorerGreedy();
+		return greedy.findSolution(arraySet);
+	}
+	
+	private void printSolution(List<ArrayConfiguration> sol) {
+		System.out.println("Solution for run");
+		for(ArrayConfiguration ac: sol) {
+			System.out.println(ac + " " + utcFormat.format(ac.getStartTime()) + " -- " + utcFormat.format(ac.getEndTime()));
+		}
+		System.out.println("----------------------------------------------------------------------------------");
+	}
+	
 	public static void main(String[] args) {
 		ArrayConfigurationsExplorerSA sa = new ArrayConfigurationsExplorerSA();
-		sa.calculateDateIntervals();
+		Set<ArrayLSTRequestedIntervalWrapper> arraySet = sa.calculateDateIntervals();
+		for (int i = 0; i < 1000; i++) {
+			List<ArrayConfiguration> s = sa.findInitialSolution(arraySet);
+			if (s.size() > 6)
+				sa.printSolution(s);
+		}
 	}
 }

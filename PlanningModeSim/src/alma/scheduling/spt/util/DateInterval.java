@@ -72,5 +72,11 @@ public class DateInterval implements Comparable<DateInterval>{
 			return new DateInterval(fromDate, i.getToDate());
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "DateInterval [fromDate=" + fromDate + ", toDate=" + toDate
+				+ "]";
+	}
 	
 }
