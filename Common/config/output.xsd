@@ -54,7 +54,8 @@
 	<xs:complexType name="ObservationProject">
 		<xs:sequence>
 			<xs:element name="scienceRank" type="xs:long" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="scienceScore" type="xs:float" minOccurs="1" maxOccurs="1"/>			
+			<xs:element name="scienceScore" type="xs:float" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="scienceGrade" type="GradeT" minOccurs="1" maxOccurs="1"/>			
 			<xs:element name="executionTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="originalId" type="xs:string" minOccurs="1" maxOccurs="1"/>			
 			<xs:element name="id" type="xs:long" minOccurs="1" maxOccurs="1"/>
@@ -125,4 +126,13 @@
 			<xs:element name="endDate" type="xs:dateTime" minOccurs="1" maxOccurs="1" />
 		</xs:sequence>
 	</xs:complexType>
+	
+	<xs:simpleType name="GradeT">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="A" />
+			<xs:enumeration value="B" />
+			<xs:enumeration value="C" />
+			<xs:enumeration value="D" />
+		</xs:restriction>
+	</xs:simpleType>
 </xs:schema>

@@ -49,9 +49,11 @@ import alma.scheduling.datamodel.output.SimulationResults;
 import alma.scheduling.datamodel.output.SchedBlockResult;
 import alma.scheduling.datamodel.obsproject.ArrayType;
 import alma.scheduling.datamodel.output.ExecutionStatus;
+import alma.scheduling.input.obsproject.generated.types.descriptors.GradeTDescriptor;
 import alma.scheduling.output.generated.Results;
 import alma.scheduling.output.generated.SkyCoordinatesT;
 import alma.scheduling.output.generated.Source;
+import alma.scheduling.output.generated.types.GradeT;
 
 
 /**
@@ -274,6 +276,7 @@ public class XmlOutputDaoImpl implements StreamBasedOutputDao {
                 op[i].setExecutionTime(tmpOp.getExecutionTime());
                 op[i].setScienceRank( tmpOp.getScienceRank());
                 op[i].setScienceScore( tmpOp.getScienceScore());
+                op[i].setScienceGrade(GradeT.fromValue(tmpOp.getGrade()));
                 op[i].setId(tmpOp.getId());
                 op[i].setOriginalId(tmpOp.getOriginalId());
                 op[i].setArchive_uid(tmpOp.getArchiveUid());

@@ -40,6 +40,7 @@ import org.apache.commons.cli.ParseException;
 import org.springframework.context.ApplicationContext;
 
 import alma.scheduling.datamodel.config.dao.ConfigurationDaoImpl;
+import alma.scheduling.datamodel.output.SimulationResults;
 import alma.scheduling.psm.sim.InputActions;
 import alma.scheduling.psm.sim.Simulator;
 import alma.scheduling.psm.util.PsmContext;
@@ -57,9 +58,12 @@ public class SimulatorCLI {
 	 */
 	public static void main(String[] args) throws Exception {
 		SimulatorCLI cli = new SimulatorCLI();
-		cli.initializeOptions();
 		cli.parseOptions(args);
 		cli.runCompleteSimulation();
+	}
+	
+	public SimulatorCLI() {
+		initializeOptions();
 	}
 	
 	@SuppressWarnings("static-access")
@@ -82,7 +86,7 @@ public class SimulatorCLI {
 		
 		Option policyFile = OptionBuilder.withArgName("file")
 										.withLongOpt("policy-file")
-										.withDescription("Sets the polic file containing DSA configurations")
+										.withDescription("Sets the policy file containing DSA configurations")
 										.hasArg()
 										.isRequired()
 										.create('p');
@@ -90,18 +94,21 @@ public class SimulatorCLI {
 		
 	}
 	
-	private void parseOptions(String[] args) {
+	public void parseOptions(String[] args) {
 		CommandLineParser parser = new GnuParser();
 		CommandLine cl = null;
 		try {
 			cl = parser.parse(opts, args);
 		} catch (ParseException e) {
-			e.printStackTrace();
+			System.err.println(e.getMessage());
+			HelpFormatter formatter = new HelpFormatter();
+			formatter.printHelp("schedulingSimulator", opts);
 			System.exit(-1);
 		}
 		if (cl.hasOption('h')) {
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("schedulingSimulator", opts);
+			System.exit(-1);
 		}
 		if (cl.hasOption('d')) {
 			if (System.getProperty(ConfigurationDaoImpl.PROP_WORK_DIR) != null) {
@@ -118,23 +125,34 @@ public class SimulatorCLI {
 			workDir = System.getProperty(ConfigurationDaoImpl.PROP_WORK_DIR);
 		}
 		if (cl.hasOption('p')) {
-			File test = new File(cl.getOptionValue('p'));
-			if(!test.exists() || test.isDirectory() || !test.canRead())
-				throw new RuntimeException(cl.getOptionValue('p') + " not usable.");
-			policyFile = cl.getOptionValue('p');
+			setPolicyFile(new File(cl.getOptionValue('p')));
 		}
 	}
 	
-	private void runCompleteSimulation() throws Exception {
+	public void loadData() throws Exception {
 		ApplicationContext ctx = DSAContextFactory.getContextFromPoliciesFile(policyFile);
 		InputActions.setApplicationContext(ctx);
 		InputActions input = InputActions.getInstance(workDir);
 		//load
-		
 		input.fullLoad(InputActions.IMMUTABLE_DATA_LOADER_BEAN);
+	}
+	
+	public SimulationResults runSimulationDataAlreadyLoaded() {
+		ApplicationContext ctx = DSAContextFactory.getContextFromPoliciesFile(policyFile);
 		//run
 		PsmContext.setApplicationContext(ctx);
 		Simulator sim = new Simulator(workDir);
-		sim.run("AllSelectors");
+		return sim.run("AllSelectors");
+	}
+	
+	public SimulationResults runCompleteSimulation() throws Exception {
+		loadData();
+		return runSimulationDataAlreadyLoaded();
+	}
+	
+	public void setPolicyFile(File policyFile) {
+		if(!policyFile.exists() || policyFile.isDirectory() || !policyFile.canRead())
+			throw new RuntimeException(policyFile.getAbsolutePath() + " could not be valid.");
+		this.policyFile = policyFile.getAbsolutePath();
 	}
 }

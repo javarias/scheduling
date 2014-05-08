@@ -100,11 +100,11 @@ public class PsmContext extends Observable {
 	}
 	
 	public static void setApplicationContext( ApplicationContext context ){
-		if( ctx == null )
+//		if( ctx == null )
 			ctx = context;
-		else{
-			System.out.println("Error, ApplicationContext already has been set");
-		}
+//		else{
+//			System.out.println("Error, ApplicationContext already has been set");
+//		}
 	}
 	
 	public static ApplicationContext getApplicationContext(){

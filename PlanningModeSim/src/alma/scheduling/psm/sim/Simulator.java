@@ -56,6 +56,7 @@ import alma.scheduling.datamodel.observation.ExecBlock;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.observatory.dao.ObservatoryDao;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.output.SimulationResults;
 import alma.scheduling.datamodel.output.dao.OutputDao;
 import alma.scheduling.datamodel.output.dao.XmlOutputDaoImpl;
 import alma.scheduling.datamodel.weather.dao.WeatherHistoryDAO;
@@ -136,7 +137,7 @@ public class Simulator extends PsmContext {
 		}
     }
     
-    public void run(String DSAPolicyName) throws IllegalArgumentException{
+    public SimulationResults run(String DSAPolicyName) throws IllegalArgumentException{
     	ApplicationContext ctx = getApplicationContext();
         // Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UT"));
         ExecutiveDAO execDao = (ExecutiveDAO) ctx.getBean("execDao");
@@ -252,7 +253,9 @@ public class Simulator extends PsmContext {
         outDao.saveResults( rc.getResults() );
         XmlOutputDaoImpl xmlOutDao = new XmlOutputDaoImpl();
         xmlOutDao.setConfigDao(xmlConfigDao);
-        xmlOutDao.saveResults( rc.getResults() );        
+        xmlOutDao.saveResults( rc.getResults() );      
+        
+        return rc.getResults();
     }
 
 //    @Transactional
@@ -478,6 +481,11 @@ public class Simulator extends PsmContext {
             }
             break;
         case START_NEXT_OBSERVATION_TIME_INTERVAL:
+        	//HACK in case the array has been already destroyed
+        	//TODO: Rafactor this piece of garbage and remove this.
+        	dsa = arraysCreated.get(ev.getArray());
+        	if (dsa == null)
+        		break;
             System.out
                     .println(TimeUtil.getUTString(time)
                             + "Starting selection of candidate SchedBlocks for Array Id: "

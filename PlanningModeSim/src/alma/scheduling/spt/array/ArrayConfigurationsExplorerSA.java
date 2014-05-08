@@ -14,11 +14,16 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
+import alma.scheduling.datamodel.observatory.dao.ObservatoryDao;
+import alma.scheduling.datamodel.output.SimulationResults;
 import alma.scheduling.input.observatory.generated.ArrayConfigurationLite;
 import alma.scheduling.input.observatory.generated.ArrayLSTRequestedInterval;
 import alma.scheduling.input.observatory.generated.IntervalRequested;
 import alma.scheduling.input.observatory.generated.ObsCycleProfiles;
+import alma.scheduling.psm.cli.SimulatorCLI;
 import alma.scheduling.spt.util.ArrayLSTRequestedIntervalWrapper;
+import alma.scheduling.spt.util.SimulatorContextFactory;
+import alma.scheduling.utils.DSAContextFactory;
 import alma.scheduling.utils.TimeUtil;
 
 public class ArrayConfigurationsExplorerSA {
@@ -182,13 +187,24 @@ public class ArrayConfigurationsExplorerSA {
 		System.out.println("----------------------------------------------------------------------------------");
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		ArrayConfigurationsExplorerSA sa = new ArrayConfigurationsExplorerSA();
 		Set<ArrayLSTRequestedIntervalWrapper> arraySet = sa.calculateDateIntervals();
-		for (int i = 0; i < 1000; i++) {
+		for (int i = 0; i < 2; i++) {
 			List<ArrayConfiguration> s = sa.findInitialSolution(arraySet);
-			if (s.size() > 6)
-				sa.printSolution(s);
+			sa.printSolution(s);
+			SimulatorCLI cli = new SimulatorCLI();
+			cli.parseOptions(args);
+			cli.loadData();
+			ObservatoryDao obsDao = (ObservatoryDao) DSAContextFactory.getContext().getBean(DSAContextFactory.SCHEDULING_OBSERVATORY_DAO);
+			obsDao.deleteAllArrayConfigurations();
+			obsDao.saveOrUpdate(s);
+			SimulationResults result = cli.runSimulationDataAlreadyLoaded();
+			SimulationResultSummary summary = new SimulationResultsAnalyzer().analyzeResult(result);
+			System.out.println(summary);
+//			if (s.size() > 6)
+//				sa.printSolution(s);
+			SimulatorContextFactory.closeContext();
 		}
 	}
 }

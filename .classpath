@@ -18,7 +18,7 @@
 	<classpathentry kind="lib" path="Common/lib/spring-expression.jar"/>
 	<classpathentry kind="lib" path="Common/lib/commons-logging.jar"/>
 	<classpathentry kind="lib" path="Common/lib/commons-lang.jar"/>
-	<classpathentry kind="lib" path="PlanningModeSim/lib/commons-cli.jar"/>
+	<classpathentry kind="lib" path="PlanningModeSim/lib/commons-cli.jar" sourcepath="/home/javarias/.m2/repository/commons-cli/commons-cli/1.2/commons-cli-1.2-sources.jar"/>
 	<classpathentry kind="lib" path="PlanningModeSim/lib/jasperreports.jar"/>
 	<classpathentry kind="lib" path="PlanningModeSim/lib/jcommon.jar"/>
 	<classpathentry kind="lib" path="PlanningModeSim/lib/jfreechart.jar"/>

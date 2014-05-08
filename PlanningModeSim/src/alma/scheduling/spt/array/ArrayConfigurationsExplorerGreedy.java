@@ -81,10 +81,6 @@ public class ArrayConfigurationsExplorerGreedy {
 		}
 	}
 	
-	private List<ArrayConfigurationLite> resolveCollision() {
-		return null;
-	}
-	
 	private ArrayConfiguration convert(ArrayLSTRequestedIntervalWrapper xmlAC) {
 		ArrayConfiguration ac = new ArrayConfiguration();
 		ac.setStartTime(xmlAC.getStartTime());

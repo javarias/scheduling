@@ -86,8 +86,8 @@ public class InputActions extends PsmContext {
         
         ConfigurationDao configDao = (ConfigurationDao) ctx.getBean(CONFIGURATION_DAO_BEAN);
         configDao.getConfiguration();
-        simulationStateContext.getCurrentState().fullload();
-        configDao.updateConfig(simulationStateContext.getCurrentState().getCurrentState().toString());
+//        simulationStateContext.getCurrentState().fullload();
+//        configDao.updateConfig(simulationStateContext.getCurrentState().getCurrentState().toString());
     }
 
     public void load(String dataLoader){
@@ -100,8 +100,8 @@ public class InputActions extends PsmContext {
 			e.printStackTrace();
 		}
         ConfigurationDao configDao = (ConfigurationDao) ctx.getBean(CONFIGURATION_DAO_BEAN);
-        simulationStateContext.getCurrentState().load();
-        configDao.updateConfig(simulationStateContext.getCurrentState().getCurrentState().toString());
+//        simulationStateContext.getCurrentState().load();
+//        configDao.updateConfig(simulationStateContext.getCurrentState().getCurrentState().toString());
     }
 
     public void unload() {
@@ -116,8 +116,8 @@ public class InputActions extends PsmContext {
     	DataLoader loader = (DataLoader) ctx.getBean(dataLoader);
     	loader.clear();
         ConfigurationDao configDao = (ConfigurationDao) ctx.getBean(CONFIGURATION_DAO_BEAN);
-        simulationStateContext.getCurrentState().clean();
-        configDao.deleteForSimulation();
+//        simulationStateContext.getCurrentState().clean();
+//        configDao.deleteForSimulation();
     }
     
     public SimulationAbstractState getCurrentSimulationState() {

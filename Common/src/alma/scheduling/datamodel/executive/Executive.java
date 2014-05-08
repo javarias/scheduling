@@ -117,4 +117,10 @@ public class Executive implements Comparable<Executive>{
 	public int compareTo(Executive o) {
 		return name.compareTo(o.getName());
 	}
+
+	@Override
+	public String toString() {
+		return "Executive [name=" + name + "]";
+	}
+	
 }
