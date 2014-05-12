@@ -6,6 +6,7 @@
     <configurations>
       <conf name="core"/>
       <conf name="standalone" extends="core"/>
+      <conf name="test" extends="standalone"/>
     </configurations>
     <publications>
       <artifact name="scheduling-simulator" type="jar" conf="core"/>

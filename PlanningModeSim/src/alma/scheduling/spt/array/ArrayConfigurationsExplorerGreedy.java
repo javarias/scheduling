@@ -5,13 +5,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
-import java.util.Map.Entry;
-import java.util.NavigableSet;
 import java.util.Set;
 
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.ArrayType;
-import alma.scheduling.input.observatory.generated.ArrayConfigurationLite;
 import alma.scheduling.spt.util.ArrayLSTRequestedIntervalWrapper;
 import alma.scheduling.spt.util.DateInterval;
 
@@ -45,7 +42,7 @@ public class ArrayConfigurationsExplorerGreedy {
 			ArrayConfiguration ac = convert(aliw);
 			ArrayList<Date> startDateSet = new ArrayList<>(aliw.getProposedStartDates().get(lst));
 			Date startDate = startDateSet.get((int)(startDateSet.size() * Math.random()));
-			Date endDate = new Date(startDate.getTime() + 4 * WEEK_DURATION_MS);
+			Date endDate = new Date(startDate.getTime() + 4 * WEEK_DURATION_MS); //Duration between 4 and 8 weeks (constant uniform distribution) 
 			DateInterval i = new DateInterval(startDate, endDate);
 			ac.setStartTime(startDate);
 			ac.setEndTime(endDate);

@@ -344,7 +344,7 @@ public class ResultComposer {
         		
         		// From Stop notification.
         		sbr.setEndDate(eb.getEndTime());
-    			sbr.setAchievedSensitivity(eb.getSensitivityAchieved());
+    			sbr.setAchievedSensitivity(new Double(eb.getSensitivityAchieved()).isInfinite()? 0: eb.getSensitivityAchieved());
     			System.out.println("Sensitivity Goal in Results: " + eb.getSensitivityAchieved());
     			sbr.setExecutionTime(eb.getTimeOnSource() / 3600.0); //in hours
     			if( ((SchedBlock)ptrOu).getSchedBlockControl().getState() == SchedBlockState.FULLY_OBSERVED ){

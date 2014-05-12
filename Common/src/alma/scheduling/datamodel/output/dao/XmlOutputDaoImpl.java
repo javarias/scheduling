@@ -376,6 +376,7 @@ public class XmlOutputDaoImpl implements StreamBasedOutputDao {
             tmpOp.setExecutionTime(xmlOp.getExecutionTime());
             tmpOp.setScienceRank( xmlOp.getScienceRank());
             tmpOp.setScienceScore( xmlOp.getScienceScore());
+            tmpOp.setGrade(xmlOp.getScienceGrade().toString());
             tmpOp.setOriginalId(xmlOp.getOriginalId());
             tmpOp.setStatus(ExecutionStatus.valueOf(xmlOp.getStatus().toString()));
              

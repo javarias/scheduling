@@ -2,6 +2,7 @@ package alma.scheduling.spt.array;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -13,8 +14,11 @@ import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import alma.scheduling.datamodel.executive.ObservingSeason;
+import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.observatory.dao.ObservatoryDao;
+import alma.scheduling.datamodel.obsproject.ArrayType;
 import alma.scheduling.datamodel.output.SimulationResults;
 import alma.scheduling.input.observatory.generated.ArrayConfigurationLite;
 import alma.scheduling.input.observatory.generated.ArrayLSTRequestedInterval;
@@ -34,8 +38,18 @@ public class ArrayConfigurationsExplorerSA {
 	private Set<ArrayLSTRequestedIntervalWrapper> arrayConfigurations;
 //	private NavigableMap<Date, Double> dateLSTMap;
 	
+	private final Date seasonStartDate;
+	private final Date seasonEndDate;
+	
+	private List<ArrayConfiguration> bestFoundConfigSoFar = null;
+	private SimulationResultSummary bestSummaryforConfig = null;
+	
+	private static final double LAMBDA = 0.5;
+	private static final int TOTAL_A_PROJECTS = 33;
+	private static final int N_ITERATIONS = 1000;
+	
 	private final static double ALMA_LONGITUDE = -67.75492777777778;
-	private final static double LST_TOLERANCE = 3.0;
+	private final static double LST_TOLERANCE = 2.0;
 	private final static long WEEK_DURATION_MS = 7 * 24 * 60 *60 * 1000;
 	private final static SimpleDateFormat utcFormat;
 	static{
@@ -78,6 +92,10 @@ public class ArrayConfigurationsExplorerSA {
 			currDate = new Date(currDate.getTime() + WEEK_DURATION_MS);
 		}
 		
+		ExecutiveDAO execDao = (ExecutiveDAO) DSAContextFactory.getContext().getBean(DSAContextFactory.SCHEDULING_EXECUTIVE_DAO_BEAN);
+		ObservingSeason season = execDao.getCurrentSeason();
+		seasonStartDate = season.getStartDate();
+		seasonEndDate = season.getEndDate();
 		sbc.cleanUp();
 	}
 	
@@ -171,12 +189,15 @@ public class ArrayConfigurationsExplorerSA {
 	private List<ArrayConfigurationLite> neighbour() {
 		final ArrayList<ArrayConfigurationLite> retval = new ArrayList<>();
 		
-		return retval;
+		return retval; 
 	}
 	
 	private List<ArrayConfiguration> findInitialSolution(Set<ArrayLSTRequestedIntervalWrapper> arraySet) {
 		ArrayConfigurationsExplorerGreedy greedy = new ArrayConfigurationsExplorerGreedy();
-		return greedy.findSolution(arraySet);
+		List<ArrayConfiguration> ret = greedy.findSolution(arraySet);
+		ret.add(get7mConfig());
+		ret.add(getTPConfig());
+		return ret;
 	}
 	
 	private void printSolution(List<ArrayConfiguration> sol) {
@@ -187,24 +208,104 @@ public class ArrayConfigurationsExplorerSA {
 		System.out.println("----------------------------------------------------------------------------------");
 	}
 	
-	public static void main(String[] args) throws Exception {
-		ArrayConfigurationsExplorerSA sa = new ArrayConfigurationsExplorerSA();
-		Set<ArrayLSTRequestedIntervalWrapper> arraySet = sa.calculateDateIntervals();
-		for (int i = 0; i < 2; i++) {
-			List<ArrayConfiguration> s = sa.findInitialSolution(arraySet);
-			sa.printSolution(s);
+	private ArrayConfiguration get7mConfig() {
+		ArrayConfiguration ac = new ArrayConfiguration();
+		ac.setStartTime(seasonStartDate);
+		ac.setEndTime(seasonEndDate);
+		ac.setConfigurationName("7m");
+		ac.setArrayName("7m");
+		ac.setNumberOfAntennas(9);
+		ac.setMinBaseline(8.9);
+		ac.setMaxBaseline(32.1);
+		ac.setAntennaDiameter(7.0);
+		ac.setArrayType(ArrayType.SEVEN_M);
+		return ac;
+	}
+	
+	private ArrayConfiguration getTPConfig() {
+		ArrayConfiguration ac = new ArrayConfiguration();
+		ac.setStartTime(seasonStartDate);
+		ac.setEndTime(seasonEndDate);
+		ac.setConfigurationName("TP");
+		ac.setArrayName("TP");
+		ac.setNumberOfAntennas(2);
+		ac.setMinBaseline(0.0);
+		ac.setMaxBaseline(0.0);
+		ac.setAntennaDiameter(7.0);
+		ac.setArrayType(ArrayType.TP_ARRAY);
+		return ac;
+	}
+	
+	public List<ArrayConfiguration> calculateBestArrayConfiguration(String[] args, int totalAProjects) throws Exception {
+		Set<ArrayLSTRequestedIntervalWrapper> arraySet = calculateDateIntervals();
+		final SimulationResultsAnalyzer analyzer = new SimulationResultsAnalyzer();
+		List<ArrayConfiguration> current = null;
+		SimulationResultSummary currentSummary = null;
+		for (int i = 0; i < N_ITERATIONS; i++) {
+			if (currentSummary != null && currentSummary.getCompletedProjects().get("A") >= totalAProjects) {
+				System.out.println("Found Solution! after " + i + " iterations");
+				System.out.println(currentSummary);
+				return current;
+			}
+			List<ArrayConfiguration> next = findInitialSolution(arraySet);
+			printSolution(next);
 			SimulatorCLI cli = new SimulatorCLI();
 			cli.parseOptions(args);
 			cli.loadData();
 			ObservatoryDao obsDao = (ObservatoryDao) DSAContextFactory.getContext().getBean(DSAContextFactory.SCHEDULING_OBSERVATORY_DAO);
 			obsDao.deleteAllArrayConfigurations();
-			obsDao.saveOrUpdate(s);
-			SimulationResults result = cli.runSimulationDataAlreadyLoaded();
-			SimulationResultSummary summary = new SimulationResultsAnalyzer().analyzeResult(result);
-			System.out.println(summary);
-//			if (s.size() > 6)
-//				sa.printSolution(s);
+			obsDao.saveOrUpdate(next);
+			SimulationResults nextResult = null;
+			try {
+				nextResult = cli.runSimulationDataAlreadyLoaded();
+			} catch (Exception ex) {
+				//In case something goes horrible wrong
+				ex.printStackTrace();
+				continue;
+			}
+			SimulationResultSummary nextSummary = analyzer.analyzeResult(nextResult);
+			System.out.println(nextSummary);
 			SimulatorContextFactory.closeContext();
+			if (current == null) {
+				current = next;
+				currentSummary = nextSummary;
+				bestFoundConfigSoFar = current;
+				bestSummaryforConfig = currentSummary;
+				continue;
+			}
+			int deltaE = nextSummary.compareTo(currentSummary);
+			if (deltaE > 0) {
+				current = next;
+				currentSummary = nextSummary;
+				bestFoundConfigSoFar = current;
+				bestSummaryforConfig = currentSummary;
+				continue;
+			}
+			double T = (N_ITERATIONS - i) * 5E6;
+			if (Math.exp(deltaE/T) > Math.random()) {
+				current = next;
+				currentSummary = nextSummary;
+				bestFoundConfigSoFar = current;
+				bestSummaryforConfig = currentSummary;
+				continue;
+			}
+		}
+		
+		System.out.println("Solution not found! after " + N_ITERATIONS + " iterations");
+		System.out.println(currentSummary);
+		return current;
+	}
+	
+	//Parameters
+	//Last parameter is the number of A projects completed that the algorithm is looking for.
+	// The others are the parameter passed to the Simulator CLI.
+	public static void main(String[] args) throws Exception {
+		ArrayConfigurationsExplorerSA sa = new ArrayConfigurationsExplorerSA();
+		String[] cliArgs = Arrays.copyOfRange(args, 0, args.length - 1 );
+		List<ArrayConfiguration> bestSolution = sa.calculateBestArrayConfiguration(cliArgs, new Integer(args[args.length - 1]));
+		System.out.println("Solution found: ");
+		for (ArrayConfiguration ac: bestSolution) {
+			System.out.println(ac + " " + utcFormat.format(ac.getStartTime()) + " -- " + utcFormat.format(ac.getEndTime()));
 		}
 	}
 }

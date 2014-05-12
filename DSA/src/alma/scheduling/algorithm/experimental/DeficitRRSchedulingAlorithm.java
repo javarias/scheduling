@@ -28,9 +28,10 @@ public class DeficitRRSchedulingAlorithm extends DynamicSchedulingAlgorithmImpl 
 	private static final double QUANTA_BASE_VALUE = 4D/3D; //hours (1 hr 20 in)
 	
 	private TreeMap<Executive, List<SchedBlock>> serviceQueues;
+	private TreeMap<Executive, List<SchedBlock>> highestPriorityQueues;
 	private TreeMap<Executive, Double> deficitCounters;
 	private TreeMap<Executive, Double> quantumSize;
-	private List<SchedBlock> too; //targets of opportunity 
+	private List<SchedBlock> too; //targets of opportunity
 	private ExecutiveDAO execDao;
 	
 	private Executive rrPtr = null;
@@ -158,8 +159,13 @@ public class DeficitRRSchedulingAlorithm extends DynamicSchedulingAlgorithmImpl 
 		for (Executive e: serviceQueues.keySet()) {
 			serviceQueues.get(e).clear();
 		}
+		try {
 		Collections.sort(ranks);
 		Collections.reverse(ranks);
+		} catch (Exception e) {
+			System.out.println(ranks);
+			throw e;
+		}
 		for (SBRank r: ranks) {
 			SchedBlock sb = sbs.get(r.getUid());
 			if (sb.getExecutive().getName().equalsIgnoreCase("EA_NA") 
