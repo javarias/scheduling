@@ -24,15 +24,20 @@
  */
 package alma.scheduling.datamodel.observatory;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 import alma.scheduling.datamodel.obsproject.ArrayType;
 
-public class ArrayConfiguration {
+public class ArrayConfiguration implements Serializable{
 
-    private Long id;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 4927222943568595492L;
+	private Long id;
     private Date startTime;
     private Date endTime;
     private Set<AntennaInstallation> antennaInstallations = new HashSet<AntennaInstallation>();

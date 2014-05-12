@@ -1,5 +1,10 @@
 package alma.scheduling.spt.array;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,6 +45,7 @@ public class ArrayConfigurationsExplorerSA {
 	
 	private final Date seasonStartDate;
 	private final Date seasonEndDate;
+	final SimulationResultsAnalyzer analyzer = new SimulationResultsAnalyzer();
 	
 	private List<ArrayConfiguration> bestFoundConfigSoFar = null;
 	private SimulationResultSummary bestSummaryforConfig = null;
@@ -186,10 +192,36 @@ public class ArrayConfigurationsExplorerSA {
 		return retVal;
 	}
 	
-	private List<ArrayConfigurationLite> neighbour() {
-		final ArrayList<ArrayConfigurationLite> retval = new ArrayList<>();
-		
-		return retval; 
+	private List<ArrayConfiguration> neighbour(List<ArrayConfiguration> initialList) {
+		List<ArrayConfiguration> ret = copyArrayConfigs(initialList);
+		boolean modified = false;
+		int tries = 0;
+		while (!modified && tries < 50) {
+			int index = (int)((ret.size() - 2) * Math.random()); //ignore TP and 7m, they are always at the end of the list
+			ArrayConfiguration ac = ret.get(index);
+			double chance = Math.random();
+			if (chance < 0.5) {
+				//modify start time if possible
+				if (index != 0) {
+					ArrayConfiguration prevAC = ret.get(index - 1);
+					if (ac.getStartTime().getTime() - prevAC.getEndTime().getTime() < WEEK_DURATION_MS - 1)
+						continue;
+				}
+				ac.setStartTime(new Date(ac.getStartTime().getTime() - WEEK_DURATION_MS)); 
+				modified = true;
+			} else {
+				//modify end time if possible
+				if (index != (ret.size() - 1)) {
+					ArrayConfiguration nextAC = ret.get(index + 1);
+					if (nextAC.getStartTime().getTime() - ac.getEndTime().getTime() < WEEK_DURATION_MS - 1)
+						continue;
+				}
+				ac.setEndTime(new Date(ac.getEndTime().getTime() + WEEK_DURATION_MS));
+				modified = true;
+			}
+			tries++;
+		}
+		return ret; 
 	}
 	
 	private List<ArrayConfiguration> findInitialSolution(Set<ArrayLSTRequestedIntervalWrapper> arraySet) {
@@ -206,6 +238,77 @@ public class ArrayConfigurationsExplorerSA {
 			System.out.println(ac + " " + utcFormat.format(ac.getStartTime()) + " -- " + utcFormat.format(ac.getEndTime()));
 		}
 		System.out.println("----------------------------------------------------------------------------------");
+	}
+	
+	public List<ArrayConfiguration> calculateBestArrayConfiguration(String[] args, int APrjsCompleted) throws Exception {
+		Set<ArrayLSTRequestedIntervalWrapper> arraySet = calculateDateIntervals();
+		List<ArrayConfiguration> current = null;
+		SimulationResultSummary currentSummary = null;
+		for (int i = 0; i < N_ITERATIONS; i++) {
+			if (currentSummary != null && currentSummary.getCompletedProjects().get("A") >= APrjsCompleted) {
+				System.out.println("Found Solution! after " + i + " iterations");
+				System.out.println(currentSummary);
+				return current;
+			}
+			List<ArrayConfiguration> next = null;
+			if (current != null && Math.random() < 0.5)
+				next = neighbour(current);
+			else
+				next = findInitialSolution(arraySet);
+			if (next == null) {
+				//Something went wrong with the simulation check logs
+				i--;
+				continue;
+			}
+			SimulationResultSummary nextSummary = executeSimulation(next, args);
+			if (current == null) {
+				current = next;
+				currentSummary = nextSummary;
+				bestFoundConfigSoFar = current;
+				bestSummaryforConfig = currentSummary;
+				continue;
+			}
+			int deltaE = nextSummary.compareTo(currentSummary);
+			if (deltaE > 0) {
+				current = next;
+				currentSummary = nextSummary;
+				bestFoundConfigSoFar = current;
+				bestSummaryforConfig = currentSummary;
+				continue;
+			}
+			double T = (N_ITERATIONS - i) * 5E6;
+			if (Math.exp(deltaE/T) > Math.random()) {
+				current = next;
+				currentSummary = nextSummary;
+				continue;
+			}
+		}
+		
+		System.out.println("Solution not found! after " + N_ITERATIONS + " iterations");
+		System.out.println(bestSummaryforConfig);
+		return bestFoundConfigSoFar;
+	}
+	
+	private SimulationResultSummary executeSimulation(List<ArrayConfiguration> next, String[] args) throws Exception {
+		printSolution(next);
+		SimulatorCLI cli = new SimulatorCLI();
+		cli.parseOptions(args);
+		cli.loadData();
+		ObservatoryDao obsDao = (ObservatoryDao) DSAContextFactory.getContext().getBean(DSAContextFactory.SCHEDULING_OBSERVATORY_DAO);
+		obsDao.deleteAllArrayConfigurations();
+		obsDao.saveOrUpdate(next);
+		SimulationResults nextResult = null;
+		try {
+			nextResult = cli.runSimulationDataAlreadyLoaded();
+		} catch (Exception ex) {
+			//In case something goes horrible wrong
+			ex.printStackTrace();
+			return null;
+		}
+		SimulationResultSummary nextSummary = analyzer.analyzeResult(nextResult);
+		System.out.println(nextSummary);
+		SimulatorContextFactory.closeContext();
+		return nextSummary;
 	}
 	
 	private ArrayConfiguration get7mConfig() {
@@ -236,64 +339,34 @@ public class ArrayConfigurationsExplorerSA {
 		return ac;
 	}
 	
-	public List<ArrayConfiguration> calculateBestArrayConfiguration(String[] args, int totalAProjects) throws Exception {
-		Set<ArrayLSTRequestedIntervalWrapper> arraySet = calculateDateIntervals();
-		final SimulationResultsAnalyzer analyzer = new SimulationResultsAnalyzer();
-		List<ArrayConfiguration> current = null;
-		SimulationResultSummary currentSummary = null;
-		for (int i = 0; i < N_ITERATIONS; i++) {
-			if (currentSummary != null && currentSummary.getCompletedProjects().get("A") >= totalAProjects) {
-				System.out.println("Found Solution! after " + i + " iterations");
-				System.out.println(currentSummary);
-				return current;
-			}
-			List<ArrayConfiguration> next = findInitialSolution(arraySet);
-			printSolution(next);
-			SimulatorCLI cli = new SimulatorCLI();
-			cli.parseOptions(args);
-			cli.loadData();
-			ObservatoryDao obsDao = (ObservatoryDao) DSAContextFactory.getContext().getBean(DSAContextFactory.SCHEDULING_OBSERVATORY_DAO);
-			obsDao.deleteAllArrayConfigurations();
-			obsDao.saveOrUpdate(next);
-			SimulationResults nextResult = null;
-			try {
-				nextResult = cli.runSimulationDataAlreadyLoaded();
-			} catch (Exception ex) {
-				//In case something goes horrible wrong
-				ex.printStackTrace();
-				continue;
-			}
-			SimulationResultSummary nextSummary = analyzer.analyzeResult(nextResult);
-			System.out.println(nextSummary);
-			SimulatorContextFactory.closeContext();
-			if (current == null) {
-				current = next;
-				currentSummary = nextSummary;
-				bestFoundConfigSoFar = current;
-				bestSummaryforConfig = currentSummary;
-				continue;
-			}
-			int deltaE = nextSummary.compareTo(currentSummary);
-			if (deltaE > 0) {
-				current = next;
-				currentSummary = nextSummary;
-				bestFoundConfigSoFar = current;
-				bestSummaryforConfig = currentSummary;
-				continue;
-			}
-			double T = (N_ITERATIONS - i) * 5E6;
-			if (Math.exp(deltaE/T) > Math.random()) {
-				current = next;
-				currentSummary = nextSummary;
-				bestFoundConfigSoFar = current;
-				bestSummaryforConfig = currentSummary;
-				continue;
+	private ArrayList<ArrayConfiguration> copyArrayConfigs(List<ArrayConfiguration> initialList) {
+		ArrayList<ArrayConfiguration> ret = new ArrayList<>();
+		for (ArrayConfiguration ac: initialList) {
+			ret.add(copy(ac));
+		}
+		return ret;
+	}
+	
+	private ArrayConfiguration copy(ArrayConfiguration ac) {
+		ArrayConfiguration ret = null;
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream out = null;
+		try {
+			out = new ObjectOutputStream(bos);
+	        out.writeObject(ac);
+	        ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bos.toByteArray()));
+	        ret = (ArrayConfiguration) in.readObject();
+		} catch (IOException | ClassNotFoundException e) {
+		} finally {
+			if (out != null) {
+				try {
+					out.flush();
+					out.close();
+				} catch (IOException e) {
+				}
 			}
 		}
-		
-		System.out.println("Solution not found! after " + N_ITERATIONS + " iterations");
-		System.out.println(currentSummary);
-		return current;
+		return ret;
 	}
 	
 	//Parameters
