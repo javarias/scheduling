@@ -7,6 +7,7 @@ import java.util.List;
 import alma.scheduling.algorithm.sbranking.AbstractBaseRanker;
 import alma.scheduling.algorithm.sbranking.SBRank;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
+import alma.scheduling.datamodel.obsproject.ObservationStatus;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 
 public class SBCompletenessScorer extends AbstractBaseRanker {
@@ -31,6 +32,9 @@ public class SBCompletenessScorer extends AbstractBaseRanker {
 					(sb.getObsUnitControl().getMaximumTime() - 
 					 sb.getSchedBlockControl().getAccumulatedExecutionTime())) / 
 					sb.getObsUnitControl().getMaximumTime();
+			if (sb.getProject().getStatus() == ObservationStatus.IN_PROGRESS)
+				s = (s + 1.0) / 2.0;
+			score.setRank(s);
 			scores.add(score);
 		}
 		printVerboseInfo(scores, arrConf.getId(), ut);

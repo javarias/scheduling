@@ -358,7 +358,7 @@ public class SchedBlockCategorizer {
 						lstMaxH, lstMaxHMin, lstMaxHMax));
 //				System.out.println(sbc.getHighestAltitudeLSTand15LST(sb.getRepresentativeCoordinates()));
 			}
-//			sbc.showGnuPlot(sortedList, ac.getConfigurationName());
+//			showGnuPlot(sortedList, ac.getConfigurationName());
 			System.out.println("---------------------------------------------------------------------------\n");
 		}
 		allSB.addAll(unmappedSBs);
@@ -394,4 +394,7 @@ public class SchedBlockCategorizer {
 		SimulatorContextFactory.closeContext();
 	}
 	
+	public static void main (String[] args) {
+		new SchedBlockCategorizer().calculateObsCycleProfiles();
+	}
 }

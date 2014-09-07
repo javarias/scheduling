@@ -8,4 +8,27 @@
 		<fileset dir="src" includes="**/*.dat" />
 	</path>
 	<import file="${common.dir}/common.xml"/>
+
+	<target name="run-single-sim" depends="version, compile" description="--> compile and run a single execution of the simulator">
+		<java classpathref="run.path.id" classname="alma.scheduling.psm.cli.SimulatorCLI">
+			<arg value="-dwork_dir"/>
+			<arg value="-ptestPolicy.xml"/>
+		</java>
+	</target>
+	
+	<target name="run-sa-ac-exp" depends="version, compile" description="--> compile and run the SA array explorer">
+		<java classpathref="run.path.id" fork="true" classname="alma.scheduling.spt.array.ArrayConfigurationsExplorerSA">
+			<jvmarg value="-Dscheduling.workdir=work_dir"/>
+			<arg value="-dwork_dir"/>
+			<arg value="-ptestPolicy.xml"/>
+			<arg value="31"/>
+		</java>
+	</target>
+	
+	<target name="run-output-analyzer" depends="version, compile" description="--> compile and run the output analyzer tool for -Danalyzer.input">
+		<java classpathref="run.path.id" fork="true" classname="alma.scheduling.spt.array.SimulationResultsAnalyzer">
+			<arg value="${analyzer.input}"/>
+		</java>
+	</target>
+
 </project>

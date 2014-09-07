@@ -192,7 +192,7 @@ public class ArrayConfigurationsExplorerSA {
 		return retVal;
 	}
 	
-	private List<ArrayConfiguration> neighbour(List<ArrayConfiguration> initialList) {
+	private List<ArrayConfiguration> neighbor(List<ArrayConfiguration> initialList) {
 		List<ArrayConfiguration> ret = copyArrayConfigs(initialList);
 		boolean modified = false;
 		int tries = 0;
@@ -204,8 +204,15 @@ public class ArrayConfigurationsExplorerSA {
 				//modify start time if possible
 				if (index != 0) {
 					ArrayConfiguration prevAC = ret.get(index - 1);
+					try {
 					if (ac.getStartTime().getTime() - prevAC.getEndTime().getTime() < WEEK_DURATION_MS - 1)
 						continue;
+					} catch (NullPointerException e) {
+						System.out.println(ac);
+						System.out.println(prevAC);
+						System.out.println(initialList);
+						throw e;
+					}
 				}
 				ac.setStartTime(new Date(ac.getStartTime().getTime() - WEEK_DURATION_MS)); 
 				modified = true;
@@ -252,7 +259,7 @@ public class ArrayConfigurationsExplorerSA {
 			}
 			List<ArrayConfiguration> next = null;
 			if (current != null && Math.random() < 0.5)
-				next = neighbour(current);
+				next = neighbor(current);
 			else
 				next = findInitialSolution(arraySet);
 			if (next == null) {

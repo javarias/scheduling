@@ -45,6 +45,7 @@ import alma.scheduling.datamodel.observation.ExecBlock;
 import alma.scheduling.datamodel.observation.ExecStatus;
 import alma.scheduling.datamodel.observation.dao.ObservationDao;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
+import alma.scheduling.datamodel.obsproject.ObservationStatus;
 import alma.scheduling.datamodel.obsproject.ObservingParameters;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.SchedBlockState;
@@ -233,6 +234,7 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
             Date ut) {
         if (sb.getSchedBlockControl().getState() == SchedBlockState.RUNNING){
             sb.getSchedBlockControl().setState(SchedBlockState.READY);
+            sb.getProject().setStatus(ObservationStatus.IN_PROGRESS);
             schedBlockDao.saveOrUpdate(sb);
         }
         

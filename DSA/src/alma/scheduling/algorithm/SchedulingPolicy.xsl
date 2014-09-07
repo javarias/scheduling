@@ -202,6 +202,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
                 </bean>
             </xsl:if>
             
+            <xsl:if test="count(Scorers/SBCompletionScorer) = 1">
+                <xsl:variable name="weight" select="Scorers/TsysScorer/weight"/>
+                <bean id="{concat('SBCompletionScorer', '_', @name)}" class="alma.scheduling.algorithm.obsproject.SBCompletenessScorer" scope="prototype">
+                    <constructor-arg><value>SBCompletionScorer</value></constructor-arg>
+                    <property name="factor" value="{$weight}"/>
+                </bean>
+            </xsl:if>
+            
             <xsl:if test="count(Scorers/ExecutiveBalancingScorer) = 1">
                 <xsl:variable name="weight" select="Scorers/ExecutiveBalancingScorer/weight"/>
                 <bean id="{concat('executiveBalancingScorer', '_', @name)}" class="alma.scheduling.algorithm.executive.ExecutiveBalancingScorer" scope="prototype">

@@ -113,6 +113,7 @@
 				<xs:element name="HourAngleScorer" type="HourAngleScorerT"/>
 				<xs:element name="TsysScorer" type="TsysScorerT"/>
 				<xs:element name="ExecutiveBalancingScorer" type="ExecutiveBalancingScorerT"/>
+				<xs:element name="SBCompletionScorer" type="SBCompletionScorerT"/>
 			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>
@@ -364,4 +365,9 @@
 		</xs:complexContent>
 	</xs:complexType>
 
+	<xs:complexType name="SBCompletionScorerT">
+		<xs:complexContent>
+			<xs:extension base="ScorerT"/>
+		</xs:complexContent>
+	</xs:complexType>
 </xs:schema>
